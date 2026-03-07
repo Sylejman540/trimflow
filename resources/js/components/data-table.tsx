@@ -65,7 +65,7 @@ export function DataTable<TData, TValue>({
         <div className="space-y-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                         placeholder={searchPlaceholder}
                         value={searchColumn ? (table.getColumn(searchColumn)?.getFilterValue() as string) ?? '' : globalFilter}
@@ -76,24 +76,23 @@ export function DataTable<TData, TValue>({
                                 setGlobalFilter(e.target.value);
                             }
                         }}
-                        className="pl-9"
+                        className="h-10 pl-9 bg-white"
                     />
                 </div>
                 {filters}
             </div>
 
-            <div className="rounded-md border">
+            <div className="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200/80">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow key={headerGroup.id} className="border-gray-100 bg-gray-50/60 hover:bg-gray-50/60">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead key={header.id} className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
+                                                  header.column.columnDef.header,
                                                   header.getContext(),
                                               )}
                                     </TableHead>
@@ -104,9 +103,9 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id}>
+                                <TableRow key={row.id} className="border-gray-100">
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="text-sm text-gray-700">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext(),
@@ -119,7 +118,7 @@ export function DataTable<TData, TValue>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center"
+                                    className="h-24 text-center text-sm text-gray-500"
                                 >
                                     No results.
                                 </TableCell>
@@ -131,7 +130,7 @@ export function DataTable<TData, TValue>({
 
             {table.getPageCount() > 1 && (
                 <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-gray-500">
                         Page {table.getState().pagination.pageIndex + 1} of{' '}
                         {table.getPageCount()}
                     </p>
