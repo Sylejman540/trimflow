@@ -115,23 +115,27 @@ const columns: ColumnDef<Appointment>[] = [
                             <Eye className="mr-2 h-4 w-4" />
                             View
                         </DropdownMenuItem>
-                        <DropdownMenuItem render={<Link href={route('appointments.edit', appt.id)} />}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => {
-                                if (confirm('Delete this appointment?')) {
-                                    router.delete(
-                                        route('appointments.destroy', appt.id),
-                                    );
-                                }
-                            }}
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </DropdownMenuItem>
+                        {appt.can_edit && (
+                            <DropdownMenuItem render={<Link href={route('appointments.edit', appt.id)} />}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                        )}
+                        {appt.can_delete && (
+                            <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => {
+                                    if (confirm('Delete this appointment?')) {
+                                        router.delete(
+                                            route('appointments.destroy', appt.id),
+                                        );
+                                    }
+                                }}
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

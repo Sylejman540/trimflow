@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npx vite build)",
       "Bash(php -l app/Policies/AppointmentPolicy.php)",
-      "Bash(php -l app/Http/Controllers/DashboardController.php)"
+      "Bash(php -l app/Http/Controllers/DashboardController.php)",
+      "Bash(php -l app/Policies/ServicePolicy.php)",
+      "Bash(php -l app/Policies/BarberPolicy.php)",
+      "Bash(php -l app/Http/Controllers/ServiceController.php)",
+      "Bash(php -l app/Http/Controllers/BarberController.php)",
+      "Bash(php artisan tinker --execute=\"echo App\\\\Models\\\\Appointment::select\\(''id'',''starts_at'',''status''\\)->orderBy\\(''starts_at'',''desc''\\)->limit\\(5\\)->get\\(\\)->toJson\\(JSON_PRETTY_PRINT\\);\")",
+      "Bash(php artisan tinker --execute=\":*)"
     ]
   }
 }

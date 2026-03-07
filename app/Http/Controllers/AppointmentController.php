@@ -25,8 +25,15 @@ class AppointmentController extends Controller
             $query->where('barber_id', $user->barber?->id);
         }
 
+        $appointments = $query->get()->map(function (Appointment $appt) use ($user) {
+            $data = $appt->toArray();
+            $data['can_edit'] = $user->can('update', $appt);
+            $data['can_delete'] = $user->can('delete', $appt);
+            return $data;
+        });
+
         return Inertia::render('appointments/Index', [
-            'appointments' => $query->get(),
+            'appointments' => $appointments,
             'can_create' => $user->can('create', Appointment::class),
         ]);
     }
@@ -98,8 +105,12 @@ class AppointmentController extends Controller
             'barberNotes',
         ]);
 
+        $user = Auth::user();
+
         return Inertia::render('appointments/Show', [
             'appointment' => $appointment,
+            'can_edit' => $user->can('update', $appointment),
+            'can_delete' => $user->can('delete', $appointment),
         ]);
     }
 

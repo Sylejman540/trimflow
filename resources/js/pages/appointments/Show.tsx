@@ -41,7 +41,13 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     );
 }
 
-export default function Show({ appointment }: { appointment: Appointment }) {
+export default function Show({
+    appointment,
+    can_edit,
+}: {
+    appointment: Appointment;
+    can_edit: boolean;
+}) {
     return (
         <AppLayout
             title={`Appointment #${appointment.id}`}
@@ -51,9 +57,11 @@ export default function Show({ appointment }: { appointment: Appointment }) {
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back
                     </Link>
-                    <Link href={route('appointments.edit', appointment.id)} className={buttonVariants({ variant: "default" })}>
-                        Edit
-                    </Link>
+                    {can_edit && (
+                        <Link href={route('appointments.edit', appointment.id)} className={buttonVariants({ variant: "default" })}>
+                            Edit
+                        </Link>
+                    )}
                 </div>
             }
         >

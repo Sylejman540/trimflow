@@ -28,16 +28,23 @@ class AppointmentPolicy
 
     public function update(User $user, Appointment $appointment): bool
     {
+        if ($appointment->starts_at->isPast()) {
+            return false;
+        }
+
         if ($user->hasRole('shop-admin')) {
             return true;
         }
 
-        // Barbers can only update appointments they created (assigned to them)
         return $user->hasRole('barber') && $user->barber && $appointment->barber_id === $user->barber->id;
     }
 
     public function delete(User $user, Appointment $appointment): bool
     {
+        if ($appointment->starts_at->isPast()) {
+            return false;
+        }
+
         return $user->hasRole('shop-admin');
     }
 }

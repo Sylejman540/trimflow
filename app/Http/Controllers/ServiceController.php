@@ -10,20 +10,24 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::orderBy('name')->get();
+        $this->authorize('viewAny', Service::class);
 
         return Inertia::render('services/Index', [
-            'services' => $services,
+            'services' => Service::orderBy('name')->get(),
         ]);
     }
 
     public function create()
     {
+        $this->authorize('create', Service::class);
+
         return Inertia::render('services/Create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Service::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'duration' => 'required|integer|min:5|max:480',
@@ -40,6 +44,8 @@ class ServiceController extends Controller
 
     public function edit(Service $service)
     {
+        $this->authorize('update', $service);
+
         return Inertia::render('services/Edit', [
             'service' => $service,
         ]);
@@ -47,6 +53,8 @@ class ServiceController extends Controller
 
     public function update(Request $request, Service $service)
     {
+        $this->authorize('update', $service);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'duration' => 'required|integer|min:5|max:480',
@@ -63,6 +71,8 @@ class ServiceController extends Controller
 
     public function destroy(Service $service)
     {
+        $this->authorize('delete', $service);
+
         $service->delete();
 
         return redirect()->route('services.index')->with('success', 'Service deleted.');

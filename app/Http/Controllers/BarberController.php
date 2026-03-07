@@ -14,20 +14,24 @@ class BarberController extends Controller
 {
     public function index()
     {
-        $barbers = Barber::with('user')->orderBy('created_at', 'desc')->get();
+        $this->authorize('viewAny', Barber::class);
 
         return Inertia::render('barbers/Index', [
-            'barbers' => $barbers,
+            'barbers' => Barber::with('user')->orderBy('created_at', 'desc')->get(),
         ]);
     }
 
     public function create()
     {
+        $this->authorize('create', Barber::class);
+
         return Inertia::render('barbers/Create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Barber::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -59,6 +63,8 @@ class BarberController extends Controller
 
     public function edit(Barber $barber)
     {
+        $this->authorize('update', $barber);
+
         $barber->load('user');
 
         return Inertia::render('barbers/Edit', [
@@ -68,6 +74,8 @@ class BarberController extends Controller
 
     public function update(Request $request, Barber $barber)
     {
+        $this->authorize('update', $barber);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $barber->user_id,
@@ -94,6 +102,8 @@ class BarberController extends Controller
 
     public function destroy(Barber $barber)
     {
+        $this->authorize('delete', $barber);
+
         $barber->delete();
 
         return redirect()->route('barbers.index')->with('success', 'Barber deleted.');

@@ -96,6 +96,8 @@ export interface Appointment {
     payment?: Payment;
     review?: Review;
     barber_notes?: BarberNote[];
+    can_edit?: boolean;
+    can_delete?: boolean;
 }
 
 export type PaymentMethod = 'cash' | 'card' | 'stripe' | 'paypal';
