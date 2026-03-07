@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BarberController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
@@ -22,7 +21,6 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::resource('barbers', BarberController::class)->except(['show']);
-    Route::resource('customers', CustomerController::class)->except(['show']);
     Route::resource('appointments', AppointmentController::class);
 });
 
