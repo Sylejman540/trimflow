@@ -42,6 +42,11 @@ class Company extends Model
         return $this->hasMany(Barber::class);
     }
 
+    public function customers(): HasMany
+    {
+        return $this->hasMany(Customer::class);
+    }
+
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);

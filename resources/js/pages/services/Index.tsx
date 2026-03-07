@@ -1,10 +1,18 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
+import { useState } from 'react';
 import { Edit, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -83,6 +91,12 @@ const columns: ColumnDef<Service>[] = [
 ];
 
 export default function Index({ services }: { services: Service[] }) {
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+
+    const filtered = statusFilter === 'all'
+        ? services
+        : services.filter((s) => (statusFilter === 'active') === s.is_active);
+
     return (
         <AppLayout
             title="Services"
@@ -94,7 +108,24 @@ export default function Index({ services }: { services: Service[] }) {
             }
         >
             <Head title="Services" />
-            <DataTable columns={columns} data={services} />
+            <DataTable
+                columns={columns}
+                data={filtered}
+                searchPlaceholder="Search services..."
+                searchColumn="name"
+                filters={
+                    <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? 'all')}>
+                        <SelectTrigger className="w-[140px]">
+                            <SelectValue placeholder="All" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                    </Select>
+                }
+            />
         </AppLayout>
     );
 }

@@ -14,6 +14,7 @@ class Review extends Model
     protected $fillable = [
         'company_id',
         'appointment_id',
+        'customer_id',
         'barber_id',
         'rating',
         'comment',
@@ -29,6 +30,11 @@ class Review extends Model
     public function appointment(): BelongsTo
     {
         return $this->belongsTo(Appointment::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 
     public function barber(): BelongsTo

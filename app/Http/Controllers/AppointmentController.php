@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Barber;
+use App\Models\Customer;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -16,7 +17,7 @@ class AppointmentController extends Controller
     {
         $this->authorize('viewAny', Appointment::class);
 
-        $query = Appointment::with(['barber.user', 'service'])
+        $query = Appointment::with(['barber.user', 'customer', 'service'])
             ->orderBy('starts_at', 'desc');
 
         $user = Auth::user();
@@ -26,6 +27,7 @@ class AppointmentController extends Controller
 
         return Inertia::render('appointments/Index', [
             'appointments' => $query->get(),
+            'can_create' => $user->can('create', Appointment::class),
         ]);
     }
 
@@ -43,23 +45,36 @@ class AppointmentController extends Controller
     {
         $this->authorize('create', Appointment::class);
 
+        $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+
         $validated = $request->validate([
-            'barber_id' => 'required|exists:barbers,id',
-            'service_id' => 'required|exists:services,id',
+            'barber_id' => $isBarber ? 'nullable' : 'required|exists:barbers,id',
             'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'nullable|string|max:50',
+            'service_id' => 'required|exists:services,id',
             'starts_at' => 'required|date',
             'notes' => 'nullable|string|max:1000',
         ]);
+
+        $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
+
+        $customer = Customer::firstOrCreate(
+            ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
+            ['phone' => $validated['customer_phone']],
+        );
+
+        if ($validated['customer_phone'] && $customer->phone !== $validated['customer_phone']) {
+            $customer->update(['phone' => $validated['customer_phone']]);
+        }
 
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
 
         Appointment::create([
-            'barber_id' => $validated['barber_id'],
+            'barber_id' => $barberId,
+            'customer_id' => $customer->id,
             'service_id' => $validated['service_id'],
-            'customer_name' => $validated['customer_name'],
-            'customer_phone' => $validated['customer_phone'] ?? null,
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->copy()->addMinutes($service->duration),
             'price' => $service->price,
@@ -76,8 +91,10 @@ class AppointmentController extends Controller
 
         $appointment->load([
             'barber.user',
+            'customer',
             'service',
             'payment',
+            'review.customer',
             'barberNotes',
         ]);
 
@@ -90,7 +107,7 @@ class AppointmentController extends Controller
     {
         $this->authorize('update', $appointment);
 
-        $appointment->load(['barber.user', 'service']);
+        $appointment->load(['barber.user', 'customer', 'service']);
 
         return Inertia::render('appointments/Edit', [
             'appointment' => $appointment,
@@ -103,24 +120,34 @@ class AppointmentController extends Controller
     {
         $this->authorize('update', $appointment);
 
+        $user = Auth::user();
+
         $validated = $request->validate([
             'barber_id' => 'required|exists:barbers,id',
-            'service_id' => 'required|exists:services,id',
             'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'nullable|string|max:20',
+            'customer_phone' => 'nullable|string|max:50',
+            'service_id' => 'required|exists:services,id',
             'starts_at' => 'required|date',
             'status' => 'required|in:scheduled,confirmed,in_progress,completed,cancelled,no_show',
             'notes' => 'nullable|string|max:1000',
         ]);
+
+        $customer = Customer::firstOrCreate(
+            ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
+            ['phone' => $validated['customer_phone']],
+        );
+
+        if ($validated['customer_phone'] && $customer->phone !== $validated['customer_phone']) {
+            $customer->update(['phone' => $validated['customer_phone']]);
+        }
 
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
 
         $appointment->update([
             'barber_id' => $validated['barber_id'],
+            'customer_id' => $customer->id,
             'service_id' => $validated['service_id'],
-            'customer_name' => $validated['customer_name'],
-            'customer_phone' => $validated['customer_phone'] ?? null,
             'starts_at' => $startsAt,
             'ends_at' => $startsAt->copy()->addMinutes($service->duration),
             'price' => $service->price,

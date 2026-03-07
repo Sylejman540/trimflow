@@ -15,6 +15,7 @@ class BarberNote extends Model
         'company_id',
         'appointment_id',
         'barber_id',
+        'customer_id',
         'notes',
     ];
 
@@ -28,4 +29,8 @@ class BarberNote extends Model
         return $this->belongsTo(Barber::class);
     }
 
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
 }

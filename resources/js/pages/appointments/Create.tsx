@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCents, formatDuration } from '@/lib/utils';
-import { Barber, Service } from '@/types';
+import { Barber, PageProps, Service } from '@/types';
 
 export default function Create({
     barbers,
@@ -23,11 +23,14 @@ export default function Create({
     barbers: Barber[];
     services: Service[];
 }) {
+    const { auth } = usePage<PageProps>().props;
+    const isBarber = auth.roles.includes('barber') && !auth.roles.includes('shop-admin');
+
     const { data, setData, post, processing, errors } = useForm({
-        barber_id: '',
-        service_id: '',
+        barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
         customer_name: '',
         customer_phone: '',
+        service_id: '',
         starts_at: '',
         notes: '',
     });
@@ -51,71 +54,63 @@ export default function Create({
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={submit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="customer_name">Customer Name</Label>
-                                <Input
-                                    id="customer_name"
-                                    value={data.customer_name}
-                                    onChange={(e) =>
-                                        setData('customer_name', e.target.value)
-                                    }
-                                    placeholder="John Doe"
-                                    required
-                                />
-                                {errors.customer_name && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.customer_name}
-                                    </p>
-                                )}
-                            </div>
+                            {!isBarber && (
+                                <div className="space-y-2">
+                                    <Label>Barber</Label>
+                                    <Select
+                                        value={data.barber_id}
+                                        onValueChange={(v) =>
+                                            setData('barber_id', v ?? '')
+                                        }
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select barber" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {barbers.map((b) => (
+                                                <SelectItem
+                                                    key={b.id}
+                                                    value={String(b.id)}
+                                                >
+                                                    {b.user?.name ?? ''}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.barber_id && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.barber_id}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
 
-                            <div className="space-y-2">
-                                <Label htmlFor="customer_phone">
-                                    Phone{' '}
-                                    <span className="text-muted-foreground">(optional)</span>
-                                </Label>
-                                <Input
-                                    id="customer_phone"
-                                    value={data.customer_phone}
-                                    onChange={(e) =>
-                                        setData('customer_phone', e.target.value)
-                                    }
-                                    placeholder="(555) 123-4567"
-                                />
-                                {errors.customer_phone && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.customer_phone}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Barber</Label>
-                                <Select
-                                    value={data.barber_id}
-                                    onValueChange={(v) =>
-                                        setData('barber_id', v ?? '')
-                                    }
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select barber" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {barbers.map((b) => (
-                                            <SelectItem
-                                                key={b.id}
-                                                value={String(b.id)}
-                                            >
-                                                {b.user?.name ?? ''}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.barber_id && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.barber_id}
-                                    </p>
-                                )}
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="customer_name">Customer Name</Label>
+                                    <Input
+                                        id="customer_name"
+                                        value={data.customer_name}
+                                        onChange={(e) => setData('customer_name', e.target.value)}
+                                        placeholder="John Doe"
+                                        required
+                                    />
+                                    {errors.customer_name && (
+                                        <p className="text-sm text-destructive">{errors.customer_name}</p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="customer_phone">Customer Phone</Label>
+                                    <Input
+                                        id="customer_phone"
+                                        value={data.customer_phone}
+                                        onChange={(e) => setData('customer_phone', e.target.value)}
+                                        placeholder="+1 234 567 890"
+                                    />
+                                    {errors.customer_phone && (
+                                        <p className="text-sm text-destructive">{errors.customer_phone}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="space-y-2">

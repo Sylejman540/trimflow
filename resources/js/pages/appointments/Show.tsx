@@ -62,6 +62,7 @@ export default function Show({ appointment }: { appointment: Appointment }) {
             <Tabs defaultValue="overview" className="space-y-4">
                 <TabsList>
                     <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="customer">Customer</TabsTrigger>
                     <TabsTrigger value="service">Service</TabsTrigger>
                     <TabsTrigger value="notes">Notes</TabsTrigger>
                 </TabsList>
@@ -94,17 +95,8 @@ export default function Show({ appointment }: { appointment: Appointment }) {
                             <Separator />
                             <InfoRow
                                 label="Customer"
-                                value={appointment.customer_name}
+                                value={appointment.customer?.name ?? '-'}
                             />
-                            {appointment.customer_phone && (
-                                <>
-                                    <Separator />
-                                    <InfoRow
-                                        label="Phone"
-                                        value={appointment.customer_phone}
-                                    />
-                                </>
-                            )}
                             <Separator />
                             <InfoRow
                                 label="Service"
@@ -130,6 +122,53 @@ export default function Show({ appointment }: { appointment: Appointment }) {
                             )}
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="customer">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Customer Information</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-1">
+                            <InfoRow
+                                label="Name"
+                                value={appointment.customer?.name ?? '-'}
+                            />
+                            <Separator />
+                            <InfoRow
+                                label="Email"
+                                value={appointment.customer?.email ?? '-'}
+                            />
+                            <Separator />
+                            <InfoRow
+                                label="Phone"
+                                value={appointment.customer?.phone ?? '-'}
+                            />
+                        </CardContent>
+                    </Card>
+
+                    {appointment.review && (
+                        <Card className="mt-4">
+                            <CardHeader>
+                                <CardTitle>Review</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-1">
+                                <InfoRow
+                                    label="Rating"
+                                    value={`${appointment.review.rating}/5`}
+                                />
+                                {appointment.review.comment && (
+                                    <>
+                                        <Separator />
+                                        <div className="py-2">
+                                            <p className="text-sm text-muted-foreground">Comment</p>
+                                            <p className="mt-1 text-sm">{appointment.review.comment}</p>
+                                        </div>
+                                    </>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="service">

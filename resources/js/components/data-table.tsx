@@ -1,13 +1,16 @@
 import {
     ColumnDef,
+    ColumnFiltersState,
+    FilterFn,
     flexRender,
     getCoreRowModel,
-    useReactTable,
+    getFilteredRowModel,
     getPaginationRowModel,
-    SortingState,
     getSortedRowModel,
+    SortingState,
+    useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import {
     Table,
     TableBody,
@@ -17,20 +20,31 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     pageSize?: number;
+    searchPlaceholder?: string;
+    searchColumn?: string;
+    globalFilterFn?: FilterFn<TData>;
+    filters?: ReactNode;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     pageSize = 10,
+    searchPlaceholder = 'Search...',
+    searchColumn,
+    globalFilterFn,
+    filters,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [globalFilter, setGlobalFilter] = useState('');
 
     const table = useReactTable({
         data,
@@ -38,13 +52,36 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
         onSortingChange: setSorting,
-        state: { sorting },
+        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn,
+        state: { sorting, columnFilters, globalFilter },
         initialState: { pagination: { pageSize } },
     });
 
     return (
-        <div>
+        <div className="space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        placeholder={searchPlaceholder}
+                        value={searchColumn ? (table.getColumn(searchColumn)?.getFilterValue() as string) ?? '' : globalFilter}
+                        onChange={(e) => {
+                            if (searchColumn) {
+                                table.getColumn(searchColumn)?.setFilterValue(e.target.value);
+                            } else {
+                                setGlobalFilter(e.target.value);
+                            }
+                        }}
+                        className="pl-9"
+                    />
+                </div>
+                {filters}
+            </div>
+
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -93,7 +130,7 @@ export function DataTable<TData, TValue>({
             </div>
 
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-between py-4">
+                <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
                         Page {table.getState().pagination.pageIndex + 1} of{' '}
                         {table.getPageCount()}

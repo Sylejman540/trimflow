@@ -41,6 +41,21 @@ export interface Barber {
     user?: User;
 }
 
+export interface Customer {
+    id: number;
+    company_id: number;
+    user_id: number | null;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    favorite_barber_id: number | null;
+    notes: string | null;
+    created_at: string;
+    updated_at: string;
+    user?: User;
+    favorite_barber?: Barber;
+}
+
 export interface Service {
     id: number;
     company_id: number;
@@ -66,9 +81,8 @@ export interface Appointment {
     id: number;
     company_id: number;
     barber_id: number;
+    customer_id: number;
     service_id: number;
-    customer_name: string;
-    customer_phone: string | null;
     starts_at: string;
     ends_at: string;
     status: AppointmentStatus;
@@ -77,6 +91,7 @@ export interface Appointment {
     created_at: string;
     updated_at: string;
     barber?: Barber;
+    customer?: Customer;
     service?: Service;
     payment?: Payment;
     review?: Review;
@@ -103,12 +118,14 @@ export interface Review {
     id: number;
     company_id: number;
     appointment_id: number;
+    customer_id: number;
     barber_id: number;
     rating: number;
     comment: string | null;
     created_at: string;
     updated_at: string;
     appointment?: Appointment;
+    customer?: Customer;
     barber?: Barber;
 }
 
@@ -117,6 +134,7 @@ export interface BarberNote {
     company_id: number;
     appointment_id: number;
     barber_id: number;
+    customer_id: number;
     notes: string;
     created_at: string;
     updated_at: string;

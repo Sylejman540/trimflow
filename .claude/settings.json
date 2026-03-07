@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vite build)",
+      "Bash(php -l app/Policies/AppointmentPolicy.php)",
+      "Bash(php -l app/Http/Controllers/DashboardController.php)"
+    ]
+  }
+}

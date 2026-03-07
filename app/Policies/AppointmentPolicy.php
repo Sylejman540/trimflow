@@ -23,7 +23,7 @@ class AppointmentPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('shop-admin');
+        return $user->hasRole('shop-admin') || $user->hasRole('barber');
     }
 
     public function update(User $user, Appointment $appointment): bool
@@ -32,7 +32,8 @@ class AppointmentPolicy
             return true;
         }
 
-        return $user->barber && $appointment->barber_id === $user->barber->id;
+        // Barbers can only update appointments they created (assigned to them)
+        return $user->hasRole('barber') && $user->barber && $appointment->barber_id === $user->barber->id;
     }
 
     public function delete(User $user, Appointment $appointment): bool

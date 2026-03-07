@@ -36,9 +36,9 @@ export default function Edit({
 }) {
     const { data, setData, put, processing, errors } = useForm({
         barber_id: String(appointment.barber_id),
+        customer_name: appointment.customer?.name ?? '',
+        customer_phone: appointment.customer?.phone ?? '',
         service_id: String(appointment.service_id),
-        customer_name: appointment.customer_name,
-        customer_phone: appointment.customer_phone ?? '',
         starts_at: appointment.starts_at.slice(0, 16),
         status: appointment.status,
         notes: appointment.notes ?? '',
@@ -64,31 +64,6 @@ export default function Edit({
                     <CardContent>
                         <form onSubmit={submit} className="space-y-6">
                             <div className="space-y-2">
-                                <Label htmlFor="customer_name">Customer Name</Label>
-                                <Input
-                                    id="customer_name"
-                                    value={data.customer_name}
-                                    onChange={(e) => setData('customer_name', e.target.value)}
-                                    required
-                                />
-                                {errors.customer_name && <p className="text-sm text-destructive">{errors.customer_name}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="customer_phone">
-                                    Phone{' '}
-                                    <span className="text-muted-foreground">(optional)</span>
-                                </Label>
-                                <Input
-                                    id="customer_phone"
-                                    value={data.customer_phone}
-                                    onChange={(e) => setData('customer_phone', e.target.value)}
-                                    placeholder="(555) 123-4567"
-                                />
-                                {errors.customer_phone && <p className="text-sm text-destructive">{errors.customer_phone}</p>}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label>Barber</Label>
                                 <Select
                                     value={data.barber_id}
@@ -106,6 +81,34 @@ export default function Edit({
                                     </SelectContent>
                                 </Select>
                                 {errors.barber_id && <p className="text-sm text-destructive">{errors.barber_id}</p>}
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="customer_name">Customer Name</Label>
+                                    <Input
+                                        id="customer_name"
+                                        value={data.customer_name}
+                                        onChange={(e) => setData('customer_name', e.target.value)}
+                                        placeholder="John Doe"
+                                        required
+                                    />
+                                    {errors.customer_name && (
+                                        <p className="text-sm text-destructive">{errors.customer_name}</p>
+                                    )}
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="customer_phone">Customer Phone</Label>
+                                    <Input
+                                        id="customer_phone"
+                                        value={data.customer_phone}
+                                        onChange={(e) => setData('customer_phone', e.target.value)}
+                                        placeholder="+1 234 567 890"
+                                    />
+                                    {errors.customer_phone && (
+                                        <p className="text-sm text-destructive">{errors.customer_phone}</p>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="space-y-2">
