@@ -14,8 +14,8 @@ import { Appointment, AppointmentStatus } from '@/types';
 
 interface Stats {
     today_appointments: number;
-    total_customers: number;
-    active_barbers: number;
+    total_customers?: number;
+    active_barbers?: number;
     active_services: number;
     monthly_revenue: number;
 }
@@ -98,10 +98,12 @@ function AppointmentRow({ appointment }: { appointment: Appointment }) {
 }
 
 export default function Dashboard({
+    is_barber,
     stats,
     upcoming_appointments,
     recent_appointments,
 }: {
+    is_barber: boolean;
     stats: Stats;
     upcoming_appointments: Appointment[];
     recent_appointments: Appointment[];
@@ -112,7 +114,7 @@ export default function Dashboard({
 
             <div className="space-y-6">
                 {/* Stats */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                <div className={`grid gap-4 sm:grid-cols-2 ${is_barber ? 'lg:grid-cols-3' : 'lg:grid-cols-5'}`}>
                     <StatCard
                         title="Today's Appointments"
                         value={stats.today_appointments}
@@ -120,20 +122,24 @@ export default function Dashboard({
                             <CalendarDays className="h-4 w-4 text-muted-foreground" />
                         }
                     />
-                    <StatCard
-                        title="Total Customers"
-                        value={stats.total_customers}
-                        icon={
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        }
-                    />
-                    <StatCard
-                        title="Active Barbers"
-                        value={stats.active_barbers}
-                        icon={
-                            <Briefcase className="h-4 w-4 text-muted-foreground" />
-                        }
-                    />
+                    {!is_barber && (
+                        <StatCard
+                            title="Total Customers"
+                            value={stats.total_customers ?? 0}
+                            icon={
+                                <Users className="h-4 w-4 text-muted-foreground" />
+                            }
+                        />
+                    )}
+                    {!is_barber && (
+                        <StatCard
+                            title="Active Barbers"
+                            value={stats.active_barbers ?? 0}
+                            icon={
+                                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                            }
+                        />
+                    )}
                     <StatCard
                         title="Active Services"
                         value={stats.active_services}

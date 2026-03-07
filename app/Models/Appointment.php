@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string $customer_name
+ * @property string|null $customer_phone
+ */
+
 class Appointment extends Model
 {
     use HasFactory, BelongsToCompany;
@@ -16,8 +21,9 @@ class Appointment extends Model
     protected $fillable = [
         'company_id',
         'barber_id',
-        'customer_id',
         'service_id',
+        'customer_name',
+        'customer_phone',
         'starts_at',
         'ends_at',
         'status',
@@ -37,11 +43,6 @@ class Appointment extends Model
     public function barber(): BelongsTo
     {
         return $this->belongsTo(Barber::class);
-    }
-
-    public function customer(): BelongsTo
-    {
-        return $this->belongsTo(Customer::class);
     }
 
     public function service(): BelongsTo
