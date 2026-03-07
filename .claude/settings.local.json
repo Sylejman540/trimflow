@@ -8,7 +8,29 @@
       "Bash(npm run build)",
       "Bash(npm uninstall tailwindcss @tailwindcss/forms autoprefixer postcss)",
       "Bash(npm install -D tailwindcss@^4.0.0 @tailwindcss/vite@^4.0.0)",
-      "Bash(npx shadcn@latest init -d)"
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npm install lucide-react framer-motion)",
+      "Bash(npx shadcn@latest add card dialog drawer tabs dropdown-menu popover toast sonner input label separator badge avatar sheet command -y)",
+      "Bash(mv Layouts _layouts_tmp)",
+      "Bash(mv _layouts_tmp layouts)",
+      "Bash(mv Pages _pages_tmp)",
+      "Bash(mv _pages_tmp pages)",
+      "Bash(mysql -u root -e \"CREATE DATABASE IF NOT EXISTS trimflow CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "Bash(npm install @fontsource-variable/inter)",
+      "Bash(php artisan make:model Company -m)",
+      "Bash(php artisan migrate)",
+      "Bash(php artisan make:model Barber -m)",
+      "Bash(php artisan make:model Customer -m)",
+      "Bash(php artisan make:model Service -m)",
+      "Bash(php artisan make:model Appointment -m)",
+      "Bash(php artisan make:model Payment -m)",
+      "Bash(php artisan make:model Review -m)",
+      "Bash(php artisan make:model BarberNote -m)",
+      "Bash(php artisan make:model AuditLog -m)",
+      "Bash(php artisan make:model AiLog -m)",
+      "Bash(php artisan db:seed)",
+      "Bash(php artisan tinker --execute=\":*)",
+      "Bash(composer require spatie/laravel-permission)"
     ]
   }
 }
