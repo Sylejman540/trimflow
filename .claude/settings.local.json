@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer require laravel/breeze --dev)",
+      "Bash(php artisan breeze:install react --typescript --ssr)",
+      "Bash(npm install)",
+      "Bash(composer remove laravel/boost --dev)",
+      "Bash(npm run build)",
+      "Bash(npm uninstall tailwindcss @tailwindcss/forms autoprefixer postcss)",
+      "Bash(npm install -D tailwindcss@^4.0.0 @tailwindcss/vite@^4.0.0)",
+      "Bash(npx shadcn@latest init -d)"
+    ]
+  }
+}
