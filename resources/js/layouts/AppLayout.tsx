@@ -9,7 +9,6 @@ import {
     Scissors,
     Settings,
     User,
-    Users,
     X,
     Briefcase,
 } from 'lucide-react';
@@ -59,13 +58,6 @@ const navItems: NavItem[] = [
         icon: <Briefcase className="h-4 w-4" />,
         active: 'barbers.*',
         roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Customers',
-        href: '/customers',
-        icon: <Users className="h-4 w-4" />,
-        active: 'customers.*',
-        roles: ['platform-admin', 'shop-admin', 'barber'],
     },
 ];
 

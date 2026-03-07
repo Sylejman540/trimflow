@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCents, formatDuration } from '@/lib/utils';
-import { Appointment, Barber, Customer, Service } from '@/types';
+import { Appointment, Barber, Service } from '@/types';
 
 const statuses = [
     'scheduled',
@@ -28,18 +28,17 @@ const statuses = [
 export default function Edit({
     appointment,
     barbers,
-    customers,
     services,
 }: {
     appointment: Appointment;
     barbers: Barber[];
-    customers: Customer[];
     services: Service[];
 }) {
     const { data, setData, put, processing, errors } = useForm({
         barber_id: String(appointment.barber_id),
-        customer_id: String(appointment.customer_id),
         service_id: String(appointment.service_id),
+        customer_name: appointment.customer_name,
+        customer_phone: appointment.customer_phone ?? '',
         starts_at: appointment.starts_at.slice(0, 16),
         status: appointment.status,
         notes: appointment.notes ?? '',
@@ -65,6 +64,31 @@ export default function Edit({
                     <CardContent>
                         <form onSubmit={submit} className="space-y-6">
                             <div className="space-y-2">
+                                <Label htmlFor="customer_name">Customer Name</Label>
+                                <Input
+                                    id="customer_name"
+                                    value={data.customer_name}
+                                    onChange={(e) => setData('customer_name', e.target.value)}
+                                    required
+                                />
+                                {errors.customer_name && <p className="text-sm text-destructive">{errors.customer_name}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="customer_phone">
+                                    Phone{' '}
+                                    <span className="text-muted-foreground">(optional)</span>
+                                </Label>
+                                <Input
+                                    id="customer_phone"
+                                    value={data.customer_phone}
+                                    onChange={(e) => setData('customer_phone', e.target.value)}
+                                    placeholder="(555) 123-4567"
+                                />
+                                {errors.customer_phone && <p className="text-sm text-destructive">{errors.customer_phone}</p>}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label>Barber</Label>
                                 <Select
                                     value={data.barber_id}
@@ -82,26 +106,6 @@ export default function Edit({
                                     </SelectContent>
                                 </Select>
                                 {errors.barber_id && <p className="text-sm text-destructive">{errors.barber_id}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label>Customer</Label>
-                                <Select
-                                    value={data.customer_id}
-                                    onValueChange={(v) => setData('customer_id', v ?? '')}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select customer" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {customers.map((c) => (
-                                            <SelectItem key={c.id} value={String(c.id)}>
-                                                {c.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.customer_id && <p className="text-sm text-destructive">{errors.customer_id}</p>}
                             </div>
 
                             <div className="space-y-2">

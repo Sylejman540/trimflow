@@ -3,7 +3,6 @@ import {
     CalendarDays,
     DollarSign,
     Scissors,
-    Users,
     Briefcase,
 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
@@ -14,7 +13,6 @@ import { Appointment, AppointmentStatus } from '@/types';
 
 interface Stats {
     today_appointments: number;
-    total_customers?: number;
     active_barbers?: number;
     active_services: number;
     monthly_revenue: number;
@@ -78,7 +76,7 @@ function AppointmentRow({ appointment }: { appointment: Appointment }) {
         >
             <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                    {appointment.customer?.name ?? 'Unknown'}
+                    {appointment.customer_name}
                 </p>
                 <p className="text-xs text-muted-foreground">
                     {appointment.barber?.user?.name} &middot;{' '}
@@ -114,7 +112,7 @@ export default function Dashboard({
 
             <div className="space-y-6">
                 {/* Stats */}
-                <div className={`grid gap-4 sm:grid-cols-2 ${is_barber ? 'lg:grid-cols-3' : 'lg:grid-cols-5'}`}>
+                <div className={`grid gap-4 sm:grid-cols-2 ${is_barber ? 'lg:grid-cols-3' : 'lg:grid-cols-4'}`}>
                     <StatCard
                         title="Today's Appointments"
                         value={stats.today_appointments}
@@ -122,15 +120,6 @@ export default function Dashboard({
                             <CalendarDays className="h-4 w-4 text-muted-foreground" />
                         }
                     />
-                    {!is_barber && (
-                        <StatCard
-                            title="Total Customers"
-                            value={stats.total_customers ?? 0}
-                            icon={
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                            }
-                        />
-                    )}
                     {!is_barber && (
                         <StatCard
                             title="Active Barbers"

@@ -46,9 +46,8 @@ const columns: ColumnDef<Appointment>[] = [
         ),
     },
     {
-        id: 'customer',
+        accessorKey: 'customer_name',
         header: 'Customer',
-        cell: ({ row }) => row.original.customer?.name ?? '-',
     },
     {
         id: 'barber',
