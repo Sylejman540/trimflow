@@ -32,7 +32,6 @@ const useCountUp = (end, duration = 2000) => {
   return count;
 };
 
-// --- COMPONENTS ---
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,10 +63,18 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4 relative z-[110]">
-          <button className="hidden sm:block text-white text-sm font-medium px-4 opacity-80 hover:opacity-100 transition-opacity">Log in</button>
-          <button className="bg-white text-slate-900 px-5 py-2 rounded-full text-xs font-bold hover:bg-slate-100 transition-all">
+          <a
+            href="/login"
+            className="hidden sm:block text-white text-sm font-medium px-4 opacity-80 hover:opacity-100 transition-opacity"
+          >
+            Log in
+          </a>
+          <a
+            href="/register"
+            className="bg-white text-slate-900 px-5 py-2 rounded-full text-xs font-bold hover:bg-slate-100 transition-all"
+          >
             Get Started
-          </button>
+          </a>
           <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-white p-2">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -82,13 +89,25 @@ const Navbar = () => {
             <a href="#" onClick={() => setIsOpen(false)} className="text-2xl font-medium text-white tracking-tight">Resources</a>
           </div>
           <div className="mt-auto pt-8 border-t border-white/10">
-            <button className="w-full bg-white text-slate-950 py-4 rounded-xl font-bold">Start Free Trial</button>
+            <a
+              href="/register"
+              className="block w-full bg-white text-slate-950 py-4 rounded-xl font-bold text-center"
+            >
+              Start Free Trial
+            </a>
+            <a
+              href="/login"
+              className="block w-full mt-4 bg-slate-900 text-white py-4 rounded-xl font-bold border border-white/10 text-center"
+            >
+              Log in
+            </a>
           </div>
         </div>
       </div>
     </nav>
   );
 };
+// ...rest of your code...
 
 const Hero = () => (
   <section className="relative h-[90vh] min-h-[700px] flex items-center overflow-hidden bg-slate-950">
@@ -115,12 +134,12 @@ const Hero = () => (
           Manage appointments, staff, and revenue with precision. Built for high-volume shops.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
-          <button className="bg-white text-slate-900 h-14 px-8 rounded-full font-bold hover:scale-105 transition-all flex items-center justify-center gap-3">
+          <a href="/register" className="bg-white text-slate-900 h-14 px-8 rounded-full font-bold hover:scale-105 transition-all flex items-center justify-center gap-3">
             Start free trial <ArrowRight className="w-5 h-5" />
-          </button>
-          <button className="border border-white/30 text-white h-14 px-8 rounded-full font-bold hover:bg-white/10 transition-all backdrop-blur-md">
-            Watch Tour
-          </button>
+          </a>
+          <a href="/login" className="border border-white/30 text-white h-14 px-8 rounded-full font-bold hover:bg-white/10 transition-all backdrop-blur-md flex items-center justify-center">
+            Log in
+          </a>
         </div>
       </div>
     </div>

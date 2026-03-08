@@ -3,6 +3,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Scissors, ArrowRight } from 'lucide-react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -21,97 +22,127 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <Head title="Sign up" />
+            <Head title="Join TrimFlow" />
 
-            <div className="mb-6">
-                <h1 className="text-xl font-bold text-gray-900">Create an account</h1>
-                <p className="mt-1 text-sm text-gray-500">
-                    Get started with TrimFlow for free.
+            <div className="mb-10 flex flex-col items-center text-center">
+                {/* Brand Icon - Matching Landing Page logo style */}
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-950 shadow-xl border border-white/10">
+                    <Scissors className="h-6 w-6 text-white" />
+                </div>
+                
+                <h1 className="text-3xl font-black tracking-tighter text-slate-950">
+                    Start your flow.
+                </h1>
+                <p className="mt-2 text-sm text-slate-500">
+                    Join the standard in modern shop management.
                 </p>
             </div>
 
-            <form onSubmit={submit} className="space-y-4">
-                <div className="space-y-1.5">
-                    <Label htmlFor="name" className="text-gray-700">Full name</Label>
+            <form onSubmit={submit} className="space-y-5">
+                <div className="space-y-2">
+                    <Label htmlFor="name" className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                        Full Name
+                    </Label>
                     <Input
                         id="name"
                         value={data.name}
-                        className="h-10"
+                        className="h-12 rounded-xl border-slate-200 focus-visible:ring-slate-950"
                         autoComplete="name"
                         autoFocus
+                        placeholder="e.g. Marcus Ray"
                         onChange={(e) => setData('name', e.target.value)}
                         required
                     />
                     {errors.name && (
-                        <p className="text-xs text-red-600">{errors.name}</p>
+                        <p className="text-xs font-medium text-red-500">{errors.name}</p>
                     )}
                 </div>
 
-                <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-gray-700">Email</Label>
+                <div className="space-y-2">
+                    <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                        Work Email
+                    </Label>
                     <Input
                         id="email"
                         type="email"
                         value={data.email}
-                        className="h-10"
+                        className="h-12 rounded-xl border-slate-200 focus-visible:ring-slate-950"
                         autoComplete="username"
+                        placeholder="name@shop.com"
                         onChange={(e) => setData('email', e.target.value)}
                         required
                     />
                     {errors.email && (
-                        <p className="text-xs text-red-600">{errors.email}</p>
+                        <p className="text-xs font-medium text-red-500">{errors.email}</p>
                     )}
                 </div>
 
-                <div className="space-y-1.5">
-                    <Label htmlFor="password" className="text-gray-700">Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        value={data.password}
-                        className="h-10"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                    />
-                    {errors.password && (
-                        <p className="text-xs text-red-600">{errors.password}</p>
-                    )}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                            Password
+                        </Label>
+                        <Input
+                            id="password"
+                            type="password"
+                            value={data.password}
+                            className="h-12 rounded-xl border-slate-200 focus-visible:ring-slate-950"
+                            autoComplete="new-password"
+                            onChange={(e) => setData('password', e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="password_confirmation" className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                            Confirm
+                        </Label>
+                        <Input
+                            id="password_confirmation"
+                            type="password"
+                            value={data.password_confirmation}
+                            className="h-12 rounded-xl border-slate-200 focus-visible:ring-slate-950"
+                            autoComplete="new-password"
+                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                            required
+                        />
+                    </div>
+                </div>
+                {(errors.password || errors.password_confirmation) && (
+                    <p className="text-xs font-medium text-red-500">
+                        {errors.password || errors.password_confirmation}
+                    </p>
+                )}
+
+                <div className="pt-2">
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="group flex w-full items-center justify-center gap-2 rounded-full bg-slate-950 h-14 text-sm font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shadow-lg shadow-slate-200"
+                    >
+                        Create Account
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </button>
                 </div>
 
-                <div className="space-y-1.5">
-                    <Label htmlFor="password_confirmation" className="text-gray-700">
-                        Confirm password
-                    </Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        value={data.password_confirmation}
-                        className="h-10"
-                        autoComplete="new-password"
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        required
-                    />
-                    {errors.password_confirmation && (
-                        <p className="text-xs text-red-600">{errors.password_confirmation}</p>
-                    )}
+                <div className="flex items-center justify-center pt-4">
+                    <p className="text-sm text-slate-500">
+                        Already using TrimFlow?{' '}
+                        <Link 
+                            href={route('login')} 
+                            className="font-bold text-slate-950 hover:underline underline-offset-4"
+                        >
+                            Sign in
+                        </Link>
+                    </p>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full rounded-xl bg-gray-900 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-black disabled:opacity-50"
-                >
-                    Create account
-                </button>
-
-                <p className="text-center text-sm text-gray-500">
-                    Already have an account?{' '}
-                    <Link href={route('login')} className="font-medium text-gray-900 hover:underline">
-                        Sign in
-                    </Link>
-                </p>
             </form>
+
+            <div className="mt-10 border-t border-slate-100 pt-6">
+                <p className="text-center text-[10px] uppercase tracking-widest text-slate-400 font-bold">
+                    Secure Enterprise Infrastructure
+                </p>
+            </div>
         </GuestLayout>
     );
 }
