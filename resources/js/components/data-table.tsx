@@ -31,6 +31,8 @@ interface DataTableProps<TData, TValue> {
     searchColumn?: string;
     globalFilterFn?: FilterFn<TData>;
     filters?: ReactNode;
+    // Add this prop to control visibility of the internal search bar
+    showSearch?: boolean; 
 }
 
 export function DataTable<TData, TValue>({
@@ -41,6 +43,7 @@ export function DataTable<TData, TValue>({
     searchColumn,
     globalFilterFn,
     filters,
+    showSearch = true, // Default to true
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -63,24 +66,27 @@ export function DataTable<TData, TValue>({
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <Input
-                        placeholder={searchPlaceholder}
-                        value={searchColumn ? (table.getColumn(searchColumn)?.getFilterValue() as string) ?? '' : globalFilter}
-                        onChange={(e) => {
-                            if (searchColumn) {
-                                table.getColumn(searchColumn)?.setFilterValue(e.target.value);
-                            } else {
-                                setGlobalFilter(e.target.value);
-                            }
-                        }}
-                        className="h-10 pl-9 bg-white"
-                    />
+            {/* Only render this container if showSearch is true OR 
+               if external filters are provided.
+            */}
+            {(showSearch || filters) && (
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    {showSearch && (
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                            <Input
+                                placeholder={searchPlaceholder}
+                                value={(table.getState().globalFilter as string) ?? ""}
+                                onChange={(event) =>
+                                    table.setGlobalFilter(event.target.value)
+                                }
+                                className="h-9 w-[300px] pl-9"
+                            />
+                        </div>
+                    )}
+                    {filters}
                 </div>
-                {filters}
-            </div>
+            )}
 
             <div className="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200/80">
                 <Table>
@@ -88,7 +94,7 @@ export function DataTable<TData, TValue>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id} className="border-gray-100 bg-gray-50/60 hover:bg-gray-50/60">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    <TableHead key={header.id} className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -129,8 +135,8 @@ export function DataTable<TData, TValue>({
             </div>
 
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-500">
+                <div className="flex items-center justify-between px-2 py-1">
+                    <p className="text-xs text-gray-500 font-medium">
                         Page {table.getState().pagination.pageIndex + 1} of{' '}
                         {table.getPageCount()}
                     </p>
@@ -138,6 +144,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -146,6 +153,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
                         >
