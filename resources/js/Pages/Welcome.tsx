@@ -41,61 +41,89 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+  }, [isOpen]);
+
   return (
-    <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-100 py-4' : 'bg-transparent py-6'}`}>
-      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
-        <div className="flex items-center gap-2 relative z-[110]">
-          <Scissors className="text-slate-900 w-5 h-5" />
-          <span className="text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
-        </div>
+    <>
+      <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled || isOpen ? 'bg-white border-b border-slate-100 py-4' : 'bg-transparent py-6'}`}>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
+          <div className="flex items-center gap-2 relative z-[110]">
+            <Scissors className="text-slate-900 w-5 h-5" />
+            <span className="text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
+          </div>
 
-        <div className="hidden lg:flex items-center gap-10 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
-          <a href="#" className="hover:text-slate-900 transition-colors">Platform</a>
-          <a href="#" className="hover:text-slate-900 transition-colors">Pricing</a>
-          <a href="#" className="hover:text-slate-900 transition-colors">Resources</a>
-        </div>
+          {/* Desktop Links */}
+          <div className="hidden lg:flex items-center gap-10 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
+            <a href="#" className="hover:text-slate-900 transition-colors">Platform</a>
+            <a href="#" className="hover:text-slate-900 transition-colors">Pricing</a>
+            <a href="#" className="hover:text-slate-900 transition-colors">Resources</a>
+          </div>
 
-        <div className="flex items-center gap-6 relative z-[110]">
-          <a href="/login" className="hidden sm:block text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors">Log in</a>
-          <a href="/register" className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-semibold hover:bg-slate-800 transition-all">
-            Join Now
-          </a>
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-slate-900">
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-4 md:gap-6 relative z-[110]">
+            <a href="/login" className="hidden sm:block text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors">Log in</a>
+            <a href="/register" className="bg-slate-900 text-white px-5 md:px-6 py-2.5 rounded-full text-xs font-semibold hover:bg-slate-800 transition-all">
+              Join Now
+            </a>
+            {/* Mobile Toggle */}
+            <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-slate-900 p-1">
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      <div className={`fixed inset-0 z-[90] bg-white transition-transform duration-500 ease-in-out lg:hidden ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className="flex flex-col h-full pt-32 px-10 pb-12">
+          <div className="space-y-8">
+            {['Platform', 'Pricing', 'Resources', 'About'].map((item) => (
+              <a key={item} href="#" onClick={() => setIsOpen(false)} className="block text-4xl font-light tracking-tight text-slate-900 hover:text-slate-400 transition-colors">
+                {item}
+              </a>
+            ))}
+          </div>
+          <div className="mt-auto space-y-4">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-300 mb-6">Contact Us</p>
+            <a href="mailto:hello@trimflow.com" className="text-lg text-slate-600">hello@trimflow.com</a>
+            <div className="flex gap-6 pt-4">
+              <span className="text-xs font-medium text-slate-400 underline cursor-pointer">Instagram</span>
+              <span className="text-xs font-medium text-slate-400 underline cursor-pointer">Twitter</span>
+            </div>
+          </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
 const Hero = () => (
   <section className="relative min-h-[95vh] flex items-center bg-white overflow-hidden">
-    {/* Background Image Container */}
     <div className="absolute inset-0 z-0">
       <img 
-        src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=2000" 
+        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
         alt="Minimalist Barber Interior" 
-        className="w-full h-full object-cover grayscale-[0.5] opacity-25"
+        className="w-full h-full object-cover opacity-20"
       />
-      {/* Soft gradient to blend image into the white layout */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
     </div>
 
     <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 w-full pt-20">
       <div className="max-w-3xl">
         <div className="inline-block mb-8">
-          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Built for the Craft</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Est. 2026 — The New Standard</span>
         </div>
-        <h1 className="text-6xl md:text-[110px] font-light tracking-tighter text-slate-900 leading-[0.85] mb-12">
+        <h1 className="text-5xl md:text-[100px] font-light tracking-tighter text-slate-900 leading-[0.9] mb-12">
           Simplify the <br />
           <span className="font-serif italic text-slate-400">modern shop.</span>
         </h1>
         <p className="text-lg md:text-xl text-slate-500 max-w-md mb-12 font-light leading-relaxed">
           The essential toolkit for ambitious studios. Clean interface, powerful automation, zero friction.
         </p>
-        <div className="flex items-center gap-8">
+        <div className="flex flex-wrap items-center gap-8">
           <a href="/register" className="bg-slate-900 text-white h-14 px-10 rounded-full font-medium hover:bg-slate-800 transition-all flex items-center justify-center">
             Start Free Trial
           </a>
@@ -119,7 +147,7 @@ const LiveStats = () => {
           {[
             { label: "Bookings Processed", val: `${appointments.toLocaleString()}+`, detail: "Real-time volume" },
             { label: "Platform Uptime", val: `99.9%`, detail: "Enterprise reliability" },
-            { label: "Partner Studios", val: shops, detail: "Curated network" }
+            { label: "Partner Studios", val: shops, detail: "Global network" }
           ].map((stat, i) => (
             <div key={i} className="flex flex-col border-l border-slate-100 pl-8">
               <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">{stat.label}</span>
@@ -132,36 +160,6 @@ const LiveStats = () => {
     </section>
   );
 };
-
-const HowItWorks = () => (
-  <section className="py-32 bg-[#FAF9F6] px-6 md:px-10">
-    <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
-        <div>
-          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-slate-900 mb-8">Refined workflow.</h2>
-          <p className="text-slate-500 text-lg font-light leading-relaxed max-w-md">
-            We stripped away the clutter of traditional legacy software to leave you with only what matters.
-          </p>
-        </div>
-        <div className="space-y-20">
-          {[
-            { step: "01", title: "Setup", desc: "Define your studio services and staff tiers with clean, intuitive inputs." },
-            { step: "02", title: "Launch", desc: "Integrate with Instagram and your custom domain in seconds." },
-            { step: "03", title: "Automate", desc: "Let the engine handle reminders, payouts, and re-booking flows." }
-          ].map((item, i) => (
-            <div key={i} className="flex gap-8 group">
-              <span className="text-xs font-bold text-slate-200 group-hover:text-slate-900 transition-colors pt-1">{item.step}</span>
-              <div>
-                <h4 className="text-xl font-medium text-slate-900 mb-3">{item.title}</h4>
-                <p className="text-slate-500 font-light text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-);
 
 const FeaturesGrid = () => (
   <section id="features" className="py-32 bg-white px-6 md:px-10">
@@ -214,7 +212,7 @@ const ReviewsSection = () => {
   return (
     <section className="py-32 bg-[#FAF9F6] overflow-hidden px-6 md:px-10">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-end justify-between mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div>
             <h2 className="text-4xl font-light text-slate-900 tracking-tight">Voices of the studio.</h2>
             <p className="text-slate-400 font-light mt-3 italic font-serif">Trusted by the industry's elite.</p>
@@ -226,13 +224,15 @@ const ReviewsSection = () => {
         </div>
         <div ref={scrollRef} className="flex gap-8 overflow-x-auto pb-8 snap-x no-scrollbar" style={{ scrollbarWidth: 'none' }}>
           {reviews.map((r, i) => (
-            <div key={i} className="min-w-[350px] md:min-w-[450px] snap-center bg-white p-12 rounded-sm border border-slate-100">
+            <div key={i} className="min-w-[300px] md:min-w-[450px] snap-center bg-white p-10 md:p-12 rounded-sm border border-slate-100">
+              {/* Colored Stars */}
               <div className="flex gap-1 mb-8">
-                {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-slate-900 text-slate-900" />)}
+                {[...Array(5)].map((_, i) => <Star key={i} size={14} className="fill-amber-400 text-amber-400" />)}
               </div>
               <p className="text-slate-600 text-lg font-light leading-relaxed mb-10">"{r.review}"</p>
               <div className="flex items-center gap-4">
-                <img src={r.avatar} alt={r.name} className="w-10 h-10 rounded-full object-cover grayscale" />
+                {/* Colored Profile Pic */}
+                <img src={r.avatar} alt={r.name} className="w-12 h-12 rounded-full object-cover shadow-sm border border-slate-100" />
                 <div>
                   <h4 className="font-medium text-slate-900 text-sm">{r.name}</h4>
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{r.role}</span>
@@ -249,17 +249,17 @@ const ReviewsSection = () => {
 const Footer = () => (
   <footer className="bg-white border-t border-slate-50 pt-32 pb-12 px-6 md:px-10">
     <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-20 mb-24">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
         <div className="col-span-1 md:col-span-2">
           <div className="flex items-center gap-2 mb-8">
             <Scissors className="text-slate-900 w-5 h-5" />
             <span className="text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
           </div>
           <p className="text-slate-400 text-sm font-light max-w-xs leading-relaxed">
-            Designing the digital infrastructure for the world's finest studios. <br /> Minimal by design, powerful by nature.
+            Designing the digital infrastructure for the world's finest studios. Minimal by design, powerful by nature.
           </p>
         </div>
-        {["Platform", "Resources"].map(c => (
+        {["Platform", "Legal"].map(c => (
           <div key={c}>
             <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-900 mb-8">{c}</h5>
             <ul className="space-y-4 text-sm font-light text-slate-500">
@@ -270,7 +270,7 @@ const Footer = () => (
           </div>
         ))}
       </div>
-      <div className="pt-8 border-t border-slate-50 flex justify-between items-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+      <div className="pt-8 border-t border-slate-50 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
         <span>© 2026 TrimFlow Digital</span>
         <div className="flex gap-8 items-center">
           <a href="#" className="hover:text-slate-900 transition-colors">Instagram</a>
@@ -288,7 +288,6 @@ export default function TrimFlowSite() {
       <Navbar />
       <Hero />
       <LiveStats />
-      <HowItWorks />
       <FeaturesGrid />
       <ReviewsSection />
       <Footer />
