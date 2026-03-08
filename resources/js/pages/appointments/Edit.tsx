@@ -12,9 +12,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatCents, formatDuration } from '@/lib/utils';
+import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Appointment, Barber, Service } from '@/types';
+import { Calendar, User, Scissors, AlignLeft, Phone, Info } from 'lucide-react';
 
 const statuses = [
     'scheduled',
@@ -56,134 +56,175 @@ export default function Edit({
     return (
         <AppLayout title="Edit Appointment">
             <Head title="Edit Appointment" />
-            <div className="mx-auto max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Edit Appointment</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label>Barber</Label>
-                                <Select
-                                    value={data.barber_id}
-                                    onValueChange={(v) => setData('barber_id', v ?? '')}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select barber" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {barbers.map((b) => (
-                                            <SelectItem key={b.id} value={String(b.id)}>
-                                                {b.user?.name ?? ''}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.barber_id && <p className="text-sm text-destructive">{errors.barber_id}</p>}
-                            </div>
+            
+            <div className="mx-auto max-w-2xl mt-4">
+                {/* Header Section */}
+                <div className="mb-8 px-2">
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Appointment</h2>
+                    <p className="text-sm text-slate-500 mt-1">Update the information below to modify this session.</p>
+                </div>
 
-                            <div className="grid gap-4 sm:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="customer_name">Customer Name</Label>
-                                    <Input
-                                        id="customer_name"
-                                        value={data.customer_name}
-                                        onChange={(e) => setData('customer_name', e.target.value)}
-                                        placeholder="John Doe"
-                                        required
-                                    />
-                                    {errors.customer_name && (
-                                        <p className="text-sm text-destructive">{errors.customer_name}</p>
-                                    )}
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="customer_phone">Customer Phone</Label>
-                                    <Input
-                                        id="customer_phone"
-                                        value={data.customer_phone}
-                                        onChange={(e) => setData('customer_phone', e.target.value)}
-                                        placeholder="+1 234 567 890"
-                                    />
-                                    {errors.customer_phone && (
-                                        <p className="text-sm text-destructive">{errors.customer_phone}</p>
-                                    )}
-                                </div>
-                            </div>
+                <form onSubmit={submit} className="space-y-8 bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+                    
+                    {/* Status & Barber Selection */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Info size={12} /> Appointment Status
+                            </Label>
+                            <Select
+                                value={data.status}
+                                onValueChange={(v) => v && setData('status', v as typeof data.status)}
+                            >
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg capitalize">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                    {statuses.map((s) => (
+                                        <SelectItem key={s} value={s} className="capitalize text-sm font-medium">
+                                            {s.replace('_', ' ')}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.status && <p className="text-xs text-red-500 font-medium">{errors.status}</p>}
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label>Service</Label>
-                                <Select
-                                    value={data.service_id}
-                                    onValueChange={(v) => setData('service_id', v ?? '')}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select service" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {services.map((s) => (
-                                            <SelectItem key={s.id} value={String(s.id)}>
-                                                {s.name} - {formatCents(s.price)} ({formatDuration(s.duration)})
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {selectedService && (
-                                    <p className="text-sm text-muted-foreground">
-                                        Duration: {formatDuration(selectedService.duration)} | Price: {formatCents(selectedService.price)}
-                                    </p>
-                                )}
-                            </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <User size={12} /> Assigned Barber
+                            </Label>
+                            <Select
+                                value={data.barber_id}
+                                onValueChange={(v) => setData('barber_id', v ?? '')}
+                            >
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
+                                    <SelectValue placeholder="Select barber" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                    {barbers.map((b) => (
+                                        <SelectItem key={b.id} value={String(b.id)} className="text-sm font-medium">
+                                            {b.user?.name ?? ''}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.barber_id && <p className="text-xs text-red-500 font-medium">{errors.barber_id}</p>}
+                        </div>
+                    </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="starts_at">Date & Time</Label>
-                                <Input
-                                    id="starts_at"
-                                    type="datetime-local"
-                                    value={data.starts_at}
-                                    onChange={(e) => setData('starts_at', e.target.value)}
-                                    required
-                                />
-                            </div>
+                    {/* Customer Info Grid */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="customer_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <User size={12} /> Customer Name
+                            </Label>
+                            <Input
+                                id="customer_name"
+                                value={data.customer_name}
+                                onChange={(e) => setData('customer_name', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="e.g. John Doe"
+                                required
+                            />
+                            {errors.customer_name && <p className="text-xs text-red-500 font-medium">{errors.customer_name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="customer_phone" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Phone size={12} /> Phone Number
+                            </Label>
+                            <Input
+                                id="customer_phone"
+                                value={data.customer_phone}
+                                onChange={(e) => setData('customer_phone', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="+1 (555) 000-0000"
+                            />
+                            {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
+                        </div>
+                    </div>
 
-                            <div className="space-y-2">
-                                <Label>Status</Label>
-                                <Select
-                                    value={data.status}
-                                    onValueChange={(v) => v && setData('status', v as typeof data.status)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {statuses.map((s) => (
-                                            <SelectItem key={s} value={s}>
-                                                {s.replace('_', ' ')}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                    {/* Service Selection */}
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <Scissors size={12} /> Service Type
+                        </Label>
+                        <Select
+                            value={data.service_id}
+                            onValueChange={(v) => setData('service_id', v ?? '')}
+                        >
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectValue placeholder="Select service" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
+                                {services.map((s) => (
+                                    <SelectItem key={s.id} value={String(s.id)} className="text-sm font-medium">
+                                        {s.name} — {formatCents(s.price)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {selectedService && (
+                            <div className="flex items-center gap-2 px-1 mt-1">
+                                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-5 py-0.5 rounded-full border border-blue-100 uppercase tracking-tight">
+                                    {formatDuration(selectedService.duration)}
+                                </span>
+                                <span className="text-[11px] font-bold text-slate-500">
+                                    Estimated Price: {formatCents(selectedService.price)}
+                                </span>
                             </div>
+                        )}
+                        {errors.service_id && <p className="text-xs text-red-500 font-medium">{errors.service_id}</p>}
+                    </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="notes">Notes</Label>
-                                <Textarea
-                                    id="notes"
-                                    value={data.notes}
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                    rows={3}
-                                />
-                            </div>
+                    {/* Time & Notes */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="starts_at" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Calendar size={12} /> Date & Time
+                            </Label>
+                            <Input
+                                id="starts_at"
+                                type="datetime-local"
+                                value={data.starts_at}
+                                onChange={(e) => setData('starts_at', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                required
+                            />
+                            {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <AlignLeft size={12} /> Internal Notes
+                            </Label>
+                            <Textarea
+                                id="notes"
+                                value={data.notes}
+                                onChange={(e) => setData('notes', e.target.value)}
+                                className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
+                                placeholder="Allergies, preferences, etc..."
+                                rows={1}
+                            />
+                        </div>
+                    </div>
 
-                            <div className="flex gap-3">
-                                <Button type="submit" disabled={processing}>
-                                    Update Appointment
-                                </Button>
-                                <Link href={route('appointments.index')} className={buttonVariants({ variant: "outline" })}>Cancel</Link>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                        <Button 
+                            type="submit" 
+                            disabled={processing} 
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                        >
+                            Update Appointment
+                        </Button>
+                        <Link 
+                            href={route('appointments.index')} 
+                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
+                        >
+                            Cancel
+                        </Link>
+                    </div>
+                </form>
             </div>
         </AppLayout>
     );

@@ -1,14 +1,11 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef, FilterFn } from '@tanstack/react-table';
 import { FormEvent, useState } from 'react';
-import { Edit, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -17,12 +14,6 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     Dialog,
     DialogContent,
     DialogDescription,
@@ -30,7 +21,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { formatCents, formatDuration } from '@/lib/utils';
+import { formatCents, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
@@ -89,179 +80,6 @@ function isTomorrow(dateStr: string) {
     return d.getFullYear() === tomorrow.getFullYear()
         && d.getMonth() === tomorrow.getMonth()
         && d.getDate() === tomorrow.getDate();
-}
-
-function EditModal({
-    appointment,
-    barbers,
-    services,
-    open,
-    onOpenChange,
-}: {
-    appointment: Appointment;
-    barbers: Barber[];
-    services: Service[];
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-}) {
-    const { data, setData, put, processing, errors } = useForm({
-        barber_id: String(appointment.barber_id),
-        customer_name: appointment.customer?.name ?? '',
-        customer_phone: appointment.customer?.phone ?? '',
-        service_id: String(appointment.service_id),
-        starts_at: appointment.starts_at.slice(0, 16),
-        status: appointment.status,
-        notes: appointment.notes ?? '',
-    });
-
-    const selectedService = services.find(
-        (s) => s.id === Number(data.service_id),
-    );
-
-    function submit(e: FormEvent) {
-        e.preventDefault();
-        put(route('appointments.update', appointment.id), {
-            onSuccess: () => onOpenChange(false),
-        });
-    }
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                    <DialogTitle>Edit Appointment</DialogTitle>
-                    <DialogDescription>
-                        Update appointment details for {appointment.customer?.name ?? 'this customer'}.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <form onSubmit={submit} className="space-y-4">
-                    <div className="space-y-1.5">
-                        <Label>Barber</Label>
-                        <Select
-                            value={data.barber_id}
-                            onValueChange={(v) => setData('barber_id', v ?? '')}
-                        >
-                            <SelectTrigger className="h-9">
-                                <SelectValue placeholder="Select barber" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {barbers.map((b) => (
-                                    <SelectItem key={b.id} value={String(b.id)}>
-                                        {b.user?.name ?? ''}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.barber_id && <p className="text-xs text-red-600">{errors.barber_id}</p>}
-                    </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="space-y-1.5">
-                            <Label htmlFor="edit_customer_name">Customer Name</Label>
-                            <Input
-                                id="edit_customer_name"
-                                value={data.customer_name}
-                                onChange={(e) => setData('customer_name', e.target.value)}
-                                className="h-9"
-                                required
-                            />
-                            {errors.customer_name && <p className="text-xs text-red-600">{errors.customer_name}</p>}
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label htmlFor="edit_customer_phone">Phone</Label>
-                            <Input
-                                id="edit_customer_phone"
-                                value={data.customer_phone}
-                                onChange={(e) => setData('customer_phone', e.target.value)}
-                                className="h-9"
-                            />
-                            {errors.customer_phone && <p className="text-xs text-red-600">{errors.customer_phone}</p>}
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label>Service</Label>
-                        <Select
-                            value={data.service_id}
-                            onValueChange={(v) => setData('service_id', v ?? '')}
-                        >
-                            <SelectTrigger className="h-9">
-                                <SelectValue placeholder="Select service" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {services.map((s) => (
-                                    <SelectItem key={s.id} value={String(s.id)}>
-                                        {s.name} - {formatCents(s.price)} ({formatDuration(s.duration)})
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {selectedService && (
-                            <p className="text-xs text-gray-500">
-                                {formatDuration(selectedService.duration)} | {formatCents(selectedService.price)}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="space-y-1.5">
-                            <Label htmlFor="edit_starts_at">Date & Time</Label>
-                            <Input
-                                id="edit_starts_at"
-                                type="datetime-local"
-                                value={data.starts_at}
-                                onChange={(e) => setData('starts_at', e.target.value)}
-                                className="h-9"
-                                required
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label>Status</Label>
-                            <Select
-                                value={data.status}
-                                onValueChange={(v) => v && setData('status', v as AppointmentStatus)}
-                            >
-                                <SelectTrigger className="h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {allStatuses.map((s) => (
-                                        <SelectItem key={s} value={s}>
-                                            {s.replace('_', ' ')}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <Label htmlFor="edit_notes">Notes</Label>
-                        <Textarea
-                            id="edit_notes"
-                            value={data.notes}
-                            onChange={(e) => setData('notes', e.target.value)}
-                            rows={2}
-                        />
-                    </div>
-
-                    <DialogFooter>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => onOpenChange(false)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" disabled={processing}>
-                            Save Changes
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
 }
 
 function DeleteModal({
@@ -329,7 +147,6 @@ export default function Index({
 }) {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [dateFilter, setDateFilter] = useState<string>('all');
-    const [editingAppt, setEditingAppt] = useState<Appointment | null>(null);
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
 
     const filtered = appointments.filter((a) => {
@@ -374,43 +191,51 @@ export default function Index({
         {
             accessorKey: 'status',
             header: 'Status',
-cell: ({ row }) => (
-    <Badge className={`text-xs font-medium rounded-full px-2.5 py-1 ${statusVariant(row.original.status)}`}>
-        {row.original.status.replace('_', ' ')}
-    </Badge>
-),
+            cell: ({ row }) => (
+                <Badge className={`text-xs font-medium rounded-full px-2.5 py-1 ${statusVariant(row.original.status)} shadow-none`}>
+                    {row.original.status.replace('_', ' ')}
+                </Badge>
+            ),
         },
         {
             id: 'actions',
+            header: () => <div className="text-right px-4">Actions</div>,
             cell: ({ row }) => {
                 const appt = row.original;
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" />}>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem render={<Link href={route('appointments.show', appt.id)} />}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View
-                            </DropdownMenuItem>
-                            {appt.can_edit && (
-                                <DropdownMenuItem onClick={() => { setTimeout(() => setEditingAppt(appt), 0); }}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit
-                                </DropdownMenuItem>
+                    <div className="flex items-center justify-end gap-1">
+                        {/* View Details Link */}
+                        <Link
+                            href={route('appointments.show', appt.id)}
+                            className={cn(
+                                buttonVariants({ variant: 'ghost', size: 'icon' }),
+                                "h-8 w-8 text-slate-500 hover:text-slate-900"
                             )}
-                            {appt.can_delete && (
-                                <DropdownMenuItem
-                                    className="text-destructive"
-                                    onClick={() => { setTimeout(() => setDeletingAppt(appt), 0); }}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
+                        >
+                            <Eye className="h-4 w-4" />
+                        </Link>
+                        
+                        {/* Edit Page Link */}
+                        <Link
+                            href={route('appointments.edit', appt.id)}
+                            className={cn(
+                                buttonVariants({ variant: 'ghost', size: 'icon' }),
+                                "h-8 w-8 text-slate-500 hover:text-slate-900"
                             )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        >
+                            <Edit className="h-4 w-4" />
+                        </Link>
+
+                        {/* Delete Modal Trigger */}
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
+                            onClick={() => setDeletingAppt(appt)}
+                        >
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                 );
             },
         },
@@ -421,7 +246,7 @@ cell: ({ row }) => (
             title="Appointments"
             actions={
                 can_create ? (
-                    <Link href={route('appointments.create')} className={buttonVariants({ variant: "default" })}>
+                    <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: "default" }), "bg-slate-900 text-white hover:bg-slate-800")}>
                         <Plus className="mr-2 h-4 w-4" />
                         New Appointment
                     </Link>
@@ -462,18 +287,6 @@ cell: ({ row }) => (
                     </>
                 }
             />
-
-            {/* Edit Modal */}
-            {editingAppt && (
-                <EditModal
-                    key={editingAppt.id}
-                    appointment={editingAppt}
-                    barbers={barbers}
-                    services={services}
-                    open={!!editingAppt}
-                    onOpenChange={(open) => { if (!open) setEditingAppt(null); }}
-                />
-            )}
 
             {/* Delete Confirmation Modal */}
             {deletingAppt && (
