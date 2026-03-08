@@ -2,14 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { 
   Calendar, Users, BarChart3, Scissors, Check, 
   ArrowRight, LayoutDashboard, Settings, Menu, X, 
-  Instagram, Twitter, Linkedin, Globe,
-  ChevronLeft, ChevronRight, TrendingUp, Star,
+  Globe, ChevronLeft, ChevronRight, TrendingUp, Star,
   Smartphone, Zap, ShieldCheck
 } from 'lucide-react';
 
 // --- STYLES & FONTS ---
 const FontImport = () => (
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
 );
 
 // --- ANIMATION HOOK ---
@@ -32,113 +31,76 @@ const useCountUp = (end, duration = 2000) => {
   return count;
 };
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isOpen]);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="absolute top-0 w-full z-[100]">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-8 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-3 relative z-[110]">
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-xl border border-white/20">
-            <Scissors className="text-slate-900 w-4 h-4" />
-          </div>
-          <span className="text-lg font-bold tracking-tighter text-white">
-            TrimFlow
-          </span>
+    <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-md border-b border-slate-100 py-4' : 'bg-transparent py-6'}`}>
+      <div className="max-w-7xl mx-auto px-6 md:px-10 flex items-center justify-between">
+        <div className="flex items-center gap-2 relative z-[110]">
+          <Scissors className="text-slate-900 w-5 h-5" />
+          <span className="text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
         </div>
 
-        <div className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-white/70">
-          <a href="#" className="hover:text-white transition-colors">Platform</a>
-          <a href="#" className="hover:text-white transition-colors">Pricing</a>
-          <a href="#" className="hover:text-white transition-colors">Resources</a>
+        <div className="hidden lg:flex items-center gap-10 text-[11px] font-medium uppercase tracking-[0.2em] text-slate-400">
+          <a href="#" className="hover:text-slate-900 transition-colors">Platform</a>
+          <a href="#" className="hover:text-slate-900 transition-colors">Pricing</a>
+          <a href="#" className="hover:text-slate-900 transition-colors">Resources</a>
         </div>
 
-        <div className="flex items-center gap-4 relative z-[110]">
-          <a
-            href="/login"
-            className="hidden sm:block text-white text-sm font-medium px-4 opacity-80 hover:opacity-100 transition-opacity"
-          >
-            Log in
+        <div className="flex items-center gap-6 relative z-[110]">
+          <a href="/login" className="hidden sm:block text-slate-600 text-sm font-medium hover:text-slate-900 transition-colors">Log in</a>
+          <a href="/register" className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-xs font-semibold hover:bg-slate-800 transition-all">
+            Join Now
           </a>
-          <a
-            href="/register"
-            className="bg-white text-slate-900 px-5 py-2 rounded-full text-xs font-bold hover:bg-slate-100 transition-all"
-          >
-            Get Started
-          </a>
-          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-white p-2">
+          <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-slate-900">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-        </div>
-      </div>
-
-      <div className={`fixed inset-0 bg-slate-950 transition-all duration-300 ease-in-out lg:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-        <div className="flex flex-col h-full pt-28 px-8 pb-12">
-          <div className="flex flex-col gap-6">
-            <a href="#" onClick={() => setIsOpen(false)} className="text-2xl font-medium text-white tracking-tight">Platform</a>
-            <a href="#" onClick={() => setIsOpen(false)} className="text-2xl font-medium text-white tracking-tight">Pricing</a>
-            <a href="#" onClick={() => setIsOpen(false)} className="text-2xl font-medium text-white tracking-tight">Resources</a>
-          </div>
-          <div className="mt-auto pt-8 border-t border-white/10">
-            <a
-              href="/register"
-              className="block w-full bg-white text-slate-950 py-4 rounded-xl font-bold text-center"
-            >
-              Start Free Trial
-            </a>
-            <a
-              href="/login"
-              className="block w-full mt-4 bg-slate-900 text-white py-4 rounded-xl font-bold border border-white/10 text-center"
-            >
-              Log in
-            </a>
-          </div>
         </div>
       </div>
     </nav>
   );
 };
-// ...rest of your code...
 
 const Hero = () => (
-  <section className="relative h-[90vh] min-h-[700px] flex items-center overflow-hidden bg-slate-950">
+  <section className="relative min-h-[95vh] flex items-center bg-white overflow-hidden">
+    {/* Background Image Container */}
     <div className="absolute inset-0 z-0">
       <img 
-        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
-        alt="Modern barbershop" 
-        className="w-full h-full object-cover opacity-50"
+        src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=2000" 
+        alt="Minimalist Barber Interior" 
+        className="w-full h-full object-cover grayscale-[0.5] opacity-25"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-transparent to-slate-950" />
+      {/* Soft gradient to blend image into the white layout */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
     </div>
 
-    <div className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-10 w-full pt-12">
-      <div className="max-w-4xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-md">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">The New Standard</span>
+    <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-10 w-full pt-20">
+      <div className="max-w-3xl">
+        <div className="inline-block mb-8">
+          <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-400">Built for the Craft</span>
         </div>
-        <h1 className="text-5xl md:text-7xl lg:text-[100px] font-black tracking-tighter text-white leading-[0.9] mb-8">
-          The platform <br />
-          <span className="text-white/40 italic font-light">for barbershops.</span>
+        <h1 className="text-6xl md:text-[110px] font-light tracking-tighter text-slate-900 leading-[0.85] mb-12">
+          Simplify the <br />
+          <span className="font-serif italic text-slate-400">modern shop.</span>
         </h1>
-        <p className="text-lg md:text-xl text-white/70 max-w-xl mb-12 leading-relaxed">
-          Manage appointments, staff, and revenue with precision. Built for high-volume shops.
+        <p className="text-lg md:text-xl text-slate-500 max-w-md mb-12 font-light leading-relaxed">
+          The essential toolkit for ambitious studios. Clean interface, powerful automation, zero friction.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a href="/register" className="bg-white text-slate-900 h-14 px-8 rounded-full font-bold hover:scale-105 transition-all flex items-center justify-center gap-3">
-            Start free trial <ArrowRight className="w-5 h-5" />
+        <div className="flex items-center gap-8">
+          <a href="/register" className="bg-slate-900 text-white h-14 px-10 rounded-full font-medium hover:bg-slate-800 transition-all flex items-center justify-center">
+            Start Free Trial
           </a>
-          <a href="/login" className="border border-white/30 text-white h-14 px-8 rounded-full font-bold hover:bg-white/10 transition-all backdrop-blur-md flex items-center justify-center">
-            Log in
+          <a href="#features" className="text-slate-900 font-medium flex items-center gap-2 group">
+            Explore Features <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
       </div>
@@ -148,26 +110,21 @@ const Hero = () => (
 
 const LiveStats = () => {
   const appointments = useCountUp(12480);
-  const revenue = useCountUp(98);
   const shops = useCountUp(450);
-  const rating = useCountUp(4);
 
   return (
-    <section className="bg-white py-16 md:py-24 border-b border-slate-100">
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+    <section className="bg-white py-24 border-y border-slate-50">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
           {[
-            { label: "Live Bookings", val: `${appointments.toLocaleString()}+`, icon: Calendar },
-            { label: "Efficiency Gain", val: `${revenue}%`, icon: TrendingUp },
-            { label: "Active Shops", val: shops, icon: Globe },
-            { label: "Partner Rating", val: `${rating}.9/5`, icon: Star }
+            { label: "Bookings Processed", val: `${appointments.toLocaleString()}+`, detail: "Real-time volume" },
+            { label: "Platform Uptime", val: `99.9%`, detail: "Enterprise reliability" },
+            { label: "Partner Studios", val: shops, detail: "Curated network" }
           ].map((stat, i) => (
-            <div key={i} className="border-l-2 border-slate-100 pl-6">
-              <div className="flex items-center gap-2 text-slate-400 mb-4">
-                <stat.icon size={14} />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{stat.label}</span>
-              </div>
-              <h3 className="text-3xl md:text-5xl font-black text-slate-950 tracking-tighter">{stat.val}</h3>
+            <div key={i} className="flex flex-col border-l border-slate-100 pl-8">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">{stat.label}</span>
+              <h3 className="text-4xl font-light text-slate-900 mb-1">{stat.val}</h3>
+              <p className="text-xs text-slate-400 font-light">{stat.detail}</p>
             </div>
           ))}
         </div>
@@ -177,59 +134,57 @@ const LiveStats = () => {
 };
 
 const HowItWorks = () => (
-  <section className="py-24 bg-slate-950 text-white px-6 md:px-10">
-    <div className="max-w-[1440px] mx-auto">
-      <div className="mb-20 text-center max-w-2xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-6">Built for speed.</h2>
-        <p className="text-slate-400 text-lg">Transition your entire shop in minutes.</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-        {[
-          { step: "01", title: "Set your chairs", desc: "Sync staff rosters and define custom services.", icon: Users },
-          { step: "02", title: "Go Live", desc: "Embed your link on Instagram and Google.", icon: Zap },
-          { step: "03", title: "Automate", desc: "TrimFlow handles reminders and payouts.", icon: Smartphone }
-        ].map((item, i) => (
-          <div key={i} className="group">
-            <div className="mb-8 flex items-center justify-between">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-slate-900 transition-all duration-500">
-                <item.icon size={24} />
+  <section className="py-32 bg-[#FAF9F6] px-6 md:px-10">
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+        <div>
+          <h2 className="text-4xl md:text-5xl font-light tracking-tight text-slate-900 mb-8">Refined workflow.</h2>
+          <p className="text-slate-500 text-lg font-light leading-relaxed max-w-md">
+            We stripped away the clutter of traditional legacy software to leave you with only what matters.
+          </p>
+        </div>
+        <div className="space-y-20">
+          {[
+            { step: "01", title: "Setup", desc: "Define your studio services and staff tiers with clean, intuitive inputs." },
+            { step: "02", title: "Launch", desc: "Integrate with Instagram and your custom domain in seconds." },
+            { step: "03", title: "Automate", desc: "Let the engine handle reminders, payouts, and re-booking flows." }
+          ].map((item, i) => (
+            <div key={i} className="flex gap-8 group">
+              <span className="text-xs font-bold text-slate-200 group-hover:text-slate-900 transition-colors pt-1">{item.step}</span>
+              <div>
+                <h4 className="text-xl font-medium text-slate-900 mb-3">{item.title}</h4>
+                <p className="text-slate-500 font-light text-sm leading-relaxed">{item.desc}</p>
               </div>
-              <span className="text-4xl font-black text-white/10">{item.step}</span>
             </div>
-            <h4 className="text-xl font-bold mb-4">{item.title}</h4>
-            <p className="text-slate-500 leading-relaxed text-sm">{item.desc}</p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   </section>
 );
 
 const FeaturesGrid = () => (
-  <section className="py-24 md:py-32 bg-white px-6 md:px-10">
-    <div className="max-w-[1440px] mx-auto">
-      <div className="mb-16 md:mb-24">
-        <h2 className="text-3xl md:text-5xl font-black text-slate-950 tracking-tighter mb-6">
-          Everything your shop <br className="hidden md:block"/> needs to thrive.
+  <section id="features" className="py-32 bg-white px-6 md:px-10">
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-24">
+        <h2 className="text-4xl md:text-5xl font-light text-slate-900 tracking-tight mb-6">
+          Everything, <span className="font-serif italic text-slate-400">nothing more.</span>
         </h2>
-        <p className="text-slate-500 text-lg max-w-2xl">
-          TrimFlow isn't just a calendar—it's a complete ecosystem designed to optimize every square inch of your floor.
-        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-20">
         {[
-          { title: "Intelligent Booking", icon: Calendar, desc: "A drag-and-drop calendar that handles complexity so you don't have to." },
-          { title: "Staff Performance", icon: BarChart3, desc: "Detailed metrics for every chair, from retention rates to ticket size." },
-          { title: "Client CRM", icon: Users, desc: "Deep client profiles with automated reminders and historical preferences." },
-          { title: "Global Controls", icon: Settings, desc: "Manage multiple locations and inventory from one unified login." },
-          { title: "Security First", icon: ShieldCheck, desc: "Enterprise-grade data protection and automated daily backups." },
-          { title: "Live Insights", icon: LayoutDashboard, desc: "Real-time revenue tracking synced directly with your bank account." }
+          { title: "Minimal Calendar", icon: Calendar, desc: "A clean interface focusing on your daily flow without visual noise." },
+          { title: "Smart Analytics", icon: BarChart3, desc: "See your revenue and retention rates through elegant charts." },
+          { title: "Guest Profiles", icon: Users, desc: "Track client history and preferences in a beautiful directory." },
+          { title: "Global Controls", icon: Settings, desc: "Scale across locations with one unified administrative account." },
+          { title: "Silent Alerts", icon: Smartphone, desc: "Automated SMS reminders that feel personal, not transactional." },
+          { title: "Secure Vault", icon: ShieldCheck, desc: "Your studio data is encrypted and protected by enterprise protocols." }
         ].map((f, i) => (
-          <div key={i} className="bg-white p-12 hover:bg-slate-50 transition-all group">
-            <f.icon className="w-6 h-6 text-slate-400 mb-8 group-hover:text-slate-950 transition-colors" />
-            <h4 className="text-xl font-bold text-slate-950 mb-4">{f.title}</h4>
-            <p className="text-slate-500 leading-relaxed text-sm">{f.desc}</p>
+          <div key={i} className="flex flex-col">
+            <f.icon className="w-5 h-5 text-slate-300 mb-6" />
+            <h4 className="text-lg font-medium text-slate-900 mb-3">{f.title}</h4>
+            <p className="text-slate-500 font-light text-sm leading-relaxed">{f.desc}</p>
           </div>
         ))}
       </div>
@@ -240,10 +195,10 @@ const FeaturesGrid = () => (
 const ReviewsSection = () => {
   const scrollRef = useRef(null);
   const reviews = [
-    { name: "Jade L.", role: "Barber", avatar: "https://randomuser.me/api/portraits/women/68.jpg", review: "TrimFlow makes managing my schedule effortless. My clients love the automated reminders." },
-    { name: "Marcus R.", role: "Shop Owner", avatar: "https://randomuser.me/api/portraits/men/45.jpg", review: "The dashboard gives me real-time insights. I can finally focus on growth, not paperwork." },
-    { name: "Sophie K.", role: "Client", avatar: "https://randomuser.me/api/portraits/women/12.jpg", review: "Booking is so easy. I always get notified before my appointment. Highly recommend." },
-    { name: "Alex T.", role: "Senior Barber", avatar: "https://randomuser.me/api/portraits/men/32.jpg", review: "The CRM features help me remember client preferences and keep them coming back." }
+    { name: "Julian P.", role: "Lead Barber", avatar: "https://randomuser.me/api/portraits/men/32.jpg", review: "The interface is so clean it actually makes me want to look at my schedule." },
+    { name: "Elena S.", role: "Studio Owner", avatar: "https://randomuser.me/api/portraits/women/44.jpg", review: "Finally, a platform that understands aesthetic matters as much as function." },
+    { name: "Marcus W.", role: "Senior Stylist", avatar: "https://randomuser.me/api/portraits/men/12.jpg", review: "The automated re-booking has increased my monthly revenue by 15% easily." },
+    { name: "Sasha K.", role: "Manager", avatar: "https://randomuser.me/api/portraits/women/68.jpg", review: "Managing four locations used to be a nightmare. Now it's a single dashboard." }
   ];
 
   const scroll = (dir) => {
@@ -257,26 +212,29 @@ const ReviewsSection = () => {
   };
 
   return (
-    <section className="py-24 bg-slate-50 overflow-hidden px-6 md:px-10">
-      <div className="max-w-[1440px] mx-auto">
-        <div className="flex items-end justify-between mb-12">
+    <section className="py-32 bg-[#FAF9F6] overflow-hidden px-6 md:px-10">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-end justify-between mb-16">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-950 tracking-tight">Voices of the floor.</h2>
-            <p className="text-slate-500 mt-2">Trusted by the industry's best professionals.</p>
+            <h2 className="text-4xl font-light text-slate-900 tracking-tight">Voices of the studio.</h2>
+            <p className="text-slate-400 font-light mt-3 italic font-serif">Trusted by the industry's elite.</p>
           </div>
-          <div className="flex gap-2">
-            <button onClick={() => scroll('left')} className="p-3 border border-slate-200 rounded-full hover:bg-white transition-all shadow-sm"><ChevronLeft size={20}/></button>
-            <button onClick={() => scroll('right')} className="p-3 border border-slate-200 rounded-full hover:bg-white transition-all shadow-sm"><ChevronRight size={20}/></button>
+          <div className="flex gap-4">
+            <button onClick={() => scroll('left')} className="w-12 h-12 border border-slate-200 rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronLeft size={18}/></button>
+            <button onClick={() => scroll('right')} className="w-12 h-12 border border-slate-200 rounded-full flex items-center justify-center hover:bg-white transition-all"><ChevronRight size={18}/></button>
           </div>
         </div>
-        <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div ref={scrollRef} className="flex gap-8 overflow-x-auto pb-8 snap-x no-scrollbar" style={{ scrollbarWidth: 'none' }}>
           {reviews.map((r, i) => (
-            <div key={i} className="min-w-[320px] md:min-w-[400px] snap-center bg-white rounded-3xl p-10 border border-slate-100 shadow-sm">
-              <p className="text-slate-600 text-lg italic mb-8">"{r.review}"</p>
+            <div key={i} className="min-w-[350px] md:min-w-[450px] snap-center bg-white p-12 rounded-sm border border-slate-100">
+              <div className="flex gap-1 mb-8">
+                {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-slate-900 text-slate-900" />)}
+              </div>
+              <p className="text-slate-600 text-lg font-light leading-relaxed mb-10">"{r.review}"</p>
               <div className="flex items-center gap-4">
-                <img src={r.avatar} alt={r.name} className="w-12 h-12 rounded-full object-cover" />
+                <img src={r.avatar} alt={r.name} className="w-10 h-10 rounded-full object-cover grayscale" />
                 <div>
-                  <h4 className="font-bold text-slate-950">{r.name}</h4>
+                  <h4 className="font-medium text-slate-900 text-sm">{r.name}</h4>
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{r.role}</span>
                 </div>
               </div>
@@ -289,31 +247,34 @@ const ReviewsSection = () => {
 };
 
 const Footer = () => (
-  <footer className="bg-slate-950 text-white pt-24 pb-12 px-6 md:px-10">
-    <div className="max-w-[1440px] mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-        <div>
-          <div className="flex items-center gap-3 mb-6">
-            <Scissors className="text-white w-6 h-6" />
-            <span className="text-2xl font-bold tracking-tighter">TrimFlow</span>
+  <footer className="bg-white border-t border-slate-50 pt-32 pb-12 px-6 md:px-10">
+    <div className="max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-20 mb-24">
+        <div className="col-span-1 md:col-span-2">
+          <div className="flex items-center gap-2 mb-8">
+            <Scissors className="text-slate-900 w-5 h-5" />
+            <span className="text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
           </div>
-          <p className="text-slate-500 text-sm">Modern tools for modern barbers.</p>
+          <p className="text-slate-400 text-sm font-light max-w-xs leading-relaxed">
+            Designing the digital infrastructure for the world's finest studios. <br /> Minimal by design, powerful by nature.
+          </p>
         </div>
-        {["Platform", "Resources", "Legal"].map(c => (
+        {["Platform", "Resources"].map(c => (
           <div key={c}>
-            <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-6">{c}</h5>
-            <ul className="space-y-3 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
+            <h5 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-900 mb-8">{c}</h5>
+            <ul className="space-y-4 text-sm font-light text-slate-500">
+              <li><a href="#" className="hover:text-slate-900 transition-colors">Features</a></li>
+              <li><a href="#" className="hover:text-slate-900 transition-colors">Privacy</a></li>
+              <li><a href="#" className="hover:text-slate-900 transition-colors">Contact</a></li>
             </ul>
           </div>
         ))}
       </div>
-      <div className="pt-8 border-t border-white/5 flex justify-between text-[10px] font-bold text-slate-600 uppercase tracking-widest">
-        <span>© 2026 TrimFlow Inc.</span>
-        <div className="flex gap-4 items-center">
-          <Globe size={12}/> EN
+      <div className="pt-8 border-t border-slate-50 flex justify-between items-center text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+        <span>© 2026 TrimFlow Digital</span>
+        <div className="flex gap-8 items-center">
+          <a href="#" className="hover:text-slate-900 transition-colors">Instagram</a>
+          <a href="#" className="hover:text-slate-900 transition-colors">Twitter</a>
         </div>
       </div>
     </div>
@@ -322,7 +283,7 @@ const Footer = () => (
 
 export default function TrimFlowSite() {
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-950 selection:bg-slate-900 selection:text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-slate-100" style={{ fontFamily: "'Inter', sans-serif" }}>
       <FontImport />
       <Navbar />
       <Hero />
