@@ -1,5 +1,5 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
 import {
     CalendarDays,
     ChevronDown,
@@ -11,8 +11,10 @@ import {
     User,
     X,
     Briefcase,
+    ShieldCheck
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { PageProps } from '@/types';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,8 +22,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
-import { PageProps } from '@/types';
 
 interface NavItem {
     label: string;
@@ -35,26 +35,26 @@ const navItems: NavItem[] = [
     {
         label: 'Dashboard',
         href: '/dashboard',
-        icon: <LayoutDashboard className="h-[18px] w-[18px]" />,
+        icon: <LayoutDashboard className="h-4 w-4" />,
         active: 'dashboard',
     },
     {
         label: 'Appointments',
         href: '/appointments',
-        icon: <CalendarDays className="h-[18px] w-[18px]" />,
+        icon: <CalendarDays className="h-4 w-4" />,
         active: 'appointments.*',
     },
     {
         label: 'Services',
         href: '/services',
-        icon: <Scissors className="h-[18px] w-[18px]" />,
+        icon: <Scissors className="h-4 w-4" />,
         active: 'services.*',
         roles: ['platform-admin', 'shop-admin'],
     },
     {
         label: 'Barbers',
         href: '/barbers',
-        icon: <Briefcase className="h-[18px] w-[18px]" />,
+        icon: <Briefcase className="h-4 w-4" />,
         active: 'barbers.*',
         roles: ['platform-admin', 'shop-admin'],
     },
@@ -72,16 +72,21 @@ export default function AppLayout({
     const { auth } = usePage<PageProps>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    // Close sidebar on route change (for mobile)
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [route().current()]);
+
     const visibleNavItems = navItems.filter(
         (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
     );
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#F9FAFB]">
-            {/* Mobile overlay */}
+        <div className="flex h-screen overflow-hidden bg-[#FDFDFD]">
+            {/* Mobile Overlay - Clicking this closes the sidebar */}
             {sidebarOpen && (
                 <div
-                    className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+                    className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden transition-opacity"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
@@ -89,40 +94,31 @@ export default function AppLayout({
             {/* Sidebar */}
             <aside
                 className={cn(
-                    'fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col bg-gray-950 transition-transform duration-200 lg:static lg:translate-x-0',
+                    'fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col bg-slate-950 border-r border-white/5 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full',
                 )}
             >
-                {/* Logo */}
-                <div className="flex h-16 items-center gap-2.5 px-5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10">
-                        <Scissors className="h-4 w-4 text-amber-400" />
-                    </div>
-                    <span className="text-[15px] font-bold tracking-tight text-white uppercase">
-                        TrimFlow
-                    </span>
+                {/* Logo Section */}
+                <div className="flex h-20 items-center justify-between px-6">
+                    <Link href="/dashboard" className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                            <Scissors className="h-5 w-5 text-slate-950" />
+                        </div>
+                        <span className="text-sm font-black tracking-widest text-white uppercase">
+                            TrimFlow
+                        </span>
+                    </Link>
                     <button
-                        className="ml-auto rounded-md p-1 text-gray-500 hover:text-white lg:hidden"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white lg:hidden"
                         onClick={() => setSidebarOpen(false)}
                     >
-                        <X className="h-5 w-5" />
+                        <X className="h-4 w-4" />
                     </button>
                 </div>
 
-                {/* Company */}
-                {auth.company && (
-                    <div className="mx-4 mb-1 rounded-lg bg-white/5 px-3 py-2.5">
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-gray-500">
-                            Workspace
-                        </p>
-                        <p className="mt-0.5 truncate text-sm font-medium text-gray-200">
-                            {auth.company.name}
-                        </p>
-                    </div>
-                )}
 
-                {/* Navigation */}
-                <nav className="mt-2 flex-1 space-y-0.5 overflow-y-auto px-3">
+                {/* Main Navigation */}
+                <nav className="flex-1 space-y-1 overflow-y-auto px-4">
                     {visibleNavItems.map((item) => {
                         const active = isActive(item.active);
                         return (
@@ -130,15 +126,15 @@ export default function AppLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors',
+                                    'group flex items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-bold tracking-tight transition-all duration-200',
                                     active
-                                        ? 'bg-white/10 text-white'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-gray-200',
+                                        ? 'bg-white text-slate-950 shadow-[0_10px_20px_rgba(0,0,0,0.4)]'
+                                        : 'text-slate-400 hover:bg-white/5 hover:text-white',
                                 )}
                             >
                                 <span className={cn(
                                     'transition-colors',
-                                    active ? 'text-amber-400' : 'text-gray-500 group-hover:text-gray-400',
+                                    active ? 'text-slate-950' : 'text-slate-500 group-hover:text-white',
                                 )}>
                                     {item.icon}
                                 </span>
@@ -148,42 +144,44 @@ export default function AppLayout({
                     })}
                 </nav>
 
-                {/* User menu at bottom */}
-                <div className="border-t border-white/5 p-3">
+                {/* User Footer Section */}
+                <div className="mt-auto border-t border-white/5 p-4">
                     <DropdownMenu>
-                        <DropdownMenuTrigger
-                            render={
-                                <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-white/5" />
-                            }
-                        >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-xs font-bold text-amber-400">
-                                {auth.user.name.charAt(0).toUpperCase()}
+                        <DropdownMenuTrigger className="w-full">
+                            <div className="flex w-full items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-white/5">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 text-xs font-black text-white shadow-inner">
+                                    {auth.user.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div className="flex-1 text-left">
+                                    <p className="truncate text-sm font-bold text-white leading-tight">
+                                        {auth.user.name}
+                                    </p>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                        <ShieldCheck className="h-3 w-3 text-emerald-500" />
+                                        <p className="truncate text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                            {auth.roles[0]?.replace('-', ' ') ?? 'Member'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <ChevronDown className="h-4 w-4 text-slate-600 group-hover:text-white transition-transform" />
                             </div>
-                            <div className="flex-1 text-left">
-                                <p className="truncate text-[13px] font-medium text-gray-200 leading-none">
-                                    {auth.user.name}
-                                </p>
-                                <p className="mt-1 truncate text-[11px] capitalize text-gray-500">
-                                    {auth.roles[0]?.replace('-', ' ') ?? 'user'}
-                                </p>
-                            </div>
-                            <ChevronDown className="h-4 w-4 shrink-0 text-gray-600" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            side="top"
-                            align="start"
-                            className="w-56"
+                            side="right"
+                            align="end"
+                            className="w-56 bg-slate-900 border-white/10 text-white"
                         >
-                            <DropdownMenuItem render={<Link href={route('profile.edit')} />}>
+                            <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.get(route('profile.edit'))}>
                                 <User className="mr-2 h-4 w-4" />
-                                Profile
+                                My Profile
                             </DropdownMenuItem>
-                            <DropdownMenuItem render={<Link href={route('profile.edit')} />}>
+                            <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.get(route('profile.edit'))}>
                                 <Settings className="mr-2 h-4 w-4" />
-                                Settings
+                                Shop Settings
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator className="bg-white/5" />
                             <DropdownMenuItem
+                                className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
                                 onClick={() => router.post(route('logout'))}
                             >
                                 <LogOut className="mr-2 h-4 w-4" />
@@ -194,31 +192,35 @@ export default function AppLayout({
                 </div>
             </aside>
 
-            {/* Main content */}
+            {/* Main Content Area */}
             <div className="flex flex-1 flex-col overflow-hidden">
-                {/* Top bar */}
-                <header className="flex h-16 shrink-0 items-center gap-4 border-b border-gray-200/80 bg-white px-5 lg:px-8">
-                    <button
-                        className="rounded-md p-1 text-gray-400 hover:text-gray-600 lg:hidden"
-                        onClick={() => setSidebarOpen(true)}
-                    >
-                        <Menu className="h-5 w-5" />
-                    </button>
+                {/* Modern Header */}
+                <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-100 bg-white px-6 lg:px-10">
+                    <div className="flex items-center gap-4">
+                        <button
+                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 lg:hidden transition-colors"
+                            onClick={() => setSidebarOpen(true)}
+                        >
+                            <Menu className="h-5 w-5" />
+                        </button>
 
-                    {title && (
-                        <h1 className="text-lg font-bold tracking-tight text-gray-900">
-                            {title}
-                        </h1>
-                    )}
+                        {title && (
+                            <h1 className="text-xl font-black tracking-tighter text-slate-950">
+                                {title}
+                            </h1>
+                        )}
+                    </div>
 
-                    <div className="ml-auto flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                         {actions}
                     </div>
                 </header>
 
-                {/* Page content */}
-                <main className="flex-1 overflow-y-auto p-5 lg:p-8">
-                    {children}
+                {/* Main Scrollable Area */}
+                <main className="flex-1 overflow-y-auto bg-[#F9FAFB] p-6 lg:p-10">
+                    <div className="mx-auto max-w-7xl">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>

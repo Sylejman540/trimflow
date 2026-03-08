@@ -2,19 +2,17 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
-    
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         shop_name: '',
         email: '',
         password: '',
         password_confirmation: '',
-        barbers: '1-3',
-        location: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -41,9 +39,9 @@ export default function Register() {
             {/* --- LEFT SIDE: Brand Anchor --- */}
             <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-16 bg-slate-950">
                 <div className="absolute inset-0 z-0">
-                    <img 
-                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
-                        alt="Modern barbershop" 
+                    <img
+                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000"
+                        alt="Modern barbershop"
                         className="h-full w-full object-cover opacity-40 grayscale"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
@@ -76,7 +74,7 @@ export default function Register() {
                     <span>V2.0.4</span>
                     <div className="w-1 h-1 rounded-full bg-slate-800" />
                     <span className="flex items-center gap-2 tracking-widest uppercase">
-                         <ShieldCheck className="w-3 h-3" /> Secure Infrastructure
+                        <ShieldCheck className="w-3 h-3" /> Secure Infrastructure
                     </span>
                 </div>
             </div>
@@ -90,53 +88,67 @@ export default function Register() {
                     </div>
 
                     <form onSubmit={submit} className="space-y-5">
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* Row 1: Names */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Shop Name</Label>
                                 <Input
                                     value={data.shop_name}
-                                    className="h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950"
+                                    className={`h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950 ${errors.shop_name ? 'border-red-500 bg-red-50/30' : ''}`}
                                     placeholder="Classic Cut"
                                     onChange={(e) => setData('shop_name', e.target.value)}
-                                    required
                                 />
+                                {errors.shop_name && (
+                                    <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight flex items-center gap-1">
+                                        <AlertCircle size={12} /> {errors.shop_name}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Owner Name</Label>
                                 <Input
                                     value={data.name}
-                                    className="h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950"
+                                    className={`h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950 ${errors.name ? 'border-red-500 bg-red-50/30' : ''}`}
                                     placeholder="Marcus Ray"
                                     onChange={(e) => setData('name', e.target.value)}
-                                    required
                                 />
+                                {errors.name && (
+                                    <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight flex items-center gap-1">
+                                        <AlertCircle size={12} /> {errors.name}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
+                        {/* Email */}
                         <div className="space-y-2">
                             <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Work Email</Label>
                             <Input
                                 type="email"
                                 value={data.email}
-                                className="h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950"
+                                className={`h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950 ${errors.email ? 'border-red-500 bg-red-50/30' : ''}`}
                                 placeholder="name@shop.com"
                                 onChange={(e) => setData('email', e.target.value)}
-                                required
                             />
+                            {errors.email && (
+                                <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight flex items-center gap-1">
+                                    <AlertCircle size={12} /> {errors.email}
+                                </p>
+                            )}
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* Passwords */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2 relative">
                                 <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Password</Label>
                                 <div className="relative">
                                     <Input
                                         type={showPassword ? "text" : "password"}
                                         value={data.password}
-                                        className="h-12 rounded-xl border-slate-200 bg-slate-50/50 pr-10"
+                                        className={`h-12 rounded-xl border-slate-200 bg-slate-50/50 pr-10 focus:ring-slate-950 ${errors.password ? 'border-red-500 bg-red-50/30' : ''}`}
                                         onChange={(e) => setData('password', e.target.value)}
-                                        required
                                     />
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-950"
@@ -144,26 +156,35 @@ export default function Register() {
                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
                                 </div>
+                                {errors.password && (
+                                    <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight flex items-center gap-1">
+                                        <AlertCircle size={12} /> {errors.password}
+                                    </p>
+                                )}
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Confirm</Label>
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     value={data.password_confirmation}
-                                    className="h-12 rounded-xl border-slate-200 bg-slate-50/50"
+                                    className={`h-12 rounded-xl border-slate-200 bg-slate-50/50 focus:ring-slate-950 ${errors.password_confirmation ? 'border-red-500 bg-red-50/30' : ''}`}
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
-                                    required
                                 />
+                                {errors.password_confirmation && (
+                                    <p className="text-[11px] font-bold text-red-600 uppercase tracking-tight flex items-center gap-1">
+                                        <AlertCircle size={12} /> {errors.password_confirmation}
+                                    </p>
+                                )}
                             </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={processing}
-                            className="group flex h-14 w-full items-center justify-center gap-3 rounded-full bg-slate-950 text-sm font-bold text-white transition-all hover:bg-slate-800 shadow-xl shadow-slate-200"
+                            className="group flex h-14 w-full items-center justify-center gap-3 rounded-full bg-slate-950 text-sm font-bold text-white transition-all hover:bg-slate-800 shadow-xl shadow-slate-200 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
-                            CREATE MY SHOP
-                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                            {processing ? 'CREATING ACCOUNT...' : 'CREATE MY SHOP'}
+                            {!processing && <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />}
                         </button>
 
                         <p className="text-center text-sm text-slate-500 pt-4">
