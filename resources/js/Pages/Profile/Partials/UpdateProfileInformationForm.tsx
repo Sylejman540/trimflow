@@ -43,7 +43,7 @@ export default function UpdateProfileInformation({
                     <InputLabel htmlFor="name" value="Name" className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" />
                     <TextInput
                         id="name"
-                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
+                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         required
@@ -58,7 +58,7 @@ export default function UpdateProfileInformation({
                     <TextInput
                         id="email"
                         type="email"
-                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
+                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
                         required

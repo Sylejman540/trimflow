@@ -57,7 +57,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                         value={data.current_password}
                         onChange={(e) => setData('current_password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
                         autoComplete="current-password"
                     />
                     <InputError message={errors.current_password} className="mt-2 text-xs" />
@@ -75,7 +75,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
                         autoComplete="new-password"
                     />
                     <InputError message={errors.password} className="mt-2 text-xs" />
@@ -92,7 +92,7 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                         value={data.password_confirmation}
                         onChange={(e) => setData('password_confirmation', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
                         autoComplete="new-password"
                     />
                     <InputError message={errors.password_confirmation} className="mt-2 text-xs" />
