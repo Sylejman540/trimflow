@@ -1,10 +1,11 @@
-import InputError from '@/components/InputError';
-import InputLabel from '@/components/InputLabel';
-import PrimaryButton from '@/components/PrimaryButton';
-import TextInput from '@/components/TextInput';
-import { Transition } from '@headlessui/react';
+import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
+import PrimaryButton from '@/Components/PrimaryButton';
+import TextInput from '@/Components/TextInput';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
+import { Transition } from '@headlessui/react';
+import { FormEvent } from 'react';
+import { PageProps } from '@/types';
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -15,7 +16,7 @@ export default function UpdateProfileInformation({
     status?: string;
     className?: string;
 }) {
-    const user = usePage().props.auth.user;
+    const user = usePage<PageProps>().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } =
         useForm({
@@ -23,82 +24,56 @@ export default function UpdateProfileInformation({
             email: user.email,
         });
 
-    const submit: FormEventHandler = (e) => {
+    const submit = (e: FormEvent) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Profile Information
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600">
-                    Update your account's profile information and email address.
+                <h2 className="text-lg font-semibold text-slate-900">Profile Information</h2>
+                <p className="mt-1 text-sm text-slate-500">
+                    Update your account profile details.
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            <form onSubmit={submit} className="mt-8 space-y-6">
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
+                    <InputLabel htmlFor="name" value="Name" className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" />
                     <TextInput
                         id="name"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         required
                         isFocused
                         autoComplete="name"
                     />
-
                     <InputError className="mt-2" message={errors.name} />
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
+                    <InputLabel htmlFor="email" value="Email" className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" />
                     <TextInput
                         id="email"
                         type="email"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
                         required
                         autoComplete="username"
                     />
-
                     <InputError className="mt-2" message={errors.email} />
                 </div>
 
-                {mustVerifyEmail && user.email_verified_at === null && (
-                    <div>
-                        <p className="mt-2 text-sm text-gray-800">
-                            Your email address is unverified.
-                            <Link
-                                href={route('verification.send')}
-                                method="post"
-                                as="button"
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                            >
-                                Click here to re-send the verification email.
-                            </Link>
-                        </p>
-
-                        {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-sm font-medium text-green-600">
-                                A new verification link has been sent to your
-                                email address.
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                <div className="flex items-center gap-4 pt-2">
+                    <PrimaryButton 
+                        disabled={processing}
+                        className="bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 px-6 py-2 rounded-lg shadow-sm transition-all"
+                    >
+                        Save
+                    </PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
@@ -107,9 +82,7 @@ export default function UpdateProfileInformation({
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">
-                            Saved.
-                        </p>
+                        <p className="text-sm text-slate-500">Saved.</p>
                     </Transition>
                 </div>
             </form>
