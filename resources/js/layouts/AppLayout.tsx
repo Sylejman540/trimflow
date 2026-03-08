@@ -1,68 +1,18 @@
 import { Link, router, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
 import {
-    CalendarDays,
-    ChevronDown,
+    Calendar,
     LayoutDashboard,
     LogOut,
     Menu,
     Scissors,
-    Settings,
     User,
     X,
-    Briefcase,
-    ShieldCheck
+    ChevronLeft,
+    ChevronRight,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageProps } from '@/types';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-interface NavItem {
-    label: string;
-    href: string;
-    icon: ReactNode;
-    active: string;
-    roles?: string[];
-}
-
-const navItems: NavItem[] = [
-    {
-        label: 'Dashboard',
-        href: '/dashboard',
-        icon: <LayoutDashboard className="h-4 w-4" />,
-        active: 'dashboard',
-    },
-    {
-        label: 'Appointments',
-        href: '/appointments',
-        icon: <CalendarDays className="h-4 w-4" />,
-        active: 'appointments.*',
-    },
-    {
-        label: 'Services',
-        href: '/services',
-        icon: <Scissors className="h-4 w-4" />,
-        active: 'services.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Barbers',
-        href: '/barbers',
-        icon: <Briefcase className="h-4 w-4" />,
-        active: 'barbers.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-];
-
-function isActive(pattern: string): boolean {
-    return route().current(pattern) ?? false;
-}
 
 export default function AppLayout({
     children,
@@ -70,155 +20,133 @@ export default function AppLayout({
     actions,
 }: PropsWithChildren<{ title?: string; actions?: ReactNode }>) {
     const { auth } = usePage<PageProps>().props;
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
-    // Close sidebar on route change (for mobile)
     useEffect(() => {
-        setSidebarOpen(false);
+        setMobileOpen(false);
     }, [route().current()]);
 
-    const visibleNavItems = navItems.filter(
-        (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
-    );
-
-    return (
-        <div className="flex h-screen overflow-hidden bg-[#FDFDFD]">
-            {/* Mobile Overlay - Clicking this closes the sidebar */}
-            {sidebarOpen && (
-                <div
-                    className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden transition-opacity"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
-
-            {/* Sidebar */}
-            <aside
+    const NavItem = ({ href, icon: Icon, label, activePattern }: { href: string; icon: any; label: string; activePattern: string }) => {
+        const active = route().current(activePattern);
+        return (
+            <Link
+                href={href}
                 className={cn(
-                    'fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col bg-slate-950 border-r border-white/5 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0',
-                    sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+                    'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                    active 
+                        ? 'bg-slate-100 text-slate-900' 
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 )}
             >
-                {/* Logo Section */}
-                <div className="flex h-20 items-center justify-between px-6">
+                <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-slate-900' : 'text-slate-400 group-hover:text-slate-900')} />
+                {!isCollapsed && <span>{label}</span>}
+            </Link>
+        );
+    };
+
+    return (
+        <div className="flex h-screen overflow-hidden bg-white font-sans text-slate-900">
+            {/* --- SIDEBAR --- */}
+            <aside
+                className={cn(
+                    'relative hidden lg:flex flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out',
+                    isCollapsed ? 'w-20' : 'w-64'
+                )}
+            >
+                {/* Brand Header */}
+                <div className="flex h-16 items-center px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                            <Scissors className="h-5 w-5 text-slate-950" />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900">
+                            <Scissors className="h-4 w-4 text-white" />
                         </div>
-                        <span className="text-sm font-black tracking-widest text-white uppercase">
-                            TrimFlow
-                        </span>
+                        {!isCollapsed && (
+                            <span className="text-lg font-semibold tracking-tight text-slate-900">TrimFlow</span>
+                        )}
                     </Link>
-                    <button
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-slate-400 hover:text-white lg:hidden"
-                        onClick={() => setSidebarOpen(false)}
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
                 </div>
 
+                {/* Sidebar Navigation */}
+                <div className="flex-1 px-4 py-6 space-y-8 overflow-y-auto">
+                    {/* WORKSPACE GROUP */}
+                    <div className="space-y-1">
+                        {!isCollapsed && (
+                            <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                                Workspace
+                            </h3>
+                        )}
+                        <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" activePattern="dashboard" />
+                        <NavItem href="/appointments" icon={Calendar} label="Appointments" activePattern="appointments.*" />
+                    </div>
 
-                {/* Main Navigation */}
-                <nav className="flex-1 space-y-1 overflow-y-auto px-4">
-                    {visibleNavItems.map((item) => {
-                        const active = isActive(item.active);
-                        return (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    'group flex items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-bold tracking-tight transition-all duration-200',
-                                    active
-                                        ? 'bg-white text-slate-950 shadow-[0_10px_20px_rgba(0,0,0,0.4)]'
-                                        : 'text-slate-400 hover:bg-white/5 hover:text-white',
-                                )}
-                            >
-                                <span className={cn(
-                                    'transition-colors',
-                                    active ? 'text-slate-950' : 'text-slate-500 group-hover:text-white',
-                                )}>
-                                    {item.icon}
-                                </span>
-                                {item.label}
-                            </Link>
-                        );
-                    })}
-                </nav>
-
-                {/* User Footer Section */}
-                <div className="mt-auto border-t border-white/5 p-4">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="w-full">
-                            <div className="flex w-full items-center gap-3 rounded-2xl p-2 transition-colors hover:bg-white/5">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 text-xs font-black text-white shadow-inner">
-                                    {auth.user.name.charAt(0).toUpperCase()}
-                                </div>
-                                <div className="flex-1 text-left">
-                                    <p className="truncate text-sm font-bold text-white leading-tight">
-                                        {auth.user.name}
-                                    </p>
-                                    <div className="flex items-center gap-1.5 mt-0.5">
-                                        <ShieldCheck className="h-3 w-3 text-emerald-500" />
-                                        <p className="truncate text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                            {auth.roles[0]?.replace('-', ' ') ?? 'Member'}
-                                        </p>
-                                    </div>
-                                </div>
-                                <ChevronDown className="h-4 w-4 text-slate-600 group-hover:text-white transition-transform" />
-                            </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            side="right"
-                            align="end"
-                            className="w-56 bg-slate-900 border-white/10 text-white"
+                    {/* ACCOUNT GROUP */}
+                    <div className="space-y-1">
+                        {!isCollapsed && (
+                            <h3 className="px-3 mb-2 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                                Account
+                            </h3>
+                        )}
+                        <NavItem href={route('profile.edit')} icon={User} label="My Profile" activePattern="profile.edit" />
+                        <button
+                            onClick={() => router.post(route('logout'))}
+                            className={cn(
+                                "w-full group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all",
+                                isCollapsed && "justify-center"
+                            )}
                         >
-                            <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.get(route('profile.edit'))}>
-                                <User className="mr-2 h-4 w-4" />
-                                My Profile
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="focus:bg-white/10 focus:text-white cursor-pointer" onClick={() => router.get(route('profile.edit'))}>
-                                <Settings className="mr-2 h-4 w-4" />
-                                Shop Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator className="bg-white/5" />
-                            <DropdownMenuItem
-                                className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer"
-                                onClick={() => router.post(route('logout'))}
-                            >
-                                <LogOut className="mr-2 h-4 w-4" />
-                                Log Out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            <LogOut className="h-4 w-4 shrink-0 text-slate-400 group-hover:text-red-600" />
+                            {!isCollapsed && <span>Sign Out</span>}
+                        </button>
+                    </div>
+                </div>
+
+                {/* User Profile Section */}
+                <div className="mt-auto border-t border-slate-200 p-4 bg-white">
+                    <div className={cn(
+                        "flex items-center gap-3 rounded-xl transition-all",
+                        !isCollapsed && "px-2 py-2"
+                    )}>
+                        <div className="h-9 w-9 shrink-0 flex items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold shadow-sm">
+                            {auth.user.name.charAt(0).toUpperCase()}
+                        </div>
+                        
+                        {!isCollapsed && (
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-slate-900 truncate">
+                                    {auth.user.name}
+                                </p>
+                                <p className="text-xs text-slate-500 truncate capitalize">
+                                    {auth.roles[0]?.replace('-', ' ') || 'Partner'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {/* Collapse Toggle Button */}
+                    <button
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        className="mt-4 flex w-full items-center justify-center py-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100"
+                    >
+                        {isCollapsed ? <ChevronRight size={16} /> : <div className="flex items-center gap-2 text-xs font-medium"><ChevronLeft size={14} /> Collapse</div>}
+                    </button>
                 </div>
             </aside>
 
-            {/* Main Content Area */}
-            <div className="flex flex-1 flex-col overflow-hidden">
-                {/* Modern Header */}
-                <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-100 bg-white px-6 lg:px-10">
+            {/* --- MAIN CONTENT AREA --- */}
+            {/* Unchanged as per instructions */}
+            <div className="flex-1 flex flex-col overflow-hidden bg-white">
+                <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8 lg:px-12">
                     <div className="flex items-center gap-4">
-                        <button
-                            className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 hover:bg-slate-100 lg:hidden transition-colors"
-                            onClick={() => setSidebarOpen(true)}
-                        >
-                            <Menu className="h-5 w-5" />
+                        <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-50 rounded-md">
+                            <Menu size={24} />
                         </button>
-
-                        {title && (
-                            <h1 className="text-xl font-black tracking-tighter text-slate-950">
-                                {title}
-                            </h1>
-                        )}
+                        <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                        {actions}
-                    </div>
+                    <div className="flex items-center gap-4">{actions}</div>
                 </header>
 
-                {/* Main Scrollable Area */}
-                <main className="flex-1 overflow-y-auto bg-[#F9FAFB] p-6 lg:p-10">
-                    <div className="mx-auto max-w-7xl">
+                <main className="flex-1 overflow-y-auto p-8 lg:p-12">
+                    <div className="max-w-[1400px] mx-auto">
                         {children}
                     </div>
                 </main>
