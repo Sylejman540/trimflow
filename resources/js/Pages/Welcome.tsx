@@ -13,19 +13,19 @@ const FontImport = () => (
 
 // --- COMPONENTS ---
 
-// --- UPDATED NAVBAR COMPONENT ---
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // lock scroll when mobile menu open
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
   }, [isOpen]);
 
   const handleJoinAction = () => {
@@ -35,63 +35,103 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled || isOpen ? 'bg-white border-b border-slate-100 py-4' : 'bg-transparent py-6 md:py-8'}`}>
+      {/* NAVBAR */}
+      <nav
+        className={`fixed top-0 w-full z-[200] transition-all duration-500 ${
+          scrolled || isOpen
+            ? "bg-white border-b border-slate-100 py-4"
+            : "bg-transparent py-6 md:py-8"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between">
-          {/* Logo - Stays visible */}
-          <div className="flex items-center gap-2 relative z-[110]">
+          
+          {/* LOGO */}
+          <div className="flex items-center gap-2 relative z-[210]">
             <Scissors className="text-[#637060] w-5 h-5" />
-            <span className="text-lg md:text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
+            <span className="text-lg font-semibold tracking-tight text-slate-900">
+              TrimFlow
+            </span>
           </div>
 
-          <div className="hidden lg:flex items-center gap-12 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">
-            <a href="#features" className="hover:text-slate-900 transition-colors">Platform</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Pricing</a>
-            <a href="#" className="hover:text-slate-900 transition-colors">Journal</a>
+          {/* DESKTOP MENU - Text made smaller and wider */}
+          <div className="hidden lg:flex items-center gap-12 text-[9px] font-bold uppercase tracking-[0.4em] text-slate-400">
+            <a
+              href="#features"
+              className="hover:text-slate-900 transition-colors"
+            >
+              Platform
+            </a>
+            <a href="#" className="hover:text-slate-900 transition-colors">
+              Pricing
+            </a>
+            <a href="#" className="hover:text-slate-900 transition-colors">
+              Journal
+            </a>
           </div>
 
-          <div className="flex items-center gap-4 md:gap-6 relative z-[110]">
-            <a href="/login" className="hidden sm:block text-[11px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-900 transition-colors">Login</a>
-            <button 
+          {/* RIGHT ACTIONS */}
+          <div className="flex items-center gap-4 md:gap-6 relative z-[210]">
+            <a
+              href="/login"
+              className="hidden sm:block text-[9px] font-bold uppercase tracking-[0.3em] text-slate-400 hover:text-slate-900 transition-colors"
+            >
+              Login
+            </a>
+
+            <button
               onClick={handleJoinAction}
-              className="bg-[#637060] text-[#FAF9F6] px-5 md:px-8 py-2.5 md:py-3 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest hover:bg-[#4f5a4d] transition-all shadow-lg shadow-slate-200"
+              className="bg-[#637060] text-[#FAF9F6] px-5 md:px-8 py-2.5 md:py-3 rounded-full text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-[#4f5a4d] transition-all shadow-lg shadow-slate-200"
             >
               Join Now
             </button>
-            
-            {/* TOGGLE BUTTON - Fixed with z-[110] to stay on top of the white menu */}
-            <button 
-              onClick={() => setIsOpen(!isOpen)} 
-              className="lg:hidden text-slate-900 p-1 relative z-[110]" 
+
+            {/* MOBILE MENU BUTTON */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden text-slate-900 p-1 relative z-[220]"
               aria-label="Toggle Menu"
             >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+              {isOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
           </div>
         </div>
       </nav>
 
       {/* MOBILE MENU OVERLAY */}
-      <div className={`fixed inset-0 z-[100] bg-white transition-transform duration-500 ease-in-out lg:hidden ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div
+        className={`fixed inset-0 z-[150] bg-white transition-all duration-500 ease-in-out lg:hidden ${
+          isOpen
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0 pointer-events-none"
+        }`}
+      >
         <div className="flex flex-col h-full pt-32 px-10 pb-12 justify-between">
-          <div className="space-y-6">
-            {['Platform', 'Pricing', 'Resources', 'About'].map((item) => (
-              <a 
-                key={item} 
-                href="#" 
-                onClick={() => setIsOpen(false)} 
-                className="block text-4xl font-light tracking-tighter text-slate-900 hover:text-[#637060]"
+          
+          {/* LINKS - Main links kept elegant, but metadata text made smaller */}
+          <div className="space-y-8">
+            {["Platform", "Pricing", "Resources", "About"].map((item) => (
+              <a
+                key={item}
+                href="#"
+                onClick={() => setIsOpen(false)}
+                className="block text-4xl font-light tracking-tighter text-slate-900 hover:text-[#637060] transition-colors"
               >
                 {item}
               </a>
             ))}
           </div>
-          <div className="space-y-6 pt-10 border-t border-slate-200">
-             <button 
-               onClick={handleJoinAction}
-               className="w-full bg-slate-900 text-white py-5 rounded-full font-bold text-[10px] uppercase tracking-widest"
-             >
-               Get Started Now
-             </button>
+
+          {/* CTA */}
+          <div className="space-y-6 pt-10 border-t border-slate-100">
+            <button
+              onClick={handleJoinAction}
+              className="w-full bg-slate-900 text-white py-5 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] hover:bg-black transition shadow-xl"
+            >
+              Get Started Now
+            </button>
+            <p className="text-center text-[8px] font-bold uppercase tracking-[0.4em] text-slate-300">
+              © 2026 TrimFlow — Minimal Excellence
+            </p>
           </div>
         </div>
       </div>

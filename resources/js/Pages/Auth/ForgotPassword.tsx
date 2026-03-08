@@ -1,8 +1,8 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState, useEffect } from 'react';
+import { FormEventHandler, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff, Lock } from 'lucide-react';
+import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 
 export default function ResetPassword({
     token,
@@ -27,14 +27,14 @@ export default function ResetPassword({
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden bg-white font-sans selection:bg-slate-100">
+        <div className="flex min-h-screen w-full bg-white font-sans selection:bg-slate-100">
             <Head title="Reset Password | TrimFlow" />
             
             {/* --- FONTS --- */}
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
 
-            {/* --- LEFT SIDE: Minimalist Color Block --- */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-20 bg-[#637060]">
+            {/* --- LEFT SIDE: Minimalist Color Block (Hidden on Mobile/Tablet) --- */}
+            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 bg-[#637060]">
                 <div className="absolute inset-0 opacity-[0.03] grayscale pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
 
                 <div className="relative z-10">
@@ -50,7 +50,7 @@ export default function ResetPassword({
                             Account Recovery
                         </span>
                     </div>
-                    <h1 className="text-7xl font-light tracking-tighter text-[#FAF9F6] leading-[0.9] mb-8">
+                    <h1 className="text-6xl xl:text-7xl font-light tracking-tighter text-[#FAF9F6] leading-[0.9] mb-8">
                         Secure your <br />
                         <span className="font-serif italic text-[#FAF9F6]/60">new access.</span>
                     </h1>
@@ -68,42 +68,45 @@ export default function ResetPassword({
                 </div>
             </div>
 
-            {/* --- RIGHT SIDE: Reset Form --- */}
-            <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-8 md:px-20 py-12 bg-white relative">
-                {/* Mobile Logo */}
-                <div className="absolute top-10 left-10 lg:hidden flex items-center gap-2">
-                    <Scissors className="text-slate-900 w-5 h-5" />
-                    <span className="text-lg font-semibold tracking-tight">TrimFlow</span>
+            {/* --- RIGHT SIDE: Reset Form (Full width on mobile) --- */}
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-start lg:justify-center px-6 sm:px-12 md:px-20 py-12 bg-white relative">
+                
+                {/* Mobile Header */}
+                <div className="w-full max-w-[440px] flex justify-between items-center mb-16 lg:hidden">
+                    <Link href="/" className="flex items-center gap-2">
+                        <Scissors className="text-slate-900 w-5 h-5" />
+                        <span className="text-lg font-semibold tracking-tight">TrimFlow</span>
+                    </Link>
                 </div>
 
                 <div className="w-full max-w-[380px]">
-                    <div className="mb-12">
-                        <h2 className="text-3xl font-light tracking-tight text-slate-900 mb-3">Reset password</h2>
+                    <div className="mb-10 md:mb-12">
+                        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-slate-900 mb-3">Reset password</h2>
                         <p className="text-slate-400 font-light text-sm">Please choose a strong, unique password for your studio.</p>
                     </div>
 
-                    <form onSubmit={submit} className="space-y-8">
-                        {/* Email Field (Usually read-only in reset flow) */}
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Account Email</Label>
+                    <form onSubmit={submit} className="space-y-6 md:space-y-8">
+                        {/* Email Field */}
+                        <div className="space-y-2">
+                            <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Account Email</Label>
                             <Input
                                 type="email"
                                 value={data.email}
-                                className="h-12 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light opacity-60"
-                                onChange={(e) => setData('email', e.target.value)}
+                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light opacity-60 text-base md:text-sm"
+                                readOnly
                                 required
                             />
                             {errors.email && <p className="text-[10px] text-red-500 font-medium uppercase tracking-wider">{errors.email}</p>}
                         </div>
 
                         {/* New Password Field */}
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">New Password</Label>
+                        <div className="space-y-2 relative">
+                            <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">New Password</Label>
                             <div className="relative">
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     value={data.password}
-                                    className="h-12 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light pr-10"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light pr-10 text-base md:text-sm"
                                     onChange={(e) => setData('password', e.target.value)}
                                     required
                                     autoComplete="new-password"
@@ -111,7 +114,7 @@ export default function ResetPassword({
                                 <button 
                                     type="button" 
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 transition-colors"
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 p-2"
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
@@ -120,12 +123,12 @@ export default function ResetPassword({
                         </div>
 
                         {/* Confirm Password Field */}
-                        <div className="space-y-3">
-                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Confirm New Password</Label>
+                        <div className="space-y-2">
+                            <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Confirm New Password</Label>
                             <Input
                                 type="password"
                                 value={data.password_confirmation}
-                                className="h-12 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light"
+                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light text-base md:text-sm"
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 required
                                 autoComplete="new-password"
@@ -133,20 +136,20 @@ export default function ResetPassword({
                             {errors.password_confirmation && <p className="text-[10px] text-red-500 font-medium uppercase tracking-wider">{errors.password_confirmation}</p>}
                         </div>
 
-                        <div className="pt-4">
+                        <div className="pt-6">
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="group relative flex h-14 w-full items-center justify-center rounded-full bg-slate-900 text-[11px] font-bold tracking-[0.2em] text-white transition-all hover:bg-slate-800 disabled:opacity-50 shadow-lg shadow-slate-100"
+                                className="group relative flex h-14 w-full items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold tracking-[0.2em] text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50 shadow-lg"
                             >
-                                UPDATE PASSWORD
-                                <ArrowRight className="absolute right-6 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                                {processing ? 'UPDATING...' : 'UPDATE PASSWORD'}
+                                {!processing && <ArrowRight className="absolute right-6 h-4 w-4 transition-transform group-hover:translate-x-1 hidden sm:block" />}
                             </button>
                         </div>
 
-                        <p className="text-center text-[11px] text-slate-400 font-light pt-6">
-                            Remembered your password?{' '}
-                            <Link href={route('login')} className="font-semibold text-slate-900 hover:underline underline-offset-4">
+                        <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em] pt-6">
+                            Remembered?{' '}
+                            <Link href={route('login')} className="text-slate-900 hover:underline underline-offset-4">
                                 Back to login
                             </Link>
                         </p>
