@@ -74,7 +74,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Refined Mobile Menu */}
       <div className={`fixed inset-0 bg-slate-950 transition-all duration-300 ease-in-out lg:hidden ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
         <div className="flex flex-col h-full pt-28 px-8 pb-12">
           <div className="flex flex-col gap-6">
@@ -187,6 +186,38 @@ const HowItWorks = () => (
   </section>
 );
 
+const FeaturesGrid = () => (
+  <section className="py-24 md:py-32 bg-white px-6 md:px-10">
+    <div className="max-w-[1440px] mx-auto">
+      <div className="mb-16 md:mb-24">
+        <h2 className="text-3xl md:text-5xl font-black text-slate-950 tracking-tighter mb-6">
+          Everything your shop <br className="hidden md:block"/> needs to thrive.
+        </h2>
+        <p className="text-slate-500 text-lg max-w-2xl">
+          TrimFlow isn't just a calendar—it's a complete ecosystem designed to optimize every square inch of your floor.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+        {[
+          { title: "Intelligent Booking", icon: Calendar, desc: "A drag-and-drop calendar that handles complexity so you don't have to." },
+          { title: "Staff Performance", icon: BarChart3, desc: "Detailed metrics for every chair, from retention rates to ticket size." },
+          { title: "Client CRM", icon: Users, desc: "Deep client profiles with automated reminders and historical preferences." },
+          { title: "Global Controls", icon: Settings, desc: "Manage multiple locations and inventory from one unified login." },
+          { title: "Security First", icon: ShieldCheck, desc: "Enterprise-grade data protection and automated daily backups." },
+          { title: "Live Insights", icon: LayoutDashboard, desc: "Real-time revenue tracking synced directly with your bank account." }
+        ].map((f, i) => (
+          <div key={i} className="bg-white p-12 hover:bg-slate-50 transition-all group">
+            <f.icon className="w-6 h-6 text-slate-400 mb-8 group-hover:text-slate-950 transition-colors" />
+            <h4 className="text-xl font-bold text-slate-950 mb-4">{f.title}</h4>
+            <p className="text-slate-500 leading-relaxed text-sm">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 const ReviewsSection = () => {
   const scrollRef = useRef(null);
   const reviews = [
@@ -212,14 +243,14 @@ const ReviewsSection = () => {
         <div className="flex items-end justify-between mb-12">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-950 tracking-tight">Voices of the floor.</h2>
-            <p className="text-slate-500 mt-2">Trusted by the industry's best.</p>
+            <p className="text-slate-500 mt-2">Trusted by the industry's best professionals.</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => scroll('left')} className="p-3 border rounded-full hover:bg-white transition-all"><ChevronLeft size={20}/></button>
-            <button onClick={() => scroll('right')} className="p-3 border rounded-full hover:bg-white transition-all"><ChevronRight size={20}/></button>
+            <button onClick={() => scroll('left')} className="p-3 border border-slate-200 rounded-full hover:bg-white transition-all shadow-sm"><ChevronLeft size={20}/></button>
+            <button onClick={() => scroll('right')} className="p-3 border border-slate-200 rounded-full hover:bg-white transition-all shadow-sm"><ChevronRight size={20}/></button>
           </div>
         </div>
-        <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none' }}>
+        <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 snap-x hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {reviews.map((r, i) => (
             <div key={i} className="min-w-[320px] md:min-w-[400px] snap-center bg-white rounded-3xl p-10 border border-slate-100 shadow-sm">
               <p className="text-slate-600 text-lg italic mb-8">"{r.review}"</p>
@@ -238,29 +269,6 @@ const ReviewsSection = () => {
   );
 };
 
-const FeaturesGrid = () => (
-  <section className="py-24 bg-white px-6 md:px-10">
-    <div className="max-w-[1440px] mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100 border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-        {[
-          { title: "Intelligent Booking", icon: Calendar, desc: "A drag-and-drop calendar that handles complexity." },
-          { title: "Staff Performance", icon: BarChart3, desc: "Detailed metrics for every chair and retention rates." },
-          { title: "Client CRM", icon: Users, desc: "Deep client profiles with automated reminders." },
-          { title: "Global Controls", icon: Settings, desc: "Manage multiple locations from one unified login." },
-          { title: "Security First", icon: ShieldCheck, desc: "Enterprise-grade protection and daily backups." },
-          { title: "Live Insights", icon: LayoutDashboard, desc: "Real-time revenue tracking synced with your bank." }
-        ].map((f, i) => (
-          <div key={i} className="bg-white p-12 hover:bg-slate-50 transition-all group">
-            <f.icon className="w-6 h-6 text-slate-400 mb-8 group-hover:text-slate-950 transition-colors" />
-            <h4 className="text-xl font-bold text-slate-950 mb-4">{f.title}</h4>
-            <p className="text-slate-500 leading-relaxed text-sm">{f.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
-
 const Footer = () => (
   <footer className="bg-slate-950 text-white pt-24 pb-12 px-6 md:px-10">
     <div className="max-w-[1440px] mx-auto">
@@ -276,9 +284,9 @@ const Footer = () => (
           <div key={c}>
             <h5 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-6">{c}</h5>
             <ul className="space-y-3 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-white">Features</a></li>
-              <li><a href="#" className="hover:text-white">Privacy</a></li>
-              <li><a href="#" className="hover:text-white">Terms</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
             </ul>
           </div>
         ))}
@@ -301,8 +309,8 @@ export default function TrimFlowSite() {
       <Hero />
       <LiveStats />
       <HowItWorks />
-      <ReviewsSection />
       <FeaturesGrid />
+      <ReviewsSection />
       <Footer />
     </div>
   );
