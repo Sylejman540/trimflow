@@ -24,7 +24,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
@@ -38,6 +37,7 @@ const Navbar = () => {
     <>
       <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 ${scrolled || isOpen ? 'bg-white border-b border-slate-100 py-4' : 'bg-transparent py-6 md:py-8'}`}>
         <div className="max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between">
+          {/* Logo - Stays visible */}
           <div className="flex items-center gap-2 relative z-[110]">
             <Scissors className="text-[#637060] w-5 h-5" />
             <span className="text-lg md:text-xl font-semibold tracking-tight text-slate-900">TrimFlow</span>
@@ -57,11 +57,12 @@ const Navbar = () => {
             >
               Join Now
             </button>
-            {/* TOGGLE: Swaps between Menu and X icon */}
+            
+            {/* TOGGLE BUTTON - Fixed with z-[110] to stay on top of the white menu */}
             <button 
               onClick={() => setIsOpen(!isOpen)} 
-              className="lg:hidden text-slate-900 p-1" 
-              aria-label={isOpen ? "Close Menu" : "Open Menu"}
+              className="lg:hidden text-slate-900 p-1 relative z-[110]" 
+              aria-label="Toggle Menu"
             >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -78,7 +79,7 @@ const Navbar = () => {
                 key={item} 
                 href="#" 
                 onClick={() => setIsOpen(false)} 
-                className="block text-4xl md:text-5xl font-light tracking-tighter text-slate-900 hover:text-[#637060] transition-colors"
+                className="block text-4xl font-light tracking-tighter text-slate-900 hover:text-[#637060]"
               >
                 {item}
               </a>
@@ -91,7 +92,6 @@ const Navbar = () => {
              >
                Get Started Now
              </button>
-             <p className="text-center text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">© 2026 TrimFlow</p>
           </div>
         </div>
       </div>
