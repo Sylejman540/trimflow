@@ -263,21 +263,21 @@ export default function Index({
                         </Select>
 
                         <Select value={statusFilter} onValueChange={setStatusFilter}>
-  <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-    <SelectValue>
-      {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}
-    </SelectValue>
-  </SelectTrigger>
+                        <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectValue>
+                            {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}
+                            </SelectValue>
+                        </SelectTrigger>
 
-  <SelectContent className="rounded-xl border-slate-200 shadow-none">
-    <SelectItem value="all">All Statuses</SelectItem>
-    {allStatuses.map((s) => (
-      <SelectItem key={s} value={s}>
-        {capitalizeWords(s)}
-      </SelectItem>
-    ))}
-  </SelectContent>
-</Select>
+                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                            <SelectItem value="all">All Statuses</SelectItem>
+                            {allStatuses.map((s) => (
+                            <SelectItem key={s} value={s}>
+                                {capitalizeWords(s)}
+                            </SelectItem>
+                            ))}
+                        </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
