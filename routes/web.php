@@ -21,6 +21,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::resource('barbers', BarberController::class)->except(['show']);
+    Route::resource('customers', CustomerController::class)->except(['show']);
     Route::resource('appointments', AppointmentController::class);
 });
 
