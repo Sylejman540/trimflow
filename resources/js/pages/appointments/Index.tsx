@@ -129,10 +129,12 @@ function DeleteModal({
 export default function Index({
     appointments,
     can_create,
+    is_barber,
     filters,
 }: {
     appointments: Appointment[];
     can_create: boolean;
+    is_barber: boolean;
     filters: { search?: string; status?: string; date?: string };
 }) {
     const { t } = useTranslation();
@@ -169,11 +171,11 @@ export default function Index({
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.customer').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm font-medium text-slate-900">{row.original.customer?.name ?? '-'}</span>,
         },
-        {
+        ...(!is_barber ? [{
             id: 'barber',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.barber').toUpperCase()}</span>,
-            cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.barber?.user?.name ?? '-'}</span>,
-        },
+            cell: ({ row }: { row: { original: Appointment } }) => <span className="text-sm text-slate-600">{row.original.barber?.user?.name ?? '-'}</span>,
+        }] : []),
         {
             id: 'service',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.service').toUpperCase()}</span>,

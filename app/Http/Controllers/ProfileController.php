@@ -40,10 +40,12 @@ class ProfileController extends Controller
             })
             ->values();
 
+        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status'          => session('status'),
-            'booking_url'     => $company
+            'booking_url'     => (!$isBarber && $company)
                 ? url(route('booking.show', $company->slug))
                 : null,
             'sessions'        => $sessions,

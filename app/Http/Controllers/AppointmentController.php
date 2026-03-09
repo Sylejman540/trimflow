@@ -46,11 +46,14 @@ class AppointmentController extends Controller
             return $data;
         });
 
+        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+
         return Inertia::render('appointments/Index', [
             'appointments' => $appointments,
-            'can_create' => $user->can('create', Appointment::class),
-            'barbers' => Barber::with('user')->where('is_active', true)->get(),
-            'services' => Service::where('is_active', true)->orderBy('name')->get(),
+            'can_create'   => $user->can('create', Appointment::class),
+            'is_barber'    => $isBarber,
+            'barbers'      => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
+            'services'     => Service::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
