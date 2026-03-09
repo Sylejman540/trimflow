@@ -6,6 +6,7 @@ use App\Models\Traits\BelongsToCompany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -29,6 +30,7 @@ class Appointment extends Model
         'recurrence_parent_id',
         'cancel_token',
         'cancel_token_expires_at',
+        'google_calendar_event_id',
     ];
 
     protected function casts(): array
@@ -72,10 +74,18 @@ class Appointment extends Model
         return $this->hasMany(BarberNote::class);
     }
 
-    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'appointment_products')
             ->withPivot(['qty', 'unit_price'])
+            ->withTimestamps();
+    }
+
+    /** Multiple services selected at booking time */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'appointment_services')
+            ->withPivot(['price', 'duration'])
             ->withTimestamps();
     }
 }

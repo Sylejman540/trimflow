@@ -36,6 +36,7 @@ export interface Barber {
     specialty: string | null;
     working_hours: Record<string, unknown> | null;
     is_active: boolean;
+    google_calendar_enabled: boolean;
     created_at: string;
     updated_at: string;
     user?: User;

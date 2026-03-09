@@ -19,6 +19,7 @@ use App\Http\Controllers\WalkinController;
 use App\Http\Controllers\BarberTimeOffController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\BarberGoogleCalendarController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
@@ -61,6 +62,9 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::post('/customers/{customer}/message', [MessageController::class, 'send'])->name('customers.message');
     Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
 
+    Route::get('/barbers/{barber}/google/connect', [BarberGoogleCalendarController::class, 'connect'])->name('barbers.google.connect');
+    Route::post('/barbers/{barber}/google/disconnect', [BarberGoogleCalendarController::class, 'disconnect'])->name('barbers.google.disconnect');
+
     Route::resource('products', ProductController::class)->except(['show']);
     Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
     Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
@@ -82,5 +86,7 @@ Route::get('/book/{slug}/confirmed', [BookingController::class, 'confirmation'])
 Route::get('/book/{slug}/slots', BookingSlotsController::class)->name('booking.slots');
 Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->name('booking.availability');
 Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');
+
+Route::get('/google/calendar/callback', [BarberGoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
 
 require __DIR__.'/auth.php';

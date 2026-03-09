@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 class BookingSlotsController extends Controller
 {
     /**
-     * GET /book/{slug}/slots?barber_id=&service_id=&date=
+     * GET /book/{slug}/slots?barber_id=&service_ids[]=&date=
      *
      * Returns:
      *   slots: string[]            — available "HH:MM" times
@@ -26,9 +26,10 @@ class BookingSlotsController extends Controller
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         $request->validate([
-            'barber_id'  => 'required|integer',
-            'service_id' => 'required|integer',
-            'date'       => 'required|date_format:Y-m-d',
+            'barber_id'    => 'required|integer',
+            'service_ids'  => 'required|array|min:1',
+            'service_ids.*'=> 'integer',
+            'date'         => 'required|date_format:Y-m-d',
         ]);
 
         $barber = Barber::where('id', $request->barber_id)
@@ -36,9 +37,12 @@ class BookingSlotsController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $service = Service::where('id', $request->service_id)
+        $totalDuration = Service::whereIn('id', $request->service_ids)
             ->where('company_id', $company->id)
-            ->firstOrFail();
+            ->sum('duration');
+        if ($totalDuration === 0) {
+            return response()->json(['slots' => [], 'next_available' => null]);
+        }
 
         $date    = Carbon::parse($request->date)->startOfDay();
         $dayKey  = strtolower($date->format('l')); // 'monday'
@@ -91,16 +95,15 @@ class BookingSlotsController extends Controller
 
         // Generate candidate slots (every 30 min within window)
         $slotInterval = 30; // minutes
-        $serviceDuration = $service->duration; // minutes
         $slots = [];
         $now = Carbon::now();
 
         $cursor = $date->copy()->setTimeFromTimeString($windowStart);
         $windowEndTime = $date->copy()->setTimeFromTimeString($windowEnd);
 
-        while ($cursor->copy()->addMinutes($serviceDuration)->lte($windowEndTime)) {
+        while ($cursor->copy()->addMinutes($totalDuration)->lte($windowEndTime)) {
             $slotStart = $cursor->copy();
-            $slotEnd   = $cursor->copy()->addMinutes($serviceDuration);
+            $slotEnd   = $cursor->copy()->addMinutes($totalDuration);
 
             // Skip past times (for today)
             if ($slotStart->lte($now)) {

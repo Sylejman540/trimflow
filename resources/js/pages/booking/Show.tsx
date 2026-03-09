@@ -72,7 +72,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 }) {
     const [step, setStep] = useState(0);
     const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
+    const [selectedServices, setSelectedServices] = useState<Service[]>([]);
     const [selectedDate, setSelectedDate] = useState(todayStr());
     const [selectedTime, setSelectedTime] = useState('');
 
@@ -86,7 +86,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
-        service_id: '',
+        service_ids: [] as string[],
         starts_at: '',
         customer_name: '',
         customer_phone: '',
@@ -109,7 +109,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
     // We use the first service as a reference for duration; if none selected, skip
     useEffect(() => {
         if (services.length === 0) return;
-        const serviceId = selectedService?.id ?? services[0]?.id;
+        const serviceId = services[0]?.id;
         if (!serviceId) return;
 
         setAvailabilityLoading(true);
@@ -129,16 +129,20 @@ export default function Show({ company, barbers: initialBarbers, services }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Load slots whenever barber, service or date changes (on step 2)
+    // Load slots whenever barber, services or date changes (on step 2)
     useEffect(() => {
-        if (step !== 2 || !selectedBarber || !selectedService || !selectedDate) return;
+        if (step !== 2 || !selectedBarber || selectedServices.length === 0 || !selectedDate) return;
 
         setSlotsLoading(true);
         setSlots([]);
         setSelectedTime('');
 
-        const url = route('booking.slots', company.slug)
-            + `?barber_id=${selectedBarber.id}&service_id=${selectedService.id}&date=${selectedDate}`;
+        const params = new URLSearchParams({
+            barber_id: String(selectedBarber.id),
+            date: selectedDate,
+        });
+        selectedServices.forEach(s => params.append('service_ids[]', String(s.id)));
+        const url = route('booking.slots', company.slug) + '?' + params.toString();
 
         fetch(url)
             .then(r => r.json())
@@ -154,9 +158,16 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         setStep(1);
     }
 
-    function selectService(s: Service) {
-        setSelectedService(s);
-        setData('service_id', String(s.id));
+    function toggleService(s: Service) {
+        setSelectedServices(prev =>
+            prev.find(x => x.id === s.id)
+                ? prev.filter(x => x.id !== s.id)
+                : [...prev, s]
+        );
+    }
+
+    function proceedFromServices() {
+        setData('service_ids', selectedServices.map(s => String(s.id)));
         setStep(2);
     }
 
@@ -234,12 +245,12 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 
                 {/* Step 1: Service */}
                 {step === 1 && (
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-32">
                         <div className="flex items-center gap-2">
                             <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
                                 <ChevronLeft className="h-5 w-5" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">Choose a Service</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">Choose Services</h2>
                         </div>
 
                         {categories.length > 0 && (
@@ -263,24 +274,61 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         )}
 
                         <div className="space-y-2">
-                            {filteredServices.map(s => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => selectService(s)}
-                                    className="w-full flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
-                                    style={s.color && COLOR_HEX[s.color] ? { borderLeftColor: COLOR_HEX[s.color], borderLeftWidth: 3 } : undefined}
-                                >
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-900">{s.name}</p>
-                                        {s.description && <p className="text-xs text-slate-500 mt-0.5">{s.description}</p>}
-                                        <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                                            <Clock className="h-3 w-3" /> {s.duration} min
-                                        </p>
-                                    </div>
-                                    <span className="text-sm font-semibold text-slate-900 ml-4 shrink-0">{formatCents(s.price)}</span>
-                                </button>
-                            ))}
+                            {filteredServices.map(s => {
+                                const isSelected = !!selectedServices.find(x => x.id === s.id);
+                                return (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => toggleService(s)}
+                                        className={cn(
+                                            'relative w-full flex items-center justify-between bg-white border rounded-xl p-4 hover:shadow-sm transition-all text-left active:scale-[0.99]',
+                                            isSelected
+                                                ? 'border-slate-900 ring-1 ring-slate-900'
+                                                : 'border-slate-200 hover:border-slate-400'
+                                        )}
+                                        style={s.color && COLOR_HEX[s.color] ? { borderLeftColor: isSelected ? undefined : COLOR_HEX[s.color], borderLeftWidth: 3 } : undefined}
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-slate-900">{s.name}</p>
+                                            {s.description && <p className="text-xs text-slate-500 mt-0.5">{s.description}</p>}
+                                            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                                                <Clock className="h-3 w-3" /> {s.duration} min
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3 ml-4 shrink-0">
+                                            <span className="text-sm font-semibold text-slate-900">{formatCents(s.price)}</span>
+                                            <div className={cn(
+                                                'flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors',
+                                                isSelected
+                                                    ? 'bg-slate-900 border-slate-900'
+                                                    : 'border-slate-300 bg-white'
+                                            )}>
+                                                {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                            </div>
+                                        </div>
+                                    </button>
+                                );
+                            })}
                         </div>
+
+                        {/* Sticky Continue bar */}
+                        {selectedServices.length > 0 && (
+                            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
+                                <div className="max-w-2xl mx-auto space-y-3">
+                                    <p className="text-xs text-slate-500 text-center">
+                                        {selectedServices.length} {selectedServices.length === 1 ? 'service' : 'services'} &middot;&nbsp;
+                                        {selectedServices.reduce((sum, s) => sum + s.duration, 0)} min total &middot;&nbsp;
+                                        {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))} total
+                                    </p>
+                                    <Button
+                                        onClick={proceedFromServices}
+                                        className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
+                                    >
+                                        Continue
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -361,7 +409,9 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         {/* Summary */}
                         <div className="bg-slate-900 rounded-xl p-4 text-white space-y-1">
                             <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Booking Summary</p>
-                            <p className="text-sm font-semibold">{selectedService?.name} · {formatCents(selectedService?.price ?? 0)}</p>
+                            <p className="text-sm font-semibold">
+                                {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))}
+                            </p>
                             <p className="text-xs text-slate-300">{selectedBarber?.user.name} · {selectedDate} at {selectedTime}</p>
                         </div>
 

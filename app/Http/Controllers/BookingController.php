@@ -38,6 +38,7 @@ class BookingController extends Controller
                 'duration'    => $s->duration,
                 'category'    => $s->category,
                 'description' => $s->description,
+                'color'       => $s->color,
             ]),
         ]);
     }
@@ -59,7 +60,8 @@ class BookingController extends Controller
         // ── Validation ─────────────────────────────────────────────────────────
         $validated = $request->validate([
             'barber_id'      => 'required|exists:barbers,id',
-            'service_id'     => 'required|exists:services,id',
+            'service_ids'    => 'required|array|min:1',
+            'service_ids.*'  => 'integer|exists:services,id',
             'starts_at'      => 'required|date|after:now',
             'customer_name'  => 'required|string|max:255',
             'customer_phone' => 'required|string|max:50',
@@ -68,11 +70,16 @@ class BookingController extends Controller
         ]);
 
         // ── Verify barber + service belong to this company ─────────────────────
-        $barber  = Barber::where('id', $validated['barber_id'])->where('company_id', $company->id)->firstOrFail();
-        $service = Service::where('id', $validated['service_id'])->where('company_id', $company->id)->firstOrFail();
+        $barber   = Barber::where('id', $validated['barber_id'])->where('company_id', $company->id)->firstOrFail();
+        $services = Service::whereIn('id', $validated['service_ids'])->where('company_id', $company->id)->get();
+        if ($services->count() !== count($validated['service_ids'])) {
+            abort(422, 'One or more services not found.');
+        }
+        $totalDuration = $services->sum('duration');
+        $totalPrice    = $services->sum('price');
 
         $startsAt = Carbon::parse($validated['starts_at']);
-        $endsAt   = $startsAt->copy()->addMinutes($service->duration);
+        $endsAt   = $startsAt->copy()->addMinutes($totalDuration);
 
         // ── Working hours check ────────────────────────────────────────────────
         $dayKey   = strtolower($startsAt->format('l'));
@@ -177,16 +184,21 @@ class BookingController extends Controller
             'company_id'              => $company->id,
             'barber_id'               => $barber->id,
             'customer_id'             => $customer->id,
-            'service_id'              => $service->id,
+            'service_id'              => $services->first()->id,
             'starts_at'               => $startsAt,
             'ends_at'                 => $endsAt,
-            'price'                   => $service->price,
+            'price'                   => $totalPrice,
             'status'                  => 'scheduled',
             'booking_source'          => 'public_booking',
             'notes'                   => $validated['notes'] ?? null,
             'cancel_token'            => $cancelToken,
             'cancel_token_expires_at' => $cancelExpires,
         ]);
+
+        $pivotData = $services->mapWithKeys(fn($s) => [
+            $s->id => ['price' => $s->price, 'duration' => $s->duration]
+        ])->all();
+        $appointment->services()->attach($pivotData);
 
         $appointment->load(['barber.user', 'customer', 'service']);
 

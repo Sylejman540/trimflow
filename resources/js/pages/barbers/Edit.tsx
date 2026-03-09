@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
-import { User, Mail, Star, AlignLeft, Info, Contact } from 'lucide-react';
+import { User, Mail, Star, AlignLeft, Info, Contact, Calendar } from 'lucide-react';
 
 export default function Edit({ barber }: { barber: Barber }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -137,6 +137,29 @@ export default function Edit({ barber }: { barber: Barber }) {
                         </Link>
                     </div>
                 </form>
+
+                {/* Google Calendar */}
+                <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl mt-4">
+                    <div className="flex items-start gap-3">
+                        <div className="mt-1 bg-white p-2 rounded-lg border border-slate-200">
+                            <Calendar size={16} className="text-slate-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-slate-900">Google Calendar</p>
+                            <p className="text-xs text-slate-500">Sync appointments to this barber's Google Calendar.</p>
+                        </div>
+                    </div>
+                    {barber.google_calendar_enabled ? (
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Connected</span>
+                            <Link method="post" href={route('barbers.google.disconnect', barber.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">Disconnect</Link>
+                        </div>
+                    ) : (
+                        <Link href={route('barbers.google.connect', barber.id)} className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50">
+                            Connect
+                        </Link>
+                    )}
+                </div>
             </div>
         </AppLayout>
     );

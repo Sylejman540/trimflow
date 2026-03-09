@@ -20,13 +20,19 @@ class Barber extends Model
         'avatar',
         'working_hours',
         'is_active',
+        'google_access_token',
+        'google_refresh_token',
+        'google_token_expires_at',
+        'google_calendar_enabled',
     ];
 
     protected function casts(): array
     {
         return [
-            'working_hours' => 'array',
-            'is_active' => 'boolean',
+            'working_hours'           => 'array',
+            'is_active'               => 'boolean',
+            'google_token_expires_at' => 'datetime',
+            'google_calendar_enabled' => 'boolean',
         ];
     }
 
