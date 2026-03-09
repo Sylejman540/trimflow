@@ -200,7 +200,7 @@ export default function Index({
                             <SlidersHorizontal size={12} /> Filter
                         </div>
                         
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>
                                     {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}

@@ -213,7 +213,7 @@ export default function Index({ entries }: { entries: WaitlistEntry[] }) {
                         <div className="hidden lg:flex items-center gap-1.5 mr-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                             <SlidersHorizontal size={12} /> Filter
                         </div>
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>
                                     {statusFilter === 'all' ? 'All Statuses' : STATUS_CONFIG[statusFilter as keyof typeof STATUS_CONFIG]?.label ?? statusFilter}

@@ -100,7 +100,7 @@ export default function Create() {
                                 type="number"
                                 step="0.01"
                                 value={data.price}
-                                onChange={(e) => setData('price', e.target.value)}
+                                onChange={(e) => setData('price', parseFloat(e.target.value) || 0)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
                                 placeholder="0.00"
                                 required

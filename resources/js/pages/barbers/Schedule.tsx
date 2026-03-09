@@ -84,7 +84,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
         setProcessing(true);
         router.put(
             route('barbers.schedule.update', barber.id),
-            { working_hours: hours },
+            { working_hours: hours as any },
             {
                 onFinish: () => setProcessing(false),
             },
@@ -105,97 +105,97 @@ export default function Schedule({ barber }: { barber: Barber }) {
         >
             <Head title={`Schedule — ${barber.user?.name}`} />
 
-            <div className="max-w-2xl space-y-6">
-                <Card className="border-slate-200 shadow-none">
-                    <CardHeader className="pb-4">
-                        <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-slate-400" />
-                            <CardTitle className="text-base">Weekly Working Hours</CardTitle>
-                        </div>
-                        <CardDescription>
-                            Toggle days on/off and set start &amp; end times. Appointments can only be booked during active hours.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-1">
-                        {DAYS.map(({ key, label }) => {
-                            const day = hours[key];
-                            return (
-                                <div
-                                    key={key}
-                                    className={cn(
-                                        'flex items-center gap-4 px-4 py-3 rounded-lg transition-colors',
-                                        day.enabled ? 'bg-slate-50' : 'opacity-50',
-                                    )}
-                                >
-                                    {/* Toggle */}
-                                    <button
-                                        type="button"
-                                        onClick={() => toggle(key)}
+            {/* Added Wrapper to Center */}
+            <div className="flex flex-col items-center w-full py-10">
+                <div className="w-full max-w-2xl space-y-6">
+                    <Card className="border-slate-200 shadow-none">
+                        <CardHeader className="pb-4">
+                            <div className="flex items-center gap-2">
+                                <Clock className="h-4 w-4 text-slate-400" />
+                                <CardTitle className="text-base">Weekly Working Hours</CardTitle>
+                            </div>
+                            <CardDescription>
+                                Toggle days on/off and set start &amp; end times. Appointments can only be booked during active hours.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-1">
+                            {DAYS.map(({ key, label }) => {
+                                const day = hours[key];
+                                return (
+                                    <div
+                                        key={key}
                                         className={cn(
-                                            'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
-                                            day.enabled ? 'bg-slate-900' : 'bg-slate-200',
+                                            'flex items-center gap-4 px-4 py-3 rounded-lg transition-colors',
+                                            day.enabled ? 'bg-slate-50' : 'opacity-50',
                                         )}
                                     >
-                                        <span
+                                        <button
+                                            type="button"
+                                            onClick={() => toggle(key)}
                                             className={cn(
-                                                'inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform',
-                                                day.enabled ? 'translate-x-4' : 'translate-x-1',
+                                                'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
+                                                day.enabled ? 'bg-slate-900' : 'bg-slate-200',
                                             )}
-                                        />
-                                    </button>
+                                        >
+                                            <span
+                                                className={cn(
+                                                    'inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform',
+                                                    day.enabled ? 'translate-x-4' : 'translate-x-1',
+                                                )}
+                                            />
+                                        </button>
 
-                                    {/* Day label */}
-                                    <span className="w-24 text-sm font-medium text-slate-900">{label}</span>
+                                        <span className="w-24 text-sm font-medium text-slate-900">{label}</span>
 
-                                    {/* Time selects */}
-                                    {day.enabled ? (
-                                        <div className="flex items-center gap-2 flex-1">
-                                            <select
-                                                value={day.start}
-                                                onChange={e => setTime(key, 'start', e.target.value)}
-                                                className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
-                                            >
-                                                {TIME_OPTIONS.map(t => (
-                                                    <option key={t} value={t}>{t}</option>
-                                                ))}
-                                            </select>
-                                            <span className="text-xs text-slate-400">to</span>
-                                            <select
-                                                value={day.end}
-                                                onChange={e => setTime(key, 'end', e.target.value)}
-                                                className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
-                                            >
-                                                {TIME_OPTIONS.filter(t => t > day.start).map(t => (
-                                                    <option key={t} value={t}>{t}</option>
-                                                ))}
-                                            </select>
-                                            {key === 'monday' && (
-                                                <button
-                                                    type="button"
-                                                    onClick={applyToWeekdays}
-                                                    className="ml-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors"
+                                        {day.enabled ? (
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <select
+                                                    value={day.start}
+                                                    onChange={e => setTime(key, 'start', e.target.value)}
+                                                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
                                                 >
-                                                    Apply to Mon–Fri
-                                                </button>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <span className="text-xs text-slate-400 italic">Day off</span>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </CardContent>
-                </Card>
+                                                    {TIME_OPTIONS.map(t => (
+                                                        <option key={t} value={t}>{t}</option>
+                                                    ))}
+                                                </select>
+                                                <span className="text-xs text-slate-400">to</span>
+                                                <select
+                                                    value={day.end}
+                                                    onChange={e => setTime(key, 'end', e.target.value)}
+                                                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
+                                                >
+                                                    {TIME_OPTIONS.filter(t => t > day.start).map(t => (
+                                                        <option key={t} value={t}>{t}</option>
+                                                    ))}
+                                                </select>
+                                                {key === 'monday' && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={applyToWeekdays}
+                                                        className="ml-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors"
+                                                    >
+                                                        Apply to Mon–Fri
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span className="text-xs text-slate-400 italic">Day off</span>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </CardContent>
+                    </Card>
 
-                <div className="flex justify-end">
-                    <Button
-                        onClick={handleSubmit}
-                        disabled={processing}
-                        className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-6 rounded-lg text-xs font-bold shadow-none"
-                    >
-                        Save Schedule
-                    </Button>
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={handleSubmit}
+                            disabled={processing}
+                            className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-6 rounded-lg text-xs font-bold shadow-none"
+                        >
+                            Save Schedule
+                        </Button>
+                    </div>
                 </div>
             </div>
         </AppLayout>

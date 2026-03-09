@@ -23,10 +23,20 @@ class WalkinController extends Controller
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'service_id'    => 'required|exists:services,id',
-            'barber_id'     => $isBarber ? 'nullable' : 'required|exists:barbers,id',
+            'barber_id'     => 'nullable|exists:barbers,id',
         ]);
 
-        $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
+        if ($isBarber) {
+            $barberId = $user->barber?->id;
+            if (! $barberId) {
+                throw ValidationException::withMessages(['barber_id' => 'Your barber profile is not set up yet.']);
+            }
+        } else {
+            $barberId = $validated['barber_id'] ?? null;
+            if (! $barberId) {
+                throw ValidationException::withMessages(['barber_id' => 'Please select a barber.']);
+            }
+        }
 
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],

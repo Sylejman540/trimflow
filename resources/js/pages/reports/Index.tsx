@@ -214,7 +214,7 @@ export default function Index({
                                             tickFormatter={(v) => `$${(v / 100).toFixed(0)}`}
                                         />
                                         <Tooltip
-                                            formatter={(v: number) => [formatCents(v), 'Revenue']}
+                                            formatter={(v: unknown) => [formatCents(v as number), 'Revenue']}
                                             contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
                                         />
                                         <Area type="monotone" dataKey="revenue" stroke="#111827" strokeWidth={2} fill="url(#revFill)" />
@@ -258,7 +258,8 @@ export default function Index({
                                         <XAxis dataKey="date" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
                                         <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} allowDecimals={false} />
                                         <Tooltip
-                                            formatter={(v: number) => [v, 'Bookings']}
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                            formatter={(v: any) => [v, 'Bookings']}
                                             contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px' }}
                                         />
                                         <Bar dataKey="bookings" fill="#111827" radius={[4, 4, 0, 0]} />

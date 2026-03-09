@@ -217,8 +217,8 @@ const FeaturesGrid = () => (
 
 
 const ReviewsSection = () => {
-  const scrollRef = useRef(null);
-  const scroll = (direction) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
       const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;

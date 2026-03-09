@@ -1,5 +1,5 @@
-import { Link, router, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
+import { Link, router, usePage, useForm } from '@inertiajs/react';
+import { PropsWithChildren, ReactNode, useState, useEffect, FormEvent } from 'react';
 import {
     CalendarDays,
     LayoutDashboard,
@@ -17,9 +17,105 @@ import {
     Clock,
     PalmtreeIcon,
     LayoutGrid,
+    Zap,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+
+interface WalkinBarber { id: number; user: { name: string } }
+interface WalkinService { id: number; name: string; duration: number; price: number }
+interface WalkinProps {
+    is_barber: boolean;
+    barbers: WalkinBarber[];
+    services: WalkinService[];
+}
+
+function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => void; walkin: WalkinProps }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        customer_name: '',
+        service_id: '',
+        barber_id: '',
+    });
+
+    function submit(e: FormEvent) {
+        e.preventDefault();
+        post(route('walkin.store'), {
+            onSuccess: () => { reset(); onClose(); },
+        });
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={v => !v && onClose()}>
+            <DialogContent className="sm:max-w-md border-slate-200 shadow-none">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-amber-500" /> Walk-in Quick Book
+                    </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={submit} className="space-y-4 pt-2">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Name</Label>
+                        <Input
+                            value={data.customer_name}
+                            onChange={e => setData('customer_name', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            placeholder="e.g. John Doe"
+                            required
+                        />
+                        {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Service</Label>
+                        <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectValue placeholder="Select service" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                {walkin.services.map(s => (
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {s.name} — {formatCents(s.price)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
+                    </div>
+                    {!walkin.is_barber && (
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Barber</Label>
+                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                    <SelectValue placeholder="Select barber" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                    {walkin.barbers.map(b => (
+                                        <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
+                            Book Now
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 interface NavItem {
     label: string;
@@ -104,9 +200,10 @@ export default function AppLayout({
     title,
     actions,
 }: PropsWithChildren<{ title?: string; actions?: ReactNode }>) {
-    const { auth } = usePage<PageProps>().props;
+    const { auth, walkin } = usePage<PageProps & { walkin: WalkinProps | null }>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [walkinOpen, setWalkinOpen] = useState(false);
 
     useEffect(() => {
         setSidebarOpen(false);
@@ -251,6 +348,14 @@ export default function AppLayout({
                         <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
                     </div>
                     <div className="flex items-center gap-3">
+                        {walkin && (
+                            <button
+                                onClick={() => setWalkinOpen(true)}
+                                className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
+                            >
+                                <Zap className="h-3.5 w-3.5" /> Walk-in
+                            </button>
+                        )}
                         {actions}
                         <Link
                             href={route('notifications.index')}
@@ -270,6 +375,14 @@ export default function AppLayout({
                     <div className="max-w-[1400px] mx-auto">{children}</div>
                 </main>
             </div>
+
+            {walkin && (
+                <WalkinModal
+                    open={walkinOpen}
+                    onClose={() => setWalkinOpen(false)}
+                    walkin={walkin}
+                />
+            )}
         </div>
     );
 }

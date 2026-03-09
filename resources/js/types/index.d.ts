@@ -48,6 +48,7 @@ export interface Customer {
     name: string;
     email: string | null;
     phone: string | null;
+    address: string | null;
     favorite_barber_id: number | null;
     notes: string | null;
     loyalty_points: number;

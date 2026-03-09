@@ -139,8 +139,6 @@ class DashboardController extends Controller
             'chart_data'  => $chartData,
             'barber_performance' => $barberPerformance,
             'today_schedule'     => $todaySchedule,
-            'walkin_barbers'     => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
-            'walkin_services'    => Service::where('is_active', true)->orderBy('name')->get(['id', 'name', 'duration', 'price']),
             'upcoming_appointments' => $appointmentQuery()
                 ->with(['barber.user', 'customer', 'service'])
                 ->where('starts_at', '>=', now())

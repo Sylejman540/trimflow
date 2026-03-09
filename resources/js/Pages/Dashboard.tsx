@@ -10,7 +10,6 @@ import {
     CheckCircle2,
     Clock,
     BarChart3,
-    Zap,
 } from 'lucide-react';
 import {
     AreaChart,
@@ -36,97 +35,9 @@ import { Label } from '@/components/ui/label';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
 import { formatCents, cn } from '@/lib/utils';
-import { Appointment, AppointmentStatus, Barber, Service, PageProps } from '@/types';
+import { Appointment, AppointmentStatus } from '@/types';
 
-interface WalkinBarber { id: number; user: { name: string } }
-interface WalkinService { id: number; name: string; duration: number; price: number }
-
-function WalkinModal({ open, onClose, barbers, services, isBarber }: {
-    open: boolean; onClose: () => void;
-    barbers: WalkinBarber[]; services: WalkinService[];
-    isBarber: boolean;
-}) {
-    const { data, setData, post, processing, errors, reset } = useForm({
-        customer_name: '',
-        service_id: '',
-        barber_id: '',
-    });
-
-    function submit(e: React.FormEvent) {
-        e.preventDefault();
-        post(route('walkin.store'), {
-            onSuccess: () => { reset(); onClose(); },
-        });
-    }
-
-    return (
-        <Dialog open={open} onOpenChange={v => !v && onClose()}>
-            <DialogContent className="sm:max-w-md border-slate-200 shadow-none">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 text-amber-500" /> Walk-in Quick Book
-                    </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={submit} className="space-y-4 pt-2">
-                    <div className="space-y-2">
-                        <Label htmlFor="wk_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Name</Label>
-                        <Input
-                            id="wk_name"
-                            value={data.customer_name}
-                            onChange={e => setData('customer_name', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            placeholder="e.g. John Doe"
-                            required
-                        />
-                        {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
-                    </div>
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Service</Label>
-                        <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder="Select service" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                                {services.map(s => (
-                                    <SelectItem key={s.id} value={String(s.id)}>
-                                        {s.name} — {formatCents(s.price)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
-                    </div>
-                    {!isBarber && (
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Barber</Label>
-                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                                    {barbers.map(b => (
-                                        <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
-                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
-                            Book Now
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
-    );
-}
 
 interface Stats {
     today_appointments: number;
@@ -330,8 +241,6 @@ export default function Dashboard({
     barber_performance,
     today_schedule,
     upcoming_appointments,
-    walkin_barbers,
-    walkin_services,
     goal,
 }: {
     is_barber: boolean;
@@ -340,35 +249,15 @@ export default function Dashboard({
     barber_performance: BarberPerf[];
     today_schedule: Appointment[];
     upcoming_appointments: Appointment[];
-    walkin_barbers: WalkinBarber[];
-    walkin_services: WalkinService[];
     goal: ShopGoal | null;
 }) {
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
-    const [walkinOpen, setWalkinOpen] = useState(false);
     const [goalOpen, setGoalOpen] = useState(false);
     const now = new Date();
 
     return (
-        <AppLayout
-            title="Dashboard"
-            actions={
-                <Button
-                    onClick={() => setWalkinOpen(true)}
-                    className="bg-amber-500 hover:bg-amber-600 text-white h-9 px-4 rounded-lg text-xs font-bold shadow-none border-none"
-                >
-                    <Zap className="mr-2 h-3.5 w-3.5" /> Walk-in
-                </Button>
-            }
-        >
+        <AppLayout title="Dashboard">
             <Head title="Dashboard" />
-            <WalkinModal
-                open={walkinOpen}
-                onClose={() => setWalkinOpen(false)}
-                barbers={walkin_barbers}
-                services={walkin_services}
-                isBarber={is_barber}
-            />
 
             <div className="space-y-6">
                 {/* KPI Cards */}

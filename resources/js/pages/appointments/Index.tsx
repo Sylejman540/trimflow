@@ -255,7 +255,7 @@ export default function Index({
                         </div>
                         
                         {/* Error was here (line 250) - fixed the double << */}
-                        <Select value={dateFilter} onValueChange={setDateFilter}>
+                        <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
                         <SelectTrigger className="h-9 w-[130px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>
                             {dateFilter === 'all' ? 'All Dates' : capitalizeWords(dateFilter)}
@@ -269,7 +269,7 @@ export default function Index({
                         </SelectContent>
                         </Select>
 
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                         <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>
                             {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}

@@ -16,7 +16,7 @@ export default function Edit({
     const [activeTab, setActiveTab] = useState('general');
 
     return (
-        <AuthenticatedLayout user={auth.user}>
+        <AuthenticatedLayout>
             <Head title="Settings" />
 
             {/* Premium Page Header */}

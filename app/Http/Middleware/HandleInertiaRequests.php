@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Barber;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -43,6 +45,18 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'walkin' => function () use ($request) {
+                $user = $request->user();
+                if (! $user || ! $user->can('create', \App\Models\Appointment::class)) {
+                    return null;
+                }
+                $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
+                return [
+                    'is_barber' => $isBarber,
+                    'barbers'   => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(['id', 'user_id'])->map(fn ($b) => ['id' => $b->id, 'user' => ['name' => $b->user?->name]]),
+                    'services'  => Service::where('is_active', true)->orderBy('name')->get(['id', 'name', 'duration', 'price']),
+                ];
+            },
         ];
     }
 }

@@ -72,14 +72,15 @@ class AppointmentController extends Controller
         ]);
 
         $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
+        $phone = $validated['customer_phone'] ?? null;
 
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
-            ['phone' => $validated['customer_phone']],
+            ['phone' => $phone],
         );
 
-        if ($validated['customer_phone'] && $customer->phone !== $validated['customer_phone']) {
-            $customer->update(['phone' => $validated['customer_phone']]);
+        if ($phone && $customer->phone !== $phone) {
+            $customer->update(['phone' => $phone]);
         }
 
         $service = Service::findOrFail($validated['service_id']);
@@ -157,13 +158,15 @@ class AppointmentController extends Controller
             'tip_amount'      => 'nullable|numeric|min:0',
         ]);
 
+        $phone = $validated['customer_phone'] ?? null;
+
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
-            ['phone' => $validated['customer_phone']],
+            ['phone' => $phone],
         );
 
-        if ($validated['customer_phone'] && $customer->phone !== $validated['customer_phone']) {
-            $customer->update(['phone' => $validated['customer_phone']]);
+        if ($phone && $customer->phone !== $phone) {
+            $customer->update(['phone' => $phone]);
         }
 
         $service = Service::findOrFail($validated['service_id']);
@@ -229,18 +232,42 @@ class AppointmentController extends Controller
         if (! $barber || empty($barber->working_hours)) return;
 
         $dayKey   = strtolower($startsAt->format('l')); // e.g. "monday"
-        $dayHours = $barber->working_hours[$dayKey] ?? null;
+        $shortKey = substr($dayKey, 0, 3);              // e.g. "mon" (seeder format)
+        $dayHours = $barber->working_hours[$dayKey] ?? $barber->working_hours[$shortKey] ?? null;
 
-        if (! $dayHours || empty($dayHours['enabled'])) {
+        // Support two formats:
+        // Schedule editor: ['enabled' => true, 'start' => '09:00', 'end' => '17:00']
+        // Seeder legacy:   ['09:00', '17:00']  (numeric array, index 0=start, 1=end)
+        if (! $dayHours) {
             throw ValidationException::withMessages([
                 'starts_at' => 'The barber is not working on ' . ucfirst($dayKey) . '.',
             ]);
         }
 
+        if (isset($dayHours['enabled'])) {
+            // Schedule editor format
+            if (! $dayHours['enabled']) {
+                throw ValidationException::withMessages([
+                    'starts_at' => 'The barber is not working on ' . ucfirst($dayKey) . '.',
+                ]);
+            }
+            $startTime = $dayHours['start'];
+            $endTime   = $dayHours['end'];
+        } else {
+            // Legacy seeder format: [0 => '09:00', 1 => '17:00']
+            $startTime = $dayHours[0] ?? null;
+            $endTime   = $dayHours[1] ?? null;
+            if (! $startTime || ! $endTime) {
+                throw ValidationException::withMessages([
+                    'starts_at' => 'The barber is not working on ' . ucfirst($dayKey) . '.',
+                ]);
+            }
+        }
+
         $appointmentTime = $startsAt->format('H:i');
-        if ($appointmentTime < $dayHours['start'] || $appointmentTime >= $dayHours['end']) {
+        if ($appointmentTime < $startTime || $appointmentTime >= $endTime) {
             throw ValidationException::withMessages([
-                'starts_at' => "The barber works {$dayHours['start']}–{$dayHours['end']} on " . ucfirst($dayKey) . '.',
+                'starts_at' => "The barber works {$startTime}–{$endTime} on " . ucfirst($dayKey) . '.',
             ]);
         }
 
