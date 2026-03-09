@@ -132,7 +132,7 @@ export default function Index({ services }: { services: Service[] }) {
                     "text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border",
                     row.original.is_active 
                         ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
-                        : "bg-slate-50 text-slate-600 border-slate-100"
+                        : "bg-slate-50 text-red-600 border-red-100"
                 )}>
                     {row.original.is_active ? 'ACTIVE' : 'INACTIVE'}
                 </Badge>
