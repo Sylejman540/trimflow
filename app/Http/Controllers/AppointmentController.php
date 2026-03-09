@@ -341,6 +341,19 @@ class AppointmentController extends Controller
         }
     }
 
+    public function confirm(Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+
+        if ($appointment->status !== 'pending') {
+            return back();
+        }
+
+        $appointment->update(['status' => 'confirmed']);
+
+        return back()->with('success', 'Appointment confirmed.');
+    }
+
     public function destroy(Appointment $appointment)
     {
         $this->authorize('delete', $appointment);

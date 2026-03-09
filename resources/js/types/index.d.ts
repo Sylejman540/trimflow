@@ -76,6 +76,7 @@ export interface Service {
 }
 
 export type AppointmentStatus =
+    | 'pending'
     | 'confirmed'
     | 'in_progress'
     | 'completed'

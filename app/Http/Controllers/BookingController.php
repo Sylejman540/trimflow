@@ -52,15 +52,31 @@ class BookingController extends Controller
             return redirect()->route('booking.confirmation', $slug);
         }
 
-        // ── Rate limiting: max 5 attempts per IP per 10 minutes ───────────────
+        // ── Rate limiting: max 3 attempts per IP per 15 minutes ──────────────
         $rateLimitKey = 'public-booking:' . $request->ip();
-        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
             $seconds = RateLimiter::availableIn($rateLimitKey);
             return back()->withErrors([
                 'customer_name' => "Too many booking attempts. Please try again in {$seconds} seconds.",
             ]);
         }
-        RateLimiter::hit($rateLimitKey, 600);
+        RateLimiter::hit($rateLimitKey, 900);
+
+        // ── Rate limiting by phone: max 3 attempts per 15 minutes ─────────────
+        $phoneRateLimitKey = 'public-booking-phone:' . Str::slug($request->input('customer_phone', ''));
+        if (RateLimiter::tooManyAttempts($phoneRateLimitKey, 3)) {
+            $seconds = RateLimiter::availableIn($phoneRateLimitKey);
+            return back()->withErrors([
+                'customer_phone' => "Too many booking attempts from this phone. Please try again in {$seconds} seconds.",
+            ]);
+        }
+        RateLimiter::hit($phoneRateLimitKey, 900);
+
+        // ── Timing check: bot detection (submitted too fast) ──────────────────
+        $openedAt = (int) $request->input('_t', 0);
+        if ($openedAt > 0 && (time() - $openedAt) < 4) {
+            return redirect()->route('booking.confirmation', $slug);
+        }
 
         // ── Validation ─────────────────────────────────────────────────────────
         $validated = $request->validate([
@@ -70,8 +86,9 @@ class BookingController extends Controller
             'starts_at'      => 'required|date|after:now',
             'customer_name'  => 'required|string|max:255',
             'customer_phone' => 'required|string|max:50',
-            'customer_email' => 'nullable|email|max:255',
+            'customer_email' => 'required|email|max:255',
             'notes'          => 'nullable|string|max:1000',
+            '_t'             => 'nullable|integer',
         ]);
 
         // ── Verify barber + service belong to this company ─────────────────────
@@ -185,6 +202,9 @@ class BookingController extends Controller
         $cancelToken   = Str::random(48);
         $cancelExpires = now()->addSeconds(60);
 
+        $isFirstTimer = ! $existingCustomer || $existingCustomer->booking_total < 1;
+        $appointmentStatus = $isFirstTimer ? 'pending' : 'confirmed';
+
         $appointment = Appointment::create([
             'company_id'              => $company->id,
             'barber_id'               => $barber->id,
@@ -193,7 +213,7 @@ class BookingController extends Controller
             'starts_at'               => $startsAt,
             'ends_at'                 => $endsAt,
             'price'                   => $totalPrice,
-            'status'                  => 'confirmed',
+            'status'                  => $appointmentStatus,
             'booking_source'          => 'public_booking',
             'notes'                   => $validated['notes'] ?? null,
             'cancel_token'            => $cancelToken,

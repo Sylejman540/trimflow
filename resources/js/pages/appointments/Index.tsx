@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal, Download } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal, Download, CheckCircle2 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -26,6 +26,7 @@ import { formatCents, formatDateTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
+    'pending',
     'confirmed',
     'in_progress',
     'completed',
@@ -46,6 +47,7 @@ function capitalizeWords(str: string) {
 
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
+        pending:     'bg-orange-50 text-orange-700 border-orange-100',
         confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
         in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
         completed:   'bg-green-50 text-green-700 border-green-100',

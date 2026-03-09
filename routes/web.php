@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
     Route::resource('customers', CustomerController::class);
     Route::resource('appointments', AppointmentController::class);
+    Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');

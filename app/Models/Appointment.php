@@ -89,7 +89,7 @@ class Appointment extends Model
      */
     public function resolveStatus(): static
     {
-        if (in_array($this->status, ['cancelled', 'no_show', 'completed'])) {
+        if (in_array($this->status, ['pending', 'cancelled', 'no_show', 'completed'])) {
             return $this;
         }
 
