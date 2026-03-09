@@ -21,6 +21,7 @@ interface ProductItem {
 
 function statusVariant(status: AppointmentStatus): string {
     const map: Record<AppointmentStatus, string> = {
+        pending:     'bg-orange-50 text-orange-700 border-orange-100',
         confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
         in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
         completed:   'bg-green-50 text-green-700 border-green-100',
@@ -54,6 +55,7 @@ export default function Show({
     const { data, setData, post, processing, reset } = useForm({ product_id: '', qty: 1 });
 
     const statusKeyMap: Record<AppointmentStatus, string> = {
+        pending:     'appt.pending',
         confirmed:   'appt.confirmed',
         in_progress: 'appt.inProgress',
         completed:   'appt.completed',
