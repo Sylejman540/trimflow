@@ -88,6 +88,14 @@ export default function Show({
                         <ArrowLeft className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">{t('back')}</span>
                     </Link>
+                    {can_edit && appointment.status === 'pending' && (
+                        <button
+                            onClick={() => router.patch(route('appointments.confirm', appointment.id))}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-emerald-600 hover:bg-emerald-700 text-white h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
+                        >
+                            Confirm
+                        </button>
+                    )}
                     {can_edit && (
                         <Link
                             href={route('appointments.edit', appointment.id)}

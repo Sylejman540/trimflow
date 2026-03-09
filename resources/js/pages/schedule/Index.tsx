@@ -24,6 +24,7 @@ const HOUR_HEIGHT = 64;
 const SLOT_MINS   = 15;
 
 const STATUS_COLORS: Record<string, string> = {
+    pending:     'bg-orange-50 border-orange-200 text-orange-800',
     confirmed:   'bg-green-50 border-green-200 text-green-800',
     in_progress: 'bg-amber-50 border-amber-200 text-amber-800',
     completed:   'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -32,6 +33,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const STATUS_BADGE: Record<string, string> = {
+    pending:     'bg-orange-100 text-orange-800',
     confirmed:   'bg-green-100 text-green-700',
     in_progress: 'bg-amber-100 text-amber-700',
     completed:   'bg-emerald-100 text-emerald-700',

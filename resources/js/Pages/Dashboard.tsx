@@ -70,6 +70,7 @@ interface BarberPerf {
 
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
+        pending:     'bg-orange-500/15 text-orange-700',
         confirmed:   'bg-green-500/15 text-green-700',
         in_progress: 'bg-amber-500/15 text-amber-700',
         completed:   'bg-emerald-500/15 text-emerald-700',

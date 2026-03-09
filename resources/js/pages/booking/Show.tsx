@@ -74,8 +74,10 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         starts_at: '',
         customer_name: '',
         customer_phone: '',
+        customer_email: '',
         notes: '',
         _hp: '', // honeypot — must stay empty
+        _t: '',
     });
 
     const categories = useMemo(() => {
@@ -89,6 +91,11 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         categoryFilter ? services.filter(s => s.category === categoryFilter) : services,
         [services, categoryFilter]
     );
+
+    useEffect(() => {
+        setData('_t', String(Math.floor(Date.now() / 1000)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (services.length === 0) return;
@@ -445,6 +452,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 autoComplete="off"
                                 aria-hidden="true"
                             />
+                            <input type="hidden" name="_t" value={data._t} />
                             <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('name')} *</label>
@@ -473,6 +481,21 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                         required
                                     />
                                     {errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('email')} *</label>
+                                    <input
+                                        type="email"
+                                        value={data.customer_email}
+                                        onChange={e => setData('customer_email', e.target.value)}
+                                        placeholder={t('booking.emailPlaceholder')}
+                                        autoComplete="email"
+                                        inputMode="email"
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                        required
+                                    />
+                                    {errors.customer_email && <p className="text-xs text-red-500 mt-1">{errors.customer_email}</p>}
                                 </div>
 
                                 <div>
