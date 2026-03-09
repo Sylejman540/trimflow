@@ -159,31 +159,10 @@ const navItems: NavItem[] = [
         roles: ['platform-admin', 'shop-admin'],
     },
     {
-        label: 'Customers',
-        href: '/customers',
-        icon: Users,
-        active: 'customers.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Reports',
-        href: '/reports',
-        icon: FileBarChart2,
-        active: 'reports.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
         label: 'Audit Log',
         href: '/audit-logs',
         icon: ShieldCheck,
         active: 'audit-logs.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Waitlist',
-        href: '/waitlist',
-        icon: Clock,
-        active: 'waitlist.*',
         roles: ['platform-admin', 'shop-admin'],
     },
     {
