@@ -38,7 +38,7 @@ import { Label } from '@/components/ui/label';
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import { formatCents, cn } from '@/lib/utils';
+import { formatCents, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
 
 interface Stats {
@@ -79,9 +79,6 @@ function statusColor(status: AppointmentStatus) {
     return map[status];
 }
 
-function formatTime(dateStr: string) {
-    return new Date(dateStr).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' });
-}
 
 function revenueChange(current: number, previous: number): { pct: number; up: boolean } {
     if (previous === 0) return { pct: current > 0 ? 100 : 0, up: true };

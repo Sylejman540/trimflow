@@ -3,7 +3,8 @@ import {
   Calendar, Users, BarChart3, Scissors, Check, 
   ArrowRight, LayoutDashboard, Settings, Menu, X, 
   Globe, ChevronLeft, ChevronRight, TrendingUp, Star,
-  Smartphone, Zap, ShieldCheck, Layers, Coffee, Sparkles
+  Smartphone, Zap, ShieldCheck, Layers, Coffee, Sparkles,
+  CreditCard, Shield, Clock, MapPin
 } from 'lucide-react';
 
 // --- STYLES & FONTS ---
@@ -42,28 +43,28 @@ const Navbar = () => {
             <div className="bg-slate-900 p-1.5 rounded-lg">
                 <Scissors className="text-white w-4 h-4" />
             </div>
-            <span className="text-lg font-bold tracking-tight text-slate-900">
+            <span className={`text-lg font-bold tracking-tight transition-colors ${scrolled || isOpen ? "text-slate-900" : "text-white md:text-slate-900"}`}>
               TrimFlow
             </span>
           </div>
 
-          <div className="hidden lg:flex items-center gap-12 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
+          <div className={`hidden lg:flex items-center gap-12 text-[10px] font-bold uppercase tracking-[0.3em] transition-colors ${scrolled ? "text-slate-500" : "text-slate-400"}`}>
             <a href="#features" className="hover:text-blue-600 transition-colors">Platform</a>
             <a href="#" className="hover:text-blue-600 transition-colors">Pricing</a>
             <a href="#" className="hover:text-blue-600 transition-colors">Journal</a>
           </div>
 
           <div className="flex items-center gap-4 md:gap-6 relative z-[210]">
-            <a href="/login" className="hidden sm:block text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 hover:text-slate-900 transition-colors">
+            <a href="/login" className={`hidden sm:block text-[10px] font-bold uppercase tracking-[0.3em] transition-colors hover:text-blue-600 ${scrolled ? "text-slate-500" : "text-white md:text-slate-500"}`}>
               Login
             </a>
             <button
               onClick={handleJoinAction}
-              className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-slate-800 transition-all shadow-sm"
+              className="bg-slate-900 text-white px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-sm"
             >
               Join Now
             </button>
-            <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden text-slate-900 p-1 relative z-[220]">
+            <button onClick={() => setIsOpen(!isOpen)} className={`lg:hidden p-1 relative z-[220] ${scrolled || isOpen ? "text-slate-900" : "text-white"}`}>
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
@@ -87,30 +88,34 @@ const Navbar = () => {
 };
 
 const Hero = () => (
-  <section className="relative min-h-screen flex items-center bg-white overflow-hidden">
+  <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div className="absolute inset-0 z-0">
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:32px_32px] opacity-40"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/50 to-white"></div>
+      <img 
+        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
+        className="w-full h-full object-cover"
+        alt="Barber Shop Background"
+      />
+      <div className="absolute inset-0 bg-slate-900/75 backdrop-blur-[2px]"></div>
     </div>
 
     <div className="max-w-7xl mx-auto px-6 md:px-10 w-full text-center relative z-10 pt-20">
       <div className="inline-block mb-6">
-        <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-100">
+        <span className="bg-blue-600/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-500/30 backdrop-blur-md">
            The New Standard in Management
         </span>
       </div>
-      <h1 className="text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] font-bold tracking-tighter text-slate-900 leading-[0.95] mb-8">
+      <h1 className="text-5xl sm:text-7xl md:text-[100px] lg:text-[120px] font-bold tracking-tighter text-white leading-[0.95] mb-8">
         Simplify the <br />
-        <span className="text-blue-600 italic font-serif font-light">modern shop.</span>
+        <span className="text-blue-400 italic font-serif font-light">modern shop.</span>
       </h1>
-      <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+      <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
         The essential toolkit for ambitious studios. Clean interface, powerful automation, and zero friction.
       </p>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="/register" className="w-full sm:w-auto bg-slate-900 text-white h-14 px-10 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3 group">
+        <a href="/register" className="w-full sm:w-auto bg-white text-slate-900 h-14 px-10 rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center gap-3 group">
           Start Free Trial <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </a>
-        <a href="#" className="w-full sm:w-auto h-14 px-10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all flex items-center justify-center">
+        <a href="#" className="w-full sm:w-auto h-14 px-10 rounded-xl text-[11px] font-bold uppercase tracking-widest text-white border border-white/20 hover:bg-white/10 transition-all flex items-center justify-center">
             Watch Demo
         </a>
       </div>
@@ -119,18 +124,20 @@ const Hero = () => (
 );
 
 const StatsSection = () => (
-  <section className="py-20 bg-slate-50/50 border-y border-slate-100">
+  <section className="py-20 bg-slate-50 border-y border-slate-100">
     <div className="max-w-7xl mx-auto px-6">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-12 text-center">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-12 text-center">
         {[
           { label: "Active Studios", val: "2.4k+" },
-          { label: "Bookings Monthly", val: "1.2M" },
-          { label: "Revenue Processed", val: "$45M" },
-          { label: "Time Saved/Week", val: "14hrs" }
+          { label: "Bookings", val: "1.2M" },
+          { label: "Revenue", val: "$45M" },
+          { label: "Time Saved", val: "14hrs" },
+          { label: "Uptime", val: "99.9%" },
+          { label: "Rating", val: "4.9/5" }
         ].map((s, i) => (
           <div key={i} className="flex flex-col gap-2">
-            <span className="text-4xl font-bold text-slate-900 tracking-tighter">{s.val}</span>
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">{s.label}</span>
+            <span className="text-3xl font-bold text-slate-900 tracking-tighter">{s.val}</span>
+            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-blue-600">{s.label}</span>
           </div>
         ))}
       </div>
@@ -164,51 +171,50 @@ const FeaturesGrid = () => (
 );
 
 const ReviewsSection = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scroll = (dir: 'left' | 'right') => {
-    if (scrollRef.current) {
-        const move = dir === 'left' ? -400 : 400;
-        scrollRef.current.scrollBy({ left: move, behavior: 'smooth' });
-    }
-  };
-
   const reviews = [
-    { name: "Julian P.", role: "Lead Barber", avatar: "https://randomuser.me/api/portraits/men/32.jpg", review: "The interface is so clean it actually makes me want to look at my schedule." },
-    { name: "Elena S.", role: "Studio Owner", avatar: "https://randomuser.me/api/portraits/women/44.jpg", review: "Finally, a platform that understands aesthetic matters as much as function." },
-    { name: "Marcus W.", role: "Senior Stylist", avatar: "https://randomuser.me/api/portraits/men/12.jpg", review: "The automated re-booking has increased my monthly revenue by 15% easily." }
+    { name: "Julian P.", role: "Lead Barber", review: "The interface is so clean it actually makes me want to look at my schedule." },
+    { name: "Elena S.", role: "Studio Owner", review: "Finally, a platform that understands aesthetic matters as much as function." },
+    { name: "Marcus W.", role: "Senior Stylist", review: "The automated re-booking has increased my monthly revenue by 15% easily." },
+    { name: "Sophia R.", role: "Spa Manager", review: "Guest Profiles allow us to provide a truly bespoke experience for every client." },
+    { name: "David L.", role: "Director", review: "Managing four locations used to be a nightmare. Now it's just a few taps." },
+    { name: "Amara K.", role: "Esthetician", review: "The smart analytics gave me insights into my slow hours I never noticed." },
+    { name: "Nathan B.", role: "Shop Owner", review: "This is the first software that actually feels like it was built for us." }
   ];
 
   return (
     <section className="py-32 bg-slate-50/30 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex justify-between items-end mb-12">
-            <h2 className="text-4xl md:text-6xl font-bold text-slate-900 tracking-tight">
-                Trusted by <br />
-                <span className="text-blue-600 italic font-serif font-light">the industry.</span>
-            </h2>
-            <div className="flex gap-2">
-                <button onClick={() => scroll('left')} className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all"><ChevronLeft size={18}/></button>
-                <button onClick={() => scroll('right')} className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all"><ChevronRight size={18}/></button>
-            </div>
+        <div className="flex items-end justify-between mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">
+              Loved by <span className="text-blue-600 italic font-serif font-light">the community.</span>
+          </h2>
+          <div className="hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <span>Scroll to explore</span>
+            <div className="w-12 h-[1px] bg-slate-200"></div>
+          </div>
         </div>
-        <div ref={scrollRef} className="flex overflow-x-auto gap-6 pb-8 scrollbar-hide snap-x">
+        
+        {/* HORIZONTAL FLEX SCROLL */}
+        <div className="flex overflow-x-auto gap-6 pb-12 snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
           {reviews.map((r, i) => (
-            <div key={i} className="min-w-[350px] md:min-w-[400px] snap-start bg-white p-10 border border-slate-100 rounded-2xl shadow-sm">
+            <div key={i} className="flex-none w-[320px] md:w-[400px] snap-center bg-white p-10 border border-slate-100 rounded-2xl shadow-sm hover:border-blue-100 transition-all">
               <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-blue-600 text-blue-600" />)}
+                  {[...Array(5)].map((_, i) => <Star key={i} size={11} className="fill-blue-600 text-blue-600" />)}
               </div>
-              <p className="text-slate-600 text-lg font-medium leading-relaxed mb-10">"{r.review}"</p>
-              <div className="flex items-center gap-4 pt-8 border-t border-slate-50">
-                <img src={r.avatar} alt={r.name} className="w-10 h-10 rounded-full object-cover" />
-                <div>
-                  <h4 className="font-bold text-slate-900 text-[10px] uppercase tracking-widest">{r.name}</h4>
-                  <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{r.role}</span>
-                </div>
+              <p className="text-slate-600 text-sm font-medium leading-relaxed mb-8">"{r.review}"</p>
+              <div className="flex flex-col pt-6 border-t border-slate-50">
+                <h4 className="font-bold text-slate-900 text-[10px] uppercase tracking-widest">{r.name}</h4>
+                <span className="text-[10px] text-blue-600 font-bold uppercase tracking-widest">{r.role}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
     </section>
   );
 };
@@ -239,30 +245,32 @@ const ProcessSection = () => (
 const Footer = () => (
     <footer className="bg-white pt-24 pb-12 border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-20">
-            <div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12 mb-20">
+            <div className="col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                     <div className="bg-slate-900 p-1 rounded-md"><Scissors size={14} className="text-white"/></div>
                     <span className="text-xl font-bold tracking-tighter">TrimFlow</span>
                 </div>
-                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em]">Minimal Excellence.</p>
+                <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] max-w-xs leading-relaxed">Defining the aesthetic of modern management.</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-16">
-                {['Platform', 'Resources', 'Company'].map(cat => (
-                    <div key={cat}>
-                        <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-6">{cat}</h5>
-                        <ul className="space-y-3">
-                            {['Features', 'Journal', 'Contact'].map(link => <li key={link}><a href="#" className="text-sm text-slate-500 hover:text-blue-600 transition-colors">{link}</a></li>)}
-                        </ul>
-                    </div>
-                ))}
-            </div>
+            
+            {['Platform', 'Resources', 'Company', 'Legal'].map((cat) => (
+              <div key={cat}>
+                  <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-900 mb-6">{cat}</h5>
+                  <ul className="space-y-3">
+                      {['Features', 'Journal', 'Contact', 'Terms'].slice(0, 3).map(link => (
+                        <li key={link}><a href="#" className="text-sm text-slate-500 hover:text-blue-600 transition-colors">{link}</a></li>
+                      ))}
+                  </ul>
+              </div>
+            ))}
         </div>
         <div className="flex justify-between items-center text-[9px] font-bold text-slate-300 uppercase tracking-widest border-t border-slate-50 pt-10">
             <span>© 2026 TrimFlow</span>
             <div className="flex gap-6">
-                <a href="#" className="hover:text-slate-900">Instagram</a>
-                <a href="#" className="hover:text-slate-900">Twitter</a>
+                <a href="#" className="hover:text-slate-900 transition-colors">Instagram</a>
+                <a href="#" className="hover:text-slate-900 transition-colors">Twitter</a>
+                <a href="#" className="hover:text-slate-900 transition-colors">LinkedIn</a>
             </div>
         </div>
       </div>

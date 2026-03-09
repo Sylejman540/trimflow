@@ -65,11 +65,14 @@ function fmtDate(dateStr: string) {
 function fmtShort(dateStr: string) {
     return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' });
 }
+function parseShopTime(isoStr: string): Date {
+    return new Date(isoStr.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
+}
 function fmtTime(isoStr: string) {
-    return new Date(isoStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    return parseShopTime(isoStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 function minutesSinceMidnight(isoStr: string) {
-    const d = new Date(isoStr);
+    const d = parseShopTime(isoStr);
     return d.getHours() * 60 + d.getMinutes();
 }
 

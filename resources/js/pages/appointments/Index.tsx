@@ -22,7 +22,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { formatCents, cn } from '@/lib/utils';
+import { formatCents, formatDateTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
@@ -55,17 +55,13 @@ function statusVariant(status: AppointmentStatus) {
     return map[status];
 }
 
-function formatDateTime(dateStr: string) {
-    return new Date(dateStr).toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-    });
+
+function parseShopDate(dateStr: string): Date {
+    return new Date(dateStr.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
 }
 
 function isToday(dateStr: string) {
-    const d = new Date(dateStr);
+    const d = parseShopDate(dateStr);
     const now = new Date();
     return d.getFullYear() === now.getFullYear()
         && d.getMonth() === now.getMonth()
@@ -73,7 +69,7 @@ function isToday(dateStr: string) {
 }
 
 function isTomorrow(dateStr: string) {
-    const d = new Date(dateStr);
+    const d = parseShopDate(dateStr);
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     return d.getFullYear() === tomorrow.getFullYear()

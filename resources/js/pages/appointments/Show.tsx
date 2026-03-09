@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { formatCents, cn } from '@/lib/utils';
+import { formatCents, formatDateTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
 
 interface ProductItem {
@@ -30,12 +30,6 @@ function statusVariant(status: AppointmentStatus): string {
     return map[status];
 }
 
-function formatDateTime(dateStr: string) {
-    return new Date(dateStr).toLocaleString('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric',
-        year: 'numeric', hour: 'numeric', minute: '2-digit',
-    });
-}
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     return (
