@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
+import { User, Mail, Star, AlignLeft, Info, Contact } from 'lucide-react';
 
 export default function Edit({ barber }: { barber: Barber }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -25,75 +26,117 @@ export default function Edit({ barber }: { barber: Barber }) {
 
     return (
         <AppLayout title="Edit Barber">
-            <Head title="Edit Barber" />
-            <div className="mx-auto max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Edit Barber</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    required
-                                />
-                                {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-                            </div>
+            <Head title={`Edit ${barber.user?.name}`} />
+            
+            <div className="mx-auto max-w-2xl mt-4">
+                {/* Header Section */}
+                <div className="mb-8 px-2">
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Barber</h2>
+                    <p className="text-sm text-slate-500 mt-1">Modify barber profile details, contact information, and status.</p>
+                </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    required
-                                />
-                                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                            </div>
+                <form onSubmit={submit} className="space-y-8 bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+                    
+                    {/* Identity & Contact Grid */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <User size={12} /> Full Name
+                            </Label>
+                            <Input
+                                id="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="e.g. Marcus Wright"
+                                required
+                            />
+                            {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
+                        </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="bio">Bio</Label>
-                                <Textarea
-                                    id="bio"
-                                    value={data.bio}
-                                    onChange={(e) => setData('bio', e.target.value)}
-                                    rows={3}
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Mail size={12} /> Email Address
+                            </Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="barber@example.com"
+                                required
+                            />
+                            {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email}</p>}
+                        </div>
+                    </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="specialty">Specialty</Label>
-                                <Input
-                                    id="specialty"
-                                    value={data.specialty}
-                                    onChange={(e) => setData('specialty', e.target.value)}
-                                    placeholder="e.g. Fades, Beard sculpting, Hot towel shave"
-                                />
-                            </div>
+                    {/* Specialty Field */}
+                    <div className="space-y-2">
+                        <Label htmlFor="specialty" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <Star size={12} /> Specialty / Expertise
+                        </Label>
+                        <Input
+                            id="specialty"
+                            value={data.specialty}
+                            onChange={(e) => setData('specialty', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                            placeholder="e.g. Skin Fades, Beard Grooming, Scissor Cuts"
+                        />
+                        {errors.specialty && <p className="text-xs text-red-500 font-medium">{errors.specialty}</p>}
+                    </div>
 
-                            <div className="flex items-center gap-3">
-                                <Switch
-                                    id="is_active"
-                                    checked={data.is_active}
-                                    onCheckedChange={(v) => setData('is_active', v)}
-                                />
-                                <Label htmlFor="is_active">Active</Label>
-                            </div>
+                    {/* Bio Field */}
+                    <div className="space-y-2">
+                        <Label htmlFor="bio" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <AlignLeft size={12} /> Professional Bio
+                        </Label>
+                        <Textarea
+                            id="bio"
+                            value={data.bio}
+                            onChange={(e) => setData('bio', e.target.value)}
+                            className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[100px] transition-all"
+                            placeholder="Tell customers a bit about this barber's experience..."
+                            rows={4}
+                        />
+                        {errors.bio && <p className="text-xs text-red-500 font-medium">{errors.bio}</p>}
+                    </div>
 
-                            <div className="flex gap-3">
-                                <Button type="submit" disabled={processing}>
-                                    Update Barber
-                                </Button>
-                                <Link href={route('barbers.index')} className={buttonVariants({ variant: "outline" })}>Cancel</Link>
+                    {/* Status Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 bg-white p-2 rounded-lg border border-slate-200">
+                                <Contact size={16} className="text-slate-400" />
                             </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                            <div className="space-y-0.5">
+                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">Active Schedule</Label>
+                                <p className="text-xs text-slate-500">Toggle whether this barber is available for booking.</p>
+                            </div>
+                        </div>
+                        <Switch
+                            id="is_active"
+                            checked={data.is_active}
+                            onCheckedChange={(v) => setData('is_active', v)}
+                        />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                        <Button 
+                            type="submit" 
+                            disabled={processing} 
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                        >
+                            Update Barber
+                        </Button>
+                        <Link 
+                            href={route('barbers.index')} 
+                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
+                        >
+                            Cancel
+                        </Link>
+                    </div>
+                </form>
             </div>
         </AppLayout>
     );
