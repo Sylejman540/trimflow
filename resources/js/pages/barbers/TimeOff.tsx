@@ -68,7 +68,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
         >
             <Head title="Barber Time Off" />
 
-            <div className="space-y-6 max-w-2xl">
+            <div className="space-y-6 max-w-2xl mx-auto">
                 {time_offs.length === 0 && (
                     <div className="bg-white border border-slate-200 rounded-xl py-16 text-center">
                         <PalmtreeIcon className="h-8 w-8 text-slate-300 mx-auto mb-3" />

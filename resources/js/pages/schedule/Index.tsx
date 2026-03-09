@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { buttonVariants } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
@@ -74,7 +74,7 @@ function AppointmentBlock({ appt }: { appt: ApptSlot }) {
         <Link
             href={route('appointments.show', appt.id)}
             className={cn(
-                'absolute left-1 right-1 rounded-lg border px-2 py-1 text-[11px] overflow-hidden hover:shadow-md transition-shadow cursor-pointer',
+                'absolute inset-x-1 rounded-lg border px-2 py-1 text-[11px] overflow-hidden hover:shadow-md transition-shadow cursor-pointer',
                 colorCls,
             )}
             style={{ top: topPx, height: heightPx }}
@@ -116,6 +116,9 @@ function HourLines() {
     );
 }
 
+// Minimum column width per day in week view (ensures blocks fill the column on narrow screens)
+const DAY_COL_MIN_W = 120; // px
+
 export default function Index({
     appointments,
     view,
@@ -130,7 +133,19 @@ export default function Index({
     barbers: { id: number; name: string }[];
     is_barber: boolean;
 }) {
-    const days = view === 'week' ? weekDates(date) : [date];
+    // On mobile, force day view by redirecting once on mount if currently in week view
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const mq = window.matchMedia('(max-width: 640px)');
+        setIsMobile(mq.matches);
+        if (mq.matches && view === 'week') {
+            router.get(route('schedule.index'), { view: 'day', date }, { preserveState: false, replace: true });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const effectiveView = isMobile ? 'day' : view;
+    const days = effectiveView === 'week' ? weekDates(date) : [date];
 
     const apptsByDay = useMemo(() => {
         const map: Record<string, ApptSlot[]> = {};
@@ -143,30 +158,38 @@ export default function Index({
     }, [appointments]);
 
     function navigate(delta: number) {
-        const newDate = view === 'week' ? addDays(start, delta * 7) : addDays(date, delta);
-        router.get(route('schedule.index'), { view, date: newDate }, { preserveState: false });
+        const newDate = effectiveView === 'week' ? addDays(start, delta * 7) : addDays(date, delta);
+        router.get(route('schedule.index'), { view: effectiveView, date: newDate }, { preserveState: false });
     }
 
     function toggleView() {
-        router.get(route('schedule.index'), { view: view === 'week' ? 'day' : 'week', date }, { preserveState: false });
+        router.get(route('schedule.index'), { view: effectiveView === 'week' ? 'day' : 'week', date }, { preserveState: false });
     }
 
     const todayStr = new Date().toISOString().split('T')[0];
+
+    // Each day column needs an explicit width so absolute children (appointment blocks) fill it properly
+    const colStyle = effectiveView === 'week'
+        ? { width: `${100 / days.length}%`, minWidth: DAY_COL_MIN_W, flexShrink: 0 }
+        : { flex: '1 1 0%' };
 
     return (
         <AppLayout
             title="Schedule"
             actions={
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={toggleView}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-2')}
-                    >
-                        {view === 'week'
-                            ? <><CalendarDays className="h-3.5 w-3.5" /> Day</>
-                            : <><LayoutGrid className="h-3.5 w-3.5" /> Week</>
-                        }
-                    </button>
+                <div className="flex flex-wrap items-center gap-2">
+                    {/* Hide day/week toggle on mobile (always day) */}
+                    {!isMobile && (
+                        <button
+                            onClick={toggleView}
+                            className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-2')}
+                        >
+                            {effectiveView === 'week'
+                                ? <><CalendarDays className="h-3.5 w-3.5" /> Day</>
+                                : <><LayoutGrid className="h-3.5 w-3.5" /> Week</>
+                            }
+                        </button>
+                    )}
                     <div className="flex items-center gap-1">
                         <button
                             onClick={() => navigate(-1)}
@@ -175,7 +198,7 @@ export default function Index({
                             <ChevronLeft className="h-4 w-4" />
                         </button>
                         <button
-                            onClick={() => router.get(route('schedule.index'), { view, date: todayStr })}
+                            onClick={() => router.get(route('schedule.index'), { view: effectiveView, date: todayStr })}
                             className="h-9 px-3 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                         >
                             Today
@@ -193,42 +216,50 @@ export default function Index({
             <Head title="Schedule" />
 
             <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                {/* Day headers */}
-                <div className="flex border-b border-slate-200">
-                    <div className="w-14 shrink-0 border-r border-slate-100" />
-                    {days.map(d => (
-                        <div
-                            key={d}
-                            className={cn(
-                                'flex-1 text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0',
-                                d === todayStr ? 'bg-slate-900 text-white' : 'text-slate-600',
-                            )}
-                        >
-                            {view === 'week' ? fmtShort(d) : fmtDate(d)}
-                        </div>
-                    ))}
+                {/* Day headers — horizontally scrollable to match grid */}
+                <div className="overflow-x-auto">
+                    <div className="flex border-b border-slate-200" style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 56 : undefined }}>
+                        <div className="w-14 shrink-0 border-r border-slate-100" />
+                        {days.map(d => (
+                            <div
+                                key={d}
+                                className={cn(
+                                    'text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0',
+                                    d === todayStr ? 'bg-slate-900 text-white' : 'text-slate-600',
+                                )}
+                                style={colStyle}
+                            >
+                                {effectiveView === 'week' ? fmtShort(d) : fmtDate(d)}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Grid body */}
-                <div className="flex overflow-y-auto max-h-[calc(100vh-240px)]">
-                    <TimeGutter />
-                    {days.map(d => (
-                        <div
-                            key={d}
-                            className="flex-1 relative border-r border-slate-100 last:border-r-0"
-                            style={{ height: TOTAL_HOURS * HOUR_HEIGHT, minWidth: 0 }}
-                        >
-                            <HourLines />
-                            {(apptsByDay[d] ?? []).map(appt => (
-                                <AppointmentBlock key={appt.id} appt={appt} />
-                            ))}
-                        </div>
-                    ))}
+                {/* Grid body — scrollable both axes on mobile */}
+                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-240px)]">
+                    <div
+                        className="flex"
+                        style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 56 : undefined }}
+                    >
+                        <TimeGutter />
+                        {days.map(d => (
+                            <div
+                                key={d}
+                                className="relative border-r border-slate-100 last:border-r-0"
+                                style={{ ...colStyle, height: TOTAL_HOURS * HOUR_HEIGHT }}
+                            >
+                                <HourLines />
+                                {(apptsByDay[d] ?? []).map(appt => (
+                                    <AppointmentBlock key={appt.id} appt={appt} />
+                                ))}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 {appointments.length === 0 && (
                     <div className="py-12 text-center text-sm text-slate-400 border-t border-slate-100">
-                        No appointments this {view}.
+                        No appointments this {effectiveView}.
                     </div>
                 )}
             </div>
