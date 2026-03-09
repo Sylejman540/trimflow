@@ -22,7 +22,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { formatCents, formatDateTime, cn } from '@/lib/utils';
+import { formatCents, formatDateTime, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
@@ -182,7 +182,20 @@ export default function Index({
         {
             accessorKey: 'starts_at',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.startsAt').toUpperCase()}</span>,
-            cell: ({ row }) => <span className="whitespace-nowrap text-sm text-slate-600">{formatDateTime(row.original.starts_at)}</span>,
+            cell: ({ row }) => {
+                const iso = row.original.starts_at;
+                const d = new Date(iso.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
+                const datePart = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const timePart = formatTime(iso);
+                return (
+                    <div className="whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1.5 bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                            {timePart}
+                        </span>
+                        <p className="text-xs text-slate-400 mt-0.5">{datePart}</p>
+                    </div>
+                );
+            },
         },
         {
             id: 'customer',
