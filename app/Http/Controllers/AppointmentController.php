@@ -116,14 +116,16 @@ class AppointmentController extends Controller
             'payment',
             'review.customer',
             'barberNotes',
+            'products',
         ]);
 
         $user = Auth::user();
 
         return Inertia::render('appointments/Show', [
-            'appointment' => $appointment,
-            'can_edit' => $user->can('update', $appointment),
-            'can_delete' => $user->can('delete', $appointment),
+            'appointment'  => $appointment,
+            'can_edit'     => $user->can('update', $appointment),
+            'can_delete'   => $user->can('delete', $appointment),
+            'all_products' => \App\Models\Product::where('is_active', true)->orderBy('name')->get(['id', 'name', 'price', 'stock_qty']),
         ]);
     }
 
@@ -202,6 +204,17 @@ class AppointmentController extends Controller
             $points = max(1, (int) round($service->price / 100));
             $customer->increment('loyalty_points', $points);
             $customer->update(['last_visit_at' => $startsAt]);
+        }
+
+        // Phone trust: track no-shows and auto-escalate trust level
+        if ($previousStatus !== 'no_show' && $validated['status'] === 'no_show') {
+            $customer->increment('booking_no_shows');
+            $customer->refresh();
+            if ($customer->booking_no_shows >= 4 && $customer->booking_trust !== 'blocked') {
+                $customer->update(['booking_trust' => 'blocked']);
+            } elseif ($customer->booking_no_shows >= 2 && $customer->booking_trust === 'ok') {
+                $customer->update(['booking_trust' => 'restricted']);
+            }
         }
 
         // Notify waiting waitlist entries when an appointment slot opens (cancelled)

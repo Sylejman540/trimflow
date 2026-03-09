@@ -24,6 +24,12 @@ import {
 import { formatCents, cn } from '@/lib/utils';
 import { Service } from '@/types';
 
+const COLOR_HEX: Record<string, string> = {
+    slate: '#64748b', red: '#ef4444', orange: '#f97316',
+    amber: '#f59e0b', green: '#22c55e', teal: '#14b8a6',
+    blue: '#3b82f6', violet: '#8b5cf6',
+};
+
 /**
  * Helper to capitalize the first letter of each word and remove underscores
  */
@@ -102,12 +108,22 @@ export default function Index({ services }: { services: Service[] }) {
         {
             accessorKey: 'name',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">SERVICE NAME</span>,
-            cell: ({ row }) => (
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-900">{row.original.name}</span>
-                    <span className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || 'Uncategorized'}</span>
-                </div>
-            ),
+            cell: ({ row }) => {
+                const color = (row.original as any).color;
+                return (
+                    <div className="flex items-center gap-2.5">
+                        {color && COLOR_HEX[color] ? (
+                            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: COLOR_HEX[color] }} />
+                        ) : (
+                            <span className="w-2.5 h-2.5 rounded-full bg-slate-200 shrink-0" />
+                        )}
+                        <div className="flex flex-col">
+                            <span className="text-sm font-medium text-slate-900">{row.original.name}</span>
+                            <span className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || 'Uncategorized'}</span>
+                        </div>
+                    </div>
+                );
+            },
         },
         {
             accessorKey: 'duration',
@@ -161,9 +177,9 @@ export default function Index({ services }: { services: Service[] }) {
         <AppLayout
             title="Services"
             actions={
-                <Link href={route('services.create')} className={cn(buttonVariants({ variant: "default" }), "bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold border-none shadow-none")}>
-                    <Plus className="mr-2 h-3.5 w-3.5" />
-                    Add Service
+                <Link href={route('services.create')} className={cn(buttonVariants({ variant: "default" }), "bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none")}>
+                    <Plus className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline ml-2">Add Service</span>
                 </Link>
             }
         >
@@ -171,10 +187,10 @@ export default function Index({ services }: { services: Service[] }) {
 
             <div className="space-y-4">
                 {/* IDENTICAL SEARCH & FILTER BAR */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="relative flex-1 max-w-2xl">
+                <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
+                    <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input 
+                        <input
                             type="text"
                             value={globalSearch}
                             placeholder="Search by name or category..."
@@ -182,19 +198,11 @@ export default function Index({ services }: { services: Service[] }) {
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
                     </div>
-
                     <div className="flex items-center gap-2">
-                        <div className="hidden lg:flex items-center gap-1.5 mr-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            <SlidersHorizontal size={12} /> Filter
-                        </div>
-                        
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>
-                                    {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}
-                                </SelectValue>
+                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}</SelectValue>
                             </SelectTrigger>
-
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 <SelectItem value="all">All Statuses</SelectItem>
                                 <SelectItem value="active">Active</SelectItem>

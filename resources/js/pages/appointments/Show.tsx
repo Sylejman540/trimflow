@@ -1,13 +1,22 @@
-import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft } from 'lucide-react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, Package, Trash2, Plus } from 'lucide-react';
+import { useState } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { formatCents } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
+
+interface ProductItem {
+    id: number;
+    name: string;
+    price: number;
+    stock_qty: number;
+    pivot?: { qty: number; unit_price: number };
+}
 
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -34,9 +43,9 @@ function formatDateTime(dateStr: string) {
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     return (
-        <div className="flex justify-between py-2">
-            <span className="text-sm text-muted-foreground">{label}</span>
-            <span className="text-sm font-medium">{value}</span>
+        <div className="flex items-start justify-between gap-4 py-2">
+            <span className="text-sm text-muted-foreground shrink-0">{label}</span>
+            <span className="text-sm font-medium text-right">{value}</span>
         </div>
     );
 }
@@ -44,21 +53,39 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function Show({
     appointment,
     can_edit,
+    all_products,
 }: {
     appointment: Appointment;
     can_edit: boolean;
+    all_products: ProductItem[];
 }) {
+    const [addingProduct, setAddingProduct] = useState(false);
+    const { data, setData, post, processing, reset } = useForm({ product_id: '', qty: 1 });
+
+    function submitProduct(e: React.FormEvent) {
+        e.preventDefault();
+        post(route('appointment-products.store', appointment.id), {
+            onSuccess: () => { reset(); setAddingProduct(false); },
+        });
+    }
+
+    function removeProduct(productId: number) {
+        router.delete(route('appointment-products.destroy', [appointment.id, productId]));
+    }
+
+    const attachedProducts: ProductItem[] = (appointment as any).products ?? [];
+
     return (
         <AppLayout
             title={`Appointment #${appointment.id}`}
             actions={
                 <div className="flex gap-2">
-                    <Link href={route('appointments.index')} className={buttonVariants({ variant: "outline" })}>
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
+                    <Link href={route('appointments.index')} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                        <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Back</span>
                     </Link>
                     {can_edit && (
-                        <Link href={route('appointments.edit', appointment.id)} className={buttonVariants({ variant: "default" })}>
+                        <Link href={route('appointments.edit', appointment.id)} className={buttonVariants({ variant: "default", size: "sm" })}>
                             Edit
                         </Link>
                     )}
@@ -73,6 +100,13 @@ export default function Show({
                     <TabsTrigger value="customer">Customer</TabsTrigger>
                     <TabsTrigger value="service">Service</TabsTrigger>
                     <TabsTrigger value="notes">Notes</TabsTrigger>
+                    <TabsTrigger value="products">
+                        <Package className="h-3.5 w-3.5 sm:mr-1.5" />
+                        <span className="hidden sm:inline">Products</span>
+                        {attachedProducts.length > 0 && (
+                            <span className="ml-1 bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 rounded-full">{attachedProducts.length}</span>
+                        )}
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview">
@@ -273,6 +307,77 @@ export default function Show({
                                         No notes for this appointment.
                                     </p>
                                 )
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="products">
+                    <Card>
+                        <CardHeader className="flex-row items-center justify-between">
+                            <CardTitle>Products Sold</CardTitle>
+                            {can_edit && (
+                                <Button size="sm" variant="outline" onClick={() => setAddingProduct(v => !v)} className="h-8 text-xs shadow-none">
+                                    <Plus className="h-3.5 w-3.5 mr-1" /> Add
+                                </Button>
+                            )}
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {can_edit && addingProduct && (
+                                <form onSubmit={submitProduct} className="flex items-end gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                    <div className="flex-1 space-y-1">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Product</label>
+                                        <select
+                                            value={data.product_id}
+                                            onChange={e => setData('product_id', e.target.value)}
+                                            className="w-full h-9 bg-white border border-slate-200 rounded-lg px-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                            required
+                                        >
+                                            <option value="">Select product…</option>
+                                            {all_products.map(p => (
+                                                <option key={p.id} value={p.id} disabled={p.stock_qty === 0}>
+                                                    {p.name} ({formatCents(p.price)}) {p.stock_qty === 0 ? '— out of stock' : `— ${p.stock_qty} in stock`}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="w-20 space-y-1">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Qty</label>
+                                        <input
+                                            type="number" min={1} value={data.qty}
+                                            onChange={e => setData('qty', parseInt(e.target.value) || 1)}
+                                            className="w-full h-9 bg-white border border-slate-200 rounded-lg px-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                        />
+                                    </div>
+                                    <Button type="submit" disabled={processing} size="sm" className="bg-slate-900 text-white hover:bg-slate-800 h-9 shadow-none">Add</Button>
+                                </form>
+                            )}
+
+                            {attachedProducts.length === 0 && !addingProduct && (
+                                <p className="text-sm text-muted-foreground py-2">No products added to this appointment.</p>
+                            )}
+
+                            {attachedProducts.map(p => (
+                                <div key={p.id} className="flex items-center justify-between py-2">
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-900">{p.name}</p>
+                                        <p className="text-xs text-slate-500">
+                                            {p.pivot?.qty ?? 1} × {formatCents(p.pivot?.unit_price ?? p.price)}
+                                            {' = '}<span className="font-semibold">{formatCents((p.pivot?.qty ?? 1) * (p.pivot?.unit_price ?? p.price))}</span>
+                                        </p>
+                                    </div>
+                                    {can_edit && (
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-300 hover:text-red-600 hover:bg-red-50" onClick={() => removeProduct(p.id)}>
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+
+                            {attachedProducts.length > 0 && (
+                                <div className="border-t border-slate-100 pt-2 flex justify-between text-sm font-semibold">
+                                    <span>Total</span>
+                                    <span>{formatCents(attachedProducts.reduce((sum, p) => sum + (p.pivot?.qty ?? 1) * (p.pivot?.unit_price ?? p.price), 0))}</span>
+                                </div>
                             )}
                         </CardContent>
                     </Card>

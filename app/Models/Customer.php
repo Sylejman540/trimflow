@@ -23,6 +23,9 @@ class Customer extends Model
         'favorite_barber_id',
         'loyalty_points',
         'last_visit_at',
+        'booking_no_shows',
+        'booking_total',
+        'booking_trust',
     ];
 
     protected function casts(): array

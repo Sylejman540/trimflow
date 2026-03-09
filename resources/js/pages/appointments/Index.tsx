@@ -222,13 +222,16 @@ export default function Index({
                 <div className="flex items-center gap-2">
                     <a
                         href={route('export.appointments')}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-4 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                        title="Export CSV"
                     >
-                        <Download className="mr-2 h-3.5 w-3.5" /> Export CSV
+                        <Download className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline ml-2">Export</span>
                     </a>
                     {can_create && (
-                        <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold border-none shadow-none')}>
-                            <Plus className="mr-2 h-3.5 w-3.5" /> New Appointment
+                        <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
+                            <Plus className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline ml-2">New</span>
                         </Link>
                     )}
                 </div>
@@ -237,53 +240,40 @@ export default function Index({
             <Head title="Appointments" />
 
             <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="relative flex-1 max-w-2xl">
+                <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
+                    <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input 
+                        <input
                             type="text"
                             value={globalSearch}
-                            placeholder="Search by customer, barber, service..."
+                            placeholder="Search customer, barber, service..."
                             className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <div className="hidden lg:flex items-center gap-1.5 mr-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            <SlidersHorizontal size={12} /> Filter
-                        </div>
-                        
-                        {/* Error was here (line 250) - fixed the double << */}
+                    <div className="flex items-center gap-2 flex-wrap">
                         <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
-                        <SelectTrigger className="h-9 w-[130px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                            <SelectValue>
-                            {dateFilter === 'all' ? 'All Dates' : capitalizeWords(dateFilter)}
-                            </SelectValue>
-                        </SelectTrigger>
-
-                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                            <SelectItem value="all">All Dates</SelectItem>
-                            <SelectItem value="today">Today</SelectItem>
-                            <SelectItem value="tomorrow">Tomorrow</SelectItem>
-                        </SelectContent>
+                            <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{dateFilter === 'all' ? 'All Dates' : capitalizeWords(dateFilter)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">All Dates</SelectItem>
+                                <SelectItem value="today">Today</SelectItem>
+                                <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                            </SelectContent>
                         </Select>
 
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                        <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                            <SelectValue>
-                            {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}
-                            </SelectValue>
-                        </SelectTrigger>
-
-                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                            <SelectItem value="all">All Statuses</SelectItem>
-                            {allStatuses.map((s) => (
-                            <SelectItem key={s} value={s}>
-                                {capitalizeWords(s)}
-                            </SelectItem>
-                            ))}
-                        </SelectContent>
+                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">All Statuses</SelectItem>
+                                {allStatuses.map((s) => (
+                                    <SelectItem key={s} value={s}>{capitalizeWords(s)}</SelectItem>
+                                ))}
+                            </SelectContent>
                         </Select>
                     </div>
                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Barber;
+use App\Models\Product;
 use App\Models\Service;
 use App\Models\ShopGoal;
 use Illuminate\Support\Carbon;
@@ -127,8 +128,16 @@ class DashboardController extends Controller
 
         $goal = ShopGoal::where('month', $today->month)->where('year', $today->year)->first();
 
+        // Low-stock products alert (admin only)
+        $lowStockProducts = $isBarber ? [] : Product::where('is_active', true)
+            ->whereColumn('stock_qty', '<=', 'low_stock_threshold')
+            ->orderBy('stock_qty')
+            ->get(['id', 'name', 'stock_qty', 'low_stock_threshold'])
+            ->toArray();
+
         return Inertia::render('Dashboard', [
-            'is_barber'   => $isBarber,
+            'is_barber'          => $isBarber,
+            'low_stock_products' => $lowStockProducts,
             'stats'       => $stats,
             'goal'        => $goal ? [
                 'revenue_target'  => $goal->revenue_target,

@@ -34,6 +34,7 @@ class ServiceController extends Controller
             'price' => 'required|integer|min:0',
             'description' => 'nullable|string|max:1000',
             'category' => 'nullable|string|max:255',
+            'color' => 'nullable|string|in:slate,red,orange,amber,green,teal,blue,violet',
             'is_active' => 'boolean',
         ]);
 
@@ -61,6 +62,7 @@ class ServiceController extends Controller
             'price' => 'required|integer|min:0',
             'description' => 'nullable|string|max:1000',
             'category' => 'nullable|string|max:255',
+            'color' => 'nullable|string|in:slate,red,orange,amber,green,teal,blue,violet',
             'is_active' => 'boolean',
         ]);
 

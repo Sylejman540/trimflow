@@ -18,6 +18,8 @@ import {
     PalmtreeIcon,
     LayoutGrid,
     Zap,
+    X,
+    Package,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -152,6 +154,13 @@ const navItems: NavItem[] = [
         roles: ['platform-admin', 'shop-admin'],
     },
     {
+        label: 'Products',
+        href: '/products',
+        icon: Package,
+        active: 'products.*',
+        roles: ['shop-admin', 'platform-admin'],
+    },
+    {
         label: 'Barbers',
         href: '/barbers',
         icon: Briefcase,
@@ -174,6 +183,14 @@ const navItems: NavItem[] = [
     },
 ];
 
+// Bottom nav items for mobile (most important 4)
+const mobileBottomNav: NavItem[] = [
+    { label: 'Home', href: '/dashboard', icon: LayoutDashboard, active: 'dashboard' },
+    { label: 'Appts', href: '/appointments', icon: CalendarDays, active: 'appointments.*' },
+    { label: 'Schedule', href: '/schedule', icon: LayoutGrid, active: 'schedule.*' },
+    { label: 'Profile', href: '/profile', icon: User, active: 'profile.*' },
+];
+
 export default function AppLayout({
     children,
     title,
@@ -192,27 +209,30 @@ export default function AppLayout({
         (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
     );
 
-    // Helper to render a sidebar link consistently
-    const SidebarLink = ({ 
-        href, 
-        icon: Icon, 
-        label, 
-        active = false, 
-        onClick, 
-        variant = 'default' 
-    }: { 
-        href?: string, 
-        icon: any, 
-        label: string, 
-        active?: boolean, 
+    const visibleMobileNav = mobileBottomNav.filter(
+        (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
+    );
+
+    const SidebarLink = ({
+        href,
+        icon: Icon,
+        label,
+        active = false,
+        onClick,
+        variant = 'default'
+    }: {
+        href?: string,
+        icon: any,
+        label: string,
+        active?: boolean,
         onClick?: () => void,
         variant?: 'default' | 'danger'
     }) => {
         const className = cn(
             'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 w-full',
-            active 
-                ? 'bg-slate-100 text-slate-900' 
-                : variant === 'danger' 
+            active
+                ? 'bg-slate-100 text-slate-900'
+                : variant === 'danger'
                     ? 'text-slate-500 hover:bg-red-50 hover:text-red-600'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
             isCollapsed && "justify-center px-0"
@@ -236,26 +256,36 @@ export default function AppLayout({
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-white font-sans text-slate-900">
+        <div className="flex h-[100dvh] overflow-hidden bg-white font-sans text-slate-900">
             {/* Mobile Overlay */}
             {sidebarOpen && (
-                <div className="fixed inset-0 z-40 bg-slate-900/10 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
+                <div
+                    className="fixed inset-0 z-40 bg-slate-900/20 backdrop-blur-sm lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
             )}
 
-            {/* Sidebar */}
+            {/* Sidebar — desktop always visible, mobile slides in */}
             <aside className={cn(
                 'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-slate-200 bg-white transition-all duration-300 lg:static lg:translate-x-0',
-                isCollapsed ? 'w-20' : 'w-64',
+                isCollapsed ? 'w-20' : 'w-72 lg:w-64',
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full',
             )}>
                 {/* Brand */}
-                <div className="flex h-16 items-center px-6 shrink-0">
+                <div className="flex h-16 items-center justify-between px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
                             <Scissors size={16} />
                         </div>
                         {!isCollapsed && <span className="text-lg font-semibold tracking-tight">TrimFlow</span>}
                     </Link>
+                    {/* Close button on mobile */}
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="lg:hidden p-1 text-slate-400 hover:text-slate-900 rounded-md"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
 
                 {/* Workspace Nav */}
@@ -263,7 +293,7 @@ export default function AppLayout({
                     <div className="space-y-1">
                         {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Workspace</h3>}
                         {visibleNavItems.map((item) => (
-                            <SidebarLink 
+                            <SidebarLink
                                 key={item.href}
                                 href={item.href}
                                 icon={item.icon}
@@ -274,22 +304,22 @@ export default function AppLayout({
                     </div>
                 </div>
 
-                {/* Account Section (Always Visible) */}
+                {/* Account Section */}
                 <div className="border-t border-slate-200 p-4 space-y-4">
                     <div className="space-y-1">
                         {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Account</h3>}
-                        
-                        <SidebarLink 
-                            href={route('profile.edit')} 
-                            icon={User} 
-                            label="My Profile" 
-                            active={route().current('profile.edit')} 
+
+                        <SidebarLink
+                            href={route('profile.edit')}
+                            icon={User}
+                            label="My Profile"
+                            active={route().current('profile.edit')}
                         />
-                        
-                        <SidebarLink 
+
+                        <SidebarLink
                             onClick={() => router.post(route('logout'))}
-                            icon={LogOut} 
-                            label="Sign Out" 
+                            icon={LogOut}
+                            label="Sign Out"
                             variant="danger"
                         />
                     </div>
@@ -307,7 +337,7 @@ export default function AppLayout({
                         )}
                     </div>
 
-                    {/* Collapse Button */}
+                    {/* Collapse Button (desktop only) */}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className="hidden lg:flex w-full items-center justify-center py-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
@@ -318,21 +348,26 @@ export default function AppLayout({
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-white">
-                <header className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-8">
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => setSidebarOpen(true)} className="lg:hidden p-2 text-slate-600 hover:bg-slate-50 rounded-md">
+            <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+                {/* Header */}
+                <header className="flex h-14 lg:h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4 lg:px-8">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden p-2 -ml-1 text-slate-600 hover:bg-slate-50 rounded-md"
+                        >
                             <Menu size={20} />
                         </button>
                         <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 lg:gap-3">
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-9 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
+                                className="flex items-center gap-1.5 h-8 lg:h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
                             >
-                                <Zap className="h-3.5 w-3.5" /> Walk-in
+                                <Zap className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">Walk-in</span>
                             </button>
                         )}
                         {actions}
@@ -350,10 +385,41 @@ export default function AppLayout({
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto p-8 bg-white">
+                {/* Page Content */}
+                <main className="flex-1 overflow-y-auto p-4 lg:p-8 bg-white pb-20 lg:pb-8">
                     <div className="max-w-[1400px] mx-auto">{children}</div>
                 </main>
             </div>
+
+            {/* Mobile Bottom Nav */}
+            <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 flex items-stretch">
+                {visibleMobileNav.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = route().current(item.active);
+                    return (
+                        <Link
+                            key={item.href}
+                            href={item.href}
+                            className={cn(
+                                'flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors',
+                                isActive ? 'text-slate-900' : 'text-slate-400'
+                            )}
+                        >
+                            <Icon className={cn('h-5 w-5', isActive ? 'text-slate-900' : 'text-slate-400')} />
+                            {item.label}
+                        </Link>
+                    );
+                })}
+                {walkin && (
+                    <button
+                        onClick={() => setWalkinOpen(true)}
+                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-amber-500"
+                    >
+                        <Zap className="h-5 w-5" />
+                        Walk-in
+                    </button>
+                )}
+            </nav>
 
             {walkin && (
                 <WalkinModal

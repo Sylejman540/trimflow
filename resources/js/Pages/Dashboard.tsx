@@ -1,4 +1,4 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     CalendarDays,
@@ -10,6 +10,8 @@ import {
     CheckCircle2,
     Clock,
     BarChart3,
+    Package,
+    AlertTriangle,
 } from 'lucide-react';
 import {
     AreaChart,
@@ -68,12 +70,12 @@ interface BarberPerf {
 
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
-        scheduled: 'bg-blue-500/15 text-blue-700 dark:text-blue-400',
-        confirmed: 'bg-green-500/15 text-green-700 dark:text-green-400',
-        in_progress: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-        completed: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-        cancelled: 'bg-red-500/15 text-red-700 dark:text-red-400',
-        no_show: 'bg-gray-500/15 text-gray-700 dark:text-gray-400',
+        scheduled: 'bg-blue-500/15 text-blue-700',
+        confirmed: 'bg-green-500/15 text-green-700',
+        in_progress: 'bg-amber-500/15 text-amber-700',
+        completed: 'bg-emerald-500/15 text-emerald-700',
+        cancelled: 'bg-red-500/15 text-red-700',
+        no_show: 'bg-gray-500/15 text-gray-700',
     };
     return map[status];
 }
@@ -105,12 +107,12 @@ function KpiCard({
     trend?: { pct: number; up: boolean };
 }) {
     return (
-        <Card className="relative overflow-hidden">
-            <CardContent className="p-6">
+        <Card className="relative overflow-hidden border-slate-200 shadow-none">
+            <CardContent className="p-4 lg:p-6">
                 <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                        <p className="text-sm font-medium text-muted-foreground">{title}</p>
-                        <p className="text-2xl font-semibold tracking-tight">{value}</p>
+                    <div className="space-y-1 min-w-0">
+                        <p className="text-xs font-medium text-muted-foreground truncate">{title}</p>
+                        <p className="text-xl lg:text-2xl font-semibold tracking-tight">{value}</p>
                         {subtitle && (
                             <p className="text-xs text-muted-foreground">{subtitle}</p>
                         )}
@@ -121,7 +123,7 @@ function KpiCard({
                             </div>
                         )}
                     </div>
-                    <div className="rounded-lg bg-muted/50 p-3">
+                    <div className="rounded-lg bg-muted/50 p-2.5 lg:p-3 shrink-0">
                         {icon}
                     </div>
                 </div>
@@ -134,9 +136,9 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
     return (
         <Link
             href={route('appointments.show', appointment.id)}
-            className="flex items-center gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-muted/50"
+            className="flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/50 active:bg-muted"
         >
-            <div className="flex h-10 w-16 flex-col items-center justify-center rounded-md bg-muted/60 text-xs font-medium">
+            <div className="flex h-10 w-14 flex-col items-center justify-center rounded-md bg-muted/60 text-xs font-medium shrink-0">
                 {formatTime(appointment.starts_at)}
             </div>
             <div className="flex-1 min-w-0">
@@ -145,11 +147,10 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                     {appointment.service?.name}
-                    {!appointment.barber && '' }
-                    {appointment.barber?.user?.name && ` \u00b7 ${appointment.barber.user.name}`}
+                    {appointment.barber?.user?.name && ` · ${appointment.barber.user.name}`}
                 </p>
             </div>
-            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(appointment.status)}`}>
+            <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${statusColor(appointment.status)}`}>
                 {appointment.status.replace('_', ' ')}
             </span>
         </Link>
@@ -169,8 +170,8 @@ function GoalBar({ label, current, target }: { label: string; current: number; t
     return (
         <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-                <span className="font-medium text-slate-700">{label}</span>
-                <span className={cn('font-bold', done ? 'text-emerald-600' : 'text-slate-500')}>
+                <span className="font-medium text-slate-700 truncate pr-2">{label}</span>
+                <span className={cn('font-bold shrink-0', done ? 'text-emerald-600' : 'text-slate-500')}>
                     {pct}% {done && '✓'}
                 </span>
             </div>
@@ -234,6 +235,8 @@ function GoalSetModal({ goal, month, year, open, onClose }: {
     );
 }
 
+interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
+
 export default function Dashboard({
     is_barber,
     stats,
@@ -242,6 +245,7 @@ export default function Dashboard({
     today_schedule,
     upcoming_appointments,
     goal,
+    low_stock_products = [],
 }: {
     is_barber: boolean;
     stats: Stats;
@@ -250,56 +254,77 @@ export default function Dashboard({
     today_schedule: Appointment[];
     upcoming_appointments: Appointment[];
     goal: ShopGoal | null;
+    low_stock_products?: LowStockProduct[];
 }) {
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
     const [goalOpen, setGoalOpen] = useState(false);
+    const [lowStockDismissed, setLowStockDismissed] = useState(false);
     const now = new Date();
 
     return (
         <AppLayout title="Dashboard">
             <Head title="Dashboard" />
 
-            <div className="space-y-6">
-                {/* KPI Cards */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-4 lg:space-y-6">
+                {/* Low-stock alert */}
+                {!is_barber && !lowStockDismissed && low_stock_products.length > 0 && (
+                    <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                        <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-amber-800">Low stock alert</p>
+                            <p className="text-xs text-amber-700 mt-0.5">
+                                {low_stock_products.map(p => `${p.name} (${p.stock_qty} left)`).join(' · ')}
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <Link href={route('products.index')} className="text-xs font-semibold text-amber-700 hover:text-amber-900 flex items-center gap-1">
+                                <Package className="h-3.5 w-3.5" /> View
+                            </Link>
+                            <button onClick={() => setLowStockDismissed(true)} className="text-xs text-amber-400 hover:text-amber-700">✕</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* KPI Cards — 2 cols on mobile, 4 on desktop */}
+                <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:grid-cols-4">
                     <KpiCard
                         title="Today's Appointments"
                         value={stats.today_appointments}
                         subtitle={`${stats.weekly_bookings} this week`}
-                        icon={<CalendarDays className="h-5 w-5 text-muted-foreground" />}
+                        icon={<CalendarDays className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     <KpiCard
                         title="Monthly Bookings"
                         value={stats.monthly_bookings}
-                        icon={<BarChart3 className="h-5 w-5 text-muted-foreground" />}
+                        icon={<BarChart3 className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     <KpiCard
                         title="Monthly Revenue"
                         value={formatCents(stats.monthly_revenue)}
                         trend={revTrend}
-                        icon={<DollarSign className="h-5 w-5 text-muted-foreground" />}
+                        icon={<DollarSign className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     {!is_barber && stats.active_barbers != null ? (
                         <KpiCard
                             title="Active Barbers"
                             value={stats.active_barbers}
-                            icon={<Users className="h-5 w-5 text-muted-foreground" />}
+                            icon={<Users className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                         />
                     ) : (
                         <KpiCard
                             title="Completion Rate"
                             value={`${stats.completion_rate}%`}
                             subtitle="This month"
-                            icon={<CheckCircle2 className="h-5 w-5 text-muted-foreground" />}
+                            icon={<CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                         />
                     )}
                 </div>
 
                 {/* Popular service pill */}
                 {stats.popular_service && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Star className="h-4 w-4 text-amber-500" />
-                        Top service this month:{' '}
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                        <Star className="h-4 w-4 text-amber-500 shrink-0" />
+                        <span>Top service:</span>
                         <span className="font-medium text-foreground">{stats.popular_service}</span>
                         <Badge variant="secondary" className="text-xs">{stats.popular_service_count} bookings</Badge>
                     </div>
@@ -308,7 +333,7 @@ export default function Dashboard({
                 {/* Monthly Goals */}
                 {!is_barber && (
                     <Card className="border-slate-200 shadow-none">
-                        <CardHeader className="pb-3">
+                        <CardHeader className="pb-3 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <CardTitle className="text-base">Monthly Goals</CardTitle>
@@ -326,7 +351,7 @@ export default function Dashboard({
                                 </Button>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-0 space-y-4">
+                        <CardContent className="pt-0 space-y-4 px-4 lg:px-6">
                             {goal ? (
                                 <>
                                     <GoalBar
@@ -359,18 +384,18 @@ export default function Dashboard({
                     onClose={() => setGoalOpen(false)}
                 />
 
-                {/* Chart + Today's Schedule */}
-                <div className="grid gap-6 lg:grid-cols-5">
+                {/* Chart + Today's Schedule — stacked on mobile, side-by-side on desktop */}
+                <div className="grid gap-4 lg:gap-6 lg:grid-cols-5">
                     {/* Bookings Chart */}
-                    <Card className="lg:col-span-3">
-                        <CardHeader className="pb-2">
+                    <Card className="lg:col-span-3 border-slate-200 shadow-none">
+                        <CardHeader className="pb-2 px-4 lg:px-6">
                             <CardTitle className="text-base">Bookings Trend</CardTitle>
                             <CardDescription>Last 14 days</CardDescription>
                         </CardHeader>
-                        <CardContent className="pt-0">
-                            <div className="h-[260px]">
+                        <CardContent className="pt-0 px-2 lg:px-4">
+                            <div className="h-[200px] lg:h-[260px]">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={chart_data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+                                    <AreaChart data={chart_data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="bookingsFill" x1="0" y1="0" x2="0" y2="1">
                                                 <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -380,13 +405,14 @@ export default function Dashboard({
                                         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                                         <XAxis
                                             dataKey="date"
-                                            tick={{ fontSize: 12 }}
+                                            tick={{ fontSize: 11 }}
                                             className="fill-muted-foreground"
                                             tickLine={false}
                                             axisLine={false}
+                                            interval="preserveStartEnd"
                                         />
                                         <YAxis
-                                            tick={{ fontSize: 12 }}
+                                            tick={{ fontSize: 11 }}
                                             className="fill-muted-foreground"
                                             tickLine={false}
                                             axisLine={false}
@@ -414,8 +440,8 @@ export default function Dashboard({
                     </Card>
 
                     {/* Today's Schedule */}
-                    <Card className="lg:col-span-2">
-                        <CardHeader className="pb-2">
+                    <Card className="lg:col-span-2 border-slate-200 shadow-none">
+                        <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <CardTitle className="text-base">Today's Schedule</CardTitle>
@@ -426,8 +452,8 @@ export default function Dashboard({
                                 <Clock className="h-4 w-4 text-muted-foreground" />
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-0">
-                            <div className="max-h-[260px] overflow-y-auto space-y-0.5">
+                        <CardContent className="pt-0 px-2 lg:px-4">
+                            <div className="max-h-[220px] lg:max-h-[260px] overflow-y-auto space-y-0.5">
                                 {today_schedule.length > 0 ? (
                                     today_schedule.map((a) => (
                                         <ScheduleRow key={a.id} appointment={a} />
@@ -443,15 +469,15 @@ export default function Dashboard({
                 </div>
 
                 {/* Bottom row: Barber Performance + Upcoming */}
-                <div className="grid gap-6 lg:grid-cols-2">
+                <div className="grid gap-4 lg:gap-6 lg:grid-cols-2">
                     {/* Barber Performance (admin only) */}
                     {!is_barber && barber_performance.length > 0 && (
-                        <Card>
-                            <CardHeader className="pb-2">
+                        <Card className="border-slate-200 shadow-none">
+                            <CardHeader className="pb-2 px-4 lg:px-6">
                                 <CardTitle className="text-base">Barber Performance</CardTitle>
                                 <CardDescription>This month</CardDescription>
                             </CardHeader>
-                            <CardContent className="pt-0">
+                            <CardContent className="pt-0 px-4 lg:px-6">
                                 <div className="space-y-3">
                                     {barber_performance.map((b, i) => (
                                         <div key={b.id} className="flex items-center gap-3">
@@ -465,7 +491,7 @@ export default function Dashboard({
                                                     {b.no_shows > 0 && ` · ${b.no_shows} no-show${b.no_shows > 1 ? 's' : ''}`}
                                                 </p>
                                             </div>
-                                            <div className="flex flex-col items-end gap-0.5">
+                                            <div className="flex flex-col items-end gap-0.5 shrink-0">
                                                 <p className="text-sm font-semibold tabular-nums">
                                                     {formatCents(b.revenue)}
                                                 </p>
@@ -484,8 +510,11 @@ export default function Dashboard({
                     )}
 
                     {/* Upcoming Appointments */}
-                    <Card className={!is_barber && barber_performance.length > 0 ? '' : 'lg:col-span-2'}>
-                        <CardHeader className="pb-2">
+                    <Card className={cn(
+                        'border-slate-200 shadow-none',
+                        (!is_barber && barber_performance.length > 0) ? '' : 'lg:col-span-2'
+                    )}>
+                        <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <CardTitle className="text-base">Upcoming</CardTitle>
@@ -499,7 +528,7 @@ export default function Dashboard({
                                 </Link>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-0 space-y-0.5">
+                        <CardContent className="pt-0 px-2 lg:px-4 space-y-0.5">
                             {upcoming_appointments.length > 0 ? (
                                 upcoming_appointments.map((a) => (
                                     <ScheduleRow key={a.id} appointment={a} />

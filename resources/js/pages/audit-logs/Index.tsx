@@ -214,8 +214,8 @@ export default function Index({
             <Head title="Audit Log" />
 
             <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="relative flex-1 max-w-2xl">
+                <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
+                    <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input
                             type="text"
@@ -225,20 +225,10 @@ export default function Index({
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-
-                    <div className="flex items-center gap-2">
-                        <div className="hidden lg:flex items-center gap-1.5 mr-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                            <SlidersHorizontal size={12} /> Filter
-                        </div>
-
-                        <Select
-                            value={modelFilter}
-                            onValueChange={(v) => { setModelFilter(v ?? 'all'); }}
-                        >
-                            <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>
-                                    {MODEL_OPTIONS.find(o => o.value === modelFilter)?.label ?? 'All Models'}
-                                </SelectValue>
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Select value={modelFilter} onValueChange={(v) => { setModelFilter(v ?? 'all'); }}>
+                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{MODEL_OPTIONS.find(o => o.value === modelFilter)?.label ?? 'All Models'}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 {MODEL_OPTIONS.map(o => (
@@ -246,15 +236,9 @@ export default function Index({
                                 ))}
                             </SelectContent>
                         </Select>
-
-                        <Select
-                            value={actionFilter}
-                            onValueChange={(v) => { setActionFilter(v ?? 'all'); }}
-                        >
-                            <SelectTrigger className="h-9 w-[140px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>
-                                    {ACTION_OPTIONS.find(o => o.value === actionFilter)?.label ?? 'All Actions'}
-                                </SelectValue>
+                        <Select value={actionFilter} onValueChange={(v) => { setActionFilter(v ?? 'all'); }}>
+                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{ACTION_OPTIONS.find(o => o.value === actionFilter)?.label ?? 'All Actions'}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 {ACTION_OPTIONS.map(o => (

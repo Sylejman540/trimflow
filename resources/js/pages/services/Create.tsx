@@ -9,10 +9,22 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Scissors, Clock, DollarSign, AlignLeft, Info, Tag } from 'lucide-react';
 
+const SERVICE_COLORS = [
+    { key: 'slate',  hex: '#64748b', label: 'Slate'  },
+    { key: 'red',    hex: '#ef4444', label: 'Red'    },
+    { key: 'orange', hex: '#f97316', label: 'Orange' },
+    { key: 'amber',  hex: '#f59e0b', label: 'Amber'  },
+    { key: 'green',  hex: '#22c55e', label: 'Green'  },
+    { key: 'teal',   hex: '#14b8a6', label: 'Teal'   },
+    { key: 'blue',   hex: '#3b82f6', label: 'Blue'   },
+    { key: 'violet', hex: '#8b5cf6', label: 'Violet' },
+] as const;
+
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         category: '',
+        color: '',
         duration: 30,
         price: 0,
         description: '',
@@ -33,14 +45,14 @@ export default function Create() {
         <AppLayout title="Create Service">
             <Head title="Create New Service" />
             
-            <div className="mx-auto max-w-2xl mt-4">
+            <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
-                <div className="mb-8 px-2">
+                <div className="mb-6 px-1">
                     <h2 className="text-xl font-bold tracking-tight text-slate-900">New Service</h2>
                     <p className="text-sm text-slate-500 mt-1">Define a new offering for your shop, including duration and pricing.</p>
                 </div>
 
-                <form onSubmit={submit} className="space-y-8 bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+                <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
                     
                     {/* Basic Info Grid */}
                     <div className="grid gap-6 sm:grid-cols-2">
@@ -71,6 +83,29 @@ export default function Create() {
                                 placeholder="e.g. Haircuts"
                             />
                             {errors.category && <p className="text-xs text-red-500 font-medium">{errors.category}</p>}
+                        </div>
+                    </div>
+
+                    {/* Color Picker */}
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Color Label</Label>
+                        <div className="flex flex-wrap gap-2">
+                            {SERVICE_COLORS.map(c => (
+                                <button
+                                    key={c.key}
+                                    type="button"
+                                    title={c.label}
+                                    onClick={() => setData('color', data.color === c.key ? '' : c.key)}
+                                    className={cn(
+                                        'w-7 h-7 rounded-full border-2 transition-all',
+                                        data.color === c.key ? 'border-slate-900 scale-110' : 'border-transparent hover:scale-105'
+                                    )}
+                                    style={{ background: c.hex }}
+                                />
+                            ))}
+                            {data.color && (
+                                <button type="button" onClick={() => setData('color', '')} className="text-xs text-slate-400 hover:text-slate-700 ml-1">Clear</button>
+                            )}
                         </div>
                     </div>
 

@@ -28,14 +28,14 @@ export default function Edit({ barber }: { barber: Barber }) {
         <AppLayout title="Edit Barber">
             <Head title={`Edit ${barber.user?.name}`} />
             
-            <div className="mx-auto max-w-2xl mt-4">
+            <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
-                <div className="mb-8 px-2">
+                <div className="mb-6 px-1">
                     <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Barber</h2>
                     <p className="text-sm text-slate-500 mt-1">Modify barber profile details, contact information, and status.</p>
                 </div>
 
-                <form onSubmit={submit} className="space-y-8 bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+                <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
                     
                     {/* Identity & Contact Grid */}
                     <div className="grid gap-6 sm:grid-cols-2">

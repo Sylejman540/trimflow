@@ -10,7 +10,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\BookingCancelController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\BookingSlotsController;
+use App\Http\Controllers\BookingAvailabilityController;
 use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\WalkinController;
 use App\Http\Controllers\BarberTimeOffController;
@@ -18,6 +21,8 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AppointmentProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -55,6 +60,10 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::post('/customers/{customer}/message', [MessageController::class, 'send'])->name('customers.message');
     Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
+
+    Route::resource('products', ProductController::class)->except(['show']);
+    Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
+    Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -70,5 +79,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/book/{slug}', [BookingController::class, 'show'])->name('booking.show');
 Route::post('/book/{slug}', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/book/{slug}/confirmed', [BookingController::class, 'confirmation'])->name('booking.confirmation');
+Route::get('/book/{slug}/slots', BookingSlotsController::class)->name('booking.slots');
+Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->name('booking.availability');
+Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');
 
 require __DIR__.'/auth.php';

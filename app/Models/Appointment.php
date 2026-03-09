@@ -21,20 +21,24 @@ class Appointment extends Model
         'starts_at',
         'ends_at',
         'status',
+        'booking_source',
         'notes',
         'price',
         'tip_amount',
         'recurrence_rule',
         'recurrence_parent_id',
+        'cancel_token',
+        'cancel_token_expires_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'starts_at' => 'datetime',
-            'ends_at' => 'datetime',
-            'price'      => 'integer',
-            'tip_amount' => 'integer',
+            'starts_at'               => 'datetime',
+            'ends_at'                 => 'datetime',
+            'cancel_token_expires_at' => 'datetime',
+            'price'                   => 'integer',
+            'tip_amount'              => 'integer',
         ];
     }
 
@@ -66,5 +70,12 @@ class Appointment extends Model
     public function barberNotes(): HasMany
     {
         return $this->hasMany(BarberNote::class);
+    }
+
+    public function products(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'appointment_products')
+            ->withPivot(['qty', 'unit_price'])
+            ->withTimestamps();
     }
 }

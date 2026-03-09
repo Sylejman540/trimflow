@@ -1,9 +1,14 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useState, useMemo } from 'react';
-import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { cn, formatCents } from '@/lib/utils';
+
+const COLOR_HEX: Record<string, string> = {
+    slate: '#64748b', red: '#ef4444', orange: '#f97316',
+    amber: '#f59e0b', green: '#22c55e', teal: '#14b8a6',
+    blue: '#3b82f6', violet: '#8b5cf6',
+};
 
 interface Company {
     id: number;
@@ -17,6 +22,8 @@ interface Barber {
     id: number;
     user: { name: string };
     specialty?: string;
+    next_available?: string | null;
+    next_time_label?: string | null;
 }
 
 interface Service {
@@ -26,9 +33,10 @@ interface Service {
     duration: number;
     category?: string;
     description?: string;
+    color?: string | null;
 }
 
-const STEPS = ['Service', 'Barber', 'Date & Time', 'Your Info'];
+const STEPS = ['Barber', 'Service', 'Date & Time', 'Your Info'];
 
 function StepIndicator({ current }: { current: number }) {
     return (
@@ -53,41 +61,34 @@ function StepIndicator({ current }: { current: number }) {
     );
 }
 
-// Generate time slots every 30 minutes
-function generateSlots(start = '08:00', end = '20:00') {
-    const slots: string[] = [];
-    const [sh, sm] = start.split(':').map(Number);
-    const [eh, em] = end.split(':').map(Number);
-    let h = sh, m = sm;
-    while (h < eh || (h === eh && m < em)) {
-        slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-        m += 30;
-        if (m >= 60) { h++; m -= 60; }
-    }
-    return slots;
-}
-
 function todayStr() {
     return new Date().toISOString().split('T')[0];
 }
 
-export default function Show({ company, barbers, services }: {
+export default function Show({ company, barbers: initialBarbers, services }: {
     company: Company;
     barbers: Barber[];
     services: Service[];
 }) {
     const [step, setStep] = useState(0);
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
+    const [selectedService, setSelectedService] = useState<Service | null>(null);
     const [selectedDate, setSelectedDate] = useState(todayStr());
     const [selectedTime, setSelectedTime] = useState('');
+
+    // Barbers with next-available info loaded from API
+    const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
+    const [availabilityLoading, setAvailabilityLoading] = useState(false);
+
+    // Slots from API
+    const [slots, setSlots] = useState<string[]>([]);
+    const [slotsLoading, setSlotsLoading] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
         service_id: '',
         starts_at: '',
         customer_name: '',
-        customer_email: '',
         customer_phone: '',
         notes: '',
     });
@@ -104,17 +105,58 @@ export default function Show({ company, barbers, services }: {
         [services, categoryFilter]
     );
 
-    const slots = generateSlots();
+    // Load next-available per barber when we first show the barber list
+    // We use the first service as a reference for duration; if none selected, skip
+    useEffect(() => {
+        if (services.length === 0) return;
+        const serviceId = selectedService?.id ?? services[0]?.id;
+        if (!serviceId) return;
 
-    function selectService(s: Service) {
-        setSelectedService(s);
-        setData('service_id', String(s.id));
-        setStep(1);
-    }
+        setAvailabilityLoading(true);
+        fetch(route('booking.availability', company.slug) + `?service_id=${serviceId}`)
+            .then(r => r.json())
+            .then((json: { barbers: Barber[] }) => {
+                // Merge next_available info into barbers list
+                const map = new Map(json.barbers.map(b => [b.id, b]));
+                setBarbers(initialBarbers.map(b => ({
+                    ...b,
+                    next_available: map.get(b.id)?.next_available ?? null,
+                    next_time_label: map.get(b.id)?.next_time_label ?? null,
+                })));
+            })
+            .catch(() => {})
+            .finally(() => setAvailabilityLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Load slots whenever barber, service or date changes (on step 2)
+    useEffect(() => {
+        if (step !== 2 || !selectedBarber || !selectedService || !selectedDate) return;
+
+        setSlotsLoading(true);
+        setSlots([]);
+        setSelectedTime('');
+
+        const url = route('booking.slots', company.slug)
+            + `?barber_id=${selectedBarber.id}&service_id=${selectedService.id}&date=${selectedDate}`;
+
+        fetch(url)
+            .then(r => r.json())
+            .then((json: { slots: string[] }) => setSlots(json.slots ?? []))
+            .catch(() => setSlots([]))
+            .finally(() => setSlotsLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [step, selectedDate]);
 
     function selectBarber(b: Barber) {
         setSelectedBarber(b);
         setData('barber_id', String(b.id));
+        setStep(1);
+    }
+
+    function selectService(s: Service) {
+        setSelectedService(s);
+        setData('service_id', String(s.id));
         setStep(2);
     }
 
@@ -150,10 +192,55 @@ export default function Show({ company, barbers, services }: {
             <div className="max-w-2xl mx-auto px-4 py-8">
                 <StepIndicator current={step} />
 
-                {/* Step 0: Service */}
+                {/* Step 0: Barber */}
                 {step === 0 && (
                     <div className="space-y-4">
-                        <h2 className="text-lg font-semibold text-slate-900">Choose a Service</h2>
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-semibold text-slate-900">Choose a Barber</h2>
+                            {availabilityLoading && (
+                                <span className="flex items-center gap-1 text-xs text-slate-400">
+                                    <Loader2 className="h-3 w-3 animate-spin" /> Loading availability…
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            {barbers.map(b => (
+                                <button
+                                    key={b.id}
+                                    onClick={() => selectBarber(b)}
+                                    className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                                >
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shrink-0">
+                                        <User className="h-5 w-5 text-slate-500" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-900">{b.user.name}</p>
+                                        {b.specialty && <p className="text-xs text-slate-500 truncate">{b.specialty}</p>}
+                                    </div>
+                                    {b.next_time_label && (
+                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                                            {b.next_time_label}
+                                        </span>
+                                    )}
+                                    {!b.next_time_label && !availabilityLoading && (
+                                        <span className="text-xs text-slate-400 shrink-0">No slots</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 1: Service */}
+                {step === 1 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
+                                <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <h2 className="text-lg font-semibold text-slate-900">Choose a Service</h2>
+                        </div>
 
                         {categories.length > 0 && (
                             <div className="flex flex-wrap gap-2">
@@ -180,7 +267,8 @@ export default function Show({ company, barbers, services }: {
                                 <button
                                     key={s.id}
                                     onClick={() => selectService(s)}
-                                    className="w-full flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left"
+                                    className="w-full flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                                    style={s.color && COLOR_HEX[s.color] ? { borderLeftColor: COLOR_HEX[s.color], borderLeftWidth: 3 } : undefined}
                                 >
                                     <div>
                                         <p className="text-sm font-medium text-slate-900">{s.name}</p>
@@ -189,37 +277,7 @@ export default function Show({ company, barbers, services }: {
                                             <Clock className="h-3 w-3" /> {s.duration} min
                                         </p>
                                     </div>
-                                    <span className="text-sm font-semibold text-slate-900">{formatCents(s.price)}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Step 1: Barber */}
-                {step === 1 && (
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
-                                <ChevronLeft className="h-5 w-5" />
-                            </button>
-                            <h2 className="text-lg font-semibold text-slate-900">Choose a Barber</h2>
-                        </div>
-
-                        <div className="space-y-2">
-                            {barbers.map(b => (
-                                <button
-                                    key={b.id}
-                                    onClick={() => selectBarber(b)}
-                                    className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left"
-                                >
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shrink-0">
-                                        <User className="h-5 w-5 text-slate-500" />
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-900">{b.user.name}</p>
-                                        {b.specialty && <p className="text-xs text-slate-500">{b.specialty}</p>}
-                                    </div>
+                                    <span className="text-sm font-semibold text-slate-900 ml-4 shrink-0">{formatCents(s.price)}</span>
                                 </button>
                             ))}
                         </div>
@@ -254,22 +312,37 @@ export default function Show({ company, barbers, services }: {
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
                                     <Clock className="h-3.5 w-3.5 inline mr-1" /> Time
                                 </label>
-                                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
-                                    {slots.map(slot => (
-                                        <button
-                                            key={slot}
-                                            onClick={() => selectTime(slot)}
-                                            className={cn(
-                                                'py-2 text-xs font-medium rounded-lg border transition-colors',
-                                                selectedTime === slot
-                                                    ? 'bg-slate-900 text-white border-slate-900'
-                                                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
-                                            )}
-                                        >
-                                            {slot}
-                                        </button>
-                                    ))}
-                                </div>
+
+                                {slotsLoading && (
+                                    <div className="flex items-center gap-2 text-sm text-slate-400 py-4 justify-center">
+                                        <Loader2 className="h-4 w-4 animate-spin" /> Loading available slots…
+                                    </div>
+                                )}
+
+                                {!slotsLoading && slots.length === 0 && (
+                                    <p className="text-sm text-slate-500 py-4 text-center">
+                                        No available slots on this day. Try a different date.
+                                    </p>
+                                )}
+
+                                {!slotsLoading && slots.length > 0 && (
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                        {slots.map(slot => (
+                                            <button
+                                                key={slot}
+                                                onClick={() => selectTime(slot)}
+                                                className={cn(
+                                                    'py-2 text-xs font-medium rounded-lg border transition-colors active:scale-[0.97]',
+                                                    selectedTime === slot
+                                                        ? 'bg-slate-900 text-white border-slate-900'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
+                                                )}
+                                            >
+                                                {slot}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -301,6 +374,7 @@ export default function Show({ company, barbers, services }: {
                                         value={data.customer_name}
                                         onChange={e => setData('customer_name', e.target.value)}
                                         placeholder="Your full name"
+                                        autoComplete="name"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                         required
                                     />
@@ -308,25 +382,18 @@ export default function Show({ company, barbers, services }: {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Phone</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Phone *</label>
                                     <input
                                         type="tel"
                                         value={data.customer_phone}
                                         onChange={e => setData('customer_phone', e.target.value)}
                                         placeholder="+1 (555) 000-0000"
+                                        autoComplete="tel"
+                                        inputMode="tel"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                        required
                                     />
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
-                                    <input
-                                        type="email"
-                                        value={data.customer_email}
-                                        onChange={e => setData('customer_email', e.target.value)}
-                                        placeholder="you@example.com"
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
-                                    />
+                                    {errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
                                 </div>
 
                                 <div>
@@ -350,7 +417,9 @@ export default function Show({ company, barbers, services }: {
                                 disabled={processing}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
-                                {processing ? 'Booking...' : 'Confirm Booking'}
+                                {processing ? (
+                                    <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Booking…</span>
+                                ) : 'Confirm Booking'}
                             </Button>
                         </form>
                     </div>
