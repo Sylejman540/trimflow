@@ -86,7 +86,6 @@ class BookingController extends Controller
             'starts_at'      => 'required|date|after:now',
             'customer_name'  => 'required|string|max:255',
             'customer_phone' => 'required|string|max:50',
-            'customer_email' => 'required|email|max:255',
             'notes'          => 'nullable|string|max:1000',
             '_t'             => 'nullable|integer',
         ]);
@@ -190,13 +189,10 @@ class BookingController extends Controller
         // ── Create / update customer ───────────────────────────────────────────
         $customer = Customer::firstOrCreate(
             ['phone' => $validated['customer_phone'], 'company_id' => $company->id],
-            ['name'  => $validated['customer_name'], 'email' => $validated['customer_email'] ?? null]
+            ['name'  => $validated['customer_name']]
         );
 
-        $customer->fill([
-            'name'  => $validated['customer_name'],
-            'email' => $validated['customer_email'] ?? $customer->email,
-        ])->save();
+        $customer->fill(['name' => $validated['customer_name']])->save();
 
         // ── Create appointment ─────────────────────────────────────────────────
         $cancelToken   = Str::random(48);
