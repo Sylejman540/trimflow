@@ -83,7 +83,7 @@ export default function Show({
                 <div className="flex gap-2">
                     <Link
                         href={route('appointments.index')}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
                     >
                         <ArrowLeft className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">{t('back')}</span>
@@ -91,7 +91,7 @@ export default function Show({
                     {can_edit && appointment.status === 'pending' && (
                         <button
                             onClick={() => router.patch(route('appointments.confirm', appointment.id))}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-emerald-600 hover:bg-emerald-700 text-white h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-emerald-600 hover:bg-emerald-700 text-white h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
                         >
                             Confirm
                         </button>
@@ -99,7 +99,7 @@ export default function Show({
                     {can_edit && (
                         <Link
                             href={route('appointments.edit', appointment.id)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
                         >
                             {t('edit')}
                         </Link>
@@ -110,27 +110,29 @@ export default function Show({
             <Head title={`${t('appt.title')} #${appointment.id}`} />
 
             <Tabs defaultValue="overview" className="space-y-4">
-                <TabsList className="bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5">
-                    <TabsTrigger value="overview" className="rounded-lg text-xs font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
+                <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0 no-scrollbar">
+                <TabsList className="bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5 w-max lg:w-auto">
+                    <TabsTrigger value="overview" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
                         Overview
                     </TabsTrigger>
-                    <TabsTrigger value="customer" className="rounded-lg text-xs font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <TabsTrigger value="customer" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
                         {t('appt.customer')}
                     </TabsTrigger>
-                    <TabsTrigger value="service" className="rounded-lg text-xs font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <TabsTrigger value="service" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
                         {t('appt.service')}
                     </TabsTrigger>
-                    <TabsTrigger value="notes" className="rounded-lg text-xs font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
+                    <TabsTrigger value="notes" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
                         {t('notes')}
                     </TabsTrigger>
-                    <TabsTrigger value="products" className="rounded-lg text-xs font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none gap-1.5">
+                    <TabsTrigger value="products" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none gap-1.5">
                         <Package className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Products</span>
+                        Products
                         {attachedProducts.length > 0 && (
                             <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 rounded-full">{attachedProducts.length}</span>
                         )}
                     </TabsTrigger>
                 </TabsList>
+                </div>
 
                 <TabsContent value="overview">
                     <Card className="border-slate-200 shadow-none">
@@ -270,13 +272,13 @@ export default function Show({
                         </CardHeader>
                         <CardContent className="px-4 lg:px-6 space-y-3 pt-4">
                             {can_edit && addingProduct && (
-                                <form onSubmit={submitProduct} className="flex items-end gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                                    <div className="flex-1 space-y-1">
+                                <form onSubmit={submitProduct} className="space-y-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                                    <div className="space-y-1">
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Product</label>
                                         <select
                                             value={data.product_id}
                                             onChange={e => setData('product_id', e.target.value)}
-                                            className="w-full h-9 bg-white border border-slate-200 rounded-lg px-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                            className="w-full h-11 bg-white border border-slate-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                             required
                                         >
                                             <option value="">Select product…</option>
@@ -287,15 +289,17 @@ export default function Show({
                                             ))}
                                         </select>
                                     </div>
-                                    <div className="w-20 space-y-1">
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Qty</label>
-                                        <input
-                                            type="number" min={1} value={data.qty}
-                                            onChange={e => setData('qty', parseInt(e.target.value) || 1)}
-                                            className="w-full h-9 bg-white border border-slate-200 rounded-lg px-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
-                                        />
+                                    <div className="flex items-end gap-3">
+                                        <div className="w-24 space-y-1">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Qty</label>
+                                            <input
+                                                type="number" min={1} value={data.qty}
+                                                onChange={e => setData('qty', parseInt(e.target.value) || 1)}
+                                                className="w-full h-11 bg-white border border-slate-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                            />
+                                        </div>
+                                        <Button type="submit" disabled={processing} className="flex-1 bg-slate-900 text-white hover:bg-slate-800 h-11 shadow-none">Add Product</Button>
                                     </div>
-                                    <Button type="submit" disabled={processing} size="sm" className="bg-slate-900 text-white hover:bg-slate-800 h-9 shadow-none">Add</Button>
                                 </form>
                             )}
 

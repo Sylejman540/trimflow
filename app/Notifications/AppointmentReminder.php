@@ -16,7 +16,20 @@ class AppointmentReminder extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
+    }
+
+    public function toDatabase(object $notifiable): array
+    {
+        $appt    = $this->appointment;
+        $service = $appt->service?->name ?? 'appointment';
+        $time    = $appt->starts_at->format('g:i A');
+
+        return [
+            'appointment_id' => $appt->id,
+            'message'        => "Reminder: {$service} tomorrow at {$time}.",
+            'icon'           => 'clock',
+        ];
     }
 
     public function toMail(object $notifiable): MailMessage

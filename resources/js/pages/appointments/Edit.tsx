@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Appointment, Barber, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign, RefreshCw } from 'lucide-react';
 
 const statuses = [
     'confirmed',
@@ -35,6 +35,8 @@ export default function Edit({
     services: Service[];
     is_barber: boolean;
 }) {
+    const isRecurring = appointment.recurrence_rule && appointment.recurrence_rule !== 'none';
+
     const { data, setData, put, processing, errors } = useForm({
         barber_id: String(appointment.barber_id),
         customer_name: appointment.customer?.name ?? '',
@@ -44,6 +46,7 @@ export default function Edit({
         status: appointment.status,
         notes: appointment.notes ?? '',
         tip_amount: appointment.tip_amount ? String(appointment.tip_amount / 100) : '0',
+        update_scope: 'this' as 'this' | 'future',
     });
 
     const selectedService = services.find(
@@ -78,7 +81,7 @@ export default function Edit({
                                 value={data.status}
                                 onValueChange={(v) => v && setData('status', v as typeof data.status)}
                             >
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg capitalize">
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg capitalize">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -105,7 +108,7 @@ export default function Edit({
                                     value={data.barber_id}
                                     onValueChange={(v) => setData('barber_id', v ?? '')}
                                 >
-                                    <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
+                                    <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
                                         <SelectValue placeholder="Select barber" />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -131,7 +134,7 @@ export default function Edit({
                                 id="customer_name"
                                 value={data.customer_name}
                                 onChange={(e) => setData('customer_name', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="e.g. John Doe"
                                 required
                             />
@@ -145,7 +148,7 @@ export default function Edit({
                                 id="customer_phone"
                                 value={data.customer_phone}
                                 onChange={(e) => setData('customer_phone', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="+1 (555) 000-0000"
                             />
                             {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
@@ -161,7 +164,7 @@ export default function Edit({
                             value={data.service_id}
                             onValueChange={(v) => setData('service_id', v ?? '')}
                         >
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue placeholder="Select service" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
@@ -196,7 +199,7 @@ export default function Edit({
                                 type="datetime-local"
                                 value={data.starts_at}
                                 onChange={(e) => setData('starts_at', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 required
                             />
                             {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
@@ -212,7 +215,7 @@ export default function Edit({
                                 step="0.01"
                                 value={data.tip_amount}
                                 onChange={(e) => setData('tip_amount', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="0.00"
                             />
                             {errors.tip_amount && <p className="text-xs text-red-500 font-medium">{errors.tip_amount}</p>}
@@ -234,18 +237,43 @@ export default function Edit({
                         />
                     </div>
 
+                    {/* Recurrence scope */}
+                    {isRecurring && (
+                        <div className="rounded-lg border border-amber-100 bg-amber-50 p-3 space-y-2">
+                            <div className="flex items-center gap-2 text-xs font-bold text-amber-700">
+                                <RefreshCw className="h-3.5 w-3.5" />
+                                This is a recurring appointment
+                            </div>
+                            <div className="flex items-center gap-4">
+                                {(['this', 'future'] as const).map((scope) => (
+                                    <label key={scope} className="flex items-center gap-2 text-xs text-amber-800 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="update_scope"
+                                            value={scope}
+                                            checked={data.update_scope === scope}
+                                            onChange={() => setData('update_scope', scope)}
+                                            className="accent-amber-600"
+                                        />
+                                        {scope === 'this' ? 'This appointment only' : 'This and all future'}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Action Buttons */}
                     <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                        <Button 
-                            type="submit" 
-                            disabled={processing} 
-                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
                             Update Appointment
                         </Button>
-                        <Link 
-                            href={route('appointments.index')} 
-                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
+                        <Link
+                            href={route('appointments.index')}
+                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
                         >
                             Cancel
                         </Link>

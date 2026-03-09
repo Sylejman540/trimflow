@@ -25,6 +25,8 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AppointmentProductController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\CustomerPortalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -71,6 +73,8 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::resource('products', ProductController::class)->except(['show']);
     Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
     Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
+
+    Route::get('/search', SearchController::class)->name('search');
 });
 
 // Platform super-admin panel
@@ -86,6 +90,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Customer portal (no auth required)
+Route::get('/book/{slug}/my-appointments', [CustomerPortalController::class, 'show'])->name('portal.show');
+Route::post('/book/{slug}/my-appointments', [CustomerPortalController::class, 'lookup'])->name('portal.lookup');
+Route::post('/book/{slug}/my-appointments/cancel', [CustomerPortalController::class, 'cancel'])->name('portal.cancel');
 
 // Public booking portal (no auth required)
 Route::get('/book/{slug}', [BookingController::class, 'show'])->name('booking.show');

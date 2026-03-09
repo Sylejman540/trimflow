@@ -82,7 +82,7 @@ export default function Create({
                                 value={data.barber_id}
                                 onValueChange={(v) => setData('barber_id', v ?? '')}
                             >
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
                                     <SelectValue placeholder="Select barber" />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -107,7 +107,7 @@ export default function Create({
                                 id="customer_name"
                                 value={data.customer_name}
                                 onChange={(e) => setData('customer_name', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="e.g. John Doe"
                                 required
                             />
@@ -121,7 +121,7 @@ export default function Create({
                                 id="customer_phone"
                                 value={data.customer_phone}
                                 onChange={(e) => setData('customer_phone', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="+1 (555) 000-0000"
                             />
                             {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
@@ -160,7 +160,7 @@ export default function Create({
                             value={data.service_id}
                             onValueChange={(v) => setData('service_id', v ?? '')}
                         >
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue placeholder="Select service" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
@@ -195,7 +195,7 @@ export default function Create({
                                 type="datetime-local"
                                 value={data.starts_at}
                                 onChange={(e) => setData('starts_at', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 required
                             />
                             {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
@@ -224,7 +224,7 @@ export default function Create({
                             value={data.recurrence_rule}
                             onValueChange={(v) => setData('recurrence_rule', v ?? 'none')}
                         >
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -238,16 +238,16 @@ export default function Create({
 
                     {/* Action Buttons */}
                     <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
-                        <Button 
-                            type="submit" 
-                            disabled={processing} 
-                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
                             Book Appointment
                         </Button>
-                        <Link 
-                            href={route('appointments.index')} 
-                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
+                        <Link
+                            href={route('appointments.index')}
+                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
                         >
                             Cancel
                         </Link>

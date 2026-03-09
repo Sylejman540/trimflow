@@ -148,6 +148,12 @@ export default function Confirmation({
                         >
                             <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
                         </Link>
+                        <Link
+                            href={route('portal.show', company.slug)}
+                            className={cn(buttonVariants({ variant: 'outline' }), 'h-10 rounded-xl font-semibold shadow-none border-slate-200')}
+                        >
+                            View My Appointments
+                        </Link>
                     </div>
                 </div>
             </div>

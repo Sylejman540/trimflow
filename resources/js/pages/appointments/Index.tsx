@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal, Download, CheckCircle2 } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2, Search, Download, CheckCircle2, RefreshCw } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -91,10 +91,12 @@ function DeleteModal({
 }) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
+    const isRecurring = appointment.recurrence_rule && appointment.recurrence_rule !== 'none';
 
-    function handleDelete() {
+    function handleDelete(scope: 'this' | 'future' = 'this') {
         setProcessing(true);
         router.delete(route('appointments.destroy', appointment.id), {
+            data: { delete_scope: scope },
             onSuccess: () => onOpenChange(false),
             onFinish: () => setProcessing(false),
         });
@@ -113,13 +115,29 @@ function DeleteModal({
                         {' '}on {formatDateTime(appointment.starts_at)}?
                     </DialogDescription>
                 </DialogHeader>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">
-                        {t('cancel')}
-                    </Button>
-                    <Button variant="destructive" onClick={handleDelete} disabled={processing} className="shadow-none">
-                        {t('delete')}
-                    </Button>
+                <DialogFooter className={isRecurring ? 'flex-col gap-2 sm:flex-col' : ''}>
+                    {isRecurring ? (
+                        <>
+                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none w-full">
+                                Delete this appointment only
+                            </Button>
+                            <Button variant="destructive" onClick={() => handleDelete('future')} disabled={processing} className="shadow-none w-full opacity-80">
+                                Delete this and all future
+                            </Button>
+                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none w-full">
+                                {t('cancel')}
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">
+                                {t('cancel')}
+                            </Button>
+                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none">
+                                {t('delete')}
+                            </Button>
+                        </>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -185,6 +203,20 @@ export default function Index({
             accessorKey: 'price',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('price').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm font-medium text-slate-900">{formatCents(row.original.price)}</span>,
+        },
+        {
+            id: 'recurrence',
+            header: () => <span></span>,
+            cell: ({ row }) => {
+                const rule = row.original.recurrence_rule;
+                if (!rule || rule === 'none') return null;
+                return (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-md">
+                        <RefreshCw className="h-2.5 w-2.5" />
+                        {rule}
+                    </span>
+                );
+            },
         },
         {
             accessorKey: 'status',
@@ -269,14 +301,14 @@ export default function Index({
                             type="text"
                             value={globalSearch}
                             placeholder={t('search')}
-                            className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
                         <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectTrigger className="h-10 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>
                                     {dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}
                                 </SelectValue>
@@ -289,7 +321,7 @@ export default function Index({
                         </Select>
 
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectTrigger className="h-10 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{statusFilter === 'all' ? t('all') : capitalizeWords(statusFilter)}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
@@ -302,7 +334,58 @@ export default function Index({
                     </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                {/* Mobile card list */}
+                <div className="sm:hidden space-y-2">
+                    {filtered.length === 0 && (
+                        <p className="text-sm text-slate-400 text-center py-8">No appointments found.</p>
+                    )}
+                    {filtered.map(appt => (
+                        <div key={appt.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+                            <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                    <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">{appt.service?.name ?? '-'}{!is_barber && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}</p>
+                                </div>
+                                <div className="flex items-center gap-1 shrink-0">
+                                    {appt.recurrence_rule && appt.recurrence_rule !== 'none' && (
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-md">
+                                            <RefreshCw className="h-2.5 w-2.5" />{appt.recurrence_rule}
+                                        </span>
+                                    )}
+                                    <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
+                                        {capitalizeWords(appt.status)}
+                                    </Badge>
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between text-xs text-slate-500">
+                                <span>{formatDateTime(appt.starts_at)}</span>
+                                <span className="font-semibold text-slate-900">{formatCents(appt.price)}</span>
+                            </div>
+                            <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                {appt.status === 'pending' && (
+                                    <button
+                                        onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg"
+                                    >
+                                        <CheckCircle2 className="h-3.5 w-3.5" /> Confirm
+                                    </button>
+                                )}
+                                <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
+                                    <Eye className="h-3.5 w-3.5 mr-1" /> View
+                                </Link>
+                                <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
+                                    <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                                </Link>
+                                <button onClick={() => setDeletingAppt(appt)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Desktop table */}
+                <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
                     <DataTable
                         columns={columns}
                         data={filtered}

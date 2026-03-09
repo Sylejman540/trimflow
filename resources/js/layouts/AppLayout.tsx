@@ -1,5 +1,6 @@
 import { Link, router, usePage, useForm } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect, FormEvent } from 'react';
+import CommandPalette from '@/components/CommandPalette';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
     CalendarDays,
@@ -21,6 +22,7 @@ import {
     Zap,
     X,
     Package,
+    Search,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -224,7 +226,7 @@ export default function AppLayout({
         variant?: 'default' | 'danger'
     }) => {
         const className = cn(
-            'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 w-full',
+            'group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full',
             active
                 ? 'bg-slate-100 text-slate-900'
                 : variant === 'danger'
@@ -277,9 +279,9 @@ export default function AppLayout({
                     {/* Close button on mobile */}
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="lg:hidden p-1 text-slate-400 hover:text-slate-900 rounded-md"
+                        className="lg:hidden p-2 text-slate-400 hover:text-slate-900 rounded-md"
                     >
-                        <X size={18} />
+                        <X size={20} />
                     </button>
                 </div>
 
@@ -359,13 +361,21 @@ export default function AppLayout({
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-8 lg:h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
+                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
                             >
                                 <Zap className="h-3.5 w-3.5" />
                                 <span className="hidden sm:inline">Walk-in</span>
                             </button>
                         )}
                         {actions}
+                        <button
+                            onClick={() => document.dispatchEvent(new Event('open-command-palette'))}
+                            className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300 transition-colors text-xs"
+                            title="Search (Ctrl+K)"
+                        >
+                            <Search size={13} />
+                            <span className="text-[11px] font-medium">⌘K</span>
+                        </button>
                         <LanguageSwitcher compact />
                         <Link
                             href={route('notifications.index')}
@@ -424,6 +434,8 @@ export default function AppLayout({
                     walkin={walkin}
                 />
             )}
+
+            <CommandPalette />
         </div>
     );
 }

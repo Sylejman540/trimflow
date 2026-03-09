@@ -9,6 +9,8 @@ use App\Models\Service;
 use App\Models\BarberTimeOff;
 use App\Models\WaitlistEntry;
 use App\Notifications\AppointmentStatusChanged;
+use App\Notifications\NewInternalAppointment;
+use App\Services\RecurrenceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -103,7 +105,7 @@ class AppointmentController extends Controller
         $endsAt = $startsAt->copy()->addMinutes($service->duration);
         $this->validateNoConflict($barberId, $startsAt, $endsAt);
 
-        Appointment::create([
+        $appointment = Appointment::create([
             'barber_id'       => $barberId,
             'customer_id'     => $customer->id,
             'service_id'      => $validated['service_id'],
@@ -114,6 +116,20 @@ class AppointmentController extends Controller
             'notes'           => $validated['notes'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? 'none',
         ]);
+
+        // Generate recurring children
+        if (($validated['recurrence_rule'] ?? 'none') !== 'none') {
+            $appointment->load(['customer', 'service']);
+            RecurrenceService::generateChildren($appointment);
+        }
+
+        // Notify shop admin
+        $owner = \App\Models\User::where('company_id', $user->company_id)
+            ->role('shop-admin')->first();
+        if ($owner && $owner->id !== $user->id) {
+            $appointment->load(['customer', 'service']);
+            $owner->notify(new NewInternalAppointment($appointment));
+        }
 
         return redirect()->route('appointments.index')->with('success', 'Appointment created.');
     }
@@ -178,6 +194,7 @@ class AppointmentController extends Controller
             'notes'           => 'nullable|string|max:1000',
             'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
             'tip_amount'      => 'nullable|numeric|min:0',
+            'update_scope'    => 'nullable|in:this,future',
         ]);
 
         $phone = $validated['customer_phone'] ?? null;
@@ -253,6 +270,27 @@ class AppointmentController extends Controller
             if ($owner && $owner->id !== $user->id) {
                 $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
             }
+        }
+
+        // Update future recurring siblings if requested
+        if (($validated['update_scope'] ?? 'this') === 'future' && $appointment->recurrence_parent_id) {
+            $delta = $appointment->starts_at->diffInMinutes(Carbon::parse($validated['starts_at']), false);
+            Appointment::where('recurrence_parent_id', $appointment->recurrence_parent_id)
+                ->where('starts_at', '>=', $appointment->starts_at)
+                ->where('id', '!=', $appointment->id)
+                ->get()
+                ->each(function (Appointment $sibling) use ($validated, $barberId, $customer, $service, $delta) {
+                    $siblingStart = $sibling->starts_at->copy()->addMinutes($delta);
+                    $sibling->update([
+                        'barber_id'   => $barberId,
+                        'customer_id' => $customer->id,
+                        'service_id'  => $validated['service_id'],
+                        'starts_at'   => $siblingStart,
+                        'ends_at'     => $siblingStart->copy()->addMinutes($service->duration),
+                        'price'       => $service->price,
+                        'notes'       => $validated['notes'] ?? null,
+                    ]);
+                });
         }
 
         return redirect()->route('appointments.index')->with('success', 'Appointment updated.');
@@ -357,9 +395,13 @@ class AppointmentController extends Controller
         return back()->with('success', 'Appointment confirmed.');
     }
 
-    public function destroy(Appointment $appointment)
+    public function destroy(Request $request, Appointment $appointment)
     {
         $this->authorize('delete', $appointment);
+
+        if ($request->input('delete_scope') === 'future') {
+            RecurrenceService::deleteFuture($appointment);
+        }
 
         $appointment->delete();
 
