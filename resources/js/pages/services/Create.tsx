@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { Scissors, Clock, DollarSign, AlignLeft, Info, Tag } from 'lucide-react';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -20,143 +21,145 @@ export default function Create() {
 
     function submit(e: FormEvent) {
         e.preventDefault();
-        setData('price', Math.round(data.price * 100));
-        post(route('services.store'));
+        // Send the request with price transformed to cents
+        post(route('services.store'), {
+            onBefore: () => {
+                data.price = Math.round(Number(data.price) * 100);
+            }
+        });
     }
 
     return (
         <AppLayout title="Create Service">
-            <Head title="Create Service" />
-            <div className="mx-auto max-w-2xl">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>New Service</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={submit} className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData('name', e.target.value)
-                                    }
-                                    required
-                                />
-                                {errors.name && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.name}
-                                    </p>
-                                )}
-                            </div>
+            <Head title="Create New Service" />
+            
+            <div className="mx-auto max-w-2xl mt-4">
+                {/* Header Section */}
+                <div className="mb-8 px-2">
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">New Service</h2>
+                    <p className="text-sm text-slate-500 mt-1">Define a new offering for your shop, including duration and pricing.</p>
+                </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="category">Category</Label>
-                                <Input
-                                    id="category"
-                                    value={data.category}
-                                    onChange={(e) =>
-                                        setData('category', e.target.value)
-                                    }
-                                    placeholder="e.g. Haircut, Beard, Styling"
-                                />
-                                {errors.category && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.category}
-                                    </p>
-                                )}
-                            </div>
+                <form onSubmit={submit} className="space-y-8 bg-white border border-slate-200 rounded-xl p-8 shadow-sm">
+                    
+                    {/* Basic Info Grid */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Scissors size={12} /> Service Name
+                            </Label>
+                            <Input
+                                id="name"
+                                value={data.name}
+                                onChange={(e) => setData('name', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="e.g. Classic Haircut"
+                                required
+                            />
+                            {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
+                        </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="duration">
-                                        Duration (minutes)
-                                    </Label>
-                                    <Input
-                                        id="duration"
-                                        type="number"
-                                        min={5}
-                                        max={480}
-                                        value={data.duration}
-                                        onChange={(e) =>
-                                            setData(
-                                                'duration',
-                                                parseInt(e.target.value) || 0,
-                                            )
-                                        }
-                                        required
-                                    />
-                                    {errors.duration && (
-                                        <p className="text-sm text-destructive">
-                                            {errors.duration}
-                                        </p>
-                                    )}
-                                </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Tag size={12} /> Category
+                            </Label>
+                            <Input
+                                id="category"
+                                value={data.category}
+                                onChange={(e) => setData('category', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="e.g. Haircuts"
+                            />
+                            {errors.category && <p className="text-xs text-red-500 font-medium">{errors.category}</p>}
+                        </div>
+                    </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="price">Price ($)</Label>
-                                    <Input
-                                        id="price"
-                                        type="number"
-                                        min={0}
-                                        step={0.01}
-                                        value={data.price}
-                                        onChange={(e) =>
-                                            setData(
-                                                'price',
-                                                parseFloat(e.target.value) || 0,
-                                            )
-                                        }
-                                        required
-                                    />
-                                    {errors.price && (
-                                        <p className="text-sm text-destructive">
-                                            {errors.price}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
+                    {/* Duration & Price Grid */}
+                    <div className="grid gap-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="duration" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Clock size={12} /> Duration (Minutes)
+                            </Label>
+                            <Input
+                                id="duration"
+                                type="number"
+                                min={1}
+                                value={data.duration}
+                                onChange={(e) => setData('duration', parseInt(e.target.value) || 0)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                required
+                            />
+                            {errors.duration && <p className="text-xs text-red-500 font-medium">{errors.duration}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="price" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <DollarSign size={12} /> Price ($)
+                            </Label>
+                            <Input
+                                id="price"
+                                type="number"
+                                step="0.01"
+                                value={data.price}
+                                onChange={(e) => setData('price', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="0.00"
+                                required
+                            />
+                            {errors.price && <p className="text-xs text-red-500 font-medium">{errors.price}</p>}
+                        </div>
+                    </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="description">Description</Label>
-                                <Textarea
-                                    id="description"
-                                    value={data.description}
-                                    onChange={(e) =>
-                                        setData('description', e.target.value)
-                                    }
-                                    rows={3}
-                                />
-                                {errors.description && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.description}
-                                    </p>
-                                )}
-                            </div>
+                    {/* Description */}
+                    <div className="space-y-2">
+                        <Label htmlFor="description" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <AlignLeft size={12} /> Service Description
+                        </Label>
+                        <Textarea
+                            id="description"
+                            value={data.description}
+                            onChange={(e) => setData('description', e.target.value)}
+                            className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[80px] transition-all"
+                            placeholder="Provide details about what this service entails..."
+                            rows={3}
+                        />
+                        {errors.description && <p className="text-xs text-red-500 font-medium">{errors.description}</p>}
+                    </div>
 
-                            <div className="flex items-center gap-3">
-                                <Switch
-                                    id="is_active"
-                                    checked={data.is_active}
-                                    onCheckedChange={(v) =>
-                                        setData('is_active', v)
-                                    }
-                                />
-                                <Label htmlFor="is_active">Active</Label>
+                    {/* Status Toggle */}
+                    <div className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-xl">
+                        <div className="flex items-start gap-3">
+                            <div className="mt-1 bg-white p-2 rounded-lg border border-slate-200">
+                                <Info size={16} className="text-slate-400" />
                             </div>
+                            <div className="space-y-0.5">
+                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">Active Status</Label>
+                                <p className="text-xs text-slate-500">Service will be visible for booking immediately.</p>
+                            </div>
+                        </div>
+                        <Switch
+                            id="is_active"
+                            checked={data.is_active}
+                            onCheckedChange={(v) => setData('is_active', v)}
+                        />
+                    </div>
 
-                            <div className="flex gap-3">
-                                <Button type="submit" disabled={processing}>
-                                    Create Service
-                                </Button>
-                                <Link href={route('services.index')} className={buttonVariants({ variant: "outline" })}>
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                        <Button 
+                            type="submit" 
+                            disabled={processing} 
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                        >
+                            Create Service
+                        </Button>
+                        <Link 
+                            href={route('services.index')} 
+                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
+                        >
+                            Cancel
+                        </Link>
+                    </div>
+                </form>
             </div>
         </AppLayout>
     );
