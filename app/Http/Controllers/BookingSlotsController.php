@@ -37,7 +37,7 @@ class BookingSlotsController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $totalDuration = Service::whereIn('id', $request->service_ids)
+        $totalDuration = (int) Service::whereIn('id', $request->service_ids)
             ->where('company_id', $company->id)
             ->sum('duration');
         if ($totalDuration === 0) {

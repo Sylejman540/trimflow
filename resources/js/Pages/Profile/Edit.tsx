@@ -25,10 +25,27 @@ export default function Edit({
 
     function copyLink() {
         if (!booking_url) return;
-        navigator.clipboard.writeText(booking_url).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        });
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(booking_url).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            }).catch(() => fallbackCopy(booking_url));
+        } else {
+            fallbackCopy(booking_url);
+        }
+    }
+
+    function fallbackCopy(text: string) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     }
 
     return (

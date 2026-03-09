@@ -75,8 +75,8 @@ class BookingController extends Controller
         if ($services->count() !== count($validated['service_ids'])) {
             abort(422, 'One or more services not found.');
         }
-        $totalDuration = $services->sum('duration');
-        $totalPrice    = $services->sum('price');
+        $totalDuration = (int) $services->sum('duration');
+        $totalPrice    = (int) $services->sum('price');
 
         $startsAt = Carbon::parse($validated['starts_at']);
         $endsAt   = $startsAt->copy()->addMinutes($totalDuration);
