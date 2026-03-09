@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid, GripVertical, Clock, User, Scissors } from 'lucide-react';
 import { useMemo, useEffect, useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -161,6 +162,7 @@ function MobileListView({ appointments, date, navigate }: {
     date: string;
     navigate: (delta: number) => void;
 }) {
+    const { t } = useTranslation();
     const todayStr = new Date().toISOString().split('T')[0];
     const sorted = [...appointments].sort((a, b) => a.starts_at.localeCompare(b.starts_at));
 
@@ -182,7 +184,7 @@ function MobileListView({ appointments, date, navigate }: {
 
             {sorted.length === 0 ? (
                 <div className="bg-white border border-slate-200 rounded-xl py-12 text-center text-sm text-slate-400">
-                    No appointments this day.
+                    {t('appt.noAppointments')}
                 </div>
             ) : (
                 sorted.map(appt => (
@@ -234,6 +236,7 @@ export default function Index({
     barbers: { id: number; name: string }[];
     is_barber: boolean;
 }) {
+    const { t } = useTranslation();
     const [isMobile, setIsMobile] = useState(() =>
         typeof window !== 'undefined' ? window.innerWidth < 640 : false
     );

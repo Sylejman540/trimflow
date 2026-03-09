@@ -31,6 +31,10 @@ export default {
     dashboard: 'Πίνακας ελέγχου',
     settings: 'Ρυθμίσεις',
     profileLabel: 'Προφίλ',
+    today: 'Σήμερα',
+    tomorrow: 'Αύριο',
+    upcoming: 'Προσεχή',
+    past: 'Παρελθόν',
     logout: 'Αποσύνδεση',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Κάντε νέο ραντεβού',
         shopPhone: 'Τηλέφωνο καταστήματος',
         windowExpired: 'Το παράθυρο ακύρωσης έχει λήξει.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Άδεια',
+        add: 'Προσθήκη άδειας',
+        noTimeOff: 'Δεν υπάρχει άδεια.',
+        upcomingActive: 'Επερχόμενα & Ενεργά',
+        from: 'Από',
+        to: 'Έως',
+        reason: 'Λόγος (προαιρετικό)',
+        reasonPlaceholder: 'π.χ. Διακοπές, αρρώστια…',
     },
 } as const;

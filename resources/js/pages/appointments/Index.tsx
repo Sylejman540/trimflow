@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal, Download } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
@@ -90,6 +91,7 @@ function DeleteModal({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
+    const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
 
     function handleDelete() {
@@ -115,10 +117,10 @@ function DeleteModal({
                 </DialogHeader>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     <Button variant="destructive" onClick={handleDelete} disabled={processing} className="shadow-none">
-                        Delete
+                        {t('delete')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -135,6 +137,7 @@ export default function Index({
     can_create: boolean;
     filters: { search?: string; status?: string; date?: string };
 }) {
+    const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(filters?.status ?? 'all');
     const [dateFilter, setDateFilter] = useState(filters?.date ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(filters?.search ?? '');
@@ -160,41 +163,52 @@ export default function Index({
     const columns: ColumnDef<Appointment>[] = [
         {
             accessorKey: 'starts_at',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">DATE & TIME</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.startsAt').toUpperCase()}</span>,
             cell: ({ row }) => <span className="whitespace-nowrap text-sm text-slate-600">{formatDateTime(row.original.starts_at)}</span>,
         },
         {
             id: 'customer',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">CUSTOMER</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.customer').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm font-medium text-slate-900">{row.original.customer?.name ?? '-'}</span>,
         },
         {
             id: 'barber',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">BARBER</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.barber').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.barber?.user?.name ?? '-'}</span>,
         },
         {
             id: 'service',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">SERVICE</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.service').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm text-slate-600">{row.original.service?.name ?? '-'}</span>,
         },
         {
             accessorKey: 'price',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">PRICE</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('price').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm font-medium text-slate-900">{formatCents(row.original.price)}</span>,
         },
         {
             accessorKey: 'status',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">STATUS</span>,
-            cell: ({ row }) => (
-                <Badge className={cn("text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border", statusVariant(row.original.status))}>
-                    {capitalizeWords(row.original.status)}
-                </Badge>
-            ),
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
+            cell: ({ row }) => {
+                const statusKeyMap: Record<string, string> = {
+                    confirmed: 'appt.confirmed',
+                    in_progress: 'appt.inProgress',
+                    completed: 'appt.completed',
+                    cancelled: 'appt.cancelled',
+                    no_show: 'appt.noShow',
+                    scheduled: 'appt.scheduled',
+                };
+                const key = statusKeyMap[row.original.status];
+                return (
+                    <Badge className={cn("text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border", statusVariant(row.original.status))}>
+                        {key ? t(key) : capitalizeWords(row.original.status)}
+                    </Badge>
+                );
+            },
         },
         {
             id: 'actions',
-            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">ACTIONS</div>,
+            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">{t('actions').toUpperCase()}</div>,
             cell: ({ row }) => {
                 const appt = row.original;
                 return (
@@ -216,7 +230,7 @@ export default function Index({
 
     return (
         <AppLayout
-            title="Appointments"
+            title={t('appt.title')}
             actions={
                 <div className="flex items-center gap-2">
                     <a
@@ -230,13 +244,13 @@ export default function Index({
                     {can_create && (
                         <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
                             <Plus className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline ml-2">New</span>
+                            <span className="hidden sm:inline ml-2">{t('appt.new')}</span>
                         </Link>
                     )}
                 </div>
             }
         >
-            <Head title="Appointments" />
+            <Head title={t('appt.title')} />
 
             <div className="space-y-4">
                 <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
@@ -245,7 +259,7 @@ export default function Index({
                         <input
                             type="text"
                             value={globalSearch}
-                            placeholder="Search customer, barber, service..."
+                            placeholder={t('search')}
                             className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
@@ -254,21 +268,21 @@ export default function Index({
                     <div className="flex items-center gap-2 flex-wrap">
                         <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{dateFilter === 'all' ? 'All Dates' : capitalizeWords(dateFilter)}</SelectValue>
+                                <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">All Dates</SelectItem>
-                                <SelectItem value="today">Today</SelectItem>
-                                <SelectItem value="tomorrow">Tomorrow</SelectItem>
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                <SelectItem value="today">{t('today')}</SelectItem>
+                                <SelectItem value="tomorrow">{t('tomorrow')}</SelectItem>
                             </SelectContent>
                         </Select>
 
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}</SelectValue>
+                                <SelectValue>{statusFilter === 'all' ? t('all') : capitalizeWords(statusFilter)}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">All Statuses</SelectItem>
+                                <SelectItem value="all">{t('all')}</SelectItem>
                                 {allStatuses.map((s) => (
                                     <SelectItem key={s} value={s}>{capitalizeWords(s)}</SelectItem>
                                 ))}

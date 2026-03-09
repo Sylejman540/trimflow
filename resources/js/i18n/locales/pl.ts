@@ -31,6 +31,10 @@ export default {
     dashboard: 'Panel',
     settings: 'Ustawienia',
     profileLabel: 'Profil',
+    today: 'Dzisiaj',
+    tomorrow: 'Jutro',
+    upcoming: 'Nadchodzące',
+    past: 'Minione',
     logout: 'Wyloguj',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Zarezerwuj kolejną wizytę',
         shopPhone: 'Telefon salonu',
         windowExpired: 'Okno anulowania wygasło.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Wolne',
+        add: 'Dodaj wolne',
+        noTimeOff: 'Brak zaplanowanych wolnych.',
+        upcomingActive: 'Nadchodzące & Aktywne',
+        from: 'Od',
+        to: 'Do',
+        reason: 'Powód (opcjonalnie)',
+        reasonPlaceholder: 'np. Urlop, choroba…',
     },
 } as const;

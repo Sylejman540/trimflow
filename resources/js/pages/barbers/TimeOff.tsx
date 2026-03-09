@@ -58,29 +58,29 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
 
     return (
         <AppLayout
-            title="Time Off"
+            title={t('timeoff.title')}
             actions={
                 <Button
                     onClick={() => setAddOpen(true)}
                     className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold shadow-none border-none"
                 >
-                    <Plus className="mr-2 h-3.5 w-3.5" /> Add Time Off
+                    <Plus className="mr-2 h-3.5 w-3.5" /> {t('timeoff.add')}
                 </Button>
             }
         >
-            <Head title="Barber Time Off" />
+            <Head title={t('timeoff.title')} />
 
             <div className="space-y-6 max-w-2xl mx-auto">
                 {time_offs.length === 0 && (
                     <div className="bg-white border border-slate-200 rounded-xl py-16 text-center">
                         <PalmtreeIcon className="h-8 w-8 text-slate-300 mx-auto mb-3" />
-                        <p className="text-sm text-slate-500">No time off scheduled.</p>
+                        <p className="text-sm text-slate-500">{t('timeoff.noTimeOff')}</p>
                     </div>
                 )}
 
                 {upcoming.length > 0 && (
                     <section>
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Upcoming & Active</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">{t('timeoff.upcomingActive')}</h3>
                         <div className="space-y-2">
                             {upcoming.map(t => (
                                 <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} />
@@ -91,7 +91,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
 
                 {past.length > 0 && (
                     <section>
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Past</h3>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">{t('past')}</h3>
                         <div className="space-y-2 opacity-60">
                             {past.map(t => (
                                 <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} />
@@ -105,7 +105,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
             <Dialog open={addOpen} onOpenChange={v => !v && setAddOpen(false)}>
                 <DialogContent className="sm:max-w-md border-slate-200 shadow-none">
                     <DialogHeader>
-                        <DialogTitle>Add Time Off</DialogTitle>
+                        <DialogTitle>{t('timeoff.add')}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={submit} className="space-y-4 pt-2">
                         <div className="space-y-2">
@@ -128,7 +128,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="starts_on" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                    <CalendarDays size={12} /> From
+                                    <CalendarDays size={12} /> {t('timeoff.from')}
                                 </Label>
                                 <Input
                                     id="starts_on"
@@ -142,7 +142,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="ends_on" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                    <CalendarDays size={12} /> To
+                                    <CalendarDays size={12} /> {t('timeoff.to')}
                                 </Label>
                                 <Input
                                     id="ends_on"
@@ -158,13 +158,13 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="reason" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Reason (optional)</Label>
+                            <Label htmlFor="reason" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('timeoff.reason')}</Label>
                             <Input
                                 id="reason"
                                 value={data.reason}
                                 onChange={e => setData('reason', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder="e.g. Vacation, sick leave..."
+                                placeholder={t('timeoff.reasonPlaceholder')}
                             />
                         </div>
 
@@ -199,7 +199,7 @@ function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void 
                     )}
                     {future && (
                         <Badge className="text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
-                            Upcoming
+                            {t('upcoming')}
                         </Badge>
                     )}
                 </div>

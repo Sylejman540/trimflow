@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Trash2, Search, Package } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
@@ -51,6 +52,7 @@ function DeleteModal({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
+    const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
 
     function handleDelete() {
@@ -78,7 +80,7 @@ function DeleteModal({
                         onClick={() => onOpenChange(false)}
                         className="border-slate-200 shadow-none"
                     >
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     <Button
                         variant="destructive"
@@ -86,7 +88,7 @@ function DeleteModal({
                         disabled={processing}
                         className="shadow-none"
                     >
-                        Delete
+                        {t('delete')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -95,6 +97,7 @@ function DeleteModal({
 }
 
 export default function Index({ products }: { products: Product[] }) {
+    const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
@@ -117,7 +120,7 @@ export default function Index({ products }: { products: Product[] }) {
             accessorKey: 'name',
             header: () => (
                 <span className="text-[10px] font-bold tracking-wider text-slate-400">
-                    PRODUCT NAME
+                    {t('prod.title').toUpperCase()}
                 </span>
             ),
             cell: ({ row }) => (
@@ -139,7 +142,7 @@ export default function Index({ products }: { products: Product[] }) {
         {
             accessorKey: 'price',
             header: () => (
-                <span className="text-[10px] font-bold tracking-wider text-slate-400">PRICE</span>
+                <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('price').toUpperCase()}</span>
             ),
             cell: ({ row }) => (
                 <span className="text-sm font-medium text-slate-900">
@@ -150,7 +153,7 @@ export default function Index({ products }: { products: Product[] }) {
         {
             accessorKey: 'stock_qty',
             header: () => (
-                <span className="text-[10px] font-bold tracking-wider text-slate-400">STOCK</span>
+                <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('prod.stock').toUpperCase()}</span>
             ),
             cell: ({ row }) => {
                 const { stock_qty, low_stock_threshold } = row.original;
@@ -165,7 +168,7 @@ export default function Index({ products }: { products: Product[] }) {
                                     'bg-amber-50 text-amber-700 border-amber-200',
                                 )}
                             >
-                                LOW STOCK
+                                {t('prod.lowStock').toUpperCase()}
                             </Badge>
                         )}
                     </div>
@@ -175,7 +178,7 @@ export default function Index({ products }: { products: Product[] }) {
         {
             accessorKey: 'is_active',
             header: () => (
-                <span className="text-[10px] font-bold tracking-wider text-slate-400">STATUS</span>
+                <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>
             ),
             cell: ({ row }) => (
                 <Badge
@@ -186,7 +189,7 @@ export default function Index({ products }: { products: Product[] }) {
                             : 'bg-slate-50 text-red-600 border-red-100',
                     )}
                 >
-                    {row.original.is_active ? 'ACTIVE' : 'INACTIVE'}
+                    {row.original.is_active ? t('active').toUpperCase() : t('inactive').toUpperCase()}
                 </Badge>
             ),
         },
@@ -194,7 +197,7 @@ export default function Index({ products }: { products: Product[] }) {
             id: 'actions',
             header: () => (
                 <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">
-                    ACTIONS
+                    {t('actions').toUpperCase()}
                 </div>
             ),
             cell: ({ row }) => {
@@ -226,7 +229,7 @@ export default function Index({ products }: { products: Product[] }) {
 
     return (
         <AppLayout
-            title="Products"
+            title={t('prod.title')}
             actions={
                 <Link
                     href={route('products.create')}
@@ -236,11 +239,11 @@ export default function Index({ products }: { products: Product[] }) {
                     )}
                 >
                     <Plus className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline ml-2">Add Product</span>
+                    <span className="hidden sm:inline ml-2">{t('prod.new')}</span>
                 </Link>
             }
         >
-            <Head title="Products" />
+            <Head title={t('prod.title')} />
 
             <div className="space-y-4">
                 {/* Search & Filter Bar */}
@@ -250,7 +253,7 @@ export default function Index({ products }: { products: Product[] }) {
                         <input
                             type="text"
                             value={globalSearch}
-                            placeholder="Search by name or category..."
+                            placeholder={t('search')}
                             className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
@@ -259,13 +262,13 @@ export default function Index({ products }: { products: Product[] }) {
                         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>
-                                    {statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}
+                                    {statusFilter === 'all' ? t('all') : capitalizeWords(statusFilter)}
                                 </SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">All Statuses</SelectItem>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                <SelectItem value="active">{t('active')}</SelectItem>
+                                <SelectItem value="inactive">{t('inactive')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

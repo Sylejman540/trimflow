@@ -31,6 +31,10 @@ export default {
     dashboard: 'Tableau de bord',
     settings: 'Paramètres',
     profileLabel: 'Profil',
+    today: "Aujourd'hui",
+    tomorrow: 'Demain',
+    upcoming: 'À venir',
+    past: 'Passés',
     logout: 'Déconnexion',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Prendre un autre rendez-vous',
         shopPhone: 'Téléphone du salon',
         windowExpired: "Le délai d'annulation a expiré.",
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Congé',
+        add: 'Ajouter un congé',
+        noTimeOff: 'Aucun congé prévu.',
+        upcomingActive: 'À venir & Actif',
+        from: 'De',
+        to: 'À',
+        reason: 'Motif (optionnel)',
+        reasonPlaceholder: 'p.ex. Vacances, maladie…',
     },
 } as const;

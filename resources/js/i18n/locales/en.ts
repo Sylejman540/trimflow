@@ -33,6 +33,22 @@ export default {
     settings: 'Settings',
     profileLabel: 'Profile',
     logout: 'Log out',
+    today: 'Today',
+    tomorrow: 'Tomorrow',
+    upcoming: 'Upcoming',
+    past: 'Past',
+
+    // Time Off
+    timeoff: {
+        title: 'Time Off',
+        add: 'Add Time Off',
+        noTimeOff: 'No time off scheduled.',
+        upcomingActive: 'Upcoming & Active',
+        from: 'From',
+        to: 'To',
+        reason: 'Reason (optional)',
+        reasonPlaceholder: 'e.g. Vacation, sick leave…',
+    },
 
     // Nav
     nav: {

@@ -31,6 +31,10 @@ export default {
     dashboard: 'Nadzorna ploča',
     settings: 'Postavke',
     profileLabel: 'Profil',
+    today: 'Danas',
+    tomorrow: 'Sutra',
+    upcoming: 'Nadolazeće',
+    past: 'Prošlo',
     logout: 'Odjava',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Rezerviraj još jedan termin',
         shopPhone: 'Telefon salona',
         windowExpired: 'Prozor za otkazivanje je istekao.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Slobodni dani',
+        add: 'Dodaj slobodne dane',
+        noTimeOff: 'Nema zakazanih slobodnih dana.',
+        upcomingActive: 'Nadolazeće & Aktivno',
+        from: 'Od',
+        to: 'Do',
+        reason: 'Razlog (neobavezno)',
+        reasonPlaceholder: 'npr. Odmor, bolovanje…',
     },
 } as const;

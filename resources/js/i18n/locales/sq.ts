@@ -32,6 +32,10 @@ export default {
     dashboard: 'Paneli',
     settings: 'Cilësimet',
     profileLabel: 'Profili',
+    today: 'Sot',
+    tomorrow: 'Nesër',
+    upcoming: 'Të ardhshme',
+    past: 'Të kaluara',
     logout: 'Dil',
 
     nav: {
@@ -229,5 +233,17 @@ export default {
         bookAnother: 'Rezervo një takim tjetër',
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Koha e lirë',
+        add: 'Shto kohë të lirë',
+        noTimeOff: 'Nuk ka kohë të lirë të planifikuar.',
+        upcomingActive: 'E ardhshme & Aktive',
+        from: 'Nga',
+        to: 'Deri',
+        reason: 'Arsyeja (opsionale)',
+        reasonPlaceholder: 'p.sh. Pushime, sëmundje…',
     },
 } as const;

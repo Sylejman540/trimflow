@@ -31,6 +31,10 @@ export default {
     dashboard: 'Dashboard',
     settings: 'Impostazioni',
     profileLabel: 'Profilo',
+    today: 'Oggi',
+    tomorrow: 'Domani',
+    upcoming: 'Prossimi',
+    past: 'Passati',
     logout: 'Esci',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Prenota un altro appuntamento',
         shopPhone: 'Telefono del negozio',
         windowExpired: 'La finestra di cancellazione è scaduta.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Ferie',
+        add: 'Aggiungi ferie',
+        noTimeOff: 'Nessuna ferie pianificata.',
+        upcomingActive: 'Prossimi & Attivi',
+        from: 'Da',
+        to: 'A',
+        reason: 'Motivo (opzionale)',
+        reasonPlaceholder: 'es. Vacanze, malattia…',
     },
 } as const;

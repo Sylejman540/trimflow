@@ -169,13 +169,6 @@ const navItems: NavItem[] = [
         roles: ['platform-admin', 'shop-admin'],
     },
     {
-        label: 'Audit Log',
-        href: '/audit-logs',
-        icon: ShieldCheck,
-        active: 'audit-logs.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
         label: 'Time Off',
         href: '/barbers/time-off',
         icon: PalmtreeIcon,
@@ -189,6 +182,7 @@ const mobileBottomNav: NavItem[] = [
     { label: 'Home', href: '/dashboard', icon: LayoutDashboard, active: 'dashboard' },
     { label: 'Appts', href: '/appointments', icon: CalendarDays, active: 'appointments.*' },
     { label: 'Schedule', href: '/schedule', icon: LayoutGrid, active: 'schedule.*' },
+    { label: 'Products', href: '/products', icon: Package, active: 'products.*', roles: ['shop-admin', 'platform-admin'] },
     { label: 'Profile', href: '/profile', icon: User, active: 'profile.*' },
 ];
 

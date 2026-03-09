@@ -31,6 +31,10 @@ export default {
     dashboard: 'Dashboard',
     settings: 'Einstellungen',
     profileLabel: 'Profil',
+    today: 'Heute',
+    tomorrow: 'Morgen',
+    upcoming: 'Bevorstehend',
+    past: 'Vergangen',
     logout: 'Abmelden',
 
     nav: {
@@ -228,5 +232,17 @@ export default {
         bookAnother: 'Neuen Termin buchen',
         shopPhone: 'Telefon des Salons',
         windowExpired: 'Das Stornierungsfenster ist abgelaufen.',
+    },
+
+    // Time Off
+    timeoff: {
+        title: 'Urlaub',
+        add: 'Urlaub hinzufügen',
+        noTimeOff: 'Kein Urlaub geplant.',
+        upcomingActive: 'Bevorstehend & Aktiv',
+        from: 'Von',
+        to: 'Bis',
+        reason: 'Grund (optional)',
+        reasonPlaceholder: 'z.B. Urlaub, Krankheit…',
     },
 } as const;
