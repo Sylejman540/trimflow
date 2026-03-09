@@ -12,17 +12,14 @@ import {
     Briefcase,
     ChevronLeft,
     ChevronRight,
-    ShieldCheck,
-    Users,
-    FileBarChart2,
     Bell,
-    Clock,
     PalmtreeIcon,
     LayoutGrid,
     Zap,
     X,
     Package,
     Search,
+    Users,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -162,6 +159,13 @@ const navItems: NavItem[] = [
         icon: Package,
         active: 'products.*',
         roles: ['shop-admin', 'platform-admin'],
+    },
+    {
+        label: 'Customers',
+        href: '/customers',
+        icon: Users,
+        active: 'customers.*',
+        roles: ['platform-admin', 'shop-admin'],
     },
     {
         label: 'Barbers',

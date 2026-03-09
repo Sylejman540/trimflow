@@ -371,7 +371,14 @@ export default function Index({
                                 </div>
                             </div>
                             <div className="flex items-center justify-between text-xs text-slate-500">
-                                <span>{formatDateTime(appt.starts_at)}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="inline-flex items-center bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                                        {formatTime(appt.starts_at)}
+                                    </span>
+                                    <span className="text-slate-400">
+                                        {parseShopDate(appt.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                    </span>
+                                </div>
                                 <span className="font-semibold text-slate-900">{formatCents(appt.price)}</span>
                             </div>
                             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
