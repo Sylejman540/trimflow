@@ -17,7 +17,7 @@ interface NotificationItem {
 }
 
 function NotifIcon({ icon }: { icon?: string }) {
-    const cls = 'h-3.5 w-3.5 shrink-0';
+    const cls = 'h-4 w-4 shrink-0';
     switch (icon) {
         case 'check':        return <Check className={cn(cls, 'text-emerald-500')} />;
         case 'check-circle': return <CheckCircle2 className={cn(cls, 'text-emerald-500')} />;
@@ -50,7 +50,7 @@ export default function Index({
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 text-[11px] font-semibold text-slate-500"
+                        className="h-8 text-[11px] font-bold text-slate-500 hover:text-slate-900"
                         onClick={markAll}
                     >
                         Mark all as read
@@ -60,12 +60,13 @@ export default function Index({
         >
             <Head title="Notifications" />
 
-            <div className="flex flex-col items-center w-full py-4 px-4">
-                <div className="w-full max-w-3xl space-y-1">
+            <div className="w-full">
+                {/* Full-width container with no max-width to allow flexing left-to-right */}
+                <div className="flex flex-col bg-white">
                     {notifications.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-20 text-center">
-                            <BellOff className="h-8 w-8 text-slate-200 mb-2" />
-                            <p className="text-sm text-slate-500 font-medium">No notifications</p>
+                        <div className="flex flex-col items-center justify-center py-24 text-center">
+                            <BellOff className="h-10 w-10 text-slate-200 mb-4" />
+                            <p className="text-sm font-medium text-slate-500">No notifications yet</p>
                         </div>
                     )}
 
@@ -73,57 +74,51 @@ export default function Index({
                         <div
                             key={n.id}
                             className={cn(
-                                'group flex items-center gap-3 rounded-md border px-3 py-1.5 transition-all duration-200',
-                                n.read_at
-                                    ? 'border-transparent bg-white hover:bg-slate-50'
-                                    : 'border-blue-100 bg-blue-50/30'
+                                'group flex items-center gap-4 px-6 py-3 border-b border-slate-100 transition-colors duration-150',
+                                n.read_at ? 'bg-white' : 'bg-slate-50/50 hover:bg-slate-50'
                             )}
                         >
-                            {/* 1. Icon Section */}
-                            <div className="shrink-0 flex items-center justify-center w-5">
+                            {/* 1. Icon (Fixed Width) */}
+                            <div className="flex-none">
                                 <NotifIcon icon={n.data.icon} />
                             </div>
 
-                            {/* 2. Message Section (Flex-Grow) */}
-                            <div className="flex-1 min-w-0">
-                                <p className={cn(
-                                    'text-[13px] truncate', // Truncate keeps it to exactly one line
+                            {/* 2. Message & View Action (Flex Grow) */}
+                            <div className="flex-1 min-w-0 flex items-center gap-3">
+                                <span className={cn(
+                                    'text-[13px] truncate',
                                     n.read_at ? 'text-slate-500' : 'font-medium text-slate-900'
                                 )}>
                                     {n.data.message}
-                                </p>
-                            </div>
-
-                            {/* 3. Action Section (View Link) */}
-                            <div className="shrink-0">
+                                </span>
+                                
                                 {n.data.appointment_id && (
                                     <button
                                         onClick={() => router.visit(route('appointments.show', n.data.appointment_id!))}
-                                        className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 px-2 py-1"
+                                        className="flex-none text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-0.5"
                                     >
-                                        View
-                                        <ArrowRight className="h-3 w-3" />
+                                        View <ArrowRight className="h-3 w-3" />
                                     </button>
                                 )}
                             </div>
 
-                            {/* 4. Timestamp Section */}
-                            <div className="shrink-0 text-[10px] text-slate-400 w-20 text-right">
+                            {/* 3. Timestamp (Fixed Width) */}
+                            <div className="flex-none text-[11px] text-slate-400 min-w-[100px] text-right">
                                 {n.created_at}
                             </div>
 
-                            {/* 5. Status/Marking Section */}
-                            <div className="shrink-0 flex items-center justify-center w-6">
+                            {/* 4. Mark as Read Action */}
+                            <div className="flex-none w-8 flex justify-end">
                                 {!n.read_at ? (
                                     <button
                                         onClick={() => markOne(n.id)}
-                                        className="h-5 w-5 flex items-center justify-center rounded-full hover:bg-blue-100 transition-colors"
+                                        className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-blue-100 transition-all"
                                         title="Mark as read"
                                     >
-                                        <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                        <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
                                     </button>
                                 ) : (
-                                    <div className="h-5 w-5" /> // Spacer for alignment
+                                    <Check className="h-3.5 w-3.5 text-slate-200" />
                                 )}
                             </div>
                         </div>
