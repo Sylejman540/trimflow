@@ -23,6 +23,7 @@ class Appointment extends Model
         'status',
         'notes',
         'price',
+        'tip_amount',
         'recurrence_rule',
         'recurrence_parent_id',
     ];
@@ -32,7 +33,8 @@ class Appointment extends Model
         return [
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
-            'price' => 'integer',
+            'price'      => 'integer',
+            'tip_amount' => 'integer',
         ];
     }
 

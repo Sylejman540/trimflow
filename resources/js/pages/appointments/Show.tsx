@@ -115,6 +115,28 @@ export default function Show({
                                 label="Price"
                                 value={formatCents(appointment.price)}
                             />
+                            {appointment.tip_amount > 0 && (
+                                <>
+                                    <Separator />
+                                    <InfoRow
+                                        label="Tip"
+                                        value={
+                                            <span className="text-emerald-600 font-semibold">
+                                                +{formatCents(appointment.tip_amount)}
+                                            </span>
+                                        }
+                                    />
+                                    <Separator />
+                                    <InfoRow
+                                        label="Total"
+                                        value={
+                                            <span className="font-bold text-slate-900">
+                                                {formatCents(appointment.price + appointment.tip_amount)}
+                                            </span>
+                                        }
+                                    />
+                                </>
+                            )}
                             {appointment.payment && (
                                 <>
                                     <Separator />

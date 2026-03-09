@@ -93,6 +93,7 @@ export interface Appointment {
     ends_at: string;
     status: AppointmentStatus;
     price: number;
+    tip_amount: number;
     notes: string | null;
     recurrence_rule: RecurrenceRule;
     recurrence_parent_id: number | null;

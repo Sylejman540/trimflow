@@ -1,4 +1,5 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import {
     CalendarDays,
     TrendingUp,
@@ -9,6 +10,7 @@ import {
     CheckCircle2,
     Clock,
     BarChart3,
+    Zap,
 } from 'lucide-react';
 import {
     AreaChart,
@@ -28,8 +30,103 @@ import {
     CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatCents } from '@/lib/utils';
-import { Appointment, AppointmentStatus } from '@/types';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import { formatCents, cn } from '@/lib/utils';
+import { Appointment, AppointmentStatus, Barber, Service, PageProps } from '@/types';
+
+interface WalkinBarber { id: number; user: { name: string } }
+interface WalkinService { id: number; name: string; duration: number; price: number }
+
+function WalkinModal({ open, onClose, barbers, services, isBarber }: {
+    open: boolean; onClose: () => void;
+    barbers: WalkinBarber[]; services: WalkinService[];
+    isBarber: boolean;
+}) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        customer_name: '',
+        service_id: '',
+        barber_id: '',
+    });
+
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        post(route('walkin.store'), {
+            onSuccess: () => { reset(); onClose(); },
+        });
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={v => !v && onClose()}>
+            <DialogContent className="sm:max-w-md border-slate-200 shadow-none">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Zap className="h-4 w-4 text-amber-500" /> Walk-in Quick Book
+                    </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={submit} className="space-y-4 pt-2">
+                    <div className="space-y-2">
+                        <Label htmlFor="wk_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Name</Label>
+                        <Input
+                            id="wk_name"
+                            value={data.customer_name}
+                            onChange={e => setData('customer_name', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            placeholder="e.g. John Doe"
+                            required
+                        />
+                        {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Service</Label>
+                        <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectValue placeholder="Select service" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                {services.map(s => (
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {s.name} — {formatCents(s.price)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
+                    </div>
+                    {!isBarber && (
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Barber</Label>
+                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                    <SelectValue placeholder="Select barber" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                    {barbers.map(b => (
+                                        <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
+                            Book Now
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 interface Stats {
     today_appointments: number;
@@ -148,6 +245,84 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
     );
 }
 
+interface ShopGoal {
+    revenue_target: number;
+    bookings_target: number;
+    month: number;
+    year: number;
+}
+
+function GoalBar({ label, current, target }: { label: string; current: number; target: number }) {
+    const pct = target > 0 ? Math.min(Math.round((current / target) * 100), 100) : 0;
+    const done = pct >= 100;
+    return (
+        <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-700">{label}</span>
+                <span className={cn('font-bold', done ? 'text-emerald-600' : 'text-slate-500')}>
+                    {pct}% {done && '✓'}
+                </span>
+            </div>
+            <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                    className={cn('h-full rounded-full transition-all', done ? 'bg-emerald-500' : 'bg-slate-900')}
+                    style={{ width: `${pct}%` }}
+                />
+            </div>
+        </div>
+    );
+}
+
+function GoalSetModal({ goal, month, year, open, onClose }: {
+    goal: ShopGoal | null; month: number; year: number; open: boolean; onClose: () => void;
+}) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        month: String(month),
+        year: String(year),
+        revenue_target: goal ? String(goal.revenue_target / 100) : '',
+        bookings_target: goal ? String(goal.bookings_target) : '',
+    });
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        post(route('goals.update'), { onSuccess: () => { reset(); onClose(); } });
+    }
+    return (
+        <Dialog open={open} onOpenChange={v => !v && onClose()}>
+            <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
+                <DialogHeader><DialogTitle>Set Monthly Goals</DialogTitle></DialogHeader>
+                <form onSubmit={submit} className="space-y-4 pt-2">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Revenue Target ($)</Label>
+                        <Input
+                            type="number" min="0" step="0.01"
+                            value={data.revenue_target}
+                            onChange={e => setData('revenue_target', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            placeholder="e.g. 5000"
+                        />
+                        {errors.revenue_target && <p className="text-xs text-red-500">{errors.revenue_target}</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Bookings Target</Label>
+                        <Input
+                            type="number" min="0"
+                            value={data.bookings_target}
+                            onChange={e => setData('bookings_target', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            placeholder="e.g. 80"
+                        />
+                        {errors.bookings_target && <p className="text-xs text-red-500">{errors.bookings_target}</p>}
+                    </div>
+                    <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">Save Goals</Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function Dashboard({
     is_barber,
     stats,
@@ -155,6 +330,9 @@ export default function Dashboard({
     barber_performance,
     today_schedule,
     upcoming_appointments,
+    walkin_barbers,
+    walkin_services,
+    goal,
 }: {
     is_barber: boolean;
     stats: Stats;
@@ -162,12 +340,35 @@ export default function Dashboard({
     barber_performance: BarberPerf[];
     today_schedule: Appointment[];
     upcoming_appointments: Appointment[];
+    walkin_barbers: WalkinBarber[];
+    walkin_services: WalkinService[];
+    goal: ShopGoal | null;
 }) {
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
+    const [walkinOpen, setWalkinOpen] = useState(false);
+    const [goalOpen, setGoalOpen] = useState(false);
+    const now = new Date();
 
     return (
-        <AppLayout title="Dashboard">
+        <AppLayout
+            title="Dashboard"
+            actions={
+                <Button
+                    onClick={() => setWalkinOpen(true)}
+                    className="bg-amber-500 hover:bg-amber-600 text-white h-9 px-4 rounded-lg text-xs font-bold shadow-none border-none"
+                >
+                    <Zap className="mr-2 h-3.5 w-3.5" /> Walk-in
+                </Button>
+            }
+        >
             <Head title="Dashboard" />
+            <WalkinModal
+                open={walkinOpen}
+                onClose={() => setWalkinOpen(false)}
+                barbers={walkin_barbers}
+                services={walkin_services}
+                isBarber={is_barber}
+            />
 
             <div className="space-y-6">
                 {/* KPI Cards */}
@@ -214,6 +415,60 @@ export default function Dashboard({
                         <Badge variant="secondary" className="text-xs">{stats.popular_service_count} bookings</Badge>
                     </div>
                 )}
+
+                {/* Monthly Goals */}
+                {!is_barber && (
+                    <Card className="border-slate-200 shadow-none">
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-base">Monthly Goals</CardTitle>
+                                    <CardDescription>
+                                        {new Date(now.getFullYear(), now.getMonth()).toLocaleString('en-US', { month: 'long', year: 'numeric' })}
+                                    </CardDescription>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 text-xs text-slate-400 hover:text-slate-900"
+                                    onClick={() => setGoalOpen(true)}
+                                >
+                                    {goal ? 'Edit' : 'Set Goals'}
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pt-0 space-y-4">
+                            {goal ? (
+                                <>
+                                    <GoalBar
+                                        label={`Revenue — ${formatCents(stats.monthly_revenue)} of ${formatCents(goal.revenue_target)}`}
+                                        current={stats.monthly_revenue}
+                                        target={goal.revenue_target}
+                                    />
+                                    <GoalBar
+                                        label={`Bookings — ${stats.monthly_bookings} of ${goal.bookings_target}`}
+                                        current={stats.monthly_bookings}
+                                        target={goal.bookings_target}
+                                    />
+                                </>
+                            ) : (
+                                <p className="text-sm text-muted-foreground py-2">
+                                    No goals set for this month.{' '}
+                                    <button className="font-medium text-slate-900 underline underline-offset-2" onClick={() => setGoalOpen(true)}>
+                                        Set goals
+                                    </button>
+                                </p>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
+                <GoalSetModal
+                    goal={goal}
+                    month={now.getMonth() + 1}
+                    year={now.getFullYear()}
+                    open={goalOpen}
+                    onClose={() => setGoalOpen(false)}
+                />
 
                 {/* Chart + Today's Schedule */}
                 <div className="grid gap-6 lg:grid-cols-5">

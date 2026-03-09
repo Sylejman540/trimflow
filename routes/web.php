@@ -12,6 +12,11 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\WaitlistController;
+use App\Http\Controllers\WalkinController;
+use App\Http\Controllers\BarberTimeOffController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -43,6 +48,13 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::post('/waitlist', [WaitlistController::class, 'store'])->name('waitlist.store');
     Route::patch('/waitlist/{waitlist}', [WaitlistController::class, 'update'])->name('waitlist.update');
     Route::delete('/waitlist/{waitlist}', [WaitlistController::class, 'destroy'])->name('waitlist.destroy');
+    Route::post('/walkin', [WalkinController::class, 'store'])->name('walkin.store');
+    Route::get('/barbers/time-off', [BarberTimeOffController::class, 'index'])->name('barbers.time-off.index');
+    Route::post('/barbers/time-off', [BarberTimeOffController::class, 'store'])->name('barbers.time-off.store');
+    Route::delete('/barbers/time-off/{timeOff}', [BarberTimeOffController::class, 'destroy'])->name('barbers.time-off.destroy');
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
+    Route::post('/customers/{customer}/message', [MessageController::class, 'send'])->name('customers.message');
+    Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
 });
 
 Route::middleware('auth')->group(function () {

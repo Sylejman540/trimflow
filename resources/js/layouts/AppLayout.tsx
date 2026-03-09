@@ -15,6 +15,8 @@ import {
     FileBarChart2,
     Bell,
     Clock,
+    PalmtreeIcon,
+    LayoutGrid,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -39,6 +41,12 @@ const navItems: NavItem[] = [
         href: '/appointments',
         icon: CalendarDays,
         active: 'appointments.*',
+    },
+    {
+        label: 'Schedule',
+        href: '/schedule',
+        icon: LayoutGrid,
+        active: 'schedule.*',
     },
     {
         label: 'Services',
@@ -80,6 +88,13 @@ const navItems: NavItem[] = [
         href: '/waitlist',
         icon: Clock,
         active: 'waitlist.*',
+        roles: ['platform-admin', 'shop-admin'],
+    },
+    {
+        label: 'Time Off',
+        href: '/barbers/time-off',
+        icon: PalmtreeIcon,
+        active: 'barbers.time-off.*',
         roles: ['platform-admin', 'shop-admin'],
     },
 ];

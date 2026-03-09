@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Appointment, Barber, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Info } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign } from 'lucide-react';
 
 const statuses = [
     'scheduled',
@@ -42,6 +42,7 @@ export default function Edit({
         starts_at: appointment.starts_at.slice(0, 16),
         status: appointment.status,
         notes: appointment.notes ?? '',
+        tip_amount: appointment.tip_amount ? String(appointment.tip_amount / 100) : '0',
     });
 
     const selectedService = services.find(
@@ -194,18 +195,36 @@ export default function Edit({
                             {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <AlignLeft size={12} /> Internal Notes
+                            <Label htmlFor="tip_amount" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <DollarSign size={12} /> Tip ($)
                             </Label>
-                            <Textarea
-                                id="notes"
-                                value={data.notes}
-                                onChange={(e) => setData('notes', e.target.value)}
-                                className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
-                                placeholder="Allergies, preferences, etc..."
-                                rows={1}
+                            <Input
+                                id="tip_amount"
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={data.tip_amount}
+                                onChange={(e) => setData('tip_amount', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="0.00"
                             />
+                            {errors.tip_amount && <p className="text-xs text-red-500 font-medium">{errors.tip_amount}</p>}
                         </div>
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-2">
+                        <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <AlignLeft size={12} /> Internal Notes
+                        </Label>
+                        <Textarea
+                            id="notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
+                            placeholder="Allergies, preferences, etc..."
+                            rows={1}
+                        />
                     </div>
 
                     {/* Action Buttons */}

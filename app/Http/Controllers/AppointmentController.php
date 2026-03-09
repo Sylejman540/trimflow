@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\Barber;
 use App\Models\Customer;
 use App\Models\Service;
+use App\Models\BarberTimeOff;
 use App\Models\WaitlistEntry;
 use App\Notifications\AppointmentStatusChanged;
 use Illuminate\Http\Request;
@@ -85,13 +86,15 @@ class AppointmentController extends Controller
         $startsAt = Carbon::parse($validated['starts_at']);
 
         $this->validateBarberAvailability($barberId, $startsAt);
+        $endsAt = $startsAt->copy()->addMinutes($service->duration);
+        $this->validateNoConflict($barberId, $startsAt, $endsAt);
 
         Appointment::create([
             'barber_id'       => $barberId,
             'customer_id'     => $customer->id,
             'service_id'      => $validated['service_id'],
             'starts_at'       => $startsAt,
-            'ends_at'         => $startsAt->copy()->addMinutes($service->duration),
+            'ends_at'         => $endsAt,
             'price'           => $service->price,
             'status'          => 'scheduled',
             'notes'           => $validated['notes'] ?? null,
@@ -151,6 +154,7 @@ class AppointmentController extends Controller
             'status'          => 'required|in:scheduled,confirmed,in_progress,completed,cancelled,no_show',
             'notes'           => 'nullable|string|max:1000',
             'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
+            'tip_amount'      => 'nullable|numeric|min:0',
         ]);
 
         $customer = Customer::firstOrCreate(
@@ -166,6 +170,8 @@ class AppointmentController extends Controller
         $startsAt = Carbon::parse($validated['starts_at']);
 
         $this->validateBarberAvailability($validated['barber_id'], $startsAt);
+        $endsAt = $startsAt->copy()->addMinutes($service->duration);
+        $this->validateNoConflict($validated['barber_id'], $startsAt, $endsAt, $appointment->id);
 
         $previousStatus = $appointment->status;
 
@@ -174,8 +180,9 @@ class AppointmentController extends Controller
             'customer_id'     => $customer->id,
             'service_id'      => $validated['service_id'],
             'starts_at'       => $startsAt,
-            'ends_at'         => $startsAt->copy()->addMinutes($service->duration),
+            'ends_at'         => $endsAt,
             'price'           => $service->price,
+            'tip_amount'      => (int) round(($validated['tip_amount'] ?? 0) * 100),
             'status'          => $validated['status'],
             'notes'           => $validated['notes'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? $appointment->recurrence_rule,
@@ -234,6 +241,44 @@ class AppointmentController extends Controller
         if ($appointmentTime < $dayHours['start'] || $appointmentTime >= $dayHours['end']) {
             throw ValidationException::withMessages([
                 'starts_at' => "The barber works {$dayHours['start']}–{$dayHours['end']} on " . ucfirst($dayKey) . '.',
+            ]);
+        }
+
+        // Check time off / vacation blocks
+        $onTimeOff = BarberTimeOff::where('barber_id', $barberId)
+            ->where('starts_on', '<=', $startsAt->toDateString())
+            ->where('ends_on', '>=', $startsAt->toDateString())
+            ->first();
+
+        if ($onTimeOff) {
+            $label = $onTimeOff->reason ? " ({$onTimeOff->reason})" : '';
+            throw ValidationException::withMessages([
+                'starts_at' => "The barber is on time off from {$onTimeOff->starts_on->format('M j')} to {$onTimeOff->ends_on->format('M j')}{$label}.",
+            ]);
+        }
+    }
+
+    private function validateNoConflict(?int $barberId, Carbon $startsAt, Carbon $endsAt, ?int $excludeId = null): void
+    {
+        if (! $barberId) return;
+
+        $conflict = Appointment::where('barber_id', $barberId)
+            ->whereNotIn('status', ['cancelled', 'no_show'])
+            ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
+            ->where(fn ($q) => $q
+                ->whereBetween('starts_at', [$startsAt, $endsAt->copy()->subSecond()])
+                ->orWhereBetween('ends_at', [$startsAt->copy()->addSecond(), $endsAt])
+                ->orWhere(fn ($q2) => $q2->where('starts_at', '<=', $startsAt)->where('ends_at', '>=', $endsAt))
+            )
+            ->first();
+
+        if ($conflict) {
+            throw ValidationException::withMessages([
+                'starts_at' => 'This barber already has an appointment from '
+                    . Carbon::parse($conflict->starts_at)->format('g:i A')
+                    . ' to '
+                    . Carbon::parse($conflict->ends_at)->format('g:i A')
+                    . '. Please choose a different time.',
             ]);
         }
     }

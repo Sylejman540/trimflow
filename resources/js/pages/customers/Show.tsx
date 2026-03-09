@@ -1,13 +1,83 @@
-import { Head, Link } from '@inertiajs/react';
-import { 
-    ChevronLeft, Star, CalendarDays, Edit, Phone, Mail, 
-    MapPin, Wallet, Award, History, ClipboardList, Scissors 
+import { Head, Link, useForm } from '@inertiajs/react';
+import { useState } from 'react';
+import {
+    ChevronLeft, Star, CalendarDays, Edit, Phone, Mail,
+    MapPin, Wallet, Award, History, ClipboardList, Scissors, Send
 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Badge } from '@/components/ui/badge';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import { formatCents, cn } from '@/lib/utils';
 import { Customer, Appointment } from '@/types';
+
+function SendMessageModal({ customer, open, onClose }: {
+    customer: Customer; open: boolean; onClose: () => void;
+}) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        subject: '',
+        body: '',
+    });
+    function submit(e: React.FormEvent) {
+        e.preventDefault();
+        post(route('customers.message', customer.id), {
+            onSuccess: () => { reset(); onClose(); },
+        });
+    }
+    return (
+        <Dialog open={open} onOpenChange={v => !v && onClose()}>
+            <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Send className="h-4 w-4 text-slate-400" /> Message {customer.name}
+                    </DialogTitle>
+                </DialogHeader>
+                {!customer.email ? (
+                    <p className="text-sm text-slate-500 py-4">This customer has no email address on file.</p>
+                ) : (
+                    <form onSubmit={submit} className="space-y-4 pt-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="msg_subject" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Subject</Label>
+                            <Input
+                                id="msg_subject"
+                                value={data.subject}
+                                onChange={e => setData('subject', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="Your appointment reminder"
+                                required
+                            />
+                            {errors.subject && <p className="text-xs text-red-500">{errors.subject}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="msg_body" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Message</Label>
+                            <Textarea
+                                id="msg_body"
+                                value={data.body}
+                                onChange={e => setData('body', e.target.value)}
+                                className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[120px]"
+                                placeholder="Hi John, just a reminder that your appointment is tomorrow at 2pm..."
+                                required
+                            />
+                            {errors.body && <p className="text-xs text-red-500">{errors.body}</p>}
+                        </div>
+                        <p className="text-xs text-slate-400">Sending to: <span className="font-medium text-slate-600">{customer.email}</span></p>
+                        <DialogFooter>
+                            <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
+                            <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
+                                <Send className="mr-2 h-3.5 w-3.5" /> Send
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 function tierClass(tier?: string) {
     switch (tier) {
@@ -45,6 +115,7 @@ export default function Show({
     customer: Customer & { loyalty_tier: string; visit_count: number };
     appointments: Appointment[];
 }) {
+    const [msgOpen, setMsgOpen] = useState(false);
     const completedAppts = appointments.filter(a => a.status === 'completed');
     const upcomingAppts  = appointments.filter(a => ['scheduled', 'confirmed'].includes(a.status));
     const totalSpend     = completedAppts.reduce((sum, a) => sum + a.price, 0);
@@ -74,6 +145,15 @@ export default function Show({
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {customer.email && (
+                            <Button
+                                onClick={() => setMsgOpen(true)}
+                                variant="outline"
+                                className="h-10 px-5 rounded-lg text-xs font-bold border-slate-200 shadow-sm hover:bg-slate-50"
+                            >
+                                <Send className="mr-2 h-3.5 w-3.5" /> Message
+                            </Button>
+                        )}
                         <Link
                             href={route('customers.edit', customer.id)}
                             className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-6 rounded-lg text-xs font-bold border-slate-200 shadow-sm transition-all hover:bg-slate-50')}
@@ -87,6 +167,7 @@ export default function Show({
                             <ChevronLeft className="mr-1 h-3.5 w-3.5" /> Back
                         </Link>
                     </div>
+                    <SendMessageModal customer={customer} open={msgOpen} onClose={() => setMsgOpen(false)} />
                 </div>
 
                 {/* Info Cards Grid */}

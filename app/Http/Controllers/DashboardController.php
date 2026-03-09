@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Barber;
 use App\Models\Service;
+use App\Models\ShopGoal;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -124,12 +125,22 @@ class DashboardController extends Controller
             ->orderBy('starts_at')
             ->get();
 
+        $goal = ShopGoal::where('month', $today->month)->where('year', $today->year)->first();
+
         return Inertia::render('Dashboard', [
-            'is_barber' => $isBarber,
-            'stats' => $stats,
-            'chart_data' => $chartData,
+            'is_barber'   => $isBarber,
+            'stats'       => $stats,
+            'goal'        => $goal ? [
+                'revenue_target'  => $goal->revenue_target,
+                'bookings_target' => $goal->bookings_target,
+                'month'           => $goal->month,
+                'year'            => $goal->year,
+            ] : null,
+            'chart_data'  => $chartData,
             'barber_performance' => $barberPerformance,
-            'today_schedule' => $todaySchedule,
+            'today_schedule'     => $todaySchedule,
+            'walkin_barbers'     => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
+            'walkin_services'    => Service::where('is_active', true)->orderBy('name')->get(['id', 'name', 'duration', 'price']),
             'upcoming_appointments' => $appointmentQuery()
                 ->with(['barber.user', 'customer', 'service'])
                 ->where('starts_at', '>=', now())
