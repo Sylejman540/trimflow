@@ -81,6 +81,7 @@ function isTomorrow(dateStr: string) {
         && d.getDate() === tomorrow.getDate();
 }
 
+
 function DeleteModal({
     appointment,
     open,
@@ -144,9 +145,9 @@ export default function Index({
 
     const filtered = appointments.filter((a) => {
         const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
-        const matchesDate = 
-            dateFilter === 'all' || 
-            (dateFilter === 'today' && isToday(a.starts_at)) || 
+        const matchesDate =
+            dateFilter === 'all' ||
+            (dateFilter === 'today' && isToday(a.starts_at)) ||
             (dateFilter === 'tomorrow' && isTomorrow(a.starts_at));
         
         const search = globalSearch.toLowerCase();
@@ -266,7 +267,9 @@ export default function Index({
                     <div className="flex items-center gap-2 flex-wrap">
                         <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
+                                <SelectValue>
+                                    {dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}
+                                </SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 <SelectItem value="all">{t('all')}</SelectItem>

@@ -81,6 +81,31 @@ class Appointment extends Model
             ->withTimestamps();
     }
 
+    /**
+     * Sync status based on current time and persist if changed.
+     * confirmed → in_progress (started, not ended)
+     * in_progress → completed (ended)
+     * Does not touch cancelled / no_show.
+     */
+    public function resolveStatus(): static
+    {
+        if (in_array($this->status, ['cancelled', 'no_show', 'completed'])) {
+            return $this;
+        }
+
+        $now = now();
+
+        if ($this->status === 'confirmed' && $this->starts_at <= $now && $this->ends_at > $now) {
+            $this->status = 'in_progress';
+            $this->saveQuietly();
+        } elseif (in_array($this->status, ['confirmed', 'in_progress']) && $this->ends_at <= $now) {
+            $this->status = 'completed';
+            $this->saveQuietly();
+        }
+
+        return $this;
+    }
+
     /** Multiple services selected at booking time */
     public function services(): BelongsToMany
     {

@@ -36,6 +36,7 @@ class ScheduleController extends Controller
             ->whereNotIn('status', ['cancelled'])
             ->orderBy('starts_at')
             ->get()
+            ->each(fn (Appointment $a) => $a->resolveStatus())
             ->map(fn (Appointment $a) => [
                 'id'           => $a->id,
                 'starts_at'    => $a->starts_at->toIso8601String(),

@@ -21,11 +21,20 @@ class AppointmentController extends Controller
     {
         $this->authorize('viewAny', Appointment::class);
 
+        $user = Auth::user();
+
+        // Run auto-status first so DB is up to date before filtering
+        Appointment::query()
+            ->when($user->hasRole('barber') && !$user->hasRole('shop-admin'), fn ($q) => $q->where('barber_id', $user->barber?->id))
+            ->whereIn('status', ['confirmed', 'in_progress'])
+            ->get()
+            ->each(fn (Appointment $a) => $a->resolveStatus());
+
         $query = Appointment::with(['barber.user', 'customer', 'service'])
+            ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
             ->where('ends_at', '>=', Carbon::now())
             ->orderBy('starts_at', 'asc');
 
-        $user = Auth::user();
         if ($user->hasRole('barber') && !$user->hasRole('shop-admin')) {
             $query->where('barber_id', $user->barber?->id);
         }
@@ -119,6 +128,8 @@ class AppointmentController extends Controller
             'barberNotes',
             'products',
         ]);
+
+        $appointment->resolveStatus();
 
         $user = Auth::user();
 

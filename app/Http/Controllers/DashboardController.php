@@ -125,6 +125,7 @@ class DashboardController extends Controller
             ->whereDate('starts_at', $today)
             ->orderBy('starts_at')
             ->get()
+            ->each(fn (Appointment $a) => $a->resolveStatus())
             ->map(fn (Appointment $a) => $this->mapAppointment($a));
 
         $goal = ShopGoal::where('month', $today->month)->where('year', $today->year)->first();
@@ -151,11 +152,12 @@ class DashboardController extends Controller
             'today_schedule'     => $todaySchedule,
             'upcoming_appointments' => $appointmentQuery()
                 ->with(['barber.user', 'customer', 'service'])
-                ->where('starts_at', '>=', now())
-                ->whereIn('status', ['confirmed', 'in_progress'])
+                ->where('ends_at', '>=', now())
+                ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
                 ->orderBy('starts_at')
                 ->limit(5)
                 ->get()
+                ->each(fn (Appointment $a) => $a->resolveStatus())
                 ->map(fn (Appointment $a) => $this->mapAppointment($a)),
         ]);
     }
