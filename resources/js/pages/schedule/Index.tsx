@@ -381,7 +381,7 @@ export default function Index({
 
     return (
         <AppLayout
-            title="Schedule"
+            title={t('nav.schedule')}
             actions={
                 <div className="flex flex-wrap items-center gap-2">
                     {!isMobile && (
@@ -412,7 +412,7 @@ export default function Index({
                 </div>
             }
         >
-            <Head title="Schedule" />
+            <Head title={t('nav.schedule')} />
 
             {/* Error toast */}
             {errorMsg && (
