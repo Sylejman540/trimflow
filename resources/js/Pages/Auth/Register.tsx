@@ -2,7 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff } from 'lucide-react';
+import { Scissors, ArrowRight, ShieldCheck, Eye, EyeOff, Star } from 'lucide-react';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -23,130 +23,150 @@ export default function Register() {
     };
 
     return (
-        <div className="flex min-h-screen w-full bg-white font-sans selection:bg-slate-100">
+        <div className="flex min-h-screen w-full bg-white font-sans selection:bg-blue-600 selection:text-white">
             <Head title="Create Your Shop | TrimFlow" />
             
             {/* --- FONTS --- */}
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
 
-            {/* --- LEFT SIDE: Minimalist Sage Panel (Hidden on Mobile/Tablet) --- */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 bg-[#637060]">
-                <div className="absolute inset-0 opacity-[0.03] grayscale pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]" />
+            {/* --- LEFT SIDE: Brand Panel (Matches Landing Hero) --- */}
+            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden">
+                {/* Background Image & Overlay */}
+                <div className="absolute inset-0 z-0">
+                    <img 
+                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
+                        className="w-full h-full object-cover"
+                        alt="Barber Shop Background"
+                    />
+                    <div className="absolute inset-0 bg-slate-900/85 backdrop-blur-[2px]"></div>
+                </div>
 
                 <div className="relative z-10">
                     <Link href="/" className="flex items-center gap-2">
-                        <Scissors className="text-[#FAF9F6] w-5 h-5" />
-                        <span className="text-xl font-semibold tracking-tight text-[#FAF9F6]">TrimFlow</span>
+                        <div className="bg-white p-1.5 rounded-lg">
+                            <Scissors className="text-slate-900 w-4 h-4" />
+                        </div>
+                        <span className="text-xl font-bold tracking-tight text-white">TrimFlow</span>
                     </Link>
                 </div>
 
                 <div className="relative z-10">
-                    <div className="inline-block mb-10">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#FAF9F6]/70 pb-1">
+                    <div className="inline-block mb-6">
+                        <span className="bg-blue-600/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-blue-500/30 backdrop-blur-md">
                             The New Standard
                         </span>
                     </div>
-                    <h1 className="text-6xl xl:text-7xl font-light tracking-tighter text-[#FAF9F6] leading-[0.9] mb-8">
+                    <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
                         Create your <br />
-                        <span className="font-serif italic text-[#FAF9F6]/60">studio profile.</span>
+                        <span className="text-blue-400 italic font-serif font-light">studio profile.</span>
                     </h1>
-                    <p className="text-lg text-[#FAF9F6]/80 max-w-sm font-light leading-relaxed">
-                        Join the network of elite studios using precision tools to manage staff and revenue.
+                    <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
+                        Join the network of ambitious studios using premium tools to scale.
                     </p>
+                    
+                    {/* Minimal Review Snippet for Social Proof */}
+                    <div className="mt-12 flex items-center gap-4 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex gap-1 mb-2">
+                                {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-blue-500 text-blue-500" />)}
+                            </div>
+                            <p className="text-white text-xs font-medium italic">"The aesthetic matters as much as the function."</p>
+                            <span className="text-blue-400 text-[9px] font-bold uppercase tracking-widest mt-2">— Elena S., Studio Owner</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="relative z-10 flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#FAF9F6]/50">
-                    <span>Build 2.0.4</span>
-                    <div className="w-1 h-1 rounded-full bg-[#FAF9F6]/30" />
-                    <span className="flex items-center gap-2 tracking-widest uppercase">
-                         <ShieldCheck className="w-3 h-3" /> Secure Infrastructure
+                <div className="relative z-10 flex items-center gap-6 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
+                    <span className="flex items-center gap-2">
+                         <ShieldCheck className="w-3.5 h-3.5 text-blue-500" /> Enterprise Secure
                     </span>
                 </div>
             </div>
 
-            {/* --- RIGHT SIDE: Form (Full width on mobile) --- */}
-            <div className="w-full lg:w-1/2 flex flex-col items-center justify-start lg:justify-center px-6 sm:px-12 md:px-20 py-12 bg-white relative">
+            {/* --- RIGHT SIDE: Form --- */}
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 sm:px-12 md:px-20 py-12 bg-white relative">
                 
-                {/* Mobile Header: Visible only on < lg screens */}
-                <div className="w-full max-w-[440px] flex justify-between items-center mb-16 lg:hidden">
+                {/* Mobile Logo Visibility */}
+                <div className="w-full max-w-[440px] flex justify-center mb-12 lg:hidden">
                     <Link href="/" className="flex items-center gap-2">
-                        <Scissors className="text-slate-900 w-5 h-5" />
-                        <span className="text-lg font-semibold tracking-tight">TrimFlow</span>
+                        <div className="bg-slate-900 p-1.5 rounded-lg">
+                            <Scissors className="text-white w-4 h-4" />
+                        </div>
+                        <span className="text-xl font-bold tracking-tight text-slate-900">TrimFlow</span>
                     </Link>
                 </div>
 
                 <div className="w-full max-w-[440px]">
-                    <div className="mb-10 md:mb-12">
-                        <h2 className="text-3xl md:text-4xl font-light tracking-tight text-slate-900 mb-3">Get started</h2>
-                        <p className="text-slate-400 font-light text-sm">Set up your professional studio profile in seconds.</p>
+                    <div className="mb-12">
+                        <h2 className="text-4xl font-bold tracking-tight text-slate-900 mb-3">Get started</h2>
+                        <p className="text-slate-500 font-medium text-sm">Join the elite community of modern studios.</p>
                     </div>
 
-                    <form onSubmit={submit} className="space-y-6 md:space-y-8">
-                        {/* Grid Rows: Switch from 1 to 2 columns on tablet/desktop */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                    <form onSubmit={submit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Studio Name</Label>
+                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Studio Name</Label>
                                 <Input
                                     value={data.shop_name}
-                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all placeholder:text-slate-300 font-light text-base md:text-sm"
-                                    placeholder="Classic Cut"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all placeholder:text-slate-300 font-medium text-sm"
+                                    placeholder="Classic Cut Studio"
                                     onChange={(e) => setData('shop_name', e.target.value)}
                                 />
-                                {errors.shop_name && <p className="text-[10px] text-red-500 font-medium tracking-tight uppercase">{errors.shop_name}</p>}
+                                {errors.shop_name && <p className="text-[10px] text-red-500 font-bold tracking-tight uppercase mt-1">{errors.shop_name}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Owner Name</Label>
+                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Owner Name</Label>
                                 <Input
                                     value={data.name}
-                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all placeholder:text-slate-300 font-light text-base md:text-sm"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all placeholder:text-slate-300 font-medium text-sm"
                                     placeholder="Marcus Ray"
                                     onChange={(e) => setData('name', e.target.value)}
                                 />
-                                {errors.name && <p className="text-[10px] text-red-500 font-medium tracking-tight uppercase">{errors.name}</p>}
+                                {errors.name && <p className="text-[10px] text-red-500 font-bold tracking-tight uppercase mt-1">{errors.name}</p>}
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Work Email</Label>
+                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Work Email</Label>
                             <Input
                                 type="email"
                                 value={data.email}
-                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all placeholder:text-slate-300 font-light text-base md:text-sm"
-                                placeholder="name@studio.com"
+                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all placeholder:text-slate-300 font-medium text-sm"
+                                placeholder="owner@studio.com"
                                 onChange={(e) => setData('email', e.target.value)}
                             />
-                            {errors.email && <p className="text-[10px] text-red-500 font-medium tracking-tight uppercase">{errors.email}</p>}
+                            {errors.email && <p className="text-[10px] text-red-500 font-bold tracking-tight uppercase mt-1">{errors.email}</p>}
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2 relative">
-                                <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Password</Label>
+                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Password</Label>
                                 <div className="relative">
                                     <Input
                                         type={showPassword ? "text" : "password"}
                                         value={data.password}
-                                        className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light pr-10 text-base md:text-sm"
+                                        className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all font-medium pr-10 text-sm"
                                         onChange={(e) => setData('password', e.target.value)}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 p-2"
+                                        className="absolute right-0 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 transition-colors"
                                     >
                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
                                 </div>
-                                {errors.password && <p className="text-[10px] text-red-500 font-medium tracking-tight uppercase">{errors.password}</p>}
+                                {errors.password && <p className="text-[10px] text-red-500 font-bold tracking-tight uppercase mt-1">{errors.password}</p>}
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Confirm</Label>
+                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600">Confirm</Label>
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     value={data.password_confirmation}
-                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all font-light text-base md:text-sm"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all font-medium text-sm"
                                     onChange={(e) => setData('password_confirmation', e.target.value)}
                                 />
-                                {errors.password_confirmation && <p className="text-[10px] text-red-500 font-medium tracking-tight uppercase">{errors.password_confirmation}</p>}
+                                {errors.password_confirmation && <p className="text-[10px] text-red-500 font-bold tracking-tight uppercase mt-1">{errors.password_confirmation}</p>}
                             </div>
                         </div>
 
@@ -154,16 +174,16 @@ export default function Register() {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="group relative flex h-14 w-full items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold tracking-[0.2em] text-white transition-all hover:bg-slate-800 active:scale-[0.98] disabled:opacity-50"
+                                className="group relative flex h-14 w-full items-center justify-center rounded-xl bg-slate-900 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:bg-blue-600 active:scale-[0.98] disabled:opacity-50"
                             >
-                                {processing ? 'CREATING...' : 'CREATE MY STUDIO'}
+                                {processing ? 'INITIALIZING...' : 'START FREE TRIAL'}
                                 {!processing && <ArrowRight className="absolute right-6 h-4 w-4 transition-transform group-hover:translate-x-1 hidden sm:block" />}
                             </button>
                         </div>
 
-                        <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em] pt-4">
-                            Member?{' '}
-                            <Link href={route('login')} className="text-slate-900 hover:underline underline-offset-4">
+                        <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] pt-4">
+                            Already a member?{' '}
+                            <Link href={route('login')} className="text-slate-900 hover:text-blue-600 transition-colors underline-offset-4">
                                 Sign in
                             </Link>
                         </p>
