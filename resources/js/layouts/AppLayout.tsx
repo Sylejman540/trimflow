@@ -57,7 +57,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
 
     return (
         <Dialog open={open} onOpenChange={v => !v && onClose()}>
-            <DialogContent className="sm:max-w-md border-slate-200 shadow-none">
+            <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Zap className="h-4 w-4 text-amber-500" /> Walk-in Quick Book
@@ -81,7 +81,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                             <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue placeholder="Select service" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
                                 {walkin.services.map(s => (
                                     <SelectItem key={s.id} value={String(s.id)}>
                                         {s.name} — {formatCents(s.price)}
@@ -98,7 +98,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                                 <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                     <SelectValue placeholder="Select barber" />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
                                     {walkin.barbers.map(b => (
                                         <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
                                     ))}
