@@ -37,7 +37,7 @@ class GenerateRecurringAppointments extends Command
                 'service_id'           => $appt->service_id,
                 'starts_at'            => $nextStart,
                 'ends_at'              => $nextStart->copy()->addMinutes($duration),
-                'status'               => 'scheduled',
+                'status'               => 'confirmed',
                 'price'                => $appt->price,
                 'notes'                => $appt->notes,
                 'recurrence_rule'      => $appt->recurrence_rule,

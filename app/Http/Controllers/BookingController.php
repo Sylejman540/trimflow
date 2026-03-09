@@ -146,7 +146,7 @@ class BookingController extends Controller
 
             if ($existingCustomer->booking_trust === 'restricted') {
                 $pendingCount = Appointment::where('customer_id', $existingCustomer->id)
-                    ->whereIn('status', ['scheduled', 'confirmed'])
+                    ->whereIn('status', ['confirmed'])
                     ->where('starts_at', '>', now())
                     ->count();
 
@@ -159,7 +159,7 @@ class BookingController extends Controller
 
             // Duplicate booking protection: max 3 future appointments
             $futureCount = Appointment::where('customer_id', $existingCustomer->id)
-                ->whereIn('status', ['scheduled', 'confirmed'])
+                ->whereIn('status', ['confirmed'])
                 ->where('starts_at', '>', now())
                 ->count();
 
@@ -193,7 +193,7 @@ class BookingController extends Controller
             'starts_at'               => $startsAt,
             'ends_at'                 => $endsAt,
             'price'                   => $totalPrice,
-            'status'                  => 'scheduled',
+            'status'                  => 'confirmed',
             'booking_source'          => 'public_booking',
             'notes'                   => $validated['notes'] ?? null,
             'cancel_token'            => $cancelToken,

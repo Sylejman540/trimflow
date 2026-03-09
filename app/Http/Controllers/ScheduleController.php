@@ -67,7 +67,7 @@ class ScheduleController extends Controller
         $this->authorize('update', $appointment);
 
         $validated = $request->validate([
-            'starts_at' => 'required|date|after:now',
+            'starts_at' => 'required|date',
         ]);
 
         $duration = $appointment->starts_at->diffInMinutes($appointment->ends_at);

@@ -124,7 +124,8 @@ class DashboardController extends Controller
             ->with(['barber.user', 'customer', 'service'])
             ->whereDate('starts_at', $today)
             ->orderBy('starts_at')
-            ->get();
+            ->get()
+            ->map(fn (Appointment $a) => $this->mapAppointment($a));
 
         $goal = ShopGoal::where('month', $today->month)->where('year', $today->year)->first();
 
@@ -151,11 +152,27 @@ class DashboardController extends Controller
             'upcoming_appointments' => $appointmentQuery()
                 ->with(['barber.user', 'customer', 'service'])
                 ->where('starts_at', '>=', now())
-                ->whereIn('status', ['scheduled', 'confirmed'])
+                ->whereIn('status', ['confirmed', 'in_progress'])
                 ->orderBy('starts_at')
                 ->limit(5)
-                ->get(),
+                ->get()
+                ->map(fn (Appointment $a) => $this->mapAppointment($a)),
         ]);
+    }
+
+    private function mapAppointment(Appointment $a): array
+    {
+        return [
+            'id'         => $a->id,
+            'starts_at'  => $a->starts_at->toIso8601String(),
+            'ends_at'    => $a->ends_at->toIso8601String(),
+            'status'     => $a->status,
+            'price'      => $a->price,
+            'notes'      => $a->notes,
+            'customer'   => $a->customer ? ['id' => $a->customer->id, 'name' => $a->customer->name] : null,
+            'service'    => $a->service  ? ['id' => $a->service->id,  'name' => $a->service->name]  : null,
+            'barber'     => $a->barber   ? ['id' => $a->barber->id,   'user' => ['name' => $a->barber->user?->name]] : null,
+        ];
     }
 
     private function completionRate(callable $query, Carbon $start, Carbon $end): int

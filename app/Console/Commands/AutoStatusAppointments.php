@@ -15,8 +15,8 @@ class AutoStatusAppointments extends Command
     {
         $now = Carbon::now();
 
-        // Mark as in_progress: scheduled/confirmed appointments that have started but not ended
-        $inProgress = Appointment::whereIn('status', ['scheduled', 'confirmed'])
+        // Mark as in_progress: confirmed appointments that have started but not ended
+        $inProgress = Appointment::whereIn('status', ['confirmed'])
             ->where('starts_at', '<=', $now)
             ->where('ends_at', '>', $now)
             ->update(['status' => 'in_progress']);

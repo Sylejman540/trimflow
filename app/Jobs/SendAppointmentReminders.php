@@ -21,7 +21,7 @@ class SendAppointmentReminders implements ShouldQueue
         $windowEnd   = Carbon::now()->addHours(25);
 
         Appointment::with(['customer.user', 'barber.user', 'service'])
-            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->whereIn('status', ['confirmed'])
             ->whereBetween('starts_at', [$windowStart, $windowEnd])
             ->get()
             ->each(function (Appointment $appointment) {

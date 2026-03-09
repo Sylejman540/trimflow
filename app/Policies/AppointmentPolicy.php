@@ -28,10 +28,6 @@ class AppointmentPolicy
 
     public function update(User $user, Appointment $appointment): bool
     {
-        if ($appointment->starts_at->isPast()) {
-            return false;
-        }
-
         if ($user->hasRole('shop-admin')) {
             return true;
         }

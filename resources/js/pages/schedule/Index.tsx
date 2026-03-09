@@ -24,15 +24,14 @@ const HOUR_HEIGHT = 64;
 const SLOT_MINS   = 15;
 
 const STATUS_COLORS: Record<string, string> = {
-    scheduled:   'bg-blue-50 border-blue-200 text-blue-800',
     confirmed:   'bg-green-50 border-green-200 text-green-800',
     in_progress: 'bg-amber-50 border-amber-200 text-amber-800',
     completed:   'bg-emerald-50 border-emerald-200 text-emerald-800',
     no_show:     'bg-slate-50 border-slate-200 text-slate-500',
+    cancelled:   'bg-red-50 border-red-200 text-red-600',
 };
 
 const STATUS_BADGE: Record<string, string> = {
-    scheduled:   'bg-blue-100 text-blue-700',
     confirmed:   'bg-green-100 text-green-700',
     in_progress: 'bg-amber-100 text-amber-700',
     completed:   'bg-emerald-100 text-emerald-700',
@@ -212,7 +211,12 @@ function MobileListView({ appointments, date, navigate }: {
                                 </div>
                             </div>
                             <span className={cn('text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0', STATUS_BADGE[appt.status] ?? 'bg-slate-100 text-slate-500')}>
-                                {appt.status.replace('_', ' ')}
+                                {appt.status === 'confirmed' ? t('appt.confirmed')
+                                    : appt.status === 'in_progress' ? t('appt.inProgress')
+                                    : appt.status === 'completed' ? t('appt.completed')
+                                    : appt.status === 'cancelled' ? t('appt.cancelled')
+                                    : appt.status === 'no_show' ? t('appt.noShow')
+                                    : appt.status}
                             </span>
                         </div>
                     </button>

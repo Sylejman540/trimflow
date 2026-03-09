@@ -14,7 +14,14 @@ class BarberTimeOffController extends Controller
     {
         $timeOffs = BarberTimeOff::with('barber.user')
             ->orderBy('starts_on')
-            ->get();
+            ->get()
+            ->map(fn ($t) => [
+                'id'        => $t->id,
+                'starts_on' => $t->starts_on->format('Y-m-d'),
+                'ends_on'   => $t->ends_on->format('Y-m-d'),
+                'reason'    => $t->reason,
+                'barber'    => ['id' => $t->barber->id, 'user' => ['name' => $t->barber->user->name]],
+            ]);
 
         return Inertia::render('barbers/TimeOff', [
             'time_offs' => $timeOffs,

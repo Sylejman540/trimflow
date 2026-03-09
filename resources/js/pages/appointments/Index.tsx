@@ -45,13 +45,12 @@ function capitalizeWords(str: string) {
 }
 
 function statusVariant(status: AppointmentStatus) {
-    const map = {
-        scheduled: 'bg-blue-50 text-blue-600 border-blue-100',
-        confirmed: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    const map: Record<AppointmentStatus, string> = {
+        confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
         in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
-        completed: 'bg-green-50 text-green-700 border-green-100',
-        cancelled: 'bg-red-50 text-red-600 border-red-100',
-        no_show: 'bg-slate-50 text-slate-600 border-slate-100',
+        completed:   'bg-green-50 text-green-700 border-green-100',
+        cancelled:   'bg-red-50 text-red-600 border-red-100',
+        no_show:     'bg-slate-50 text-slate-600 border-slate-100',
     };
     return map[status];
 }
@@ -190,13 +189,12 @@ export default function Index({
             accessorKey: 'status',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => {
-                const statusKeyMap: Record<string, string> = {
-                    confirmed: 'appt.confirmed',
+                const statusKeyMap: Record<AppointmentStatus, string> = {
+                    confirmed:   'appt.confirmed',
                     in_progress: 'appt.inProgress',
-                    completed: 'appt.completed',
-                    cancelled: 'appt.cancelled',
-                    no_show: 'appt.noShow',
-                    scheduled: 'appt.scheduled',
+                    completed:   'appt.completed',
+                    cancelled:   'appt.cancelled',
+                    no_show:     'appt.noShow',
                 };
                 const key = statusKeyMap[row.original.status];
                 return (

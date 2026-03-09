@@ -98,7 +98,7 @@ class AppointmentController extends Controller
             'starts_at'       => $startsAt,
             'ends_at'         => $endsAt,
             'price'           => $service->price,
-            'status'          => 'scheduled',
+            'status'          => 'confirmed',
             'notes'           => $validated['notes'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? 'none',
         ]);
@@ -160,7 +160,7 @@ class AppointmentController extends Controller
             'customer_phone'  => 'nullable|string|max:50',
             'service_id'      => 'required|exists:services,id',
             'starts_at'       => 'required|date',
-            'status'          => 'required|in:scheduled,confirmed,in_progress,completed,cancelled,no_show',
+            'status'          => 'required|in:confirmed,in_progress,completed,cancelled,no_show',
             'notes'           => 'nullable|string|max:1000',
             'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
             'tip_amount'      => 'nullable|numeric|min:0',

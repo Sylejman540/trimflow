@@ -106,7 +106,6 @@ export default {
         service: 'Leistung',
         startsAt: 'Startzeit',
         endsAt: 'Endzeit',
-        scheduled: 'Geplant',
         confirmed: 'Bestätigt',
         inProgress: 'In Bearbeitung',
         completed: 'Abgeschlossen',

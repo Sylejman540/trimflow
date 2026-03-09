@@ -106,7 +106,6 @@ export default {
         service: 'Service',
         startsAt: 'Heure de début',
         endsAt: 'Heure de fin',
-        scheduled: 'Planifié',
         confirmed: 'Confirmé',
         inProgress: 'En cours',
         completed: 'Terminé',

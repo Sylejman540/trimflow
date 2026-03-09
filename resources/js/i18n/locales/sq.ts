@@ -107,7 +107,6 @@ export default {
         service: 'Shërbimi',
         startsAt: 'Ora e fillimit',
         endsAt: 'Ora e mbarimit',
-        scheduled: 'I planifikuar',
         confirmed: 'I konfirmuar',
         inProgress: 'Në vazhdim',
         completed: 'I përfunduar',

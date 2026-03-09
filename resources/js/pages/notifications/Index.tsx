@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Bell, BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check } from 'lucide-react';
+import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -16,8 +16,11 @@ interface NotificationItem {
     created_at: string;
 }
 
+/**
+ * Smaller, more refined icons for the compact list
+ */
 function NotifIcon({ icon }: { icon?: string }) {
-    const cls = 'h-4 w-4 shrink-0';
+    const cls = 'h-3.5 w-3.5 shrink-0';
     switch (icon) {
         case 'check':        return <Check className={cn(cls, 'text-emerald-500')} />;
         case 'check-circle': return <CheckCircle2 className={cn(cls, 'text-emerald-500')} />;
@@ -48,71 +51,88 @@ export default function Index({
             actions={
                 unread_count > 0 ? (
                     <Button
-                        variant="outline"
-                        className="h-9 px-4 rounded-lg text-xs font-bold border-slate-200 shadow-none"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-[11px] font-semibold text-slate-500 hover:text-slate-900"
                         onClick={markAll}
                     >
-                        Mark all read
+                        Mark all as read
                     </Button>
                 ) : undefined
             }
         >
             <Head title="Notifications" />
 
-            {/* Centering Wrapper */}
-            <div className="flex flex-col items-center w-full py-10">
-                <div className="w-full max-w-2xl space-y-2">
+            <div className="flex flex-col items-center w-full py-6 px-4">
+                {/* Max-width reduced slightly to make the list feel tighter */}
+                <div className="w-full max-w-xl space-y-1.5">
                     {notifications.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <BellOff className="h-10 w-10 text-slate-200 mb-4" />
-                            <p className="text-sm font-medium text-slate-500">No notifications yet</p>
-                            <p className="text-xs text-slate-400 mt-1">Status changes and alerts will appear here.</p>
+                        <div className="flex flex-col items-center justify-center py-20 text-center">
+                            <BellOff className="h-8 w-8 text-slate-200 mb-3" />
+                            <p className="text-sm font-medium text-slate-500">All caught up!</p>
+                            <p className="text-xs text-slate-400">No new notifications to show.</p>
                         </div>
                     )}
 
-                    {notifications.map(n => (
+                    {notifications.map((n) => (
                         <div
                             key={n.id}
                             className={cn(
-                                'flex items-start gap-4 rounded-xl border px-5 py-4 transition-colors',
+                                'group relative flex items-start gap-3 rounded-md border p-2.5 transition-all duration-200',
                                 n.read_at
-                                    ? 'border-slate-100 bg-white'
-                                    : 'border-slate-200 bg-slate-50',
+                                    ? 'border-slate-100 bg-white opacity-80 hover:opacity-100'
+                                    : 'border-blue-100 bg-blue-50/40 shadow-sm ring-1 ring-blue-50/50'
                             )}
                         >
+                            {/* Icon - tucked top-left */}
                             <div className="mt-0.5">
                                 <NotifIcon icon={n.data.icon} />
                             </div>
 
                             <div className="flex-1 min-w-0">
-                                <p className={cn(
-                                    'text-sm leading-snug',
-                                    n.read_at ? 'text-slate-500' : 'font-medium text-slate-900',
-                                )}>
-                                    {n.data.message}
-                                </p>
-                                <p className="text-[11px] text-slate-400 mt-0.5">{n.created_at}</p>
+                                <div className="flex items-start justify-between gap-2">
+                                    <p className={cn(
+                                        'text-[13px] leading-snug break-words',
+                                        n.read_at ? 'text-slate-500' : 'font-medium text-slate-900'
+                                    )}>
+                                        {n.data.message}
+                                    </p>
+                                    
+                                    {/* Inline Timestamp to save vertical space */}
+                                    <span className="shrink-0 text-[10px] text-slate-400 mt-0.5">
+                                        {n.created_at}
+                                    </span>
+                                </div>
+
+                                {/* Footer actions: Tiny and clean */}
+                                <div className="flex items-center gap-3 mt-1.5">
+                                    {n.data.appointment_id && (
+                                        <button
+                                            onClick={() => router.visit(route('appointments.show', n.data.appointment_id!))}
+                                            className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                                        >
+                                            View details
+                                            <ArrowRight className="h-3 w-3" />
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 shrink-0">
-                                {n.data.appointment_id && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-7 px-2 text-xs text-slate-400 hover:text-slate-900"
-                                        onClick={() => router.visit(route('appointments.show', n.data.appointment_id!))}
-                                    >
-                                        View
-                                    </Button>
-                                )}
-                                {!n.read_at && (
-                                    <button
-                                        onClick={() => markOne(n.id)}
-                                        className="h-2 w-2 rounded-full bg-slate-900 hover:bg-slate-600 transition-colors shrink-0"
-                                        title="Mark as read"
-                                    />
-                                )}
-                            </div>
+                            {/* Mark as read - hidden until hover for a cleaner look */}
+                            {!n.read_at && (
+                                <button
+                                    onClick={() => markOne(n.id)}
+                                    className="ml-2 shrink-0 opacity-0 group-hover:opacity-100 h-6 w-6 flex items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm hover:border-blue-300 hover:text-blue-600 transition-all"
+                                    title="Mark as read"
+                                >
+                                    <Check className="h-3 w-3" />
+                                </button>
+                            )}
+                            
+                            {/* Unread indicator dot (when not hovering) */}
+                            {!n.read_at && (
+                                <div className="absolute top-2.5 right-2.5 h-1.5 w-1.5 rounded-full bg-blue-500 group-hover:hidden" />
+                            )}
                         </div>
                     ))}
                 </div>

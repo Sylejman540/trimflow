@@ -106,7 +106,6 @@ export default {
         service: 'Υπηρεσία',
         startsAt: 'Ώρα έναρξης',
         endsAt: 'Ώρα λήξης',
-        scheduled: 'Προγραμματισμένο',
         confirmed: 'Επιβεβαιωμένο',
         inProgress: 'Σε εξέλιξη',
         completed: 'Ολοκληρωμένο',

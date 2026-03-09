@@ -9,13 +9,13 @@ use Illuminate\Support\Carbon;
 class MarkNoShows extends Command
 {
     protected $signature   = 'appointments:mark-no-shows';
-    protected $description = 'Mark scheduled/confirmed appointments that have passed as no_show';
+    protected $description = 'Mark confirmed appointments that have passed as no_show';
 
     public function handle(): int
     {
         $cutoff = Carbon::now()->subMinutes(30);
 
-        $updated = Appointment::whereIn('status', ['scheduled', 'confirmed'])
+        $updated = Appointment::whereIn('status', ['confirmed'])
             ->where('ends_at', '<', $cutoff)
             ->update(['status' => 'no_show']);
 

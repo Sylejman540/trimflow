@@ -106,7 +106,6 @@ export default {
         service: 'Usluga',
         startsAt: 'Početak',
         endsAt: 'Kraj',
-        scheduled: 'Zakazano',
         confirmed: 'Potvrđeno',
         inProgress: 'U tijeku',
         completed: 'Završeno',

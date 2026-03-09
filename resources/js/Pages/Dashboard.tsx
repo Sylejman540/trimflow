@@ -70,12 +70,11 @@ interface BarberPerf {
 
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
-        scheduled: 'bg-blue-500/15 text-blue-700',
-        confirmed: 'bg-green-500/15 text-green-700',
+        confirmed:   'bg-green-500/15 text-green-700',
         in_progress: 'bg-amber-500/15 text-amber-700',
-        completed: 'bg-emerald-500/15 text-emerald-700',
-        cancelled: 'bg-red-500/15 text-red-700',
-        no_show: 'bg-gray-500/15 text-gray-700',
+        completed:   'bg-emerald-500/15 text-emerald-700',
+        cancelled:   'bg-red-500/15 text-red-700',
+        no_show:     'bg-gray-500/15 text-gray-700',
     };
     return map[status];
 }

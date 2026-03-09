@@ -49,6 +49,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Block login for inactive barbers
+        $user = Auth::user();
+        if ($user && $user->barber && ! $user->barber->is_active) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been deactivated. Please contact the barbershop owner.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

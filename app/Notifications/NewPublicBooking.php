@@ -26,7 +26,7 @@ class NewPublicBooking extends Notification
         return [
             'appointment_id' => $this->appointment->id,
             'message'        => "New booking: {$customer} booked {$service} on {$time}.",
-            'status'         => 'scheduled',
+            'status'         => 'confirmed',
             'icon'           => 'calendar',
         ];
     }

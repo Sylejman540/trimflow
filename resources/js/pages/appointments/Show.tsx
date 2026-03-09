@@ -20,12 +20,11 @@ interface ProductItem {
 
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-        scheduled: 'outline',
-        confirmed: 'default',
+        confirmed:   'default',
         in_progress: 'secondary',
-        completed: 'default',
-        cancelled: 'destructive',
-        no_show: 'destructive',
+        completed:   'default',
+        cancelled:   'destructive',
+        no_show:     'destructive',
     };
     return map[status];
 }

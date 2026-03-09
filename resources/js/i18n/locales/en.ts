@@ -122,7 +122,6 @@ export default {
         service: 'Service',
         startsAt: 'Start Time',
         endsAt: 'End Time',
-        scheduled: 'Scheduled',
         confirmed: 'Confirmed',
         inProgress: 'In Progress',
         completed: 'Completed',

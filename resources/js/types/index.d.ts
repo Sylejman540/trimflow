@@ -76,7 +76,6 @@ export interface Service {
 }
 
 export type AppointmentStatus =
-    | 'scheduled'
     | 'confirmed'
     | 'in_progress'
     | 'completed'
