@@ -29,10 +29,12 @@ export default function Edit({
     appointment,
     barbers,
     services,
+    is_barber,
 }: {
     appointment: Appointment;
     barbers: Barber[];
     services: Service[];
+    is_barber: boolean;
 }) {
     const { data, setData, put, processing, errors } = useForm({
         barber_id: String(appointment.barber_id),
@@ -95,21 +97,27 @@ export default function Edit({
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <User size={12} /> Assigned Barber
                             </Label>
-                            <Select
-                                value={data.barber_id}
-                                onValueChange={(v) => setData('barber_id', v ?? '')}
-                            >
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                                    {barbers.map((b) => (
-                                        <SelectItem key={b.id} value={String(b.id)} className="text-sm font-medium">
-                                            {b.user?.name ?? ''}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            {is_barber ? (
+                                <div className="h-10 bg-slate-50 border border-slate-200 rounded-lg px-3 flex items-center text-sm text-slate-700">
+                                    {appointment.barber?.user?.name ?? 'You'}
+                                </div>
+                            ) : (
+                                <Select
+                                    value={data.barber_id}
+                                    onValueChange={(v) => setData('barber_id', v ?? '')}
+                                >
+                                    <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
+                                        <SelectValue placeholder="Select barber" />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                        {barbers.map((b) => (
+                                            <SelectItem key={b.id} value={String(b.id)} className="text-sm font-medium">
+                                                {b.user?.name ?? ''}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                             {errors.barber_id && <p className="text-xs text-red-500 font-medium">{errors.barber_id}</p>}
                         </div>
                     </div>

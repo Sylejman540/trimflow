@@ -133,10 +133,14 @@ class AppointmentController extends Controller
 
         $appointment->load(['barber.user', 'customer', 'service']);
 
+        $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
+
         return Inertia::render('appointments/Edit', [
             'appointment' => $appointment,
-            'barbers' => Barber::with('user')->where('is_active', true)->get(),
+            'barbers' => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
             'services' => Service::where('is_active', true)->orderBy('name')->get(),
+            'is_barber' => $isBarber,
         ]);
     }
 
@@ -145,9 +149,10 @@ class AppointmentController extends Controller
         $this->authorize('update', $appointment);
 
         $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
 
         $validated = $request->validate([
-            'barber_id'       => 'required|exists:barbers,id',
+            'barber_id'       => $isBarber ? 'nullable' : 'required|exists:barbers,id',
             'customer_name'   => 'required|string|max:255',
             'customer_phone'  => 'nullable|string|max:50',
             'service_id'      => 'required|exists:services,id',
@@ -159,6 +164,7 @@ class AppointmentController extends Controller
         ]);
 
         $phone = $validated['customer_phone'] ?? null;
+        $barberId = $isBarber ? $appointment->barber_id : $validated['barber_id'];
 
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
@@ -172,14 +178,14 @@ class AppointmentController extends Controller
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
 
-        $this->validateBarberAvailability($validated['barber_id'], $startsAt);
+        $this->validateBarberAvailability($barberId, $startsAt);
         $endsAt = $startsAt->copy()->addMinutes($service->duration);
-        $this->validateNoConflict($validated['barber_id'], $startsAt, $endsAt, $appointment->id);
+        $this->validateNoConflict($barberId, $startsAt, $endsAt, $appointment->id);
 
         $previousStatus = $appointment->status;
 
         $appointment->update([
-            'barber_id'       => $validated['barber_id'],
+            'barber_id'       => $barberId,
             'customer_id'     => $customer->id,
             'service_id'      => $validated['service_id'],
             'starts_at'       => $startsAt,
