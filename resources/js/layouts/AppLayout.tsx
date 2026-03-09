@@ -174,7 +174,7 @@ export default function AppLayout({
 
                     {/* User Badge */}
                     <div className={cn("flex items-center gap-3 pt-2", !isCollapsed && "px-2")}>
-                        <div className="h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold">
+                        <div className="ml-1 h-8 w-8 shrink-0 flex items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold">
                             {auth.user.name.charAt(0).toUpperCase()}
                         </div>
                         {!isCollapsed && (
