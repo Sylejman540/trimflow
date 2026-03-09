@@ -37,6 +37,7 @@ class HandleInertiaRequests extends Middleware
                 'company' => $request->user()?->company,
                 'roles' => $request->user()?->getRoleNames() ?? [],
                 'permissions' => $request->user()?->getAllPermissions()->pluck('name') ?? [],
+                'unread_notifications' => $request->user()?->unreadNotifications()->count() ?? 0,
             ],
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),

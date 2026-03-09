@@ -100,6 +100,47 @@ class BarberController extends Controller
         return redirect()->route('barbers.index')->with('success', 'Barber updated.');
     }
 
+    public function schedule(Barber $barber)
+    {
+        $this->authorize('update', $barber);
+
+        $barber->load('user');
+
+        return Inertia::render('barbers/Schedule', [
+            'barber' => $barber,
+        ]);
+    }
+
+    public function updateSchedule(Request $request, Barber $barber)
+    {
+        $this->authorize('update', $barber);
+
+        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+        $validated = $request->validate([
+            'working_hours' => 'required|array',
+            'working_hours.*' => 'nullable|array',
+            'working_hours.*.enabled' => 'boolean',
+            'working_hours.*.start' => 'nullable|string|date_format:H:i',
+            'working_hours.*.end'   => 'nullable|string|date_format:H:i',
+        ]);
+
+        $schedule = [];
+        foreach ($days as $day) {
+            $dayData = $validated['working_hours'][$day] ?? ['enabled' => false];
+            $enabled = (bool) ($dayData['enabled'] ?? false);
+            $schedule[$day] = [
+                'enabled' => $enabled,
+                'start'   => $enabled ? ($dayData['start'] ?? '09:00') : null,
+                'end'     => $enabled ? ($dayData['end']   ?? '18:00') : null,
+            ];
+        }
+
+        $barber->update(['working_hours' => $schedule]);
+
+        return redirect()->route('barbers.index')->with('success', 'Schedule updated.');
+    }
+
     public function destroy(Barber $barber)
     {
         $this->authorize('delete', $barber);

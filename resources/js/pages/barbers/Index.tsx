@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
-import { Edit, Plus, Trash2, Search, SlidersHorizontal, Mail, User } from 'lucide-react';
+import { Edit, Plus, Trash2, Search, SlidersHorizontal, Mail, User, Clock } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -154,6 +154,9 @@ export default function Index({
                 const barber = row.original;
                 return (
                     <div className="flex items-center justify-end gap-1">
+                        <Link href={route('barbers.schedule', barber.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")} title="Edit Schedule">
+                            <Clock className="h-4 w-4" />
+                        </Link>
                         <Link href={route('barbers.edit', barber.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
                             <Edit className="h-4 w-4" />
                         </Link>

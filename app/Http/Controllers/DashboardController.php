@@ -92,15 +92,24 @@ class DashboardController extends Controller
                 ->map(function (Barber $barber) use ($monthStart, $monthEnd) {
                     $appts = $barber->appointments()
                         ->whereBetween('starts_at', [$monthStart, $monthEnd]);
-                    $total = $appts->count();
+                    $total     = $appts->count();
                     $completed = (clone $appts)->where('status', 'completed')->count();
-                    $revenue = (clone $appts)->where('status', 'completed')->sum('price');
+                    $revenue   = (clone $appts)->where('status', 'completed')->sum('price');
+                    $noShows   = (clone $appts)->where('status', 'no_show')->count();
+                    $avgRating = round(
+                        $barber->reviews()
+                            ->whereBetween('created_at', [$monthStart, $monthEnd])
+                            ->avg('rating') ?? 0,
+                        1
+                    );
                     return [
-                        'id' => $barber->id,
-                        'name' => $barber->user?->name ?? '-',
+                        'id'           => $barber->id,
+                        'name'         => $barber->user?->name ?? '-',
                         'appointments' => $total,
-                        'completed' => $completed,
-                        'revenue' => $revenue,
+                        'completed'    => $completed,
+                        'revenue'      => $revenue,
+                        'no_shows'     => $noShows,
+                        'avg_rating'   => $avgRating,
                     ];
                 })
                 ->sortByDesc('revenue')

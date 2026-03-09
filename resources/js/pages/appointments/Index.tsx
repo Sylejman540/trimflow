@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
-import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2, Search, SlidersHorizontal, Download } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -219,12 +219,19 @@ export default function Index({
         <AppLayout
             title="Appointments"
             actions={
-                can_create && (
-                    <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: "default" }), "bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold border-none shadow-none")}>
-                        <Plus className="mr-2 h-3.5 w-3.5" />
-                        New Appointment
-                    </Link>
-                )
+                <div className="flex items-center gap-2">
+                    <a
+                        href={route('export.appointments')}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-4 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                    >
+                        <Download className="mr-2 h-3.5 w-3.5" /> Export CSV
+                    </a>
+                    {can_create && (
+                        <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold border-none shadow-none')}>
+                            <Plus className="mr-2 h-3.5 w-3.5" /> New Appointment
+                        </Link>
+                    )}
+                </div>
             }
         >
             <Head title="Appointments" />

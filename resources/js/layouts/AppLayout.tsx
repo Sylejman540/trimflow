@@ -6,12 +6,15 @@ import {
     LogOut,
     Menu,
     Scissors,
-    Settings,
     User,
     Briefcase,
     ChevronLeft,
     ChevronRight,
-    X,
+    ShieldCheck,
+    Users,
+    FileBarChart2,
+    Bell,
+    Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -49,6 +52,34 @@ const navItems: NavItem[] = [
         href: '/barbers',
         icon: Briefcase,
         active: 'barbers.*',
+        roles: ['platform-admin', 'shop-admin'],
+    },
+    {
+        label: 'Customers',
+        href: '/customers',
+        icon: Users,
+        active: 'customers.*',
+        roles: ['platform-admin', 'shop-admin'],
+    },
+    {
+        label: 'Reports',
+        href: '/reports',
+        icon: FileBarChart2,
+        active: 'reports.*',
+        roles: ['platform-admin', 'shop-admin'],
+    },
+    {
+        label: 'Audit Log',
+        href: '/audit-logs',
+        icon: ShieldCheck,
+        active: 'audit-logs.*',
+        roles: ['platform-admin', 'shop-admin'],
+    },
+    {
+        label: 'Waitlist',
+        href: '/waitlist',
+        icon: Clock,
+        active: 'waitlist.*',
         roles: ['platform-admin', 'shop-admin'],
     },
 ];
@@ -204,7 +235,20 @@ export default function AppLayout({
                         </button>
                         <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
                     </div>
-                    <div className="flex items-center gap-4">{actions}</div>
+                    <div className="flex items-center gap-3">
+                        {actions}
+                        <Link
+                            href={route('notifications.index')}
+                            className="relative p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                        >
+                            <Bell size={18} />
+                            {auth.unread_notifications > 0 && (
+                                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white">
+                                    {auth.unread_notifications > 9 ? '9+' : auth.unread_notifications}
+                                </span>
+                            )}
+                        </Link>
+                    </div>
                 </header>
 
                 <main className="flex-1 overflow-y-auto p-8 bg-white">

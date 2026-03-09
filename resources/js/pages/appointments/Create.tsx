@@ -1,5 +1,5 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, useState, useMemo } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Tag } from 'lucide-react';
 
 export default function Create({
     barbers,
@@ -33,7 +33,22 @@ export default function Create({
         service_id: '',
         starts_at: '',
         notes: '',
+        recurrence_rule: 'none',
     });
+
+    const categories = useMemo(() => {
+        const cats = services.map(s => s.category).filter(Boolean) as string[];
+        return ['all', ...Array.from(new Set(cats))];
+    }, [services]);
+
+    const [categoryFilter, setCategoryFilter] = useState('all');
+
+    const filteredServices = useMemo(() =>
+        categoryFilter === 'all'
+            ? services
+            : services.filter(s => s.category === categoryFilter),
+        [services, categoryFilter],
+    );
 
     const selectedService = services.find(
         (s) => s.id === Number(data.service_id),
@@ -118,6 +133,29 @@ export default function Create({
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                             <Scissors size={12} /> Service Type
                         </Label>
+                        {categories.length > 2 && (
+                            <div className="flex items-center gap-2 flex-wrap">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => {
+                                            setCategoryFilter(cat);
+                                            setData('service_id', '');
+                                        }}
+                                        className={cn(
+                                            'inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors border',
+                                            categoryFilter === cat
+                                                ? 'bg-slate-900 text-white border-slate-900'
+                                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400',
+                                        )}
+                                    >
+                                        <Tag size={9} />
+                                        {cat === 'all' ? 'All' : cat}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                         <Select
                             value={data.service_id}
                             onValueChange={(v) => setData('service_id', v ?? '')}
@@ -126,7 +164,7 @@ export default function Create({
                                 <SelectValue placeholder="Select service" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
-                                {services.map((s) => (
+                                {filteredServices.map((s) => (
                                     <SelectItem key={s.id} value={String(s.id)} className="text-sm">
                                         {s.name} — {formatCents(s.price)}
                                     </SelectItem>
@@ -175,6 +213,27 @@ export default function Create({
                                 rows={1}
                             />
                         </div>
+                    </div>
+
+                    {/* Recurrence */}
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <Tag size={12} /> Repeat
+                        </Label>
+                        <Select
+                            value={data.recurrence_rule}
+                            onValueChange={(v) => setData('recurrence_rule', v ?? 'none')}
+                        >
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                <SelectItem value="none">Does not repeat</SelectItem>
+                                <SelectItem value="weekly">Weekly</SelectItem>
+                                <SelectItem value="biweekly">Every 2 weeks</SelectItem>
+                                <SelectItem value="monthly">Monthly</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     {/* Action Buttons */}

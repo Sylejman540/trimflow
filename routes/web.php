@@ -1,10 +1,17 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\BarberController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\WaitlistController;
 use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,8 +28,21 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::resource('barbers', BarberController::class)->except(['show']);
-    Route::resource('customers', CustomerController::class)->except(['show']);
+    Route::get('/barbers/{barber}/schedule', [BarberController::class, 'schedule'])->name('barbers.schedule');
+    Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
+    Route::resource('customers', CustomerController::class);
     Route::resource('appointments', AppointmentController::class);
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
+    Route::get('/export/customers', [ExportController::class, 'customers'])->name('export.customers');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
+    Route::get('/waitlist', [WaitlistController::class, 'index'])->name('waitlist.index');
+    Route::get('/waitlist/create', [WaitlistController::class, 'create'])->name('waitlist.create');
+    Route::post('/waitlist', [WaitlistController::class, 'store'])->name('waitlist.store');
+    Route::patch('/waitlist/{waitlist}', [WaitlistController::class, 'update'])->name('waitlist.update');
+    Route::delete('/waitlist/{waitlist}', [WaitlistController::class, 'destroy'])->name('waitlist.destroy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -33,5 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Public booking portal (no auth required)
+Route::get('/book/{slug}', [BookingController::class, 'show'])->name('booking.show');
+Route::post('/book/{slug}', [BookingController::class, 'store'])->name('booking.store');
+Route::get('/book/{slug}/confirmed', [BookingController::class, 'confirmation'])->name('booking.confirmation');
 
 require __DIR__.'/auth.php';

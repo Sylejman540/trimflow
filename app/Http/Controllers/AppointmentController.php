@@ -6,9 +6,12 @@ use App\Models\Appointment;
 use App\Models\Barber;
 use App\Models\Customer;
 use App\Models\Service;
+use App\Models\WaitlistEntry;
+use App\Notifications\AppointmentStatusChanged;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class AppointmentController extends Controller
@@ -58,12 +61,13 @@ class AppointmentController extends Controller
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
 
         $validated = $request->validate([
-            'barber_id' => $isBarber ? 'nullable' : 'required|exists:barbers,id',
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'nullable|string|max:50',
-            'service_id' => 'required|exists:services,id',
-            'starts_at' => 'required|date',
-            'notes' => 'nullable|string|max:1000',
+            'barber_id'       => $isBarber ? 'nullable' : 'required|exists:barbers,id',
+            'customer_name'   => 'required|string|max:255',
+            'customer_phone'  => 'nullable|string|max:50',
+            'service_id'      => 'required|exists:services,id',
+            'starts_at'       => 'required|date',
+            'notes'           => 'nullable|string|max:1000',
+            'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
         ]);
 
         $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
@@ -80,15 +84,18 @@ class AppointmentController extends Controller
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
 
+        $this->validateBarberAvailability($barberId, $startsAt);
+
         Appointment::create([
-            'barber_id' => $barberId,
-            'customer_id' => $customer->id,
-            'service_id' => $validated['service_id'],
-            'starts_at' => $startsAt,
-            'ends_at' => $startsAt->copy()->addMinutes($service->duration),
-            'price' => $service->price,
-            'status' => 'scheduled',
-            'notes' => $validated['notes'] ?? null,
+            'barber_id'       => $barberId,
+            'customer_id'     => $customer->id,
+            'service_id'      => $validated['service_id'],
+            'starts_at'       => $startsAt,
+            'ends_at'         => $startsAt->copy()->addMinutes($service->duration),
+            'price'           => $service->price,
+            'status'          => 'scheduled',
+            'notes'           => $validated['notes'] ?? null,
+            'recurrence_rule' => $validated['recurrence_rule'] ?? 'none',
         ]);
 
         return redirect()->route('appointments.index')->with('success', 'Appointment created.');
@@ -136,13 +143,14 @@ class AppointmentController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'barber_id' => 'required|exists:barbers,id',
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'nullable|string|max:50',
-            'service_id' => 'required|exists:services,id',
-            'starts_at' => 'required|date',
-            'status' => 'required|in:scheduled,confirmed,in_progress,completed,cancelled,no_show',
-            'notes' => 'nullable|string|max:1000',
+            'barber_id'       => 'required|exists:barbers,id',
+            'customer_name'   => 'required|string|max:255',
+            'customer_phone'  => 'nullable|string|max:50',
+            'service_id'      => 'required|exists:services,id',
+            'starts_at'       => 'required|date',
+            'status'          => 'required|in:scheduled,confirmed,in_progress,completed,cancelled,no_show',
+            'notes'           => 'nullable|string|max:1000',
+            'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
         ]);
 
         $customer = Customer::firstOrCreate(
@@ -157,18 +165,77 @@ class AppointmentController extends Controller
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
 
+        $this->validateBarberAvailability($validated['barber_id'], $startsAt);
+
+        $previousStatus = $appointment->status;
+
         $appointment->update([
-            'barber_id' => $validated['barber_id'],
-            'customer_id' => $customer->id,
-            'service_id' => $validated['service_id'],
-            'starts_at' => $startsAt,
-            'ends_at' => $startsAt->copy()->addMinutes($service->duration),
-            'price' => $service->price,
-            'status' => $validated['status'],
-            'notes' => $validated['notes'] ?? null,
+            'barber_id'       => $validated['barber_id'],
+            'customer_id'     => $customer->id,
+            'service_id'      => $validated['service_id'],
+            'starts_at'       => $startsAt,
+            'ends_at'         => $startsAt->copy()->addMinutes($service->duration),
+            'price'           => $service->price,
+            'status'          => $validated['status'],
+            'notes'           => $validated['notes'] ?? null,
+            'recurrence_rule' => $validated['recurrence_rule'] ?? $appointment->recurrence_rule,
         ]);
 
+        // Award loyalty points when first marked completed (1 point per $1 of service price)
+        if ($previousStatus !== 'completed' && $validated['status'] === 'completed') {
+            $points = max(1, (int) round($service->price / 100));
+            $customer->increment('loyalty_points', $points);
+            $customer->update(['last_visit_at' => $startsAt]);
+        }
+
+        // Notify waiting waitlist entries when an appointment slot opens (cancelled)
+        if ($previousStatus !== 'cancelled' && $validated['status'] === 'cancelled') {
+            WaitlistEntry::where('status', 'waiting')
+                ->where(fn ($q) => $q->whereNull('barber_id')->orWhere('barber_id', $appointment->barber_id))
+                ->where(fn ($q) => $q->whereNull('service_id')->orWhere('service_id', $appointment->service_id))
+                ->take(5)
+                ->each(function (WaitlistEntry $entry) {
+                    $entry->update(['status' => 'notified', 'notified_at' => now()]);
+                    // Optionally send email notification here
+                });
+        }
+
+        // Notify the shop admin when status changes
+        if ($previousStatus !== $validated['status']) {
+            $appointment->load(['customer', 'service']);
+            $owner = \App\Models\User::where('company_id', $user->company_id)
+                ->role('shop-admin')
+                ->first();
+            if ($owner && $owner->id !== $user->id) {
+                $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+            }
+        }
+
         return redirect()->route('appointments.index')->with('success', 'Appointment updated.');
+    }
+
+    private function validateBarberAvailability(?int $barberId, Carbon $startsAt): void
+    {
+        if (! $barberId) return;
+
+        $barber = Barber::find($barberId);
+        if (! $barber || empty($barber->working_hours)) return;
+
+        $dayKey   = strtolower($startsAt->format('l')); // e.g. "monday"
+        $dayHours = $barber->working_hours[$dayKey] ?? null;
+
+        if (! $dayHours || empty($dayHours['enabled'])) {
+            throw ValidationException::withMessages([
+                'starts_at' => 'The barber is not working on ' . ucfirst($dayKey) . '.',
+            ]);
+        }
+
+        $appointmentTime = $startsAt->format('H:i');
+        if ($appointmentTime < $dayHours['start'] || $appointmentTime >= $dayHours['end']) {
+            throw ValidationException::withMessages([
+                'starts_at' => "The barber works {$dayHours['start']}–{$dayHours['end']} on " . ucfirst($dayKey) . '.',
+            ]);
+        }
     }
 
     public function destroy(Appointment $appointment)

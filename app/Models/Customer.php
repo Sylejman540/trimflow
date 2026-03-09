@@ -21,7 +21,26 @@ class Customer extends Model
         'address',
         'notes',
         'favorite_barber_id',
+        'loyalty_points',
+        'last_visit_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'last_visit_at' => 'datetime',
+        ];
+    }
+
+    public function loyaltyTier(): string
+    {
+        return match (true) {
+            $this->loyalty_points >= 500 => 'Gold',
+            $this->loyalty_points >= 200 => 'Silver',
+            $this->loyalty_points >= 50  => 'Bronze',
+            default                      => 'Member',
+        };
+    }
 
     public function user(): BelongsTo
     {

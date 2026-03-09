@@ -50,6 +50,10 @@ export interface Customer {
     phone: string | null;
     favorite_barber_id: number | null;
     notes: string | null;
+    loyalty_points: number;
+    last_visit_at: string | null;
+    loyalty_tier?: string;
+    visit_count?: number;
     created_at: string;
     updated_at: string;
     user?: User;
@@ -77,6 +81,8 @@ export type AppointmentStatus =
     | 'cancelled'
     | 'no_show';
 
+export type RecurrenceRule = 'none' | 'weekly' | 'biweekly' | 'monthly';
+
 export interface Appointment {
     id: number;
     company_id: number;
@@ -88,6 +94,8 @@ export interface Appointment {
     status: AppointmentStatus;
     price: number;
     notes: string | null;
+    recurrence_rule: RecurrenceRule;
+    recurrence_parent_id: number | null;
     created_at: string;
     updated_at: string;
     barber?: Barber;
@@ -150,6 +158,7 @@ export type PageProps<
         company: Company | null;
         roles: string[];
         permissions: string[];
+        unread_notifications: number;
     };
     ziggy: Config & { location: string };
 };

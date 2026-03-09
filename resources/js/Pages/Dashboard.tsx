@@ -54,6 +54,8 @@ interface BarberPerf {
     appointments: number;
     completed: number;
     revenue: number;
+    no_shows: number;
+    avg_rating: number;
 }
 
 function statusColor(status: AppointmentStatus) {
@@ -309,18 +311,27 @@ export default function Dashboard({
                                 <div className="space-y-3">
                                     {barber_performance.map((b, i) => (
                                         <div key={b.id} className="flex items-center gap-3">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-semibold">
+                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
                                                 {i + 1}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium truncate">{b.name}</p>
                                                 <p className="text-xs text-muted-foreground">
                                                     {b.completed}/{b.appointments} completed
+                                                    {b.no_shows > 0 && ` · ${b.no_shows} no-show${b.no_shows > 1 ? 's' : ''}`}
                                                 </p>
                                             </div>
-                                            <p className="text-sm font-semibold tabular-nums">
-                                                {formatCents(b.revenue)}
-                                            </p>
+                                            <div className="flex flex-col items-end gap-0.5">
+                                                <p className="text-sm font-semibold tabular-nums">
+                                                    {formatCents(b.revenue)}
+                                                </p>
+                                                {b.avg_rating > 0 && (
+                                                    <span className="flex items-center gap-0.5 text-[11px] text-amber-500 font-medium">
+                                                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                                                        {b.avg_rating}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

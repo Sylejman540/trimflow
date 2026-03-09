@@ -12,8 +12,14 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::with('favoriteBarber.user')
+            ->withCount(['appointments as visit_count' => fn ($q) => $q->where('status', 'completed')])
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function (Customer $c) {
+                $data = $c->toArray();
+                $data['loyalty_tier'] = $c->loyaltyTier();
+                return $data;
+            });
 
         return Inertia::render('customers/Index', [
             'customers' => $customers,
@@ -41,6 +47,24 @@ class CustomerController extends Controller
         Customer::create($validated);
 
         return redirect()->route('customers.index')->with('success', 'Customer created.');
+    }
+
+    public function show(Customer $customer)
+    {
+        $customer->load(['favoriteBarber.user', 'reviews.barber.user', 'reviews.appointment.service']);
+
+        $appointments = $customer->appointments()
+            ->with(['barber.user', 'service', 'review'])
+            ->orderByDesc('starts_at')
+            ->get();
+
+        return Inertia::render('customers/Show', [
+            'customer'     => array_merge($customer->toArray(), [
+                'loyalty_tier' => $customer->loyaltyTier(),
+                'visit_count'  => $appointments->where('status', 'completed')->count(),
+            ]),
+            'appointments' => $appointments,
+        ]);
     }
 
     public function edit(Customer $customer)

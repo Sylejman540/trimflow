@@ -23,6 +23,8 @@ class Appointment extends Model
         'status',
         'notes',
         'price',
+        'recurrence_rule',
+        'recurrence_parent_id',
     ];
 
     protected function casts(): array
