@@ -10,7 +10,17 @@ class EnsureHasCompany
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user() && !$request->user()->company_id) {
+        $user = $request->user();
+
+        if ($user && !$user->company_id) {
+            // Platform admins don't belong to a company — send them to their panel
+            if ($user->hasRole('platform-admin')) {
+                if ($request->is('admin*')) {
+                    return $next($request);
+                }
+                return redirect()->route('admin.dashboard');
+            }
+
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'No company assigned.'], 403);
             }

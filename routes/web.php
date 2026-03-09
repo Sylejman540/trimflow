@@ -24,6 +24,7 @@ use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AppointmentProductController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -70,6 +71,11 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::resource('products', ProductController::class)->except(['show']);
     Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
     Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
+});
+
+// Platform super-admin panel
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
 });
 
 Route::middleware('auth')->group(function () {

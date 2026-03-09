@@ -16,8 +16,13 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $today = Carbon::today();
         $user = Auth::user();
+
+        if ($user->hasRole('platform-admin')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $today = Carbon::today();
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
         $barberId = $isBarber ? $user->barber?->id : null;
 
