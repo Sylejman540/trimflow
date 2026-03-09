@@ -57,4 +57,40 @@ class ScheduleController extends Controller
             'is_barber'    => $isBarber,
         ]);
     }
+
+    /**
+     * PATCH /schedule/{appointment}/reschedule
+     * Drag-and-drop reschedule: update starts_at / ends_at only.
+     */
+    public function reschedule(Request $request, Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+
+        $validated = $request->validate([
+            'starts_at' => 'required|date|after:now',
+        ]);
+
+        $duration = $appointment->starts_at->diffInMinutes($appointment->ends_at);
+        $newStart = Carbon::parse($validated['starts_at']);
+        $newEnd   = $newStart->copy()->addMinutes($duration);
+
+        // Double-booking check (exclude self)
+        $conflict = Appointment::where('barber_id', $appointment->barber_id)
+            ->where('id', '!=', $appointment->id)
+            ->whereNotIn('status', ['cancelled', 'no_show'])
+            ->where('starts_at', '<', $newEnd)
+            ->where('ends_at', '>', $newStart)
+            ->exists();
+
+        if ($conflict) {
+            return response()->json(['error' => 'Time slot conflict.'], 422);
+        }
+
+        $appointment->update([
+            'starts_at' => $newStart,
+            'ends_at'   => $newEnd,
+        ]);
+
+        return response()->json(['ok' => true]);
+    }
 }

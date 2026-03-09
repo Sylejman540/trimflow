@@ -22,7 +22,8 @@ class AppointmentController extends Controller
         $this->authorize('viewAny', Appointment::class);
 
         $query = Appointment::with(['barber.user', 'customer', 'service'])
-            ->orderBy('starts_at', 'desc');
+            ->where('ends_at', '>=', Carbon::now())
+            ->orderBy('starts_at', 'asc');
 
         $user = Auth::user();
         if ($user->hasRole('barber') && !$user->hasRole('shop-admin')) {

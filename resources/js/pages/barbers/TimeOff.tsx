@@ -1,5 +1,6 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PalmtreeIcon, Plus, Trash2, CalendarDays, User } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,7 @@ function isActive(startsOn: string, endsOn: string) {
 }
 
 export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; barbers: BarberSimple[] }) {
+    const { t } = useTranslation();
     const [addOpen, setAddOpen] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         barber_id: '',
@@ -108,11 +110,11 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                     <form onSubmit={submit} className="space-y-4 pt-2">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Barber
+                                <User size={12} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
                                 <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
+                                    <SelectValue placeholder={t('search')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                     {barbers.map(b => (
@@ -167,9 +169,9 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                         </div>
 
                         <DialogFooter>
-                            <Button type="button" variant="ghost" onClick={() => setAddOpen(false)} className="text-slate-500">Cancel</Button>
+                            <Button type="button" variant="ghost" onClick={() => setAddOpen(false)} className="text-slate-500">{t('cancel')}</Button>
                             <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
-                                Save
+                                {t('save')}
                             </Button>
                         </DialogFooter>
                     </form>
@@ -180,6 +182,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
 }
 
 function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void }) {
+    const { t } = useTranslation();
     const active = isActive(entry.starts_on, entry.ends_on);
     const today  = todayStr();
     const future = entry.starts_on > today;
@@ -191,7 +194,7 @@ function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void 
                     <span className="text-sm font-medium text-slate-900">{entry.barber.user.name}</span>
                     {active && (
                         <Badge className="text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                            Active
+                            {t('active')}
                         </Badge>
                     )}
                     {future && (

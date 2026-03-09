@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     CalendarDays,
     TrendingUp,
@@ -31,7 +32,7 @@ import {
     CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -39,7 +40,6 @@ import {
 } from '@/components/ui/dialog';
 import { formatCents, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
-
 
 interface Stats {
     today_appointments: number;
@@ -81,10 +81,7 @@ function statusColor(status: AppointmentStatus) {
 }
 
 function formatTime(dateStr: string) {
-    return new Date(dateStr).toLocaleString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-    });
+    return new Date(dateStr).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
 
 function revenueChange(current: number, previous: number): { pct: number; up: boolean } {
@@ -93,18 +90,9 @@ function revenueChange(current: number, previous: number): { pct: number; up: bo
     return { pct: Math.abs(pct), up: pct >= 0 };
 }
 
-function KpiCard({
-    title,
-    value,
-    subtitle,
-    icon,
-    trend,
-}: {
-    title: string;
-    value: string | number;
-    subtitle?: string;
-    icon: React.ReactNode;
-    trend?: { pct: number; up: boolean };
+function KpiCard({ title, value, subtitle, icon, trend }: {
+    title: string; value: string | number; subtitle?: string;
+    icon: React.ReactNode; trend?: { pct: number; up: boolean; label: string };
 }) {
     return (
         <Card className="relative overflow-hidden border-slate-200 shadow-none">
@@ -113,19 +101,15 @@ function KpiCard({
                     <div className="space-y-1 min-w-0">
                         <p className="text-xs font-medium text-muted-foreground truncate">{title}</p>
                         <p className="text-xl lg:text-2xl font-semibold tracking-tight">{value}</p>
-                        {subtitle && (
-                            <p className="text-xs text-muted-foreground">{subtitle}</p>
-                        )}
+                        {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
                         {trend && trend.pct > 0 && (
                             <div className={`flex items-center gap-1 text-xs font-medium ${trend.up ? 'text-emerald-600' : 'text-red-600'}`}>
                                 {trend.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                                {trend.pct}% vs last month
+                                {trend.pct}% {trend.label}
                             </div>
                         )}
                     </div>
-                    <div className="rounded-lg bg-muted/50 p-2.5 lg:p-3 shrink-0">
-                        {icon}
-                    </div>
+                    <div className="rounded-lg bg-muted/50 p-2.5 lg:p-3 shrink-0">{icon}</div>
                 </div>
             </CardContent>
         </Card>
@@ -133,6 +117,10 @@ function KpiCard({
 }
 
 function ScheduleRow({ appointment }: { appointment: Appointment }) {
+    const { t } = useTranslation();
+    const statusKey = appointment.status === 'no_show' ? 'noShow'
+        : appointment.status === 'in_progress' ? 'inProgress'
+        : appointment.status;
     return (
         <Link
             href={route('appointments.show', appointment.id)}
@@ -142,27 +130,20 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
                 {formatTime(appointment.starts_at)}
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                    {appointment.customer?.name ?? 'Walk-in'}
-                </p>
+                <p className="text-sm font-medium truncate">{appointment.customer?.name ?? t('dash.walkin')}</p>
                 <p className="text-xs text-muted-foreground truncate">
                     {appointment.service?.name}
                     {appointment.barber?.user?.name && ` · ${appointment.barber.user.name}`}
                 </p>
             </div>
             <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${statusColor(appointment.status)}`}>
-                {appointment.status.replace('_', ' ')}
+                {t(`appt.${statusKey}`)}
             </span>
         </Link>
     );
 }
 
-interface ShopGoal {
-    revenue_target: number;
-    bookings_target: number;
-    month: number;
-    year: number;
-}
+interface ShopGoal { revenue_target: number; bookings_target: number; month: number; year: number; }
 
 function GoalBar({ label, current, target }: { label: string; current: number; target: number }) {
     const pct = target > 0 ? Math.min(Math.round((current / target) * 100), 100) : 0;
@@ -171,15 +152,10 @@ function GoalBar({ label, current, target }: { label: string; current: number; t
         <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
                 <span className="font-medium text-slate-700 truncate pr-2">{label}</span>
-                <span className={cn('font-bold shrink-0', done ? 'text-emerald-600' : 'text-slate-500')}>
-                    {pct}% {done && '✓'}
-                </span>
+                <span className={cn('font-bold shrink-0', done ? 'text-emerald-600' : 'text-slate-500')}>{pct}% {done && '✓'}</span>
             </div>
             <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div
-                    className={cn('h-full rounded-full transition-all', done ? 'bg-emerald-500' : 'bg-slate-900')}
-                    style={{ width: `${pct}%` }}
-                />
+                <div className={cn('h-full rounded-full transition-all', done ? 'bg-emerald-500' : 'bg-slate-900')} style={{ width: `${pct}%` }} />
             </div>
         </div>
     );
@@ -188,9 +164,9 @@ function GoalBar({ label, current, target }: { label: string; current: number; t
 function GoalSetModal({ goal, month, year, open, onClose }: {
     goal: ShopGoal | null; month: number; year: number; open: boolean; onClose: () => void;
 }) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
-        month: String(month),
-        year: String(year),
+        month: String(month), year: String(year),
         revenue_target: goal ? String(goal.revenue_target / 100) : '',
         bookings_target: goal ? String(goal.bookings_target) : '',
     });
@@ -201,33 +177,25 @@ function GoalSetModal({ goal, month, year, open, onClose }: {
     return (
         <Dialog open={open} onOpenChange={v => !v && onClose()}>
             <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
-                <DialogHeader><DialogTitle>Set Monthly Goals</DialogTitle></DialogHeader>
+                <DialogHeader><DialogTitle>{t('dash.setMonthlyGoals')}</DialogTitle></DialogHeader>
                 <form onSubmit={submit} className="space-y-4 pt-2">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Revenue Target ($)</Label>
-                        <Input
-                            type="number" min="0" step="0.01"
-                            value={data.revenue_target}
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('dash.revenueTarget')}</Label>
+                        <Input type="number" min="0" step="0.01" value={data.revenue_target}
                             onChange={e => setData('revenue_target', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            placeholder="e.g. 5000"
-                        />
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg" placeholder="e.g. 5000" />
                         {errors.revenue_target && <p className="text-xs text-red-500">{errors.revenue_target}</p>}
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Bookings Target</Label>
-                        <Input
-                            type="number" min="0"
-                            value={data.bookings_target}
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('dash.bookingsTarget')}</Label>
+                        <Input type="number" min="0" value={data.bookings_target}
                             onChange={e => setData('bookings_target', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            placeholder="e.g. 80"
-                        />
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg" placeholder="e.g. 80" />
                         {errors.bookings_target && <p className="text-xs text-red-500">{errors.bookings_target}</p>}
                     </div>
                     <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
-                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">Save Goals</Button>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">{t('cancel')}</Button>
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">{t('dash.saveGoals')}</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
@@ -238,95 +206,86 @@ function GoalSetModal({ goal, month, year, open, onClose }: {
 interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
 
 export default function Dashboard({
-    is_barber,
-    stats,
-    chart_data,
-    barber_performance,
-    today_schedule,
-    upcoming_appointments,
-    goal,
-    low_stock_products = [],
+    is_barber, stats, chart_data, barber_performance,
+    today_schedule, upcoming_appointments, goal, low_stock_products = [],
 }: {
-    is_barber: boolean;
-    stats: Stats;
-    chart_data: ChartPoint[];
-    barber_performance: BarberPerf[];
-    today_schedule: Appointment[];
-    upcoming_appointments: Appointment[];
-    goal: ShopGoal | null;
+    is_barber: boolean; stats: Stats; chart_data: ChartPoint[];
+    barber_performance: BarberPerf[]; today_schedule: Appointment[];
+    upcoming_appointments: Appointment[]; goal: ShopGoal | null;
     low_stock_products?: LowStockProduct[];
 }) {
+    const { t } = useTranslation();
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
     const [goalOpen, setGoalOpen] = useState(false);
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
     const now = new Date();
 
     return (
-        <AppLayout title="Dashboard">
-            <Head title="Dashboard" />
-
+        <AppLayout title={t('dashboard')}>
+            <Head title={t('dashboard')} />
             <div className="space-y-4 lg:space-y-6">
+
                 {/* Low-stock alert */}
                 {!is_barber && !lowStockDismissed && low_stock_products.length > 0 && (
                     <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                         <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-amber-800">Low stock alert</p>
+                            <p className="text-sm font-semibold text-amber-800">{t('dash.lowStockAlert')}</p>
                             <p className="text-xs text-amber-700 mt-0.5">
                                 {low_stock_products.map(p => `${p.name} (${p.stock_qty} left)`).join(' · ')}
                             </p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                             <Link href={route('products.index')} className="text-xs font-semibold text-amber-700 hover:text-amber-900 flex items-center gap-1">
-                                <Package className="h-3.5 w-3.5" /> View
+                                <Package className="h-3.5 w-3.5" /> {t('dash.viewProducts')}
                             </Link>
                             <button onClick={() => setLowStockDismissed(true)} className="text-xs text-amber-400 hover:text-amber-700">✕</button>
                         </div>
                     </div>
                 )}
 
-                {/* KPI Cards — 2 cols on mobile, 4 on desktop */}
+                {/* KPI Cards */}
                 <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:grid-cols-4">
                     <KpiCard
-                        title="Today's Appointments"
+                        title={t('dash.todayAppointments')}
                         value={stats.today_appointments}
-                        subtitle={`${stats.weekly_bookings} this week`}
+                        subtitle={`${stats.weekly_bookings} ${t('dash.thisWeek')}`}
                         icon={<CalendarDays className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     <KpiCard
-                        title="Monthly Bookings"
+                        title={t('dash.bookingsGoal')}
                         value={stats.monthly_bookings}
                         icon={<BarChart3 className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     <KpiCard
-                        title="Monthly Revenue"
+                        title={t('dash.revenueToday')}
                         value={formatCents(stats.monthly_revenue)}
-                        trend={revTrend}
+                        trend={{ ...revTrend, label: t('dash.vsLastMonth') }}
                         icon={<DollarSign className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                     />
                     {!is_barber && stats.active_barbers != null ? (
                         <KpiCard
-                            title="Active Barbers"
+                            title={t('dash.activeBarbers')}
                             value={stats.active_barbers}
                             icon={<Users className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                         />
                     ) : (
                         <KpiCard
-                            title="Completion Rate"
+                            title={t('appt.completed')}
                             value={`${stats.completion_rate}%`}
-                            subtitle="This month"
+                            subtitle={t('dash.thisMonth')}
                             icon={<CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5 text-muted-foreground" />}
                         />
                     )}
                 </div>
 
-                {/* Popular service pill */}
+                {/* Popular service */}
                 {stats.popular_service && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                         <Star className="h-4 w-4 text-amber-500 shrink-0" />
-                        <span>Top service:</span>
+                        <span>{t('dash.topService')}</span>
                         <span className="font-medium text-foreground">{stats.popular_service}</span>
-                        <Badge variant="secondary" className="text-xs">{stats.popular_service_count} bookings</Badge>
+                        <Badge variant="secondary" className="text-xs">{stats.popular_service_count}</Badge>
                     </div>
                 )}
 
@@ -336,18 +295,13 @@ export default function Dashboard({
                         <CardHeader className="pb-3 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Monthly Goals</CardTitle>
+                                    <CardTitle className="text-base">{t('dash.monthlyGoals')}</CardTitle>
                                     <CardDescription>
                                         {new Date(now.getFullYear(), now.getMonth()).toLocaleString('en-US', { month: 'long', year: 'numeric' })}
                                     </CardDescription>
                                 </div>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 text-xs text-slate-400 hover:text-slate-900"
-                                    onClick={() => setGoalOpen(true)}
-                                >
-                                    {goal ? 'Edit' : 'Set Goals'}
+                                <Button variant="ghost" size="sm" className="h-8 text-xs text-slate-400 hover:text-slate-900" onClick={() => setGoalOpen(true)}>
+                                    {goal ? t('dash.editGoals') : t('dash.setGoals')}
                                 </Button>
                             </div>
                         </CardHeader>
@@ -355,42 +309,33 @@ export default function Dashboard({
                             {goal ? (
                                 <>
                                     <GoalBar
-                                        label={`Revenue — ${formatCents(stats.monthly_revenue)} of ${formatCents(goal.revenue_target)}`}
-                                        current={stats.monthly_revenue}
-                                        target={goal.revenue_target}
+                                        label={`${t('dash.revenueGoal')} — ${formatCents(stats.monthly_revenue)} of ${formatCents(goal.revenue_target)}`}
+                                        current={stats.monthly_revenue} target={goal.revenue_target}
                                     />
                                     <GoalBar
-                                        label={`Bookings — ${stats.monthly_bookings} of ${goal.bookings_target}`}
-                                        current={stats.monthly_bookings}
-                                        target={goal.bookings_target}
+                                        label={`${t('dash.bookingsGoal')} — ${stats.monthly_bookings} of ${goal.bookings_target}`}
+                                        current={stats.monthly_bookings} target={goal.bookings_target}
                                     />
                                 </>
                             ) : (
                                 <p className="text-sm text-muted-foreground py-2">
-                                    No goals set for this month.{' '}
+                                    {t('dash.noGoals')}{' '}
                                     <button className="font-medium text-slate-900 underline underline-offset-2" onClick={() => setGoalOpen(true)}>
-                                        Set goals
+                                        {t('dash.setGoalsLink')}
                                     </button>
                                 </p>
                             )}
                         </CardContent>
                     </Card>
                 )}
-                <GoalSetModal
-                    goal={goal}
-                    month={now.getMonth() + 1}
-                    year={now.getFullYear()}
-                    open={goalOpen}
-                    onClose={() => setGoalOpen(false)}
-                />
+                <GoalSetModal goal={goal} month={now.getMonth() + 1} year={now.getFullYear()} open={goalOpen} onClose={() => setGoalOpen(false)} />
 
-                {/* Chart + Today's Schedule — stacked on mobile, side-by-side on desktop */}
+                {/* Chart + Today's Schedule */}
                 <div className="grid gap-4 lg:gap-6 lg:grid-cols-5">
-                    {/* Bookings Chart */}
                     <Card className="lg:col-span-3 border-slate-200 shadow-none">
                         <CardHeader className="pb-2 px-4 lg:px-6">
-                            <CardTitle className="text-base">Bookings Trend</CardTitle>
-                            <CardDescription>Last 14 days</CardDescription>
+                            <CardTitle className="text-base">{t('dash.bookingsTrend')}</CardTitle>
+                            <CardDescription>{t('dash.last14')}</CardDescription>
                         </CardHeader>
                         <CardContent className="pt-0 px-2 lg:px-4">
                             <div className="h-[200px] lg:h-[260px]">
@@ -403,50 +348,23 @@ export default function Dashboard({
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                                        <XAxis
-                                            dataKey="date"
-                                            tick={{ fontSize: 11 }}
-                                            className="fill-muted-foreground"
-                                            tickLine={false}
-                                            axisLine={false}
-                                            interval="preserveStartEnd"
-                                        />
-                                        <YAxis
-                                            tick={{ fontSize: 11 }}
-                                            className="fill-muted-foreground"
-                                            tickLine={false}
-                                            axisLine={false}
-                                            allowDecimals={false}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{
-                                                backgroundColor: 'hsl(var(--card))',
-                                                border: '1px solid hsl(var(--border))',
-                                                borderRadius: '8px',
-                                                fontSize: '13px',
-                                            }}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="bookings"
-                                            stroke="hsl(var(--primary))"
-                                            strokeWidth={2}
-                                            fill="url(#bookingsFill)"
-                                        />
+                                        <XAxis dataKey="date" tick={{ fontSize: 11 }} className="fill-muted-foreground" tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                                        <YAxis tick={{ fontSize: 11 }} className="fill-muted-foreground" tickLine={false} axisLine={false} allowDecimals={false} />
+                                        <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '13px' }} />
+                                        <Area type="monotone" dataKey="bookings" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#bookingsFill)" />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
                         </CardContent>
                     </Card>
 
-                    {/* Today's Schedule */}
                     <Card className="lg:col-span-2 border-slate-200 shadow-none">
                         <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Today's Schedule</CardTitle>
+                                    <CardTitle className="text-base">{t('dash.todaySchedule')}</CardTitle>
                                     <CardDescription>
-                                        {today_schedule.length} appointment{today_schedule.length !== 1 ? 's' : ''}
+                                        {today_schedule.length} {today_schedule.length !== 1 ? t('dash.appointmentsPlural') : t('dash.appointments')}
                                     </CardDescription>
                                 </div>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -454,51 +372,39 @@ export default function Dashboard({
                         </CardHeader>
                         <CardContent className="pt-0 px-2 lg:px-4">
                             <div className="max-h-[220px] lg:max-h-[260px] overflow-y-auto space-y-0.5">
-                                {today_schedule.length > 0 ? (
-                                    today_schedule.map((a) => (
-                                        <ScheduleRow key={a.id} appointment={a} />
-                                    ))
-                                ) : (
-                                    <p className="py-8 text-center text-sm text-muted-foreground">
-                                        No appointments today
-                                    </p>
+                                {today_schedule.length > 0 ? today_schedule.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
+                                    <p className="py-8 text-center text-sm text-muted-foreground">{t('dash.noToday')}</p>
                                 )}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Bottom row: Barber Performance + Upcoming */}
+                {/* Barber Performance + Upcoming */}
                 <div className="grid gap-4 lg:gap-6 lg:grid-cols-2">
-                    {/* Barber Performance (admin only) */}
                     {!is_barber && barber_performance.length > 0 && (
                         <Card className="border-slate-200 shadow-none">
                             <CardHeader className="pb-2 px-4 lg:px-6">
-                                <CardTitle className="text-base">Barber Performance</CardTitle>
-                                <CardDescription>This month</CardDescription>
+                                <CardTitle className="text-base">{t('dash.barberPerf')}</CardTitle>
+                                <CardDescription>{t('dash.thisMonth')}</CardDescription>
                             </CardHeader>
                             <CardContent className="pt-0 px-4 lg:px-6">
                                 <div className="space-y-3">
                                     {barber_performance.map((b, i) => (
                                         <div key={b.id} className="flex items-center gap-3">
-                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">
-                                                {i + 1}
-                                            </div>
+                                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold">{i + 1}</div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium truncate">{b.name}</p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    {b.completed}/{b.appointments} completed
-                                                    {b.no_shows > 0 && ` · ${b.no_shows} no-show${b.no_shows > 1 ? 's' : ''}`}
+                                                    {b.completed}/{b.appointments} {t('dash.completed')}
+                                                    {b.no_shows > 0 && ` · ${b.no_shows} ${b.no_shows > 1 ? t('dash.noShows') : t('dash.noShow')}`}
                                                 </p>
                                             </div>
                                             <div className="flex flex-col items-end gap-0.5 shrink-0">
-                                                <p className="text-sm font-semibold tabular-nums">
-                                                    {formatCents(b.revenue)}
-                                                </p>
+                                                <p className="text-sm font-semibold tabular-nums">{formatCents(b.revenue)}</p>
                                                 {b.avg_rating > 0 && (
                                                     <span className="flex items-center gap-0.5 text-[11px] text-amber-500 font-medium">
-                                                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                                        {b.avg_rating}
+                                                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" /> {b.avg_rating}
                                                     </span>
                                                 )}
                                             </div>
@@ -509,34 +415,21 @@ export default function Dashboard({
                         </Card>
                     )}
 
-                    {/* Upcoming Appointments */}
-                    <Card className={cn(
-                        'border-slate-200 shadow-none',
-                        (!is_barber && barber_performance.length > 0) ? '' : 'lg:col-span-2'
-                    )}>
+                    <Card className={cn('border-slate-200 shadow-none', (!is_barber && barber_performance.length > 0) ? '' : 'lg:col-span-2')}>
                         <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base">Upcoming</CardTitle>
-                                    <CardDescription>Next scheduled appointments</CardDescription>
+                                    <CardTitle className="text-base">{t('dash.upcoming')}</CardTitle>
+                                    <CardDescription>{t('dash.nextScheduled')}</CardDescription>
                                 </div>
-                                <Link
-                                    href={route('appointments.index')}
-                                    className="text-xs font-medium text-primary hover:underline"
-                                >
-                                    View all
+                                <Link href={route('appointments.index')} className="text-xs font-medium text-primary hover:underline">
+                                    {t('dash.viewAll')}
                                 </Link>
                             </div>
                         </CardHeader>
                         <CardContent className="pt-0 px-2 lg:px-4 space-y-0.5">
-                            {upcoming_appointments.length > 0 ? (
-                                upcoming_appointments.map((a) => (
-                                    <ScheduleRow key={a.id} appointment={a} />
-                                ))
-                            ) : (
-                                <p className="py-8 text-center text-sm text-muted-foreground">
-                                    No upcoming appointments
-                                </p>
+                            {upcoming_appointments.length > 0 ? upcoming_appointments.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
+                                <p className="py-8 text-center text-sm text-muted-foreground">{t('dash.noUpcomingFull')}</p>
                             )}
                         </CardContent>
                     </Card>

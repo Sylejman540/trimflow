@@ -17,6 +17,9 @@ Schedule::job(new SendAppointmentReminders)->hourly();
 // Auto-mark no-shows every 30 minutes
 Schedule::command('appointments:mark-no-shows')->everyThirtyMinutes();
 
+// Auto-transition in_progress / completed every minute
+Schedule::command('appointments:auto-status')->everyMinute();
+
 // Generate next occurrences for completed recurring appointments daily
 Schedule::command('appointments:generate-recurring')->daily();
 

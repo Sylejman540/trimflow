@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::post('/barbers/time-off', [BarberTimeOffController::class, 'store'])->name('barbers.time-off.store');
     Route::delete('/barbers/time-off/{timeOff}', [BarberTimeOffController::class, 'destroy'])->name('barbers.time-off.destroy');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
+    Route::patch('/schedule/{appointment}/reschedule', [ScheduleController::class, 'reschedule'])->name('schedule.reschedule');
     Route::post('/customers/{customer}/message', [MessageController::class, 'send'])->name('customers.message');
     Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
 

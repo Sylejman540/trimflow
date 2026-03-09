@@ -47,6 +47,11 @@ class BookingController extends Controller
     {
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
+        // ── Honeypot: bots fill the hidden _hp field, real users don't ──────────
+        if ($request->filled('_hp')) {
+            return redirect()->route('booking.confirmation', $slug);
+        }
+
         // ── Rate limiting: max 5 attempts per IP per 10 minutes ───────────────
         $rateLimitKey = 'public-booking:' . $request->ip();
         if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {

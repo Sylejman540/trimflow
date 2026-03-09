@@ -25,7 +25,6 @@ import { formatCents, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
-    'scheduled',
     'confirmed',
     'in_progress',
     'completed',

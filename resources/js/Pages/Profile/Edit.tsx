@@ -7,6 +7,45 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 import { User, ShieldCheck, AlertTriangle, Monitor, Smartphone, Key, Link2, Copy, Check } from 'lucide-react';
 
+interface SessionData {
+    id: string;
+    ip_address: string;
+    user_agent: string;
+    last_activity: number;
+    is_current: boolean;
+}
+
+function parseUserAgent(ua: string): { browser: string; platform: string; isMobile: boolean } {
+    const isMobile = /mobile|android|iphone|ipad/i.test(ua);
+    const isTablet = /ipad|tablet/i.test(ua);
+
+    let browser = 'Unknown Browser';
+    if (/edg\//i.test(ua)) browser = 'Edge';
+    else if (/opr\//i.test(ua)) browser = 'Opera';
+    else if (/chrome/i.test(ua)) browser = 'Chrome';
+    else if (/safari/i.test(ua)) browser = 'Safari';
+    else if (/firefox/i.test(ua)) browser = 'Firefox';
+
+    let platform = 'Unknown OS';
+    if (/windows nt 10/i.test(ua)) platform = 'Windows 10';
+    else if (/windows/i.test(ua)) platform = 'Windows';
+    else if (/mac os x/i.test(ua)) platform = 'macOS';
+    else if (/iphone/i.test(ua)) platform = 'iPhone';
+    else if (/ipad/i.test(ua)) platform = 'iPad';
+    else if (/android/i.test(ua)) platform = 'Android';
+    else if (/linux/i.test(ua)) platform = 'Linux';
+
+    return { browser, platform, isMobile: isMobile && !isTablet };
+}
+
+function fmtLastActive(timestamp: number): string {
+    const diffSec = Math.floor(Date.now() / 1000) - timestamp;
+    if (diffSec < 60) return 'Just now';
+    if (diffSec < 3600) return `${Math.floor(diffSec / 60)} min ago`;
+    if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} hr ago`;
+    return `${Math.floor(diffSec / 86400)} days ago`;
+}
+
 const TABS = [
     { id: 'general',  label: 'General',     icon: User },
     { id: 'security', label: 'Security',    icon: ShieldCheck },
@@ -19,7 +58,8 @@ export default function Edit({
     mustVerifyEmail,
     status,
     booking_url,
-}: PageProps<{ mustVerifyEmail: boolean; status?: string; booking_url?: string | null }>) {
+    sessions = [],
+}: PageProps<{ mustVerifyEmail: boolean; status?: string; booking_url?: string | null; sessions?: SessionData[] }>) {
     const [activeTab, setActiveTab] = useState('general');
     const [copied, setCopied] = useState(false);
 
@@ -136,28 +176,39 @@ export default function Edit({
                 {activeTab === 'sessions' && (
                     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-8 animate-in fade-in slide-in-from-bottom-2 duration-200">
                         <header className="mb-6">
-                            <h3 className="text-base font-bold text-slate-900">Browser Sessions</h3>
-                            <p className="text-sm text-slate-500 mt-1">Log out of other active sessions on other devices.</p>
+                            <h3 className="text-base font-bold text-slate-900">Active Sessions</h3>
+                            <p className="text-sm text-slate-500 mt-1">These are all your currently active browser sessions.</p>
                         </header>
 
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-4 p-4 border border-slate-100 rounded-xl bg-slate-50/50">
-                                <Monitor className="h-6 w-6 text-slate-400 shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-bold text-slate-900 truncate">macOS — Chrome</div>
-                                    <div className="text-xs text-slate-500">192.168.1.1 · <span className="text-emerald-600 font-bold">This device</span></div>
-                                </div>
+                        {sessions.length === 0 ? (
+                            <p className="text-sm text-slate-400 text-center py-6">No active sessions found.</p>
+                        ) : (
+                            <div className="space-y-3">
+                                {sessions.map(session => {
+                                    const { browser, platform, isMobile } = parseUserAgent(session.user_agent);
+                                    const Icon = isMobile ? Smartphone : Monitor;
+                                    return (
+                                        <div
+                                            key={session.id}
+                                            className={`flex items-center gap-4 p-4 border rounded-xl ${session.is_current ? 'bg-slate-50/50 border-slate-200' : 'border-slate-100'}`}
+                                        >
+                                            <Icon className="h-6 w-6 text-slate-400 shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <div className="text-sm font-bold text-slate-900 truncate">
+                                                    {platform} — {browser}
+                                                </div>
+                                                <div className="text-xs text-slate-500">
+                                                    {session.ip_address} · {session.is_current
+                                                        ? <span className="text-emerald-600 font-bold">This device</span>
+                                                        : fmtLastActive(session.last_activity)
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-
-                            <div className="flex items-center gap-4 p-4 border border-slate-100 rounded-xl">
-                                <Smartphone className="h-6 w-6 text-slate-400 shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                    <div className="text-sm font-bold text-slate-900 truncate">iPhone 15 Pro</div>
-                                    <div className="text-xs text-slate-500">London, UK · 2 hours ago</div>
-                                </div>
-                                <button className="text-xs font-bold text-rose-600 hover:underline shrink-0">Revoke</button>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 )}
 

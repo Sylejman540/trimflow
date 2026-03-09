@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, SlidersHorizontal, ShieldCheck } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
@@ -97,7 +98,7 @@ function ChangeSummary({ old_values, new_values, action }: { old_values: Record<
 }
 
 const MODEL_OPTIONS = [
-    { value: 'all', label: 'All Models' },
+    { value: 'all', label: 'all' },
     { value: 'Appointment', label: 'Appointments' },
     { value: 'Customer', label: 'Customers' },
     { value: 'Barber', label: 'Barbers' },
@@ -105,7 +106,7 @@ const MODEL_OPTIONS = [
 ];
 
 const ACTION_OPTIONS = [
-    { value: 'all', label: 'All Actions' },
+    { value: 'all', label: 'all' },
     { value: 'created', label: 'Created' },
     { value: 'updated', label: 'Updated' },
     { value: 'deleted', label: 'Deleted' },
@@ -118,6 +119,7 @@ export default function Index({
     logs: PaginatedLogs;
     filters: { action?: string; model?: string };
 }) {
+    const { t } = useTranslation();
     const [actionFilter, setActionFilter] = useState(filters?.action ?? 'all');
     const [modelFilter, setModelFilter] = useState(filters?.model ?? 'all');
     const [search, setSearch] = useState('');
@@ -210,8 +212,8 @@ export default function Index({
     }
 
     return (
-        <AppLayout title="Audit Log">
-            <Head title="Audit Log" />
+        <AppLayout title={t('nav.auditLogs')}>
+            <Head title={t('nav.auditLogs')} />
 
             <div className="space-y-4">
                 <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
@@ -220,7 +222,7 @@ export default function Index({
                         <input
                             type="text"
                             value={search}
-                            placeholder="Search by user, model, action..."
+                            placeholder={t('search')}
                             className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setSearch(e.target.value)}
                         />

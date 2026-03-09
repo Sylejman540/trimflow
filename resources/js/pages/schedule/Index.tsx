@@ -1,9 +1,9 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid } from 'lucide-react';
-import { useMemo, useEffect, useState } from 'react';
+import { Head, router } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid, GripVertical, Clock, User, Scissors } from 'lucide-react';
+import { useMemo, useEffect, useState, useRef, useCallback } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { buttonVariants } from '@/components/ui/button';
-import { cn, formatCents } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface ApptSlot {
     id: number;
@@ -16,11 +16,11 @@ interface ApptSlot {
     price: number;
 }
 
-// Hours to show: 07:00 – 21:00
-const HOUR_START = 7;
-const HOUR_END   = 21;
+const HOUR_START  = 7;
+const HOUR_END    = 21;
 const TOTAL_HOURS = HOUR_END - HOUR_START;
-const HOUR_HEIGHT = 64; // px per hour
+const HOUR_HEIGHT = 64;
+const SLOT_MINS   = 15;
 
 const STATUS_COLORS: Record<string, string> = {
     scheduled:   'bg-blue-50 border-blue-200 text-blue-800',
@@ -30,6 +30,17 @@ const STATUS_COLORS: Record<string, string> = {
     no_show:     'bg-slate-50 border-slate-200 text-slate-500',
 };
 
+const STATUS_BADGE: Record<string, string> = {
+    scheduled:   'bg-blue-100 text-blue-700',
+    confirmed:   'bg-green-100 text-green-700',
+    in_progress: 'bg-amber-100 text-amber-700',
+    completed:   'bg-emerald-100 text-emerald-700',
+    no_show:     'bg-slate-100 text-slate-500',
+    cancelled:   'bg-red-100 text-red-600',
+};
+
+const DAY_COL_MIN_W = 120;
+
 function addDays(dateStr: string, n: number) {
     const d = new Date(dateStr + 'T12:00:00');
     d.setDate(d.getDate() + n);
@@ -38,7 +49,7 @@ function addDays(dateStr: string, n: number) {
 
 function weekDates(anchorDate: string) {
     const d = new Date(anchorDate + 'T12:00:00');
-    const day = d.getDay(); // 0=Sun
+    const day = d.getDay();
     const mon = new Date(d);
     mon.setDate(d.getDate() - ((day + 6) % 7));
     return Array.from({ length: 7 }, (_, i) => {
@@ -57,44 +68,24 @@ function fmtShort(dateStr: string) {
 function fmtTime(isoStr: string) {
     return new Date(isoStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 }
-
 function minutesSinceMidnight(isoStr: string) {
     const d = new Date(isoStr);
     return d.getHours() * 60 + d.getMinutes();
 }
 
-function AppointmentBlock({ appt }: { appt: ApptSlot }) {
-    const startMins = minutesSinceMidnight(appt.starts_at);
-    const endMins   = minutesSinceMidnight(appt.ends_at);
-    const topPx     = ((startMins - HOUR_START * 60) / 60) * HOUR_HEIGHT;
-    const heightPx  = Math.max(((endMins - startMins) / 60) * HOUR_HEIGHT, 24);
-    const colorCls  = STATUS_COLORS[appt.status] ?? 'bg-slate-50 border-slate-200 text-slate-700';
-
-    return (
-        <Link
-            href={route('appointments.show', appt.id)}
-            className={cn(
-                'absolute inset-x-1 rounded-lg border px-2 py-1 text-[11px] overflow-hidden hover:shadow-md transition-shadow cursor-pointer',
-                colorCls,
-            )}
-            style={{ top: topPx, height: heightPx }}
-        >
-            <p className="font-semibold truncate leading-tight">{appt.customer}</p>
-            <p className="truncate opacity-70 leading-tight">{appt.service}</p>
-            {heightPx > 40 && <p className="truncate opacity-60 leading-tight">{fmtTime(appt.starts_at)}</p>}
-        </Link>
-    );
+interface DragState {
+    apptId: number;
+    startY: number;
+    origTop: number;
+    ghostTop: number;
+    origAppt: ApptSlot;
 }
 
 function TimeGutter() {
     return (
-        <div className="w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
+        <div className="w-12 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
             {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div
-                    key={i}
-                    className="absolute right-2 text-[10px] text-slate-400 font-medium"
-                    style={{ top: i * HOUR_HEIGHT - 7 }}
-                >
+                <div key={i} className="absolute right-2 text-[10px] text-slate-400 font-medium" style={{ top: i * HOUR_HEIGHT - 7 }}>
                     {((HOUR_START + i) % 12 || 12)}{HOUR_START + i < 12 ? 'am' : 'pm'}
                 </div>
             ))}
@@ -106,21 +97,131 @@ function HourLines() {
     return (
         <>
             {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div
-                    key={i}
-                    className="absolute left-0 right-0 border-t border-slate-100"
-                    style={{ top: i * HOUR_HEIGHT }}
-                />
+                <div key={i} className="absolute left-0 right-0 border-t border-slate-100" style={{ top: i * HOUR_HEIGHT }} />
             ))}
         </>
     );
 }
 
-// Minimum column width per day in week view (ensures blocks fill the column on narrow screens)
-const DAY_COL_MIN_W = 120; // px
+function AppointmentBlock({
+    appt,
+    onDragStart,
+    isDragging,
+    ghostTop,
+}: {
+    appt: ApptSlot;
+    colDate: string;
+    onDragStart: (e: React.MouseEvent, appt: ApptSlot, origTop: number) => void;
+    isDragging: boolean;
+    ghostTop: number | null;
+}) {
+    const startMins = minutesSinceMidnight(appt.starts_at);
+    const endMins   = minutesSinceMidnight(appt.ends_at);
+    const topPx     = ((startMins - HOUR_START * 60) / 60) * HOUR_HEIGHT;
+    const heightPx  = Math.max(((endMins - startMins) / 60) * HOUR_HEIGHT, 24);
+    const colorCls  = STATUS_COLORS[appt.status] ?? 'bg-slate-50 border-slate-200 text-slate-700';
+    const canDrag   = appt.status !== 'completed' && appt.status !== 'cancelled' && appt.status !== 'no_show';
+    const displayTop = isDragging && ghostTop !== null ? ghostTop : topPx;
+
+    return (
+        <>
+            {isDragging && (
+                <div
+                    className="absolute inset-x-1 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50/60 pointer-events-none"
+                    style={{ top: topPx, height: heightPx }}
+                />
+            )}
+            <div
+                className={cn(
+                    'absolute inset-x-1 rounded-lg border px-1.5 py-1 text-[11px] overflow-hidden',
+                    colorCls,
+                    canDrag ? 'cursor-grab active:cursor-grabbing hover:shadow-md' : 'cursor-pointer hover:shadow-sm',
+                    isDragging ? 'shadow-2xl z-30 ring-2 ring-slate-900/20' : 'z-10 transition-shadow',
+                )}
+                style={{ top: displayTop, height: heightPx }}
+                onMouseDown={canDrag ? (e) => onDragStart(e, appt, topPx) : undefined}
+                onClick={!canDrag || !isDragging ? () => router.visit(route('appointments.show', appt.id)) : undefined}
+            >
+                <div className="flex items-start gap-0.5">
+                    {canDrag && <GripVertical className="h-3 w-3 mt-0.5 shrink-0 opacity-30" />}
+                    <div className="flex-1 min-w-0">
+                        <p className="font-semibold truncate leading-tight">{appt.customer}</p>
+                        <p className="truncate opacity-70 leading-tight">{appt.service}</p>
+                        {heightPx > 40 && <p className="truncate opacity-60 leading-tight">{fmtTime(appt.starts_at)}</p>}
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+// Mobile list view — cards instead of a time grid
+function MobileListView({ appointments, date, navigate }: {
+    appointments: ApptSlot[];
+    date: string;
+    navigate: (delta: number) => void;
+}) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const sorted = [...appointments].sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+
+    return (
+        <div className="space-y-3">
+            {/* Date header */}
+            <div className="flex items-center justify-between bg-white border border-slate-200 rounded-xl px-4 py-3">
+                <button onClick={() => navigate(-1)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">
+                    <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="text-center">
+                    <p className="text-sm font-semibold text-slate-900">{fmtDate(date)}</p>
+                    {date === todayStr && <p className="text-[11px] text-amber-600 font-medium">Today</p>}
+                </div>
+                <button onClick={() => navigate(1)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">
+                    <ChevronRight className="h-4 w-4" />
+                </button>
+            </div>
+
+            {sorted.length === 0 ? (
+                <div className="bg-white border border-slate-200 rounded-xl py-12 text-center text-sm text-slate-400">
+                    No appointments this day.
+                </div>
+            ) : (
+                sorted.map(appt => (
+                    <button
+                        key={appt.id}
+                        onClick={() => router.visit(route('appointments.show', appt.id))}
+                        className="w-full text-left bg-white border border-slate-200 rounded-xl px-4 py-3 hover:border-slate-300 hover:shadow-sm transition-all"
+                    >
+                        <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-slate-900 truncate">{appt.customer}</p>
+                                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                                        <Clock className="h-3 w-3" />
+                                        {fmtTime(appt.starts_at)} – {fmtTime(appt.ends_at)}
+                                    </span>
+                                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                                        <Scissors className="h-3 w-3" />
+                                        {appt.service}
+                                    </span>
+                                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                                        <User className="h-3 w-3" />
+                                        {appt.barber}
+                                    </span>
+                                </div>
+                            </div>
+                            <span className={cn('text-[11px] font-semibold px-2 py-0.5 rounded-full shrink-0', STATUS_BADGE[appt.status] ?? 'bg-slate-100 text-slate-500')}>
+                                {appt.status.replace('_', ' ')}
+                            </span>
+                        </div>
+                    </button>
+                ))
+            )}
+        </div>
+    );
+}
 
 export default function Index({
-    appointments,
+    appointments: initialAppointments,
     view,
     date,
     start,
@@ -133,16 +234,35 @@ export default function Index({
     barbers: { id: number; name: string }[];
     is_barber: boolean;
 }) {
-    // On mobile, force day view by redirecting once on mount if currently in week view
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth < 640 : false
+    );
+    const [appointments, setAppointments] = useState<ApptSlot[]>(initialAppointments);
+    const [dragging, setDragging] = useState<DragState | null>(null);
+    const [saving, setSaving] = useState<number | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
+
+    // Track resize
     useEffect(() => {
-        const mq = window.matchMedia('(max-width: 640px)');
-        setIsMobile(mq.matches);
-        if (mq.matches && view === 'week') {
+        function onResize() {
+            setIsMobile(window.innerWidth < 640);
+        }
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
+    // Auto-switch to day view on mobile
+    useEffect(() => {
+        if (isMobile && view === 'week') {
             router.get(route('schedule.index'), { view: 'day', date }, { preserveState: false, replace: true });
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isMobile]);
+
+    useEffect(() => {
+        setAppointments(initialAppointments);
+    }, [initialAppointments]);
 
     const effectiveView = isMobile ? 'day' : view;
     const days = effectiveView === 'week' ? weekDates(date) : [date];
@@ -167,18 +287,96 @@ export default function Index({
     }
 
     const todayStr = new Date().toISOString().split('T')[0];
-
-    // Each day column needs an explicit width so absolute children (appointment blocks) fill it properly
     const colStyle = effectiveView === 'week'
-        ? { width: `${100 / days.length}%`, minWidth: DAY_COL_MIN_W, flexShrink: 0 }
+        ? { width: `${100 / days.length}%`, minWidth: DAY_COL_MIN_W, flexShrink: 0 as const }
         : { flex: '1 1 0%' };
+
+    // ── Drag handlers ────────────────────────────────────────────────────────
+    const handleDragStart = useCallback((e: React.MouseEvent, appt: ApptSlot, origTop: number) => {
+        e.preventDefault();
+        setErrorMsg(null);
+        setDragging({ apptId: appt.id, startY: e.clientY, origTop, ghostTop: origTop, origAppt: { ...appt } });
+    }, []);
+
+    useEffect(() => {
+        if (!dragging) return;
+
+        function onMove(e: MouseEvent) {
+            setDragging(prev => {
+                if (!prev) return null;
+                const rawDelta  = e.clientY - prev.startY;
+                const minsPerPx = 60 / HOUR_HEIGHT;
+                const rawMins   = rawDelta * minsPerPx;
+                const snapped   = Math.round(rawMins / SLOT_MINS) * SLOT_MINS;
+                const newTop    = prev.origTop + (snapped / 60) * HOUR_HEIGHT;
+                const appt      = prev.origAppt;
+                const durationMins = minutesSinceMidnight(appt.ends_at) - minutesSinceMidnight(appt.starts_at);
+                const maxTop    = ((TOTAL_HOURS * 60 - durationMins) / 60) * HOUR_HEIGHT;
+                const clampedTop = Math.max(0, Math.min(maxTop, newTop));
+                return { ...prev, ghostTop: clampedTop };
+            });
+        }
+
+        function onUp() {
+            setDragging(prev => {
+                if (!prev) return null;
+                const appt = prev.origAppt;
+
+                const offsetMins = (prev.ghostTop / HOUR_HEIGHT) * 60;
+                const totalMins  = HOUR_START * 60 + offsetMins;
+                const h = Math.floor(totalMins / 60);
+                const m = Math.round(totalMins % 60);
+
+                const apptDate    = appt.starts_at.split('T')[0];
+                const newStartsAt = `${apptDate}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+
+                const origMins = minutesSinceMidnight(appt.starts_at);
+                const newMins  = h * 60 + m;
+                if (origMins === newMins) return null;
+
+                const durationMins = minutesSinceMidnight(appt.ends_at) - minutesSinceMidnight(appt.starts_at);
+                const newEndsAt    = new Date(new Date(newStartsAt).getTime() + durationMins * 60000).toISOString();
+
+                setAppointments(cur => cur.map(a =>
+                    a.id === appt.id ? { ...a, starts_at: newStartsAt, ends_at: newEndsAt } : a
+                ));
+
+                setSaving(appt.id);
+                const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+                fetch(route('schedule.reschedule', appt.id), {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify({ starts_at: newStartsAt }),
+                })
+                    .then(async r => {
+                        if (!r.ok) {
+                            const json = await r.json().catch(() => ({}));
+                            throw new Error((json as { error?: string }).error ?? 'Failed');
+                        }
+                    })
+                    .catch(err => {
+                        setAppointments(cur => cur.map(a => a.id === appt.id ? appt : a));
+                        setErrorMsg((err as Error).message ?? 'Could not reschedule.');
+                    })
+                    .finally(() => setSaving(null));
+
+                return null;
+            });
+        }
+
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        return () => {
+            window.removeEventListener('mousemove', onMove);
+            window.removeEventListener('mouseup', onUp);
+        };
+    }, [dragging]);
 
     return (
         <AppLayout
             title="Schedule"
             actions={
                 <div className="flex flex-wrap items-center gap-2">
-                    {/* Hide day/week toggle on mobile (always day) */}
                     {!isMobile && (
                         <button
                             onClick={toggleView}
@@ -191,10 +389,7 @@ export default function Index({
                         </button>
                     )}
                     <div className="flex items-center gap-1">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
-                        >
+                        <button onClick={() => navigate(-1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronLeft className="h-4 w-4" />
                         </button>
                         <button
@@ -203,10 +398,7 @@ export default function Index({
                         >
                             Today
                         </button>
-                        <button
-                            onClick={() => navigate(1)}
-                            className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
-                        >
+                        <button onClick={() => navigate(1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronRight className="h-4 w-4" />
                         </button>
                     </div>
@@ -215,54 +407,92 @@ export default function Index({
         >
             <Head title="Schedule" />
 
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                {/* Day headers — horizontally scrollable to match grid */}
-                <div className="overflow-x-auto">
-                    <div className="flex border-b border-slate-200" style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 56 : undefined }}>
-                        <div className="w-14 shrink-0 border-r border-slate-100" />
-                        {days.map(d => (
-                            <div
-                                key={d}
-                                className={cn(
-                                    'text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0',
-                                    d === todayStr ? 'bg-slate-900 text-white' : 'text-slate-600',
-                                )}
-                                style={colStyle}
-                            >
-                                {effectiveView === 'week' ? fmtShort(d) : fmtDate(d)}
-                            </div>
-                        ))}
-                    </div>
+            {/* Error toast */}
+            {errorMsg && (
+                <div className="mb-3 flex items-center justify-between gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 text-sm text-red-700">
+                    <span>{errorMsg}</span>
+                    <button onClick={() => setErrorMsg(null)} className="text-red-400 hover:text-red-700 font-bold">✕</button>
                 </div>
+            )}
 
-                {/* Grid body — scrollable both axes on mobile */}
-                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-240px)]">
-                    <div
-                        className="flex"
-                        style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 56 : undefined }}
-                    >
-                        <TimeGutter />
-                        {days.map(d => (
-                            <div
-                                key={d}
-                                className="relative border-r border-slate-100 last:border-r-0"
-                                style={{ ...colStyle, height: TOTAL_HOURS * HOUR_HEIGHT }}
-                            >
-                                <HourLines />
-                                {(apptsByDay[d] ?? []).map(appt => (
-                                    <AppointmentBlock key={appt.id} appt={appt} />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
+            {saving !== null && (
+                <div className="mb-3 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2">
+                    <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                        <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
+                    </svg>
+                    Saving…
                 </div>
+            )}
 
-                {appointments.length === 0 && (
-                    <div className="py-12 text-center text-sm text-slate-400 border-t border-slate-100">
-                        No appointments this {effectiveView}.
+            {/* Mobile: card list */}
+            {isMobile ? (
+                <MobileListView
+                    appointments={apptsByDay[date] ?? []}
+                    date={date}
+                    navigate={navigate}
+                />
+            ) : (
+                /* Desktop: time grid */
+                <div ref={gridRef} className={cn('bg-white border border-slate-200 rounded-xl overflow-hidden', dragging ? 'select-none cursor-grabbing' : '')}>
+                    {/* Day headers */}
+                    <div className="overflow-x-auto">
+                        <div className="flex border-b border-slate-200" style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 48 : undefined }}>
+                            <div className="w-12 shrink-0 border-r border-slate-100" />
+                            {days.map(d => (
+                                <div
+                                    key={d}
+                                    className={cn('text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0', d === todayStr ? 'bg-slate-900 text-white' : 'text-slate-600')}
+                                    style={colStyle}
+                                >
+                                    {effectiveView === 'week' ? fmtShort(d) : fmtDate(d)}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                )}
-            </div>
+
+                    {/* Grid body */}
+                    <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 220px)' }}>
+                        <div className="flex" style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 48 : undefined }}>
+                            <TimeGutter />
+                            {days.map(d => (
+                                <div
+                                    key={d}
+                                    className="relative border-r border-slate-100 last:border-r-0"
+                                    style={{ ...colStyle, height: TOTAL_HOURS * HOUR_HEIGHT }}
+                                >
+                                    <HourLines />
+                                    {(apptsByDay[d] ?? []).map(appt => {
+                                        const isDraggingThis = dragging?.apptId === appt.id;
+                                        return (
+                                            <AppointmentBlock
+                                                key={appt.id}
+                                                appt={appt}
+                                                colDate={d}
+                                                onDragStart={handleDragStart}
+                                                isDragging={isDraggingThis}
+                                                ghostTop={isDraggingThis ? dragging!.ghostTop : null}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {appointments.length === 0 && (
+                        <div className="py-12 text-center text-sm text-slate-400 border-t border-slate-100">
+                            No appointments this {effectiveView}.
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {!isMobile && (
+                <p className="mt-2 text-[11px] text-slate-400 text-center">
+                    Drag appointments to reschedule · Click to view details · Completed/cancelled cannot be moved
+                </p>
+            )}
         </AppLayout>
     );
 }

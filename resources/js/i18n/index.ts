@@ -8,7 +8,8 @@ import de from './locales/de';
 import fr from './locales/fr';
 import it from './locales/it';
 import el from './locales/el';
-import sr from './locales/sr';
+import hr from './locales/hr';
+import pl from './locales/pl';
 
 export const LANGUAGES = [
     { code: 'en', label: 'English',    flag: '🇬🇧' },
@@ -17,7 +18,8 @@ export const LANGUAGES = [
     { code: 'fr', label: 'Français',   flag: '🇫🇷' },
     { code: 'it', label: 'Italiano',   flag: '🇮🇹' },
     { code: 'el', label: 'Ελληνικά',   flag: '🇬🇷' },
-    { code: 'sr', label: 'Srpski',     flag: '🇷🇸' },
+    { code: 'hr', label: 'Hrvatski',   flag: '🇭🇷' },
+    { code: 'pl', label: 'Polski',     flag: '🇵🇱' },
 ] as const;
 
 i18n
@@ -31,11 +33,13 @@ i18n
             fr: { translation: fr },
             it: { translation: it },
             el: { translation: el },
-            sr: { translation: sr },
+            hr: { translation: hr },
+            pl: { translation: pl },
         },
         fallbackLng: 'en',
-        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'sr'],
+        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'hr', 'pl'],
         interpolation: { escapeValue: false },
+        initImmediate: false,
         detection: {
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'],

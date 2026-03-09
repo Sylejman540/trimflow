@@ -17,7 +17,6 @@ import { Appointment, Barber, Service } from '@/types';
 import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign } from 'lucide-react';
 
 const statuses = [
-    'scheduled',
     'confirmed',
     'in_progress',
     'completed',

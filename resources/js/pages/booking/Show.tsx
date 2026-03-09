@@ -75,6 +75,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         customer_name: '',
         customer_phone: '',
         notes: '',
+        _hp: '', // honeypot — must stay empty
     });
 
     const categories = useMemo(() => {
@@ -168,15 +169,16 @@ export default function Show({ company, barbers: initialBarbers, services }: {
             <Head title={`Book at ${company.name}`} />
 
             {/* Header */}
-            <div className="bg-white border-b border-slate-200">
-                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                            <Scissors className="h-4 w-4 text-white" />
+            <div className="bg-slate-900 text-white">
+                <div className="max-w-2xl mx-auto px-4 py-6 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0">
+                            <Scissors className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
-                            {company.address && <p className="text-xs text-slate-500">{company.address}</p>}
+                            <h1 className="text-lg font-bold text-white">{company.name}</h1>
+                            {company.address && <p className="text-xs text-white/60 mt-0.5">{company.address}</p>}
+                            {company.phone && <p className="text-xs text-white/60">{company.phone}</p>}
                         </div>
                     </div>
                     <LanguageSwitcher compact />
@@ -406,15 +408,43 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         </div>
 
                         {/* Summary */}
-                        <div className="bg-slate-900 rounded-xl p-4 text-white space-y-1">
+                        <div className="bg-slate-900 rounded-xl p-4 text-white space-y-3">
                             <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('booking.bookingSummary')}</p>
-                            <p className="text-sm font-semibold">
-                                {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))}
-                            </p>
-                            <p className="text-xs text-slate-300">{selectedBarber?.user.name} · {selectedDate} at {selectedTime}</p>
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 border border-white/20 shrink-0">
+                                    <Scissors className="h-4 w-4 text-white" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-white">{company.name}</p>
+                                    {company.address && <p className="text-xs text-white/50">{company.address}</p>}
+                                </div>
+                            </div>
+                            <div className="border-t border-white/10 pt-3 space-y-1">
+                                <p className="text-sm font-semibold">
+                                    {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))}
+                                </p>
+                                <p className="text-xs text-slate-300 flex items-center gap-1">
+                                    <User className="h-3 w-3" /> {selectedBarber?.user.name}
+                                    {selectedBarber?.specialty && <span className="text-white/40"> · {selectedBarber.specialty}</span>}
+                                </p>
+                                <p className="text-xs text-slate-300 flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" /> {selectedDate} · {selectedTime}
+                                </p>
+                            </div>
                         </div>
 
                         <form onSubmit={submit} className="space-y-4">
+                            {/* Honeypot — hidden from real users, bots fill it */}
+                            <input
+                                type="text"
+                                name="_hp"
+                                value={data._hp}
+                                onChange={e => setData('_hp', e.target.value)}
+                                style={{ display: 'none' }}
+                                tabIndex={-1}
+                                autoComplete="off"
+                                aria-hidden="true"
+                            />
                             <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('name')} *</label>

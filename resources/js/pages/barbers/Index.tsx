@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Trash2, Search, SlidersHorizontal, Mail, User, Clock } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
@@ -45,6 +46,7 @@ function DeleteBarberModal({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) {
+    const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
 
     function handleDelete() {
@@ -59,18 +61,18 @@ function DeleteBarberModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
                 <DialogHeader>
-                    <DialogTitle>Remove Barber</DialogTitle>
+                    <DialogTitle>{t('barber.edit')}</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to remove <span className="font-medium text-gray-900">{barber.user?.name}</span>? 
+                        Are you sure you want to remove <span className="font-medium text-gray-900">{barber.user?.name}</span>?
                         This will affect their availability and future schedule.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     <Button variant="destructive" onClick={handleDelete} disabled={processing} className="shadow-none">
-                        Delete
+                        {t('delete')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -83,6 +85,7 @@ export default function Index({
 }: {
     barbers: Barber[];
 }) {
+    const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
     const [deletingBarber, setDeletingBarber] = useState<Barber | null>(null);
@@ -104,7 +107,7 @@ export default function Index({
     const columns: ColumnDef<Barber>[] = [
         {
             accessorKey: 'user.name',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">BARBER NAME</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('name').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <div className="h-7 w-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
@@ -116,7 +119,7 @@ export default function Index({
         },
         {
             accessorKey: 'user.email',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">CONTACT</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('email').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <div className="flex items-center text-sm text-slate-600">
                     <Mail className="mr-1.5 h-3.5 w-3.5 text-slate-400" />
@@ -126,7 +129,7 @@ export default function Index({
         },
         {
             accessorKey: 'specialty',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">SPECIALTY</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('barber.specialty').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <span className="text-sm text-slate-600 italic">
                     {row.original.specialty || 'Generalist'}
@@ -135,21 +138,21 @@ export default function Index({
         },
         {
             accessorKey: 'is_active',
-            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">STATUS</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <Badge className={cn(
                     "text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border",
-                    row.original.is_active 
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
+                    row.original.is_active
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                         : "bg-slate-50 text-red-600 border-red-100"
                 )}>
-                    {row.original.is_active ? 'ACTIVE' : 'INACTIVE'}
+                    {row.original.is_active ? t('active').toUpperCase() : t('inactive').toUpperCase()}
                 </Badge>
             ),
         },
         {
             id: 'actions',
-            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">ACTIONS</div>,
+            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">{t('actions').toUpperCase()}</div>,
             cell: ({ row }) => {
                 const barber = row.original;
                 return (
@@ -171,15 +174,15 @@ export default function Index({
 
     return (
         <AppLayout
-            title="Barbers"
+            title={t('barber.title')}
             actions={
                 <Link href={route('barbers.create')} className={cn(buttonVariants({ variant: "default" }), "bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none")}>
                     <Plus className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline ml-2">Add Barber</span>
+                    <span className="hidden sm:inline ml-2">{t('barber.new')}</span>
                 </Link>
             }
         >
-            <Head title="Barbers" />
+            <Head title={t('barber.title')} />
 
             <div className="space-y-4">
                 {/* Search & Filter Bar - Identical to Appointments */}
@@ -189,7 +192,7 @@ export default function Index({
                         <input
                             type="text"
                             value={globalSearch}
-                            placeholder="Search by name, email, specialty..."
+                            placeholder={t('search')}
                             className="w-full pl-10 pr-4 py-2 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={(e) => setGlobalSearch(e.target.value)}
                         />
@@ -197,12 +200,12 @@ export default function Index({
                     <div className="flex items-center gap-2">
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{statusFilter === 'all' ? 'All Statuses' : capitalizeWords(statusFilter)}</SelectValue>
+                                <SelectValue>{statusFilter === 'all' ? t('all') : capitalizeWords(statusFilter)}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">All Statuses</SelectItem>
-                                <SelectItem value="active">Active</SelectItem>
-                                <SelectItem value="inactive">Inactive</SelectItem>
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                <SelectItem value="active">{t('active')}</SelectItem>
+                                <SelectItem value="inactive">{t('inactive')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

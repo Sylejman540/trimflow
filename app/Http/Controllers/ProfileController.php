@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -21,12 +22,31 @@ class ProfileController extends Controller
         $user    = $request->user();
         $company = $user->company;
 
+        $currentSessionId = $request->session()->getId();
+
+        $sessions = DB::table('sessions')
+            ->where('user_id', $user->id)
+            ->orderByDesc('last_activity')
+            ->get()
+            ->map(function ($s) use ($currentSessionId) {
+                $ua = $s->user_agent ?? '';
+                return [
+                    'id'            => $s->id,
+                    'ip_address'    => $s->ip_address,
+                    'user_agent'    => $ua,
+                    'last_activity' => $s->last_activity,
+                    'is_current'    => $s->id === $currentSessionId,
+                ];
+            })
+            ->values();
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status'          => session('status'),
             'booking_url'     => $company
                 ? url(route('booking.show', $company->slug))
                 : null,
+            'sessions'        => $sessions,
         ]);
     }
 
