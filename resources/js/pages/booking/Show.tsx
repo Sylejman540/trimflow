@@ -1,8 +1,10 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const COLOR_HEX: Record<string, string> = {
     slate: '#64748b', red: '#ef4444', orange: '#f97316',
@@ -36,31 +38,6 @@ interface Service {
     color?: string | null;
 }
 
-const STEPS = ['Barber', 'Service', 'Date & Time', 'Your Info'];
-
-function StepIndicator({ current }: { current: number }) {
-    return (
-        <div className="flex items-center justify-center gap-2 mb-8">
-            {STEPS.map((label, i) => (
-                <div key={i} className="flex items-center gap-2">
-                    <div className={cn(
-                        'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors',
-                        i < current ? 'bg-slate-900 text-white' :
-                        i === current ? 'bg-slate-900 text-white ring-2 ring-slate-900 ring-offset-2' :
-                        'bg-slate-100 text-slate-400'
-                    )}>
-                        {i < current ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
-                    </div>
-                    <span className={cn('hidden sm:block text-xs font-medium', i === current ? 'text-slate-900' : 'text-slate-400')}>
-                        {label}
-                    </span>
-                    {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300" />}
-                </div>
-            ))}
-        </div>
-    );
-}
-
 function todayStr() {
     return new Date().toISOString().split('T')[0];
 }
@@ -70,17 +47,24 @@ export default function Show({ company, barbers: initialBarbers, services }: {
     barbers: Barber[];
     services: Service[];
 }) {
+    const { t } = useTranslation();
+
+    const STEPS = [
+        t('booking.step.barber'),
+        t('booking.step.service'),
+        t('booking.step.dateTime'),
+        t('booking.step.info'),
+    ];
+
     const [step, setStep] = useState(0);
     const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
     const [selectedServices, setSelectedServices] = useState<Service[]>([]);
     const [selectedDate, setSelectedDate] = useState(todayStr());
     const [selectedTime, setSelectedTime] = useState('');
 
-    // Barbers with next-available info loaded from API
     const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
     const [availabilityLoading, setAvailabilityLoading] = useState(false);
 
-    // Slots from API
     const [slots, setSlots] = useState<string[]>([]);
     const [slotsLoading, setSlotsLoading] = useState(false);
 
@@ -105,8 +89,6 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         [services, categoryFilter]
     );
 
-    // Load next-available per barber when we first show the barber list
-    // We use the first service as a reference for duration; if none selected, skip
     useEffect(() => {
         if (services.length === 0) return;
         const serviceId = services[0]?.id;
@@ -116,7 +98,6 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         fetch(route('booking.availability', company.slug) + `?service_id=${serviceId}`)
             .then(r => r.json())
             .then((json: { barbers: Barber[] }) => {
-                // Merge next_available info into barbers list
                 const map = new Map(json.barbers.map(b => [b.id, b]));
                 setBarbers(initialBarbers.map(b => ({
                     ...b,
@@ -129,7 +110,6 @@ export default function Show({ company, barbers: initialBarbers, services }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Load slots whenever barber, services or date changes (on step 2)
     useEffect(() => {
         if (step !== 2 || !selectedBarber || selectedServices.length === 0 || !selectedDate) return;
 
@@ -189,28 +169,49 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 
             {/* Header */}
             <div className="bg-white border-b border-slate-200">
-                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                        <Scissors className="h-4 w-4 text-white" />
+                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
+                            <Scissors className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                            {company.address && <p className="text-xs text-slate-500">{company.address}</p>}
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
-                        {company.address && <p className="text-xs text-slate-500">{company.address}</p>}
-                    </div>
+                    <LanguageSwitcher compact />
                 </div>
             </div>
 
             <div className="max-w-2xl mx-auto px-4 py-8">
-                <StepIndicator current={step} />
+                {/* Step Indicator */}
+                <div className="flex items-center justify-center gap-2 mb-8">
+                    {STEPS.map((label, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                            <div className={cn(
+                                'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors',
+                                i < step ? 'bg-slate-900 text-white' :
+                                i === step ? 'bg-slate-900 text-white ring-2 ring-slate-900 ring-offset-2' :
+                                'bg-slate-100 text-slate-400'
+                            )}>
+                                {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+                            </div>
+                            <span className={cn('hidden sm:block text-xs font-medium', i === step ? 'text-slate-900' : 'text-slate-400')}>
+                                {label}
+                            </span>
+                            {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300" />}
+                        </div>
+                    ))}
+                </div>
 
                 {/* Step 0: Barber */}
                 {step === 0 && (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-slate-900">Choose a Barber</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseBarber')}</h2>
                             {availabilityLoading && (
                                 <span className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Loader2 className="h-3 w-3 animate-spin" /> Loading availability…
+                                    <Loader2 className="h-3 w-3 animate-spin" /> {t('booking.loadingAvailability')}
                                 </span>
                             )}
                         </div>
@@ -235,7 +236,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                         </span>
                                     )}
                                     {!b.next_time_label && !availabilityLoading && (
-                                        <span className="text-xs text-slate-400 shrink-0">No slots</span>
+                                        <span className="text-xs text-slate-400 shrink-0">{t('booking.noSlotsBadge')}</span>
                                     )}
                                 </button>
                             ))}
@@ -250,7 +251,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
                                 <ChevronLeft className="h-5 w-5" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">Choose Services</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseServices')}</h2>
                         </div>
 
                         {categories.length > 0 && (
@@ -260,7 +261,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                     className={cn('px-3 py-1 rounded-full text-xs font-medium border transition-colors',
                                         !categoryFilter ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                                     )}
-                                >All</button>
+                                >{t('all')}</button>
                                 {categories.map(c => (
                                     <button
                                         key={c}
@@ -292,7 +293,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                             <p className="text-sm font-medium text-slate-900">{s.name}</p>
                                             {s.description && <p className="text-xs text-slate-500 mt-0.5">{s.description}</p>}
                                             <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                                                <Clock className="h-3 w-3" /> {s.duration} min
+                                                <Clock className="h-3 w-3" /> {s.duration} {t('booking.min')}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-3 ml-4 shrink-0">
@@ -316,15 +317,15 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
                                 <div className="max-w-2xl mx-auto space-y-3">
                                     <p className="text-xs text-slate-500 text-center">
-                                        {selectedServices.length} {selectedServices.length === 1 ? 'service' : 'services'} &middot;&nbsp;
-                                        {selectedServices.reduce((sum, s) => sum + s.duration, 0)} min total &middot;&nbsp;
+                                        {selectedServices.length} {selectedServices.length === 1 ? t('booking.service') : t('booking.services')} &middot;&nbsp;
+                                        {selectedServices.reduce((sum, s) => sum + s.duration, 0)} {t('booking.min')} total &middot;&nbsp;
                                         {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))} total
                                     </p>
                                     <Button
                                         onClick={proceedFromServices}
                                         className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                                     >
-                                        Continue
+                                        {t('booking.continue')}
                                     </Button>
                                 </div>
                             </div>
@@ -339,13 +340,13 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             <button onClick={() => setStep(1)} className="text-slate-400 hover:text-slate-700">
                                 <ChevronLeft className="h-5 w-5" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">Pick a Date & Time</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.pickDateTime')}</h2>
                         </div>
 
                         <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                                    <Calendar className="h-3.5 w-3.5 inline mr-1" /> Date
+                                    <Calendar className="h-3.5 w-3.5 inline mr-1" /> {t('booking.date')}
                                 </label>
                                 <input
                                     type="date"
@@ -358,19 +359,17 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                                    <Clock className="h-3.5 w-3.5 inline mr-1" /> Time
+                                    <Clock className="h-3.5 w-3.5 inline mr-1" /> {t('booking.time')}
                                 </label>
 
                                 {slotsLoading && (
                                     <div className="flex items-center gap-2 text-sm text-slate-400 py-4 justify-center">
-                                        <Loader2 className="h-4 w-4 animate-spin" /> Loading available slots…
+                                        <Loader2 className="h-4 w-4 animate-spin" /> {t('booking.loadingSlots')}
                                     </div>
                                 )}
 
                                 {!slotsLoading && slots.length === 0 && (
-                                    <p className="text-sm text-slate-500 py-4 text-center">
-                                        No available slots on this day. Try a different date.
-                                    </p>
+                                    <p className="text-sm text-slate-500 py-4 text-center">{t('booking.noSlots')}</p>
                                 )}
 
                                 {!slotsLoading && slots.length > 0 && (
@@ -403,12 +402,12 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             <button onClick={() => setStep(2)} className="text-slate-400 hover:text-slate-700">
                                 <ChevronLeft className="h-5 w-5" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">Your Details</h2>
+                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.yourDetails')}</h2>
                         </div>
 
                         {/* Summary */}
                         <div className="bg-slate-900 rounded-xl p-4 text-white space-y-1">
-                            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Booking Summary</p>
+                            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('booking.bookingSummary')}</p>
                             <p className="text-sm font-semibold">
                                 {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))}
                             </p>
@@ -418,12 +417,12 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         <form onSubmit={submit} className="space-y-4">
                             <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Name *</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('name')} *</label>
                                     <input
                                         type="text"
                                         value={data.customer_name}
                                         onChange={e => setData('customer_name', e.target.value)}
-                                        placeholder="Your full name"
+                                        placeholder={t('booking.namePlaceholder')}
                                         autoComplete="name"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                         required
@@ -432,12 +431,12 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Phone *</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('phone')} *</label>
                                     <input
                                         type="tel"
                                         value={data.customer_phone}
                                         onChange={e => setData('customer_phone', e.target.value)}
-                                        placeholder="+1 (555) 000-0000"
+                                        placeholder={t('booking.phonePlaceholder')}
                                         autoComplete="tel"
                                         inputMode="tel"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
@@ -447,11 +446,11 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Notes</label>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('notes')}</label>
                                     <textarea
                                         value={data.notes}
                                         onChange={e => setData('notes', e.target.value)}
-                                        placeholder="Any special requests?"
+                                        placeholder={t('booking.specialRequests')}
                                         rows={3}
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 resize-none"
                                     />
@@ -468,8 +467,8 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (
-                                    <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Booking…</span>
-                                ) : 'Confirm Booking'}
+                                    <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> {t('booking.booking')}</span>
+                                ) : t('booking.confirmBooking')}
                             </Button>
                         </form>
                     </div>

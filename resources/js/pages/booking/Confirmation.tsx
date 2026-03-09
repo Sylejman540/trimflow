@@ -1,8 +1,10 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Scissors, CalendarDays, X, AlertCircle } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface Company {
     id: number;
@@ -20,6 +22,7 @@ export default function Confirmation({
     cancel_token?: string | null;
     cancel_expires_at?: string | null;
 }) {
+    const { t } = useTranslation();
     const { props } = usePage();
     const cancelled = (props as any).flash?.cancelled ?? false;
 
@@ -50,11 +53,14 @@ export default function Confirmation({
             <div className="min-h-screen bg-slate-50 flex flex-col">
                 <Head title={`Cancelled — ${company.name}`} />
                 <div className="bg-white border-b border-slate-200">
-                    <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                            <Scissors className="h-4 w-4 text-white" />
+                    <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
+                                <Scissors className="h-4 w-4 text-white" />
+                            </div>
+                            <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
                         </div>
-                        <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                        <LanguageSwitcher compact />
                     </div>
                 </div>
                 <div className="flex-1 flex items-center justify-center px-4 py-16">
@@ -65,14 +71,14 @@ export default function Confirmation({
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-2xl font-semibold text-slate-900">Booking Cancelled</h2>
-                            <p className="text-sm text-slate-500">Your appointment has been cancelled successfully.</p>
+                            <h2 className="text-2xl font-semibold text-slate-900">{t('booking.cancelledTitle')}</h2>
+                            <p className="text-sm text-slate-500">{t('booking.cancelledDesc')}</p>
                         </div>
                         <Link
                             href={route('booking.show', company.slug)}
                             className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
                         >
-                            <CalendarDays className="mr-2 h-4 w-4" /> Book Again
+                            <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
                         </Link>
                     </div>
                 </div>
@@ -86,11 +92,14 @@ export default function Confirmation({
 
             {/* Header */}
             <div className="bg-white border-b border-slate-200">
-                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center gap-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                        <Scissors className="h-4 w-4 text-white" />
+                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
+                            <Scissors className="h-4 w-4 text-white" />
+                        </div>
+                        <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
                     </div>
-                    <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                    <LanguageSwitcher compact />
                 </div>
             </div>
 
@@ -103,26 +112,23 @@ export default function Confirmation({
                     </div>
 
                     <div className="space-y-2">
-                        <h2 className="text-2xl font-semibold text-slate-900">You're booked!</h2>
-                        <p className="text-sm text-slate-500">
-                            Your appointment at <span className="font-medium text-slate-700">{company.name}</span> has been confirmed.
-                            We'll see you soon!
-                        </p>
+                        <h2 className="text-2xl font-semibold text-slate-900">{t('booking.confirmed')}</h2>
+                        <p className="text-sm text-slate-500">{t('booking.confirmedDesc')}</p>
                     </div>
 
                     {company.phone && (
                         <p className="text-xs text-slate-400">
-                            Questions? Call us at <span className="font-medium text-slate-600">{company.phone}</span>
+                            {t('booking.shopPhone')}: <span className="font-medium text-slate-600">{company.phone}</span>
                         </p>
                     )}
 
-                    {/* Self-cancellation — visible only during the 60-second window */}
+                    {/* Self-cancellation window */}
                     {cancel_token && secondsLeft > 0 && (
                         <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-left space-y-3">
                             <div className="flex items-start gap-2">
                                 <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
                                 <p className="text-xs text-amber-700 font-medium">
-                                    Made a mistake? You can cancel within <span className="font-bold">{secondsLeft}s</span>.
+                                    {t('booking.cancelWindow')} <span className="font-bold">{secondsLeft}s</span>.
                                 </p>
                             </div>
                             <button
@@ -130,7 +136,7 @@ export default function Confirmation({
                                 disabled={processing}
                                 className="w-full text-sm font-semibold text-red-600 bg-white border border-red-200 rounded-lg py-2 hover:bg-red-50 transition-colors disabled:opacity-50"
                             >
-                                {processing ? 'Cancelling…' : 'Cancel this booking'}
+                                {processing ? t('loading') : t('booking.cancelAppt')}
                             </button>
                         </div>
                     )}
@@ -140,7 +146,7 @@ export default function Confirmation({
                             href={route('booking.show', company.slug)}
                             className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
                         >
-                            <CalendarDays className="mr-2 h-4 w-4" /> Book Another Appointment
+                            <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
                         </Link>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 import { Link, router, usePage, useForm } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect, FormEvent } from 'react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
     CalendarDays,
     LayoutDashboard,
@@ -371,6 +372,7 @@ export default function AppLayout({
                             </button>
                         )}
                         {actions}
+                        <LanguageSwitcher compact />
                         <Link
                             href={route('notifications.index')}
                             className="relative p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
