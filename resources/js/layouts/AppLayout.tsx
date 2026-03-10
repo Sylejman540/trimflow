@@ -67,33 +67,19 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-5 pt-1">
-                    {/* Customer name + phone */}
-                    <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                                <User size={11} /> {t('walkin.customerName')}
-                            </Label>
-                            <Input
-                                value={data.customer_name}
-                                onChange={e => setData('customer_name', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder={t('walkin.namePlaceholder')}
-                                required
-                            />
-                            {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                                <Phone size={11} /> {t('appt.phoneNumber')}
-                            </Label>
-                            <Input
-                                value={data.customer_phone}
-                                onChange={e => setData('customer_phone', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder="+1 (555) 000-0000"
-                            />
-                            {errors.customer_phone && <p className="text-xs text-red-500">{errors.customer_phone}</p>}
-                        </div>
+                    {/* Customer name */}
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                            <User size={11} /> {t('walkin.customerName')}
+                        </Label>
+                        <Input
+                            value={data.customer_name}
+                            onChange={e => setData('customer_name', e.target.value)}
+                            className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            placeholder={t('walkin.namePlaceholder')}
+                            required
+                        />
+                        {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
                     </div>
 
                     {/* Service */}
