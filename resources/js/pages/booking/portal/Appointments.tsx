@@ -8,10 +8,9 @@ function PoweredBy() {
     return (
         <div className="py-6 text-center">
             <a href="https://freshio.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-amber-500">
-                    <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
-                    <line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/>
-                    <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-amber-500">
+                    <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
+                    <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.5"/>
                 </svg>
                 Powered by <span className="font-semibold text-slate-500">Freshio</span>
             </a>
