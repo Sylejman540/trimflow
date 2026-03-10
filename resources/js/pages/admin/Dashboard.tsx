@@ -42,12 +42,12 @@ interface NewShop { id: number; name: string; slug: string; is_active: boolean; 
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const STATUS_COLORS: Record<string, string> = {
-    confirmed:   'bg-emerald-500/20 text-emerald-400',
-    pending:     'bg-amber-500/20 text-amber-400',
-    cancelled:   'bg-red-500/20 text-red-400',
-    completed:   'bg-slate-500/20 text-slate-300',
-    in_progress: 'bg-blue-500/20 text-blue-400',
-    no_show:     'bg-orange-500/20 text-orange-400',
+    confirmed:   'bg-emerald-50 text-emerald-700',
+    pending:     'bg-amber-50 text-amber-700',
+    cancelled:   'bg-red-50 text-red-600',
+    completed:   'bg-slate-100 text-slate-600',
+    in_progress: 'bg-blue-50 text-blue-700',
+    no_show:     'bg-orange-50 text-orange-700',
 };
 const STATUS_BAR_COLORS: Record<string, string> = {
     completed:   '#10b981',
