@@ -278,6 +278,8 @@ export default {
         priceDollar: 'Цена (лв.)',
         stockQuantity: 'Количество в Наличност',
         deleteConfirm: 'Сигурни ли сте, че искате да изтриете този продукт? Това действие не може да бъде отменено.',
+        namePlaceholder: 'напр. Помада',
+        categoryPlaceholder: 'напр. Грижа за косата',
     },
 
     // Profile
