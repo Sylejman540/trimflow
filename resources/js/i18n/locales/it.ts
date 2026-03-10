@@ -177,6 +177,8 @@ export default {
         clearColor: 'Cancella',
         descPlaceholder: 'Fornisci dettagli su cosa include questo servizio…',
         deleteConfirm: 'Sei sicuro di voler eliminare questo servizio? Questa azione non può essere annullata.',
+        serviceNamePlaceholder: 'es. Taglio classico',
+        categoryPlaceholder: 'es. Tagli di capelli',
         noServices: 'Nessun servizio ancora.',
         created: 'Servizio creato.',
         updated: 'Servizio aggiornato.',
@@ -214,6 +216,10 @@ export default {
         generalist: 'Generalista',
         deleteConfirm: 'Sei sicuro di voler rimuovere questo barbiere? Questo influenzerà la sua disponibilità e il programma futuro.',
         bioPlaceholder: 'Una breve descrizione del background e dello stile del barbiere…',
+        namePlaceholder: 'es. Mario Rossi',
+        emailPlaceholder: 'barbiere@esempio.it',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'es. Skin Fades, Cura della barba',
     },
 
     cust: {

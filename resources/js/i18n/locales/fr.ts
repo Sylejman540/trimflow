@@ -258,6 +258,8 @@ export default {
         priceDollar: 'Prix (€)',
         stockQuantity: 'Quantité en stock',
         deleteConfirm: 'Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.',
+        namePlaceholder: 'ex. Pommade',
+        categoryPlaceholder: 'ex. Soin capillaire',
     },
 
     profile: {
