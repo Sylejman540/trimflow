@@ -249,21 +249,48 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 
             {/* Header */}
             <div className="bg-slate-900 text-white">
-                <div className="max-w-2xl mx-auto px-4 py-6 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0 overflow-hidden">
-                            {company.logo
-                                ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
-                                : <Scissors className="h-6 w-6 text-white" />
-                            }
+                <div className="max-w-2xl mx-auto px-4 pt-6 pb-0">
+                    {/* Top bar */}
+                    <div className="flex items-center justify-between gap-3 pb-6">
+                        <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0 overflow-hidden">
+                                {company.logo
+                                    ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                    : <Scissors className="h-6 w-6 text-white" />
+                                }
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold text-white">{company.name}</h1>
+                                {company.address && <p className="text-xs text-white/60 mt-0.5">{company.address}</p>}
+                                {company.phone && <p className="text-xs text-white/60">{company.phone}</p>}
+                            </div>
                         </div>
-                        <div>
-                            <h1 className="text-lg font-bold text-white">{company.name}</h1>
-                            {company.address && <p className="text-xs text-white/60 mt-0.5">{company.address}</p>}
-                            {company.phone && <p className="text-xs text-white/60">{company.phone}</p>}
-                        </div>
+                        <LanguageSwitcher compact />
                     </div>
-                    <LanguageSwitcher compact />
+
+                    {/* Hero tagline — only show on step 0 */}
+                    {step === 0 && (
+                        <div className="pb-8 space-y-3">
+                            <p className="text-2xl font-bold text-white leading-tight">
+                                Book your next visit<br />
+                                <span className="text-emerald-400">in under 60 seconds.</span>
+                            </p>
+                            <p className="text-sm text-white/50 max-w-xs">
+                                Pick a service, choose your barber, and lock in your slot — no calls, no waiting.
+                            </p>
+                            <div className="flex flex-wrap gap-3 pt-1">
+                                <span className="inline-flex items-center gap-1.5 text-xs text-white/70 bg-white/10 rounded-full px-3 py-1">
+                                    <CheckCircle2 className="h-3 w-3 text-emerald-400" /> Instant confirmation
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 text-xs text-white/70 bg-white/10 rounded-full px-3 py-1">
+                                    <Shield className="h-3 w-3 text-emerald-400" /> Free cancellation
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 text-xs text-white/70 bg-white/10 rounded-full px-3 py-1">
+                                    <Star className="h-3 w-3 text-emerald-400" /> Top-rated barbers
+                                </span>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
