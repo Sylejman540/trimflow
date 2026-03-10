@@ -20,7 +20,6 @@ import {
     Zap,
     X,
     Package,
-    Phone,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -46,7 +45,6 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
     const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
         customer_name: '',
-        customer_phone: '',
         service_id: '',
         barber_id: '',
     });
