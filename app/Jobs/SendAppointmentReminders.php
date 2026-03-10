@@ -35,15 +35,9 @@ class SendAppointmentReminders implements ShouldQueue
 
                 try {
                     if ($customer->user) {
-                        // Registered user — full notification (database + mail + SMS if configured)
                         $customer->user->notify(new AppointmentReminder($appointment));
                     } elseif ($customer->email) {
-                        // Guest with email — send mail notification
                         Notification::route('mail', [$customer->email => $customer->name])
-                            ->notify(new AppointmentReminder($appointment));
-                    } elseif ($customer->phone && config('services.twilio.sid')) {
-                        // Guest with phone only — SMS only
-                        Notification::route('twilio_sms', $customer->phone)
                             ->notify(new AppointmentReminder($appointment));
                     }
 

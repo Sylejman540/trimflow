@@ -8,7 +8,6 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Service;
 use App\Models\User;
-use App\Notifications\BookingConfirmation;
 use App\Notifications\NewPublicBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -285,9 +284,6 @@ class BookingController extends Controller
         User::where('company_id', $company->id)
             ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
             ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
-
-        // SMS confirmation to the customer
-        $appointment->customer?->notify(new BookingConfirmation($appointment));
 
         // ── 17. Commit rate limits + update fingerprint ────────────────────────
         RateLimiter::hit($phoneKey, $phoneWindow);

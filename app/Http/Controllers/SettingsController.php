@@ -16,8 +16,6 @@ class SettingsController extends Controller
 
         return Inertia::render('settings/Index', [
             'company' => $company->only('id', 'name', 'slug', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country', 'timezone'),
-            'twilio_configured' => ! empty(config('services.twilio.sid')),
-            'twilio_from'       => config('services.twilio.from', ''),
         ]);
     }
 

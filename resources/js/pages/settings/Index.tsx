@@ -1,6 +1,6 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Building2, MessageSquare, CheckCircle2, XCircle } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,15 +21,7 @@ interface Company {
     timezone?: string;
 }
 
-export default function Index({
-    company,
-    twilio_configured,
-    twilio_from,
-}: {
-    company: Company;
-    twilio_configured: boolean;
-    twilio_from: string;
-}) {
+export default function Index({ company }: { company: Company }) {
     const { t } = useTranslation();
 
     const { data, setData, patch, processing, errors } = useForm({
@@ -55,7 +47,6 @@ export default function Index({
 
             <div className="max-w-2xl mx-auto space-y-6">
 
-                {/* Shop Info */}
                 <Card className="border-slate-200 shadow-none">
                     <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
                         <div className="flex items-center gap-2">
@@ -158,63 +149,6 @@ export default function Index({
                                 </Button>
                             </div>
                         </form>
-                    </CardContent>
-                </Card>
-
-                {/* SMS / Twilio */}
-                <Card className="border-slate-200 shadow-none">
-                    <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
-                        <div className="flex items-center gap-2">
-                            <MessageSquare className="h-4 w-4 text-slate-400" />
-                            <CardTitle className="text-base">SMS Notifications (Twilio)</CardTitle>
-                        </div>
-                        <CardDescription className="text-xs text-slate-400 mt-0.5">
-                            Customers receive SMS booking confirmations and reminders when Twilio is configured.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="px-4 lg:px-6 pb-4 space-y-4">
-                        <div className={`flex items-center gap-3 rounded-lg border px-4 py-3 ${twilio_configured ? 'border-emerald-200 bg-emerald-50' : 'border-orange-200 bg-orange-50'}`}>
-                            {twilio_configured
-                                ? <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                                : <XCircle className="h-4 w-4 text-orange-500 shrink-0" />
-                            }
-                            <div>
-                                <p className={`text-sm font-semibold ${twilio_configured ? 'text-emerald-800' : 'text-orange-800'}`}>
-                                    {twilio_configured ? 'Twilio is connected' : 'Twilio is not configured'}
-                                </p>
-                                <p className={`text-xs mt-0.5 ${twilio_configured ? 'text-emerald-600' : 'text-orange-600'}`}>
-                                    {twilio_configured
-                                        ? `Sending from ${twilio_from || 'your Twilio number'}`
-                                        : 'Add TWILIO_SID, TWILIO_TOKEN, and TWILIO_FROM to your .env file to enable SMS.'
-                                    }
-                                </p>
-                            </div>
-                        </div>
-
-                        {!twilio_configured && (
-                            <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 space-y-2">
-                                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Required .env variables</p>
-                                <pre className="text-xs text-slate-700 font-mono leading-relaxed">
-{`TWILIO_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-TWILIO_TOKEN=your_auth_token
-TWILIO_FROM=+1234567890`}
-                                </pre>
-                                <p className="text-xs text-slate-500">
-                                    Get your credentials at{' '}
-                                    <a href="https://console.twilio.com" target="_blank" rel="noopener noreferrer" className="underline">
-                                        console.twilio.com
-                                    </a>
-                                </p>
-                            </div>
-                        )}
-
-                        <div className="rounded-lg bg-slate-50 border border-slate-200 px-4 py-3 space-y-1">
-                            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">SMS sent for</p>
-                            <ul className="text-xs text-slate-600 space-y-0.5 list-disc list-inside">
-                                <li>New public booking confirmation</li>
-                                <li>1-hour appointment reminder</li>
-                            </ul>
-                        </div>
                     </CardContent>
                 </Card>
 

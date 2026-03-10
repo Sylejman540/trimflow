@@ -45,12 +45,6 @@ return [
         'webhook_secret' => env('MANYCHAT_WEBHOOK_SECRET'),
     ],
 
-    'twilio' => [
-        'sid'   => env('TWILIO_SID'),
-        'token' => env('TWILIO_TOKEN'),
-        'from'  => env('TWILIO_FROM'),
-    ],
-
     'turnstile' => [
         'site_key'   => env('TURNSTILE_SITE_KEY', ''),
         'secret_key' => env('TURNSTILE_SECRET_KEY', ''),

@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Channels\TwilioSmsChannel;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,10 +20,6 @@ class AppointmentReminder extends Notification implements ShouldQueue
 
         if (! empty($notifiable->email)) {
             $channels[] = 'mail';
-        }
-
-        if (! empty($notifiable->phone) && config('services.twilio.sid')) {
-            $channels[] = TwilioSmsChannel::class;
         }
 
         return $channels;
@@ -59,16 +54,5 @@ class AppointmentReminder extends Notification implements ShouldQueue
             ->line("**When:** {$time}")
             ->action('View Appointment', url('/appointments/' . $appt->id))
             ->salutation('See you soon!');
-    }
-
-    public function toTwilioSms(object $notifiable): string
-    {
-        $appt    = $this->appointment;
-        $service = $appt->service?->name ?? 'appointment';
-        $barber  = $appt->barber?->user?->name ?? 'your barber';
-        $time    = $appt->starts_at->format('g:i A');
-        $shop    = $appt->company?->name ?? config('app.name');
-
-        return "Hi {$notifiable->name}! Reminder from {$shop}: your {$service} with {$barber} is at {$time} today. See you soon!";
     }
 }
