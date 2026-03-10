@@ -198,6 +198,8 @@ export default {
         clearColor: 'Изчисти',
         descPlaceholder: 'Предоставете подробности за това, което включва тази услуга…',
         deleteConfirm: 'Сигурни ли сте, че искате да изтриете тази услуга? Това действие не може да бъде отменено.',
+        serviceNamePlaceholder: 'напр. Класическо подстригване',
+        categoryPlaceholder: 'напр. Подстригвания',
     },
 
     // Barbers
