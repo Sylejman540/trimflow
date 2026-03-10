@@ -10,12 +10,17 @@ class AppointmentProductController extends Controller
 {
     public function store(Request $request, Appointment $appointment)
     {
+        $this->authorize('update', $appointment);
+
         $v = $request->validate([
             'product_id' => 'required|exists:products,id',
             'qty'        => 'required|integer|min:1|max:100',
         ]);
 
-        $product = Product::findOrFail($v['product_id']);
+        // Ensure product belongs to the same company
+        $product = Product::where('id', $v['product_id'])
+            ->where('company_id', $appointment->company_id)
+            ->firstOrFail();
 
         // Prevent duplicate pivot entry — if exists, increment qty
         $existing = $appointment->products()->where('product_id', $product->id)->first();
@@ -38,6 +43,8 @@ class AppointmentProductController extends Controller
 
     public function destroy(Appointment $appointment, Product $product)
     {
+        $this->authorize('update', $appointment);
+
         $pivot = $appointment->products()->where('product_id', $product->id)->first();
         if ($pivot) {
             $product->increment('stock_qty', $pivot->pivot->qty); // restore stock

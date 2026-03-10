@@ -30,7 +30,18 @@ class BarberGoogleCalendarController extends Controller
             return redirect()->route('barbers.index')->with('error', 'Google Calendar connection was cancelled.');
         }
 
+        $user   = Auth::user();
         $barber = Barber::findOrFail($barberId);
+
+        // Verify the barber belongs to the authenticated user's company
+        // and that the user is authorized to connect this barber's calendar
+        if ($barber->company_id !== $user->company_id) {
+            abort(403);
+        }
+        if ($user->barber?->id !== $barber->id && ! $user->hasRole('shop-admin')) {
+            abort(403);
+        }
+
         $success = $google->handleCallback($barber, $code);
 
         if ($success) {

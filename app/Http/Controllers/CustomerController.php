@@ -11,6 +11,8 @@ class CustomerController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Customer::class);
+
         $customers = Customer::with('favoriteBarber.user')
             ->withCount(['appointments as visit_count' => fn ($q) => $q->where('status', 'completed')])
             ->orderBy('name')
@@ -28,6 +30,8 @@ class CustomerController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Customer::class);
+
         return Inertia::render('customers/Create', [
             'barbers' => Barber::with('user')->where('is_active', true)->get(),
         ]);
@@ -35,6 +39,8 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Customer::class);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -51,6 +57,8 @@ class CustomerController extends Controller
 
     public function show(Customer $customer)
     {
+        $this->authorize('view', $customer);
+
         $customer->load(['favoriteBarber.user', 'reviews.barber.user', 'reviews.appointment.service']);
 
         $appointments = $customer->appointments()
@@ -69,6 +77,8 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
+        $this->authorize('update', $customer);
+
         $customer->load('favoriteBarber.user');
 
         return Inertia::render('customers/Edit', [
@@ -79,6 +89,8 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
+        $this->authorize('update', $customer);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -95,6 +107,8 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+        $this->authorize('delete', $customer);
+
         $customer->delete();
 
         return redirect()->route('customers.index')->with('success', 'Customer deleted.');

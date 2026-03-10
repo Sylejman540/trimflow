@@ -12,6 +12,8 @@ class BarberTimeOffController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Barber::class);
+
         $timeOffs = BarberTimeOff::with('barber.user')
             ->orderBy('starts_on')
             ->get()
@@ -31,12 +33,19 @@ class BarberTimeOffController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Barber::class);
+
         $validated = $request->validate([
             'barber_id' => 'required|exists:barbers,id',
             'starts_on' => 'required|date',
             'ends_on'   => 'required|date|after_or_equal:starts_on',
             'reason'    => 'nullable|string|max:255',
         ]);
+
+        // Ensure the barber belongs to this company
+        $barber = Barber::where('id', $validated['barber_id'])
+            ->where('company_id', Auth::user()->company_id)
+            ->firstOrFail();
 
         BarberTimeOff::create($validated);
 
@@ -45,6 +54,8 @@ class BarberTimeOffController extends Controller
 
     public function destroy(BarberTimeOff $timeOff)
     {
+        $this->authorize('delete', $timeOff->barber);
+
         $timeOff->delete();
 
         return back()->with('success', 'Time off removed.');
