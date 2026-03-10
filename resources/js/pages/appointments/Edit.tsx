@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ export default function Edit({
     services: Service[];
     is_barber: boolean;
 }) {
+    const { t } = useTranslation();
     const isRecurring = appointment.recurrence_rule && appointment.recurrence_rule !== 'none';
 
     const { data, setData, put, processing, errors } = useForm({
@@ -59,14 +61,14 @@ export default function Edit({
     }
 
     return (
-        <AppLayout title="Edit Appointment">
-            <Head title="Edit Appointment" />
+        <AppLayout title={t('appt.edit')}>
+            <Head title={t('appt.edit')} />
             
             <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
                 <div className="mb-6 px-1">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Appointment</h2>
-                    <p className="text-sm text-slate-500 mt-1">Update the information below to modify this session.</p>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('appt.edit')}</h2>
+                    <p className="text-sm text-slate-500 mt-1">{t('appt.editDesc')}</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
@@ -75,7 +77,7 @@ export default function Edit({
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Info size={12} /> Appointment Status
+                                <Info size={12} />{' '}{t('appt.apptStatus')}
                             </Label>
                             <Select
                                 value={data.status}
@@ -97,7 +99,7 @@ export default function Edit({
 
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Assigned Barber
+                                <User size={12} />{' '}{t('appt.assignedBarber')}
                             </Label>
                             {is_barber ? (
                                 <div className="h-10 bg-slate-50 border border-slate-200 rounded-lg px-3 flex items-center text-sm text-slate-700">
@@ -109,7 +111,7 @@ export default function Edit({
                                     onValueChange={(v) => setData('barber_id', v ?? '')}
                                 >
                                     <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                        <SelectValue placeholder="Select barber" />
+                                        <SelectValue placeholder={t('appt.selectBarber')} />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                         {barbers.map((b) => (
@@ -128,7 +130,7 @@ export default function Edit({
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="customer_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Customer Name
+                                <User size={12} />{' '}{t('appt.customerName')}
                             </Label>
                             <Input
                                 id="customer_name"
@@ -142,7 +144,7 @@ export default function Edit({
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="customer_phone" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Phone size={12} /> Phone Number
+                                <Phone size={12} />{' '}{t('appt.phoneNumber')}
                             </Label>
                             <Input
                                 id="customer_phone"
@@ -158,7 +160,7 @@ export default function Edit({
                     {/* Service Selection */}
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <Scissors size={12} /> Service Type
+                            <Scissors size={12} />{' '}{t('appt.serviceType')}
                         </Label>
                         <Select
                             value={data.service_id}
@@ -181,7 +183,7 @@ export default function Edit({
                                     {formatDuration(selectedService.duration)}
                                 </span>
                                 <span className="text-[11px] font-bold text-slate-500">
-                                    Estimated Price: {formatCents(selectedService.price)}
+                                    {t('appt.estimatedPrice')} {formatCents(selectedService.price)}
                                 </span>
                             </div>
                         )}
@@ -192,7 +194,7 @@ export default function Edit({
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="starts_at" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Calendar size={12} /> Date & Time
+                                <Calendar size={12} />{' '}{t('appt.dateTime')}
                             </Label>
                             <Input
                                 id="starts_at"
@@ -206,7 +208,7 @@ export default function Edit({
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="tip_amount" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <DollarSign size={12} /> Tip ($)
+                                <DollarSign size={12} />{' '}{t('appt.tip')}
                             </Label>
                             <Input
                                 id="tip_amount"
@@ -225,14 +227,14 @@ export default function Edit({
                     {/* Notes */}
                     <div className="space-y-2">
                         <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <AlignLeft size={12} /> Internal Notes
+                            <AlignLeft size={12} />{' '}{t('appt.internalNotes')}
                         </Label>
                         <Textarea
                             id="notes"
                             value={data.notes}
                             onChange={(e) => setData('notes', e.target.value)}
                             className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
-                            placeholder="Allergies, preferences, etc..."
+                            placeholder={t('appt.notesPlaceholder')}
                             rows={1}
                         />
                     </div>
@@ -242,7 +244,7 @@ export default function Edit({
                         <div className="rounded-lg border border-amber-100 bg-amber-50 p-3 space-y-2">
                             <div className="flex items-center gap-2 text-xs font-bold text-amber-700">
                                 <RefreshCw className="h-3.5 w-3.5" />
-                                This is a recurring appointment
+                                {t('appt.recurringAppt')}
                             </div>
                             <div className="flex items-center gap-4">
                                 {(['this', 'future'] as const).map((scope) => (
@@ -255,7 +257,7 @@ export default function Edit({
                                             onChange={() => setData('update_scope', scope)}
                                             className="accent-amber-600"
                                         />
-                                        {scope === 'this' ? 'This appointment only' : 'This and all future'}
+                                        {scope === 'this' ? t('appt.thisOnly') : t('appt.thisFuture')}
                                     </label>
                                 ))}
                             </div>
@@ -269,13 +271,13 @@ export default function Edit({
                             disabled={processing}
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
-                            Update Appointment
+                            {t('appt.updateAppointment')}
                         </Button>
                         <Link
                             href={route('appointments.index')}
                             className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Link>
                     </div>
                 </form>

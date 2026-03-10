@@ -40,7 +40,7 @@ export default {
 
     nav: {
         dashboard: 'Paneli',
-        appointments: 'Takimet',
+        appointments: 'Terminet',
         customers: 'Klientët',
         barbers: 'Berberët',
         services: 'Shërbimet',
@@ -103,7 +103,7 @@ export default {
 
     appt: {
         title: 'Takimet',
-        new: 'Takim i ri',
+        new: 'Termin i ri',
         create: 'Krijo takim',
         edit: 'Ndrysho takim',
         barber: 'Berberi',
@@ -122,6 +122,31 @@ export default {
         cancelAppt: 'Anulo takimin',
         markComplete: 'Shëno si i përfunduar',
         markNoShow: 'Shëno si nuk u paraqit',
+        bookingDetails: 'Detajet e rezervimit',
+        bookingDetailsDesc: 'Plotëso informacionin për të caktuar një takim të ri.',
+        editDesc: 'Ndrysho informacionin për të modifikuar këtë seancë.',
+        assignedBarber: 'Berberi i caktuar',
+        customerName: 'Emri i klientit',
+        phoneNumber: 'Numri i telefonit',
+        serviceType: 'Lloji i shërbimit',
+        dateTime: 'Data dhe ora',
+        internalNotes: 'Shënime të brendshme',
+        notesPlaceholder: 'Alergji, preferencë, etj...',
+        estimatedPrice: 'Çmimi i parashikuar:',
+        repeat: 'Përsërit',
+        doesNotRepeat: 'Nuk përsëritet',
+        weekly: 'Çdo javë',
+        biweekly: 'Çdo 2 javë',
+        monthly: 'Çdo muaj',
+        bookAppointment: 'Rezervo takim',
+        updateAppointment: 'Përditëso takimin',
+        tip: 'Bakshish (€)',
+        recurringAppt: 'Ky është një takim i përsëritur',
+        thisOnly: 'Vetëm ky takim',
+        thisFuture: 'Ky dhe të gjithë të ardhshmet',
+        selectBarber: 'Zgjidhni berberin',
+        selectService: 'Zgjidhni shërbimin',
+        apptStatus: 'Statusi i takimit',
     },
 
     svc: {
@@ -135,6 +160,11 @@ export default {
         colorLabel: 'Ngjyra',
         activeStatus: 'Statusi aktiv',
         activeDesc: 'Shërbimi do të jetë i dukshëm për rezervim menjëherë.',
+        activeEditDesc: 'Lejo klientët të shikojnë dhe rezervojnë këtë shërbim.',
+        serviceDesc: 'Përshkrimi i shërbimit',
+        newDesc: 'Përcaktoni një ofertë të re për dyqanin tuaj, duke përfshirë kohëzgjatjen dhe çmimet.',
+        editDesc: 'Përditëso detajet dhe çmimet për këtë shërbim.',
+        updateService: 'Përditëso shërbimin',
         noServices: 'Nuk ka shërbime ende.',
         created: 'Shërbimi u krijua.',
         updated: 'Shërbimi u përditësua.',
@@ -157,6 +187,17 @@ export default {
         notConnected: 'Jo i lidhur',
         connect: 'Lidh',
         disconnect: 'Shkëput',
+        googleCalendarDesc: "Sinkronizo takimet me Google Kalendarin e këtij berberi.",
+        fullName: 'Emri i plotë',
+        emailAddress: 'Adresa e emailit',
+        initialPassword: 'Fjalëkalimi fillestar',
+        specialtyExpertise: 'Specialitet / Ekspertizë',
+        professionalBio: 'Bio profesionale',
+        activeSchedule: 'Orari aktiv',
+        activeScheduleDesc: 'Ndryshoni nëse ky berber është i disponueshëm për rezervim.',
+        newDesc: 'Krijo një profil të ri profesional dhe kredenciale hyrjeje për berberin.',
+        editDesc: 'Modifiko detajet e profilit, informacionin e kontaktit dhe statusin.',
+        updateBarber: 'Përditëso berberin',
     },
 
     cust: {
@@ -183,6 +224,14 @@ export default {
         noProducts: 'Nuk ka produkte ende.',
         stockQty: 'Sasia në stok',
         lowStockThreshold: 'Kufiri i stokut të ulët',
+        lowStockAlert: 'Alarmi i stokut të ulët',
+        lowStockHint: 'Shfaq shenjë paralajmëruese kur stoku bie deri ose poshtë këtij numri.',
+        productName: 'Emri i produktit',
+        activeStatus: 'Statusi aktiv',
+        activeDesc: 'Produkti do të jetë i disponueshëm për t\'u shtuar në takime.',
+        newDesc: 'Shto një produkt tregtar në inventarin tuaj për shitje në takime.',
+        editDesc: 'Përditëso detajet dhe nivelet e stokut për këtë produkt.',
+        updateProduct: 'Përditëso produktin',
     },
 
     profile: {
@@ -242,7 +291,7 @@ export default {
 
     // Time Off
     timeoff: {
-        title: 'Koha e lirë',
+        title: 'Pushimet',
         add: 'Shto kohë të lirë',
         noTimeOff: 'Nuk ka kohë të lirë të planifikuar.',
         upcomingActive: 'E ardhshme & Aktive',

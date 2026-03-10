@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import { Barber } from '@/types';
 import { User, Mail, Star, AlignLeft, Info, Contact, Calendar } from 'lucide-react';
 
 export default function Edit({ barber }: { barber: Barber }) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         name: barber.user?.name ?? '',
         email: barber.user?.email ?? '',
@@ -25,14 +27,14 @@ export default function Edit({ barber }: { barber: Barber }) {
     }
 
     return (
-        <AppLayout title="Edit Barber">
-            <Head title={`Edit ${barber.user?.name}`} />
+        <AppLayout title={t('barber.edit')}>
+            <Head title={`${t('barber.edit')} ${barber.user?.name}`} />
             
             <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
                 <div className="mb-6 px-1">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Barber</h2>
-                    <p className="text-sm text-slate-500 mt-1">Modify barber profile details, contact information, and status.</p>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('barber.edit')}</h2>
+                    <p className="text-sm text-slate-500 mt-1">{t('barber.editDesc')}</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
@@ -41,7 +43,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Full Name
+                                <User size={12} />{' '}{t('barber.fullName')}
                             </Label>
                             <Input
                                 id="name"
@@ -56,7 +58,7 @@ export default function Edit({ barber }: { barber: Barber }) {
 
                         <div className="space-y-2">
                             <Label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Mail size={12} /> Email Address
+                                <Mail size={12} />{' '}{t('barber.emailAddress')}
                             </Label>
                             <Input
                                 id="email"
@@ -74,7 +76,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                     {/* Specialty Field */}
                     <div className="space-y-2">
                         <Label htmlFor="specialty" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <Star size={12} /> Specialty / Expertise
+                            <Star size={12} />{' '}{t('barber.specialtyExpertise')}
                         </Label>
                         <Input
                             id="specialty"
@@ -89,7 +91,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                     {/* Bio Field */}
                     <div className="space-y-2">
                         <Label htmlFor="bio" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <AlignLeft size={12} /> Professional Bio
+                            <AlignLeft size={12} />{' '}{t('barber.professionalBio')}
                         </Label>
                         <Textarea
                             id="bio"
@@ -109,8 +111,8 @@ export default function Edit({ barber }: { barber: Barber }) {
                                 <Contact size={16} className="text-slate-400" />
                             </div>
                             <div className="space-y-0.5">
-                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">Active Schedule</Label>
-                                <p className="text-xs text-slate-500">Toggle whether this barber is available for booking.</p>
+                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">{t('barber.activeSchedule')}</Label>
+                                <p className="text-xs text-slate-500">{t('barber.activeScheduleDesc')}</p>
                             </div>
                         </div>
                         <Switch
@@ -127,13 +129,13 @@ export default function Edit({ barber }: { barber: Barber }) {
                             disabled={processing} 
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
                         >
-                            Update Barber
+                            {t('barber.updateBarber')}
                         </Button>
-                        <Link 
-                            href={route('barbers.index')} 
+                        <Link
+                            href={route('barbers.index')}
                             className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Link>
                     </div>
                 </form>
@@ -145,18 +147,18 @@ export default function Edit({ barber }: { barber: Barber }) {
                             <Calendar size={16} className="text-slate-400" />
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-slate-900">Google Calendar</p>
-                            <p className="text-xs text-slate-500">Sync appointments to this barber's Google Calendar.</p>
+                            <p className="text-sm font-bold text-slate-900">{t('barber.googleCalendar')}</p>
+                            <p className="text-xs text-slate-500">{t('barber.googleCalendarDesc')}</p>
                         </div>
                     </div>
                     {barber.google_calendar_enabled ? (
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">Connected</span>
-                            <Link method="post" href={route('barbers.google.disconnect', barber.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">Disconnect</Link>
+                            <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{t('barber.connected')}</span>
+                            <Link method="post" href={route('barbers.google.disconnect', barber.id)} className="text-xs font-semibold text-red-500 hover:text-red-700">{t('barber.disconnect')}</Link>
                         </div>
                     ) : (
                         <Link href={route('barbers.google.connect', barber.id)} className="text-xs font-semibold text-slate-700 bg-white border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50">
-                            Connect
+                            {t('barber.connect')}
                         </Link>
                     )}
                 </div>

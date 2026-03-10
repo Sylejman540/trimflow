@@ -93,8 +93,8 @@ class BookingSlotsController extends Controller
             ->where('starts_at', '<', $date->copy()->endOfDay())
             ->get(['starts_at', 'ends_at']);
 
-        // Generate candidate slots (every 30 min within window)
-        $slotInterval = 30; // minutes
+        // Generate candidate slots — interval equals service duration for back-to-back booking
+        $slotInterval = $totalDuration;
         $slots = [];
         $now = Carbon::now();
 

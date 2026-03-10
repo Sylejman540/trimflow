@@ -2,6 +2,7 @@
 
 use App\Jobs\SendAppointmentReminders;
 use App\Jobs\SendDailyDigest;
+use App\Jobs\SendLowStockAlerts;
 use App\Models\Company;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -30,3 +31,8 @@ Schedule::command('notifications:prune')->daily();
 Schedule::call(function () {
     Company::where('is_active', true)->each(fn($c) => SendDailyDigest::dispatch($c));
 })->dailyAt('20:00');
+
+// Check low stock every morning at 9 AM
+Schedule::call(function () {
+    Company::where('is_active', true)->each(fn($c) => SendLowStockAlerts::dispatch($c));
+})->dailyAt('09:00');

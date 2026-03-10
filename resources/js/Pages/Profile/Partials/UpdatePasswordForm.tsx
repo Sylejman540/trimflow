@@ -1,23 +1,21 @@
-import InputError from '@/components/InputError';
-import InputLabel from '@/components/InputLabel';
-import PrimaryButton from '@/components/PrimaryButton';
-import TextInput from '@/components/TextInput';
 import { useForm } from '@inertiajs/react';
-import { Transition } from '@headlessui/react';
 import { useRef, FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Lock } from 'lucide-react';
 
 export default function UpdatePasswordForm({ className = '' }: { className?: string }) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
 
-    const { data, setData, errors, put, reset, processing, recentlySuccessful } =
-        useForm({
-            current_password: '',
-            password: '',
-            password_confirmation: '',
-        });
+    const { data, setData, errors, put, reset, processing, recentlySuccessful } = useForm({
+        current_password: '',
+        password: '',
+        password_confirmation: '',
+    });
 
-    const updatePassword = (e: FormEvent) => {
+    function updatePassword(e: FormEvent) {
         e.preventDefault();
         put(route('password.update'), {
             preserveScroll: true,
@@ -33,88 +31,72 @@ export default function UpdatePasswordForm({ className = '' }: { className?: str
                 }
             },
         });
-    };
+    }
 
     return (
         <section className={className}>
-            <header>
-                <h2 className="text-lg font-semibold text-slate-900">Update Password</h2>
-                <p className="mt-1 text-sm text-slate-500">
-                    Ensure your account is using a long, random password to stay secure.
-                </p>
+            <header className="mb-6">
+                <h2 className="text-base font-bold text-slate-900">Update Password</h2>
+                <p className="mt-1 text-sm text-slate-500">Use a long, random password to keep your account secure.</p>
             </header>
 
-            <form onSubmit={updatePassword} className="mt-8 space-y-6">
-                <div className="space-y-1">
-                    <InputLabel 
-                        htmlFor="current_password" 
-                        value="Current Password" 
-                        className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" 
-                    />
-                    <TextInput
+            <form onSubmit={updatePassword} className="space-y-5">
+                <div className="space-y-2">
+                    <Label htmlFor="current_password" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                        <Lock size={12} /> Current Password
+                    </Label>
+                    <Input
                         id="current_password"
                         ref={currentPasswordInput}
-                        value={data.current_password}
-                        onChange={(e) => setData('current_password', e.target.value)}
                         type="password"
-                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        value={data.current_password}
+                        onChange={e => setData('current_password', e.target.value)}
+                        className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                         autoComplete="current-password"
                     />
-                    <InputError message={errors.current_password} className="mt-2 text-xs" />
+                    {errors.current_password && <p className="text-xs text-red-500 font-medium">{errors.current_password}</p>}
                 </div>
 
-                <div className="space-y-1">
-                    <InputLabel 
-                        htmlFor="password" 
-                        value="New Password" 
-                        className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" 
-                    />
-                    <TextInput
+                <div className="space-y-2">
+                    <Label htmlFor="password" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                        <Lock size={12} /> New Password
+                    </Label>
+                    <Input
                         id="password"
                         ref={passwordInput}
+                        type="password"
                         value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        type="password"
-                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        onChange={e => setData('password', e.target.value)}
+                        className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                         autoComplete="new-password"
                     />
-                    <InputError message={errors.password} className="mt-2 text-xs" />
+                    {errors.password && <p className="text-xs text-red-500 font-medium">{errors.password}</p>}
                 </div>
 
-                <div className="space-y-1">
-                    <InputLabel 
-                        htmlFor="password_confirmation" 
-                        value="Confirm Password" 
-                        className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1" 
-                    />
-                    <TextInput
+                <div className="space-y-2">
+                    <Label htmlFor="password_confirmation" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                        <Lock size={12} /> Confirm New Password
+                    </Label>
+                    <Input
                         id="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
                         type="password"
-                        className="px-2 mt-1 block w-full border-none bg-slate-50 focus:bg-white focus:ring-1 focus:ring-slate-900 transition-all rounded-lg h-10 shadow-none"
+                        value={data.password_confirmation}
+                        onChange={e => setData('password_confirmation', e.target.value)}
+                        className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                         autoComplete="new-password"
                     />
-                    <InputError message={errors.password_confirmation} className="mt-2 text-xs" />
+                    {errors.password_confirmation && <p className="text-xs text-red-500 font-medium">{errors.password_confirmation}</p>}
                 </div>
 
-                <div className="flex items-center gap-4 pt-4">
-                    <PrimaryButton 
+                <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
+                    <Button
+                        type="submit"
                         disabled={processing}
-                        className="bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 px-6 py-2 rounded-lg shadow-sm transition-all border-none"
+                        className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-none"
                     >
                         Update Password
-                    </PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-slate-500">Saved successfully.</p>
-                    </Transition>
+                    </Button>
+                    {recentlySuccessful && <p className="text-sm text-slate-500">Saved.</p>}
                 </div>
             </form>
         </section>

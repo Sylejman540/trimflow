@@ -13,9 +13,11 @@ class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
-        $user     = Auth::user();
-        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
-        $barberId = $isBarber ? $user->barber?->id : null;
+        $user          = Auth::user();
+        $isBarber      = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+        $isOwnerBarber = $user->hasRole('shop-admin') && $user->hasRole('barber') && $user->barber;
+        $filterMine    = $isOwnerBarber && $request->boolean('mine');
+        $barberId      = ($isBarber || $filterMine) ? $user->barber?->id : null;
 
         $view = $request->get('view', 'week'); // 'day' or 'week'
         $date = $request->get('date', Carbon::today()->toDateString());
@@ -49,13 +51,15 @@ class ScheduleController extends Controller
             ]);
 
         return Inertia::render('schedule/Index', [
-            'appointments' => $appointments,
-            'view'         => $view,
-            'date'         => $date,
-            'start'        => $start->toDateString(),
-            'end'          => $end->toDateString(),
-            'barbers'      => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(['id'])->map(fn ($b) => ['id' => $b->id, 'name' => $b->user?->name]),
-            'is_barber'    => $isBarber,
+            'appointments'    => $appointments,
+            'view'            => $view,
+            'date'            => $date,
+            'start'           => $start->toDateString(),
+            'end'             => $end->toDateString(),
+            'barbers'         => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(['id'])->map(fn ($b) => ['id' => $b->id, 'name' => $b->user?->name]),
+            'is_barber'       => $isBarber,
+            'is_owner_barber' => $isOwnerBarber,
+            'filter_mine'     => $filterMine,
         ]);
     }
 

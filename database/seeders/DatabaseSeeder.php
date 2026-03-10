@@ -41,13 +41,31 @@ class DatabaseSeeder extends Seeder
         ]);
         $admin->assignRole('platform-admin');
 
-        // Shop owner
+        // Shop owner (also a barber — cuts hair themselves)
         $owner = User::factory()->create([
             'name' => 'John Owner',
             'email' => 'owner@trimflow.test',
             'company_id' => $company->id,
         ]);
         $owner->assignRole('shop-admin');
+        $owner->assignRole('barber');
+
+        $ownerBarber = Barber::create([
+            'company_id' => $company->id,
+            'user_id'    => $owner->id,
+            'specialty'  => 'All-around Cuts',
+            'bio'        => 'Owner and head barber at TrimFlow Demo Shop.',
+            'working_hours' => [
+                'monday'    => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
+                'tuesday'   => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
+                'wednesday' => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
+                'thursday'  => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
+                'friday'    => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
+                'saturday'  => ['enabled' => true,  'start' => '10:00', 'end' => '16:00'],
+                'sunday'    => ['enabled' => false, 'start' => '09:00', 'end' => '17:00'],
+            ],
+            'is_active'  => true,
+        ]);
 
         // Barber users + barber profiles
         $barberData = [
@@ -56,7 +74,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Jake Blade', 'email' => 'jake@trimflow.test', 'specialty' => 'Beard Grooming'],
         ];
 
-        $barbers = [];
+        $barbers = [$ownerBarber];
         foreach ($barberData as $data) {
             $user = User::factory()->create([
                 'name' => $data['name'],

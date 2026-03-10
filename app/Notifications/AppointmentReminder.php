@@ -27,7 +27,7 @@ class AppointmentReminder extends Notification implements ShouldQueue
 
         return [
             'appointment_id' => $appt->id,
-            'message'        => "Reminder: {$service} tomorrow at {$time}.",
+            'message'        => "Reminder: {$service} in 1 hour at {$time}.",
             'icon'           => 'clock',
         ];
     }
@@ -40,14 +40,13 @@ class AppointmentReminder extends Notification implements ShouldQueue
         $time    = $appt->starts_at->format('l, F j \a\t g:i A');
 
         return (new MailMessage)
-            ->subject("Reminder: {$service} tomorrow")
+            ->subject("Reminder: {$service} in 1 hour")
             ->greeting("Hi {$notifiable->name},")
-            ->line("This is a friendly reminder about your upcoming appointment.")
+            ->line("Your appointment is coming up in about 1 hour.")
             ->line("**Service:** {$service}")
             ->line("**Barber:** {$barber}")
             ->line("**When:** {$time}")
             ->action('View Appointment', url('/appointments/' . $appt->id))
-            ->line('If you need to cancel or reschedule, please do so at least 2 hours in advance.')
             ->salutation('See you soon!');
     }
 }

@@ -25,7 +25,7 @@ class BookingController extends Controller
         $services = Service::where('company_id', $company->id)->where('is_active', true)->orderBy('name')->get();
 
         return Inertia::render('booking/Show', [
-            'company'  => $company->only('id', 'name', 'slug', 'address', 'phone'),
+            'company'  => $company->only('id', 'name', 'slug', 'address', 'phone', 'logo'),
             'barbers'  => $barbers->map(fn($b) => [
                 'id'        => $b->id,
                 'user'      => ['name' => $b->user->name],
@@ -83,7 +83,7 @@ class BookingController extends Controller
             'barber_id'      => 'required|exists:barbers,id',
             'service_ids'    => 'required|array|min:1',
             'service_ids.*'  => 'integer|exists:services,id',
-            'starts_at'      => 'required|date|after:now',
+            'starts_at'      => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
             'customer_name'  => 'required|string|max:255',
             'customer_phone' => 'required|string|max:50',
             'notes'          => 'nullable|string|max:1000',

@@ -1,12 +1,14 @@
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useMemo, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Plus, Trash2, Search, Download, CheckCircle2, RefreshCw } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2, Search, Download, CheckCircle2, RefreshCw, User, Scissors, Calendar, Phone } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -23,7 +25,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { formatCents, formatDateTime, formatTime, cn } from '@/lib/utils';
-import { Appointment, AppointmentStatus, Barber, Service } from '@/types';
+import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/types';
 
 const allStatuses: AppointmentStatus[] = [
     'pending',
@@ -79,6 +81,185 @@ function isTomorrow(dateStr: string) {
         && d.getDate() === tomorrow.getDate();
 }
 
+
+function toLocalDatetimeValue(d: Date) {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function QuickBookModal({
+    open,
+    onClose,
+    barbers,
+    services,
+    isBarber,
+}: {
+    open: boolean;
+    onClose: () => void;
+    barbers: Barber[];
+    services: Service[];
+    isBarber: boolean;
+}) {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
+        customer_name: '',
+        customer_phone: '',
+        service_id: '',
+        starts_at: '',
+        notes: '',
+        recurrence_rule: 'none',
+    });
+
+    const selectedService = useMemo(
+        () => services.find(s => s.id === Number(data.service_id)),
+        [services, data.service_id],
+    );
+
+    const timePresets = useMemo(() => {
+        const now = new Date();
+        // round up to next 15-min slot
+        const mins = now.getMinutes();
+        const rounded = Math.ceil((mins + 1) / 15) * 15;
+        const base = new Date(now);
+        base.setMinutes(rounded, 0, 0);
+        return [
+            { label: 'Now', date: base },
+            { label: '+30m', date: new Date(base.getTime() + 30 * 60000) },
+            { label: '+1h',  date: new Date(base.getTime() + 60 * 60000) },
+            { label: '+2h',  date: new Date(base.getTime() + 120 * 60000) },
+            { label: '+3h',  date: new Date(base.getTime() + 180 * 60000) },
+        ];
+    }, [open]);
+
+    function submit(e: FormEvent) {
+        e.preventDefault();
+        post(route('appointments.store'), {
+            onSuccess: () => { reset(); onClose(); },
+        });
+    }
+
+    return (
+        <Dialog open={open} onOpenChange={v => !v && onClose()}>
+            <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" /> New Appointment
+                    </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={submit} className="space-y-4 pt-1">
+                    {!isBarber && (
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <User size={10} /> Barber
+                            </Label>
+                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                    <SelectValue placeholder="Select barber" />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                    {barbers.map(b => (
+                                        <SelectItem key={b.id} value={String(b.id)}>{b.user?.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <User size={10} /> Customer Name
+                            </Label>
+                            <Input
+                                value={data.customer_name}
+                                onChange={e => setData('customer_name', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="John Doe"
+                                autoFocus
+                                required
+                            />
+                            {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <Phone size={10} /> Phone
+                            </Label>
+                            <Input
+                                value={data.customer_phone}
+                                onChange={e => setData('customer_phone', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="+1 555 000-0000"
+                                inputMode="tel"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                            <Scissors size={10} /> Service
+                        </Label>
+                        <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectValue placeholder="Select service" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                {services.map(s => (
+                                    <SelectItem key={s.id} value={String(s.id)}>
+                                        {s.name} — {formatCents(s.price)}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {selectedService && (
+                            <p className="text-xs text-slate-400">{selectedService.duration} min · {formatCents(selectedService.price)}</p>
+                        )}
+                        {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                            <Calendar size={10} /> Date & Time
+                        </Label>
+                        {/* Quick presets */}
+                        <div className="flex gap-1.5 flex-wrap">
+                            {timePresets.map(p => (
+                                <button
+                                    key={p.label}
+                                    type="button"
+                                    onClick={() => setData('starts_at', toLocalDatetimeValue(p.date))}
+                                    className={cn(
+                                        'px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors',
+                                        data.starts_at === toLocalDatetimeValue(p.date)
+                                            ? 'bg-slate-900 text-white border-slate-900'
+                                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
+                                    )}
+                                >
+                                    {p.label}
+                                </button>
+                            ))}
+                        </div>
+                        <Input
+                            type="datetime-local"
+                            value={data.starts_at}
+                            onChange={e => setData('starts_at', e.target.value)}
+                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                            required
+                        />
+                        {errors.starts_at && <p className="text-xs text-red-500">{errors.starts_at}</p>}
+                    </div>
+
+                    <DialogFooter>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">Cancel</Button>
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
+                            Book Appointment
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 function DeleteModal({
     appointment,
@@ -148,18 +329,31 @@ export default function Index({
     appointments,
     can_create,
     is_barber,
+    is_owner_barber = false,
+    filter_mine = false,
     filters,
+    barbers = [],
+    services = [],
 }: {
     appointments: Appointment[];
     can_create: boolean;
     is_barber: boolean;
+    is_owner_barber?: boolean;
+    filter_mine?: boolean;
     filters: { search?: string; status?: string; date?: string };
+    barbers: Barber[];
+    services: Service[];
 }) {
     const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(filters?.status ?? 'all');
     const [dateFilter, setDateFilter] = useState(filters?.date ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(filters?.search ?? '');
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
+    const [quickBookOpen, setQuickBookOpen] = useState(false);
+
+    function toggleMine() {
+        router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
+    }
 
     const filtered = appointments.filter((a) => {
         const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
@@ -291,6 +485,20 @@ export default function Index({
             title={t('appt.title')}
             actions={
                 <div className="flex items-center gap-2">
+                    {is_owner_barber && (
+                        <button
+                            onClick={toggleMine}
+                            className={cn(
+                                buttonVariants({ variant: 'outline' }),
+                                'h-9 px-3 rounded-lg text-xs font-bold shadow-none transition-colors',
+                                filter_mine
+                                    ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white'
+                                    : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
+                            )}
+                        >
+                            {filter_mine ? 'My Appointments' : 'All Appointments'}
+                        </button>
+                    )}
                     <a
                         href={route('export.appointments')}
                         className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
@@ -429,6 +637,14 @@ export default function Index({
                     onOpenChange={(open) => !open && setDeletingAppt(null)}
                 />
             )}
+
+            <QuickBookModal
+                open={quickBookOpen}
+                onClose={() => setQuickBookOpen(false)}
+                barbers={barbers}
+                services={services}
+                isBarber={is_barber}
+            />
         </AppLayout>
     );
 }

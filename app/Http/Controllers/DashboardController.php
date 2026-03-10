@@ -58,18 +58,17 @@ class DashboardController extends Controller
             $stats['active_barbers'] = Barber::where('is_active', true)->count();
         }
 
-        // Most popular service this month
+        // Most popular service this month — join to avoid extra query
         $popularService = $appointmentQuery()
             ->whereBetween('starts_at', [$monthStart, $monthEnd])
-            ->select('service_id', DB::raw('count(*) as count'))
-            ->groupBy('service_id')
+            ->join('services', 'appointments.service_id', '=', 'services.id')
+            ->select('appointments.service_id', 'services.name', DB::raw('count(*) as count'))
+            ->groupBy('appointments.service_id', 'services.name')
             ->orderByDesc('count')
             ->first();
 
-        $stats['popular_service'] = $popularService
-            ? Service::find($popularService->service_id)?->name
-            : null;
-        $stats['popular_service_count'] = $popularService?->count ?? 0;
+        $stats['popular_service']       = $popularService?->name;
+        $stats['popular_service_count'] = (int) ($popularService?->count ?? 0);
 
         // Daily bookings for last 14 days (chart data)
         $chartStart = $today->copy()->subDays(13);
@@ -90,33 +89,42 @@ class DashboardController extends Controller
             ];
         }
 
-        // Barber performance (admin only)
+        // Barber performance (admin only) — single aggregated query, no N+1
         $barberPerformance = [];
         if (!$isBarber) {
+            $apptStats = DB::table('appointments')
+                ->whereBetween('starts_at', [$monthStart, $monthEnd])
+                ->select(
+                    'barber_id',
+                    DB::raw('count(*) as total'),
+                    DB::raw("sum(case when status='completed' then 1 else 0 end) as completed"),
+                    DB::raw("sum(case when status='completed' then price else 0 end) as revenue"),
+                    DB::raw("sum(case when status='no_show' then 1 else 0 end) as no_shows"),
+                )
+                ->groupBy('barber_id')
+                ->get()
+                ->keyBy('barber_id');
+
+            $ratingStats = DB::table('reviews')
+                ->whereBetween('created_at', [$monthStart, $monthEnd])
+                ->select('barber_id', DB::raw('round(avg(rating),1) as avg_rating'))
+                ->groupBy('barber_id')
+                ->get()
+                ->keyBy('barber_id');
+
             $barberPerformance = Barber::with('user')
                 ->where('is_active', true)
                 ->get()
-                ->map(function (Barber $barber) use ($monthStart, $monthEnd) {
-                    $appts = $barber->appointments()
-                        ->whereBetween('starts_at', [$monthStart, $monthEnd]);
-                    $total     = $appts->count();
-                    $completed = (clone $appts)->where('status', 'completed')->count();
-                    $revenue   = (clone $appts)->where('status', 'completed')->sum('price');
-                    $noShows   = (clone $appts)->where('status', 'no_show')->count();
-                    $avgRating = round(
-                        $barber->reviews()
-                            ->whereBetween('created_at', [$monthStart, $monthEnd])
-                            ->avg('rating') ?? 0,
-                        1
-                    );
+                ->map(function (Barber $barber) use ($apptStats, $ratingStats) {
+                    $s = $apptStats[$barber->id] ?? null;
                     return [
                         'id'           => $barber->id,
                         'name'         => $barber->user?->name ?? '-',
-                        'appointments' => $total,
-                        'completed'    => $completed,
-                        'revenue'      => $revenue,
-                        'no_shows'     => $noShows,
-                        'avg_rating'   => $avgRating,
+                        'appointments' => (int) ($s->total     ?? 0),
+                        'completed'    => (int) ($s->completed ?? 0),
+                        'revenue'      => (int) ($s->revenue   ?? 0),
+                        'no_shows'     => (int) ($s->no_shows  ?? 0),
+                        'avg_rating'   => (float) ($ratingStats[$barber->id]->avg_rating ?? 0),
                     ];
                 })
                 ->sortByDesc('revenue')

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barber;
 use App\Models\Company;
-use App\Models\Service;
+use App\Models\Service; // used for duration sum
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -22,12 +22,28 @@ class BookingAvailabilityController extends Controller
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         $request->validate([
-            'service_id' => 'required|integer',
+            'service_ids'   => 'sometimes|array|min:1',
+            'service_ids.*' => 'integer',
+            // Legacy single-service support
+            'service_id'    => 'sometimes|integer',
         ]);
 
-        $service = Service::where('id', $request->service_id)
+        // Accept either service_ids[] (new) or service_id (legacy)
+        $serviceIds = $request->input('service_ids')
+            ?? ($request->input('service_id') ? [$request->input('service_id')] : []);
+
+        if (empty($serviceIds)) {
+            return response()->json(['barbers' => []]);
+        }
+
+        $services = Service::whereIn('id', $serviceIds)
             ->where('company_id', $company->id)
-            ->firstOrFail();
+            ->get();
+
+        $totalDuration = (int) $services->sum('duration');
+        if ($totalDuration === 0) {
+            return response()->json(['barbers' => []]);
+        }
 
         $barbers = Barber::where('company_id', $company->id)
             ->where('is_active', true)
@@ -38,7 +54,7 @@ class BookingAvailabilityController extends Controller
         $result = [];
 
         foreach ($barbers as $barber) {
-            $nextSlot = $this->findNextSlot($barber, $service, $now);
+            $nextSlot = $this->findNextSlot($barber, $totalDuration, $now);
             $result[] = [
                 'id'             => $barber->id,
                 'name'           => $barber->user->name,
@@ -54,7 +70,7 @@ class BookingAvailabilityController extends Controller
         return response()->json(['barbers' => $result]);
     }
 
-    private function findNextSlot(Barber $barber, Service $service, Carbon $now): ?Carbon
+    private function findNextSlot(Barber $barber, int $totalDuration, Carbon $now): ?Carbon
     {
         // Look up to 14 days ahead
         for ($dayOffset = 0; $dayOffset <= 14; $dayOffset++) {
@@ -97,12 +113,12 @@ class BookingAvailabilityController extends Controller
             $cursor = $date->copy()->setTimeFromTimeString($windowStart);
             $windowEndTime = $date->copy()->setTimeFromTimeString($windowEnd);
 
-            while ($cursor->copy()->addMinutes($service->duration)->lte($windowEndTime)) {
+            while ($cursor->copy()->addMinutes($totalDuration)->lte($windowEndTime)) {
                 $slotStart = $cursor->copy();
-                $slotEnd   = $cursor->copy()->addMinutes($service->duration);
+                $slotEnd   = $cursor->copy()->addMinutes($totalDuration);
 
                 if ($slotStart->lte($now)) {
-                    $cursor->addMinutes(30);
+                    $cursor->addMinutes($totalDuration);
                     continue;
                 }
 
@@ -120,7 +136,7 @@ class BookingAvailabilityController extends Controller
                     return $slotStart;
                 }
 
-                $cursor->addMinutes(30);
+                $cursor->addMinutes($totalDuration);
             }
         }
 

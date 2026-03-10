@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,7 @@ const SERVICE_COLORS = [
 ] as const;
 
 export default function Edit({ service }: { service: Service }) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         name: service.name,
         category: service.category ?? '',
@@ -43,14 +45,14 @@ export default function Edit({ service }: { service: Service }) {
     }
 
     return (
-        <AppLayout title="Edit Service">
-            <Head title={`Edit ${service.name}`} />
+        <AppLayout title={t('svc.edit')}>
+            <Head title={`${t('svc.edit')} ${service.name}`} />
             
             <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
                 <div className="mb-6 px-1">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Service</h2>
-                    <p className="text-sm text-slate-500 mt-1">Update the details and pricing for this service offering.</p>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('svc.edit')}</h2>
+                    <p className="text-sm text-slate-500 mt-1">{t('svc.editDesc')}</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
@@ -59,7 +61,7 @@ export default function Edit({ service }: { service: Service }) {
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Scissors size={12} /> Service Name
+                                <Scissors size={12} />{' '}{t('svc.serviceName')}
                             </Label>
                             <Input
                                 id="name"
@@ -74,7 +76,7 @@ export default function Edit({ service }: { service: Service }) {
 
                         <div className="space-y-2">
                             <Label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Tag size={12} /> Category
+                                <Tag size={12} />{' '}{t('category')}
                             </Label>
                             <Input
                                 id="category"
@@ -89,7 +91,7 @@ export default function Edit({ service }: { service: Service }) {
 
                     {/* Color Picker */}
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Color Label</Label>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('svc.colorLabel')}</Label>
                         <div className="flex flex-wrap gap-2">
                             {SERVICE_COLORS.map(c => (
                                 <button
@@ -114,7 +116,7 @@ export default function Edit({ service }: { service: Service }) {
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="duration" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Clock size={12} /> Duration (Minutes)
+                                <Clock size={12} />{' '}{t('svc.durationMin')}
                             </Label>
                             <Input
                                 id="duration"
@@ -129,7 +131,7 @@ export default function Edit({ service }: { service: Service }) {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="price" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <DollarSign size={12} /> Price ($)
+                                <DollarSign size={12} />{' '}{t('svc.priceDollar')}
                             </Label>
                             <Input
                                 id="price"
@@ -148,7 +150,7 @@ export default function Edit({ service }: { service: Service }) {
                     {/* Description */}
                     <div className="space-y-2">
                         <Label htmlFor="description" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <AlignLeft size={12} /> Service Description
+                            <AlignLeft size={12} />{' '}{t('svc.serviceDesc')}
                         </Label>
                         <Textarea
                             id="description"
@@ -168,8 +170,8 @@ export default function Edit({ service }: { service: Service }) {
                                 <Info size={16} className="text-slate-400" />
                             </div>
                             <div className="space-y-0.5">
-                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">Active Status</Label>
-                                <p className="text-xs text-slate-500">Allow customers to see and book this service.</p>
+                                <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">{t('svc.activeStatus')}</Label>
+                                <p className="text-xs text-slate-500">{t('svc.activeEditDesc')}</p>
                             </div>
                         </div>
                         <Switch
@@ -186,13 +188,13 @@ export default function Edit({ service }: { service: Service }) {
                             disabled={processing} 
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
                         >
-                            Update Service
+                            {t('svc.updateService')}
                         </Button>
-                        <Link 
-                            href={route('services.index')} 
+                        <Link
+                            href={route('services.index')}
                             className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4")}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Link>
                     </div>
                 </form>

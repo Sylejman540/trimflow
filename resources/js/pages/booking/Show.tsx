@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -18,6 +18,7 @@ interface Company {
     slug: string;
     address?: string;
     phone?: string;
+    logo?: string | null;
 }
 
 interface Barber {
@@ -38,6 +39,9 @@ interface Service {
     color?: string | null;
 }
 
+// Sentinel value for "Any Barber"
+const ANY_BARBER_ID = 0;
+
 function todayStr() {
     return new Date().toISOString().split('T')[0];
 }
@@ -49,18 +53,21 @@ export default function Show({ company, barbers: initialBarbers, services }: {
 }) {
     const { t } = useTranslation();
 
+    // Steps: 0=Service, 1=Barber, 2=DateTime, 3=Info
     const STEPS = [
-        t('booking.step.barber'),
         t('booking.step.service'),
+        t('booking.step.barber'),
         t('booking.step.dateTime'),
         t('booking.step.info'),
     ];
 
     const [step, setStep] = useState(0);
-    const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
     const [selectedServices, setSelectedServices] = useState<Service[]>([]);
+    const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null);
+    const [isAnyBarber, setIsAnyBarber] = useState(false);
     const [selectedDate, setSelectedDate] = useState(todayStr());
     const [selectedTime, setSelectedTime] = useState('');
+
 
     const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
     const [availabilityLoading, setAvailabilityLoading] = useState(false);
@@ -75,7 +82,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         customer_name: '',
         customer_phone: '',
         notes: '',
-        _hp: '', // honeypot — must stay empty
+        _hp: '',
         _t: '',
     });
 
@@ -91,18 +98,19 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         [services, categoryFilter]
     );
 
+    // Set timing token on mount
     useEffect(() => {
         setData('_t', String(Math.floor(Date.now() / 1000)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        if (services.length === 0) return;
-        const serviceId = services[0]?.id;
-        if (!serviceId) return;
-
+    // Fetch availability whenever selected services change (after step 0 → step 1 transition)
+    const fetchAvailability = useCallback((serviceIds: number[]) => {
+        if (serviceIds.length === 0) return;
         setAvailabilityLoading(true);
-        fetch(route('booking.availability', company.slug) + `?service_id=${serviceId}`)
+        const params = new URLSearchParams();
+        serviceIds.forEach(id => params.append('service_ids[]', String(id)));
+        fetch(route('booking.availability', company.slug) + '?' + params.toString())
             .then(r => r.json())
             .then((json: { barbers: Barber[] }) => {
                 const map = new Map(json.barbers.map(b => [b.id, b]));
@@ -114,36 +122,67 @@ export default function Show({ company, barbers: initialBarbers, services }: {
             })
             .catch(() => {})
             .finally(() => setAvailabilityLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [company.slug, initialBarbers]);
 
-    useEffect(() => {
-        if (step !== 2 || !selectedBarber || selectedServices.length === 0 || !selectedDate) return;
-
+    // Fetch slots for a specific barber or all barbers (any barber mode)
+    const fetchSlots = useCallback(async (barberId: number | 'any', serviceIds: number[], date: string) => {
         setSlotsLoading(true);
         setSlots([]);
         setSelectedTime('');
 
-        const params = new URLSearchParams({
-            barber_id: String(selectedBarber.id),
-            date: selectedDate,
-        });
-        selectedServices.forEach(s => params.append('service_ids[]', String(s.id)));
-        const url = route('booking.slots', company.slug) + '?' + params.toString();
+        if (barberId === 'any') {
+            // Fetch slots for all active barbers and merge, tracking which barber has each slot
+            const fetches = initialBarbers.map(b => {
+                const params = new URLSearchParams({ barber_id: String(b.id), date });
+                serviceIds.forEach(id => params.append('service_ids[]', String(id)));
+                return fetch(route('booking.slots', company.slug) + '?' + params.toString())
+                    .then(r => r.json())
+                    .then((json: { slots: string[] }) => ({ barberId: b.id, slots: json.slots ?? [] }))
+                    .catch(() => ({ barberId: b.id, slots: [] as string[] }));
+            });
 
-        fetch(url)
-            .then(r => r.json())
-            .then((json: { slots: string[] }) => setSlots(json.slots ?? []))
-            .catch(() => setSlots([]))
-            .finally(() => setSlotsLoading(false));
+            try {
+                const results = await Promise.all(fetches);
+                // Build a map: time → first barber who has it
+                const slotBarberMap = new Map<string, number>();
+                results.forEach(({ barberId: bid, slots: s }) => {
+                    s.forEach(slot => {
+                        if (!slotBarberMap.has(slot)) slotBarberMap.set(slot, bid);
+                    });
+                });
+                const merged = Array.from(slotBarberMap.keys()).sort();
+                setSlots(merged);
+                setAnyBarberSlotMap(slotBarberMap);
+            } finally {
+                setSlotsLoading(false);
+            }
+        } else {
+            const params = new URLSearchParams({ barber_id: String(barberId), date });
+            serviceIds.forEach(id => params.append('service_ids[]', String(id)));
+            fetch(route('booking.slots', company.slug) + '?' + params.toString())
+                .then(r => r.json())
+                .then((json: { slots: string[] }) => setSlots(json.slots ?? []))
+                .catch(() => setSlots([]))
+                .finally(() => setSlotsLoading(false));
+        }
+    }, [company.slug, initialBarbers]);
+
+    // Slot → barber mapping for "Any Barber" mode
+    const [anyBarberSlotMap, setAnyBarberSlotMap] = useState<Map<string, number>>(new Map());
+
+    // Re-fetch slots when date changes (on step 2)
+    useEffect(() => {
+        if (step !== 2) return;
+        const serviceIds = selectedServices.map(s => s.id);
+        if (serviceIds.length === 0) return;
+
+        if (isAnyBarber) {
+            fetchSlots('any', serviceIds, selectedDate);
+        } else if (selectedBarber) {
+            fetchSlots(selectedBarber.id, serviceIds, selectedDate);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, selectedDate]);
-
-    function selectBarber(b: Barber) {
-        setSelectedBarber(b);
-        setData('barber_id', String(b.id));
-        setStep(1);
-    }
 
     function toggleService(s: Service) {
         setSelectedServices(prev =>
@@ -154,7 +193,26 @@ export default function Show({ company, barbers: initialBarbers, services }: {
     }
 
     function proceedFromServices() {
-        setData('service_ids', selectedServices.map(s => String(s.id)));
+        const ids = selectedServices.map(s => s.id);
+        setData('service_ids', ids.map(String));
+        fetchAvailability(ids);
+        setStep(1);
+    }
+
+    function selectBarber(b: Barber) {
+        setSelectedBarber(b);
+        setIsAnyBarber(false);
+        setData('barber_id', String(b.id));
+        // Fetch slots for this barber on selected date
+        fetchSlots(b.id, selectedServices.map(s => s.id), selectedDate);
+        setStep(2);
+    }
+
+    function selectAnyBarber() {
+        setSelectedBarber(null);
+        setIsAnyBarber(true);
+        setData('barber_id', String(ANY_BARBER_ID)); // will be overridden at slot selection
+        fetchSlots('any', selectedServices.map(s => s.id), selectedDate);
         setStep(2);
     }
 
@@ -162,6 +220,18 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         setSelectedTime(time);
         const dt = `${selectedDate}T${time}:00`;
         setData('starts_at', dt);
+
+        // In any-barber mode, resolve the actual barber for this slot now
+        if (isAnyBarber) {
+            const bid = anyBarberSlotMap.get(time);
+            if (bid) {
+                setData('barber_id', String(bid));
+                // Find the barber object for the summary
+                const found = initialBarbers.find(b => b.id === bid);
+                if (found) setSelectedBarber(found);
+            }
+        }
+
         setStep(3);
     }
 
@@ -169,6 +239,9 @@ export default function Show({ company, barbers: initialBarbers, services }: {
         e.preventDefault();
         post(route('booking.store', company.slug));
     }
+
+    const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
+    const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
 
     return (
         <div className="min-h-screen bg-slate-50">
@@ -178,8 +251,11 @@ export default function Show({ company, barbers: initialBarbers, services }: {
             <div className="bg-slate-900 text-white">
                 <div className="max-w-2xl mx-auto px-4 py-6 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0">
-                            <Scissors className="h-6 w-6 text-white" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0 overflow-hidden">
+                            {company.logo
+                                ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                : <Scissors className="h-6 w-6 text-white" />
+                            }
                         </div>
                         <div>
                             <h1 className="text-lg font-bold text-white">{company.name}</h1>
@@ -212,55 +288,10 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                     ))}
                 </div>
 
-                {/* Step 0: Barber */}
+                {/* Step 0: Service Selection */}
                 {step === 0 && (
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseBarber')}</h2>
-                            {availabilityLoading && (
-                                <span className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Loader2 className="h-3 w-3 animate-spin" /> {t('booking.loadingAvailability')}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            {barbers.map(b => (
-                                <button
-                                    key={b.id}
-                                    onClick={() => selectBarber(b)}
-                                    className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
-                                >
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shrink-0">
-                                        <User className="h-5 w-5 text-slate-500" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-slate-900">{b.user.name}</p>
-                                        {b.specialty && <p className="text-xs text-slate-500 truncate">{b.specialty}</p>}
-                                    </div>
-                                    {b.next_time_label && (
-                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
-                                            {b.next_time_label}
-                                        </span>
-                                    )}
-                                    {!b.next_time_label && !availabilityLoading && (
-                                        <span className="text-xs text-slate-400 shrink-0">{t('booking.noSlotsBadge')}</span>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* Step 1: Service */}
-                {step === 1 && (
                     <div className="space-y-4 pb-32">
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
-                                <ChevronLeft className="h-5 w-5" />
-                            </button>
-                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseServices')}</h2>
-                        </div>
+                        <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseServices')}</h2>
 
                         {categories.length > 0 && (
                             <div className="flex flex-wrap gap-2">
@@ -320,14 +351,13 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             })}
                         </div>
 
-                        {/* Sticky Continue bar */}
                         {selectedServices.length > 0 && (
                             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
                                 <div className="max-w-2xl mx-auto space-y-3">
                                     <p className="text-xs text-slate-500 text-center">
                                         {selectedServices.length} {selectedServices.length === 1 ? t('booking.service') : t('booking.services')} &middot;&nbsp;
-                                        {selectedServices.reduce((sum, s) => sum + s.duration, 0)} {t('booking.min')} total &middot;&nbsp;
-                                        {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))} total
+                                        {totalDuration} {t('booking.min')} total &middot;&nbsp;
+                                        {formatCents(totalPrice)} total
                                     </p>
                                     <Button
                                         onClick={proceedFromServices}
@@ -341,6 +371,64 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                     </div>
                 )}
 
+                {/* Step 1: Barber Selection */}
+                {step === 1 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
+                                <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseBarber')}</h2>
+                            {availabilityLoading && (
+                                <span className="flex items-center gap-1 text-xs text-slate-400 ml-auto">
+                                    <Loader2 className="h-3 w-3 animate-spin" /> {t('booking.loadingAvailability')}
+                                </span>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            {/* Any Barber option */}
+                            <button
+                                onClick={selectAnyBarber}
+                                className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                            >
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 border border-amber-100 shrink-0">
+                                    <Zap className="h-5 w-5 text-amber-500" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-slate-900">Any Available Barber</p>
+                                    <p className="text-xs text-slate-500">First available slot among all barbers</p>
+                                </div>
+                                <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded-full shrink-0">Fastest</span>
+                            </button>
+
+                            {barbers.map(b => (
+                                <button
+                                    key={b.id}
+                                    onClick={() => selectBarber(b)}
+                                    className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                                >
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shrink-0">
+                                        <User className="h-5 w-5 text-slate-500" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-900">{b.user.name}</p>
+                                        {b.specialty && <p className="text-xs text-slate-500 truncate">{b.specialty}</p>}
+                                    </div>
+                                    {b.next_time_label && (
+                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                                            {b.next_time_label}
+                                        </span>
+                                    )}
+                                    {!b.next_time_label && !availabilityLoading && (
+                                        <span className="text-xs text-slate-400 shrink-0">{t('booking.noSlotsBadge')}</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Step 2: Date & Time */}
                 {step === 2 && (
                     <div className="space-y-4">
@@ -351,6 +439,13 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             <h2 className="text-lg font-semibold text-slate-900">{t('booking.pickDateTime')}</h2>
                         </div>
 
+                        {isAnyBarber && (
+                            <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                                <Zap className="h-3.5 w-3.5 shrink-0" />
+                                The best available barber will be auto-assigned when you pick a time.
+                            </div>
+                        )}
+
                         <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -359,6 +454,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 <input
                                     type="date"
                                     min={todayStr()}
+                                    max={(() => { const d = new Date(); d.setDate(d.getDate() + 60); return d.toISOString().split('T')[0]; })()}
                                     value={selectedDate}
                                     onChange={e => setSelectedDate(e.target.value)}
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
@@ -417,8 +513,11 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         <div className="bg-slate-900 rounded-xl p-4 text-white space-y-3">
                             <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('booking.bookingSummary')}</p>
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 border border-white/20 shrink-0">
-                                    <Scissors className="h-4 w-4 text-white" />
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 border border-white/20 shrink-0 overflow-hidden">
+                                    {company.logo
+                                        ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                        : <Scissors className="h-4 w-4 text-white" />
+                                    }
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-white">{company.name}</p>
@@ -427,10 +526,13 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             </div>
                             <div className="border-t border-white/10 pt-3 space-y-1">
                                 <p className="text-sm font-semibold">
-                                    {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(selectedServices.reduce((sum, s) => sum + s.price, 0))}
+                                    {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(totalPrice)}
                                 </p>
                                 <p className="text-xs text-slate-300 flex items-center gap-1">
-                                    <User className="h-3 w-3" /> {selectedBarber?.user.name}
+                                    <User className="h-3 w-3" />
+                                    {isAnyBarber && !selectedBarber
+                                        ? 'Any Available Barber'
+                                        : selectedBarber?.user.name}
                                     {selectedBarber?.specialty && <span className="text-white/40"> · {selectedBarber.specialty}</span>}
                                 </p>
                                 <p className="text-xs text-slate-300 flex items-center gap-1">
@@ -440,7 +542,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                         </div>
 
                         <form onSubmit={submit} className="space-y-4">
-                            {/* Honeypot — hidden from real users, bots fill it */}
+                            {/* Honeypot */}
                             <input
                                 type="text"
                                 name="_hp"
@@ -452,6 +554,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 aria-hidden="true"
                             />
                             <input type="hidden" name="_t" value={data._t} />
+
                             <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('name')} *</label>
@@ -497,10 +600,13 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                             {errors.starts_at && (
                                 <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errors.starts_at}</p>
                             )}
+                            {errors.barber_id && (
+                                <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errors.barber_id}</p>
+                            )}
 
                             <Button
                                 type="submit"
-                                disabled={processing}
+                                disabled={processing || !data.customer_name || !data.customer_phone}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (

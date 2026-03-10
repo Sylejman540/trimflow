@@ -236,6 +236,8 @@ export default function Index({
     view,
     date,
     start,
+    is_owner_barber = false,
+    filter_mine = false,
 }: {
     appointments: ApptSlot[];
     view: 'day' | 'week';
@@ -244,6 +246,8 @@ export default function Index({
     end: string;
     barbers: { id: number; name: string }[];
     is_barber: boolean;
+    is_owner_barber?: boolean;
+    filter_mine?: boolean;
 }) {
     const { t } = useTranslation();
     const [isMobile, setIsMobile] = useState(() =>
@@ -291,11 +295,15 @@ export default function Index({
 
     function navigate(delta: number) {
         const newDate = effectiveView === 'week' ? addDays(start, delta * 7) : addDays(date, delta);
-        router.get(route('schedule.index'), { view: effectiveView, date: newDate }, { preserveState: false });
+        router.get(route('schedule.index'), { view: effectiveView, date: newDate, ...(filter_mine ? { mine: '1' } : {}) }, { preserveState: false });
     }
 
     function toggleView() {
-        router.get(route('schedule.index'), { view: effectiveView === 'week' ? 'day' : 'week', date }, { preserveState: false });
+        router.get(route('schedule.index'), { view: effectiveView === 'week' ? 'day' : 'week', date, ...(filter_mine ? { mine: '1' } : {}) }, { preserveState: false });
+    }
+
+    function toggleMine() {
+        router.get(route('schedule.index'), { view: effectiveView, date, ...(filter_mine ? {} : { mine: '1' }) }, { preserveState: false });
     }
 
     const todayStr = new Date().toISOString().split('T')[0];
@@ -389,6 +397,20 @@ export default function Index({
             title={t('nav.schedule')}
             actions={
                 <div className="flex flex-wrap items-center gap-2">
+                    {is_owner_barber && (
+                        <button
+                            onClick={toggleMine}
+                            className={cn(
+                                buttonVariants({ variant: 'outline' }),
+                                'h-9 px-3 rounded-lg text-xs font-bold shadow-none transition-colors',
+                                filter_mine
+                                    ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white'
+                                    : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
+                            )}
+                        >
+                            {filter_mine ? 'My Schedule' : 'All Barbers'}
+                        </button>
+                    )}
                     {!isMobile && (
                         <button
                             onClick={toggleView}

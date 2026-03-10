@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

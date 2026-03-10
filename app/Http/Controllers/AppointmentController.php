@@ -25,20 +25,32 @@ class AppointmentController extends Controller
 
         $user = Auth::user();
 
-        // Run auto-status first so DB is up to date before filtering
+        $isBarber     = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+        $isOwnerBarber = $user->hasRole('shop-admin') && $user->hasRole('barber') && $user->barber;
+
+        // "mine" filter: owner-barbers can toggle between all and their own appointments
+        $filterMine = $isOwnerBarber && request()->boolean('mine');
+        $barberId   = ($isBarber || $filterMine) ? $user->barber?->id : null;
+
+        // Auto-status: only update the small window of appointments that are actually in-flight
+        // Use DB update instead of loading models to avoid memory issues at scale
+        $now = Carbon::now();
         Appointment::query()
-            ->when($user->hasRole('barber') && !$user->hasRole('shop-admin'), fn ($q) => $q->where('barber_id', $user->barber?->id))
+            ->when($barberId, fn ($q) => $q->where('barber_id', $barberId))
             ->whereIn('status', ['confirmed', 'in_progress'])
+            ->where('starts_at', '<=', $now)
+            ->where('ends_at', '>=', $now->copy()->subHours(2))
             ->get()
             ->each(fn (Appointment $a) => $a->resolveStatus());
 
         $query = Appointment::with(['barber.user', 'customer', 'service'])
             ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
             ->where('ends_at', '>=', Carbon::now())
+            ->where('starts_at', '<=', Carbon::now()->addDays(90)) // cap at 90 days ahead
             ->orderBy('starts_at', 'asc');
 
-        if ($user->hasRole('barber') && !$user->hasRole('shop-admin')) {
-            $query->where('barber_id', $user->barber?->id);
+        if ($barberId) {
+            $query->where('barber_id', $barberId);
         }
 
         $appointments = $query->get()->map(function (Appointment $appt) use ($user) {
@@ -48,14 +60,14 @@ class AppointmentController extends Controller
             return $data;
         });
 
-        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
-
         return Inertia::render('appointments/Index', [
-            'appointments' => $appointments,
-            'can_create'   => $user->can('create', Appointment::class),
-            'is_barber'    => $isBarber,
-            'barbers'      => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
-            'services'     => Service::where('is_active', true)->orderBy('name')->get(),
+            'appointments'   => $appointments,
+            'can_create'     => $user->can('create', Appointment::class),
+            'is_barber'      => $isBarber,
+            'is_owner_barber' => $isOwnerBarber,
+            'filter_mine'    => $filterMine,
+            'barbers'        => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
+            'services'       => Service::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
 
@@ -272,7 +284,7 @@ class AppointmentController extends Controller
             }
         }
 
-        // Update future recurring siblings if requested
+        // Update future recurring siblings if requested — bulk update, no N+1
         if (($validated['update_scope'] ?? 'this') === 'future' && $appointment->recurrence_parent_id) {
             $delta = $appointment->starts_at->diffInMinutes(Carbon::parse($validated['starts_at']), false);
             Appointment::where('recurrence_parent_id', $appointment->recurrence_parent_id)
@@ -281,7 +293,8 @@ class AppointmentController extends Controller
                 ->get()
                 ->each(function (Appointment $sibling) use ($validated, $barberId, $customer, $service, $delta) {
                     $siblingStart = $sibling->starts_at->copy()->addMinutes($delta);
-                    $sibling->update([
+                    // Use direct update to avoid firing observers/events per row
+                    $sibling->updateQuietly([
                         'barber_id'   => $barberId,
                         'customer_id' => $customer->id,
                         'service_id'  => $validated['service_id'],

@@ -1,5 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +26,7 @@ export default function Create({
 }) {
     const { auth } = usePage<PageProps>().props;
     const isBarber = auth.roles.includes('barber') && !auth.roles.includes('shop-admin');
+    const { t } = useTranslation();
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
@@ -60,14 +62,14 @@ export default function Create({
     }
 
     return (
-        <AppLayout title="New Appointment">
-            <Head title="New Appointment" />
+        <AppLayout title={t('appt.new')}>
+            <Head title={t('appt.new')} />
             
             <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
                 <div className="mb-6 px-1">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Booking Details</h2>
-                    <p className="text-sm text-slate-500 mt-1">Fill in the information below to schedule a new session.</p>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('appt.bookingDetails')}</h2>
+                    <p className="text-sm text-slate-500 mt-1">{t('appt.bookingDetailsDesc')}</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
@@ -76,14 +78,14 @@ export default function Create({
                     {!isBarber && (
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Assigned Barber
+                                <User size={12} />{' '}{t('appt.assignedBarber')}
                             </Label>
                             <Select
                                 value={data.barber_id}
                                 onValueChange={(v) => setData('barber_id', v ?? '')}
                             >
                                 <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
+                                    <SelectValue placeholder={t('appt.selectBarber')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                     {barbers.map((b) => (
@@ -101,7 +103,7 @@ export default function Create({
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="customer_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <User size={12} /> Customer Name
+                                <User size={12} />{' '}{t('appt.customerName')}
                             </Label>
                             <Input
                                 id="customer_name"
@@ -115,7 +117,7 @@ export default function Create({
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="customer_phone" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Phone size={12} /> Phone Number
+                                <Phone size={12} />{' '}{t('appt.phoneNumber')}
                             </Label>
                             <Input
                                 id="customer_phone"
@@ -131,7 +133,7 @@ export default function Create({
                     {/* Service Selection */}
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <Scissors size={12} /> Service Type
+                            <Scissors size={12} />{' '}{t('appt.serviceType')}
                         </Label>
                         {categories.length > 2 && (
                             <div className="flex items-center gap-2 flex-wrap">
@@ -151,7 +153,7 @@ export default function Create({
                                         )}
                                     >
                                         <Tag size={9} />
-                                        {cat === 'all' ? 'All' : cat}
+                                        {cat === 'all' ? t('all') : cat}
                                     </button>
                                 ))}
                             </div>
@@ -161,7 +163,7 @@ export default function Create({
                             onValueChange={(v) => setData('service_id', v ?? '')}
                         >
                             <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder="Select service" />
+                                <SelectValue placeholder={t('appt.selectService')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
                                 {filteredServices.map((s) => (
@@ -177,7 +179,7 @@ export default function Create({
                                     {formatDuration(selectedService.duration)}
                                 </span>
                                 <span className="text-[11px] font-bold text-slate-500">
-                                    Estimated Price: {formatCents(selectedService.price)}
+                                    {t('appt.estimatedPrice')} {formatCents(selectedService.price)}
                                 </span>
                             </div>
                         )}
@@ -188,7 +190,7 @@ export default function Create({
                     <div className="grid gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="starts_at" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Calendar size={12} /> Date & Time
+                                <Calendar size={12} />{' '}{t('appt.dateTime')}
                             </Label>
                             <Input
                                 id="starts_at"
@@ -202,14 +204,14 @@ export default function Create({
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <AlignLeft size={12} /> Internal Notes
+                                <AlignLeft size={12} />{' '}{t('appt.internalNotes')}
                             </Label>
                             <Textarea
                                 id="notes"
                                 value={data.notes}
                                 onChange={(e) => setData('notes', e.target.value)}
                                 className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
-                                placeholder="Allergies, preferences, etc..."
+                                placeholder={t('appt.notesPlaceholder')}
                                 rows={1}
                             />
                         </div>
@@ -218,7 +220,7 @@ export default function Create({
                     {/* Recurrence */}
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                            <Tag size={12} /> Repeat
+                            <Tag size={12} />{' '}{t('appt.repeat')}
                         </Label>
                         <Select
                             value={data.recurrence_rule}
@@ -228,10 +230,10 @@ export default function Create({
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                                <SelectItem value="none">Does not repeat</SelectItem>
-                                <SelectItem value="weekly">Weekly</SelectItem>
-                                <SelectItem value="biweekly">Every 2 weeks</SelectItem>
-                                <SelectItem value="monthly">Monthly</SelectItem>
+                                <SelectItem value="none">{t('appt.doesNotRepeat')}</SelectItem>
+                                <SelectItem value="weekly">{t('appt.weekly')}</SelectItem>
+                                <SelectItem value="biweekly">{t('appt.biweekly')}</SelectItem>
+                                <SelectItem value="monthly">{t('appt.monthly')}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -243,13 +245,13 @@ export default function Create({
                             disabled={processing}
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
-                            Book Appointment
+                            {t('appt.bookAppointment')}
                         </Button>
                         <Link
                             href={route('appointments.index')}
                             className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Link>
                     </div>
                 </form>
