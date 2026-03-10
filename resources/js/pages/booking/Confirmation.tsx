@@ -10,7 +10,7 @@ function PoweredBy() {
     return (
         <div className="pt-2 text-center">
             <a href="https://freshio.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-amber-500">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-emerald-500">
                     <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
                     <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.5"/>
                 </svg>
@@ -141,7 +141,7 @@ export default function Confirmation({
                     {cancel_token && secondsLeft > 0 && (
                         <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-left space-y-3">
                             <div className="flex items-start gap-2">
-                                <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                <AlertCircle className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
                                 <p className="text-xs text-amber-700 font-medium">
                                     {t('booking.cancelWindow')} <span className="font-bold">{secondsLeft}s</span>.
                                 </p>

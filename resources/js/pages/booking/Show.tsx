@@ -393,7 +393,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                                 className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 border border-amber-100 shrink-0">
-                                    <Zap className="h-5 w-5 text-amber-500" />
+                                    <Zap className="h-5 w-5 text-emerald-500" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-slate-900">Any Available Barber</p>
@@ -621,7 +621,7 @@ export default function Show({ company, barbers: initialBarbers, services }: {
             {/* Freshio branding */}
             <div className="text-center py-6">
                 <a href="https://freshio.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-amber-500">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-emerald-500">
                         <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
                     </svg>
                     Powered by <span className="font-semibold text-slate-500">Freshio</span>
