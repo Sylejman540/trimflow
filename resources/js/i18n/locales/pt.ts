@@ -198,6 +198,8 @@ export default {
         clearColor: 'Limpar',
         descPlaceholder: 'Forneça detalhes sobre o que este serviço inclui…',
         deleteConfirm: 'Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.',
+        serviceNamePlaceholder: 'ex. Corte Clássico',
+        categoryPlaceholder: 'ex. Cortes',
     },
 
     // Barbers
