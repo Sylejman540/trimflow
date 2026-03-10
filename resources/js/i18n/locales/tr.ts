@@ -232,6 +232,10 @@ export default {
         generalist: 'Genel Uzman',
         deleteConfirm: 'Bu berberi kaldırmak istediğinizden emin misiniz? Bu işlem müsaitliğini ve gelecekteki programını etkileyecektir.',
         bioPlaceholder: 'Berberin geçmişi ve tarzı hakkında kısa bir açıklama…',
+        namePlaceholder: 'örn. Ahmet Yılmaz',
+        emailPlaceholder: 'berber@ornek.com.tr',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'örn. Skin Fades, Sakal Şekillendirme',
     },
 
     // Customers
