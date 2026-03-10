@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 // Platform super-admin panel
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+    Route::patch('/companies/{company}/toggle', [AdminDashboardController::class, 'toggleCompany'])->name('companies.toggle');
 });
 
 Route::middleware('auth')->group(function () {
