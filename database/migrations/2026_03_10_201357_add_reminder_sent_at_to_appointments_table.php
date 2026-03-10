@@ -12,17 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('appointments', function (Blueprint $table) {
-            //
+            $table->timestamp('reminder_sent_at')->nullable()->after('cancel_token_expires_at');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('appointments', function (Blueprint $table) {
-            //
+            $table->dropColumn('reminder_sent_at');
         });
     }
 };
