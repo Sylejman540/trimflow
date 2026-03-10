@@ -5,6 +5,7 @@ import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calenda
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const COLOR_HEX: Record<string, string> = {
     slate: '#64748b', red: '#ef4444', orange: '#f97316',
@@ -50,10 +51,11 @@ function todayStr() {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-export default function Show({ company, barbers: initialBarbers, services }: {
+export default function Show({ company, barbers: initialBarbers, services, turnstile_site_key }: {
     company: Company;
     barbers: Barber[];
     services: Service[];
+    turnstile_site_key?: string;
 }) {
     const { t } = useTranslation();
 

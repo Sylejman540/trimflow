@@ -12,6 +12,7 @@ use App\Notifications\NewPublicBooking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -25,13 +26,14 @@ class BookingController extends Controller
         $services = Service::where('company_id', $company->id)->where('is_active', true)->orderBy('name')->get();
 
         return Inertia::render('booking/Show', [
-            'company'  => $company->only('id', 'name', 'slug', 'address', 'phone', 'logo'),
-            'barbers'  => $barbers->map(fn($b) => [
+            'company'            => $company->only('id', 'name', 'slug', 'address', 'phone', 'logo'),
+            'turnstile_site_key' => config('services.turnstile.site_key'),
+            'barbers'            => $barbers->map(fn($b) => [
                 'id'        => $b->id,
                 'user'      => ['name' => $b->user->name],
                 'specialty' => $b->specialty,
             ]),
-            'services' => $services->map(fn($s) => [
+            'services'           => $services->map(fn($s) => [
                 'id'          => $s->id,
                 'name'        => $s->name,
                 'price'       => $s->price,
@@ -47,50 +49,97 @@ class BookingController extends Controller
     {
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
-        // ── Honeypot: bots fill the hidden _hp field, real users don't ──────────
+        // ── 1. Honeypot ────────────────────────────────────────────────────────
         if ($request->filled('_hp')) {
             return redirect()->route('booking.confirmation', $slug);
         }
 
-        // ── Rate limiting: max 3 attempts per IP per 15 minutes ──────────────
-        $rateLimitKey = 'public-booking:' . $request->ip();
-        if (RateLimiter::tooManyAttempts($rateLimitKey, 3)) {
-            $seconds = RateLimiter::availableIn($rateLimitKey);
-            return back()->withErrors([
-                'customer_name' => "Too many booking attempts. Please try again in {$seconds} seconds.",
-            ]);
-        }
-        RateLimiter::hit($rateLimitKey, 900);
-
-        // ── Rate limiting by phone: max 3 attempts per 15 minutes ─────────────
-        $phoneRateLimitKey = 'public-booking-phone:' . Str::slug($request->input('customer_phone', ''));
-        if (RateLimiter::tooManyAttempts($phoneRateLimitKey, 3)) {
-            $seconds = RateLimiter::availableIn($phoneRateLimitKey);
-            return back()->withErrors([
-                'customer_phone' => "Too many booking attempts from this phone. Please try again in {$seconds} seconds.",
-            ]);
-        }
-        RateLimiter::hit($phoneRateLimitKey, 900);
-
-        // ── Timing check: bot detection (submitted too fast) ──────────────────
+        // ── 2. Timing check (bot submitted too fast) ───────────────────────────
         $openedAt = (int) $request->input('_t', 0);
         if ($openedAt > 0 && (time() - $openedAt) < 4) {
             return redirect()->route('booking.confirmation', $slug);
         }
 
-        // ── Validation ─────────────────────────────────────────────────────────
+        // ── 3. IP rate limiting: max 5 requests per minute ────────────────────
+        $ipKey = 'booking-ip:' . $request->ip();
+        if (RateLimiter::tooManyAttempts($ipKey, 5)) {
+            $seconds = RateLimiter::availableIn($ipKey);
+            return back()->withErrors([
+                'customer_name' => "Too many requests. Please wait {$seconds} seconds and try again.",
+            ]);
+        }
+        RateLimiter::hit($ipKey, 60);
+
+        // ── 4. Cloudflare Turnstile verification ──────────────────────────────
+        $turnstileSecret = config('services.turnstile.secret_key');
+        if ($turnstileSecret) {
+            if (! $this->verifyTurnstile($request->input('cf_turnstile_response', ''), $request->ip(), $turnstileSecret)) {
+                return back()->withErrors([
+                    'customer_name' => 'Security check failed. Please refresh the page and try again.',
+                ]);
+            }
+        }
+
+        // ── 5. Basic validation ────────────────────────────────────────────────
         $validated = $request->validate([
-            'barber_id'      => 'required|exists:barbers,id',
-            'service_ids'    => 'required|array|min:1',
-            'service_ids.*'  => 'integer|exists:services,id',
-            'starts_at'      => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
-            'customer_name'  => 'required|string|max:255',
-            'customer_phone' => 'required|string|max:50',
-            'notes'          => 'nullable|string|max:1000',
-            '_t'             => 'nullable|integer',
+            'barber_id'             => 'required|exists:barbers,id',
+            'service_ids'           => 'required|array|min:1',
+            'service_ids.*'         => 'integer|exists:services,id',
+            'starts_at'             => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
+            'customer_name'         => 'required|string|max:255',
+            'customer_phone'        => 'required|string|min:6|max:30',
+            'notes'                 => 'nullable|string|max:1000',
+            '_t'                    => 'nullable|integer',
+            'cf_turnstile_response' => 'nullable|string',
         ]);
 
-        // ── Verify barber + service belong to this company ─────────────────────
+        // Normalize phone: keep only digits and leading +
+        $phone = preg_replace('/[^\d+]/', '', $validated['customer_phone']);
+
+        // ── 6. Max 2 bookings per phone per day ───────────────────────────────
+        $phoneKey    = 'booking-phone-day:' . md5($phone);
+        $phoneWindow = (int) Carbon::now()->endOfDay()->diffInSeconds(Carbon::now());
+        if (RateLimiter::tooManyAttempts($phoneKey, 2)) {
+            return back()->withErrors([
+                'customer_phone' => 'Maximum bookings reached for today. Please call us to book more.',
+            ]);
+        }
+
+        // ── 7. Booking cooldown: 2 minutes between bookings ───────────────────
+        $cooldownKey = 'booking-cooldown:' . md5($phone);
+        if (RateLimiter::tooManyAttempts($cooldownKey, 1)) {
+            $wait = RateLimiter::availableIn($cooldownKey);
+            return back()->withErrors([
+                'customer_phone' => "Please wait {$wait} seconds before making another booking.",
+            ]);
+        }
+
+        // ── 8. Fingerprint tracking + suspicious activity block ───────────────
+        $ip          = $request->ip();
+        $userAgent   = substr($request->userAgent() ?? '', 0, 512);
+        $fingerprint = DB::table('booking_fingerprints')
+            ->where('phone', $phone)
+            ->where('ip_address', $ip)
+            ->first();
+
+        if ($fingerprint) {
+            if ($fingerprint->is_blocked) {
+                return back()->withErrors([
+                    'customer_name' => 'Your access has been temporarily restricted. Please call us to book.',
+                ]);
+            }
+            // Auto-block after 5 bookings from same phone+IP combination
+            if ($fingerprint->booking_count >= 5) {
+                DB::table('booking_fingerprints')
+                    ->where('id', $fingerprint->id)
+                    ->update(['is_blocked' => true]);
+                return back()->withErrors([
+                    'customer_name' => 'Suspicious activity detected. Please call us to book your appointment.',
+                ]);
+            }
+        }
+
+        // ── 9. Verify barber + services belong to this company ─────────────────
         $barber   = Barber::where('id', $validated['barber_id'])->where('company_id', $company->id)->firstOrFail();
         $services = Service::whereIn('id', $validated['service_ids'])->where('company_id', $company->id)->get();
         if ($services->count() !== count($validated['service_ids'])) {
@@ -102,7 +151,7 @@ class BookingController extends Controller
         $startsAt = Carbon::parse($validated['starts_at']);
         $endsAt   = $startsAt->copy()->addMinutes($totalDuration);
 
-        // ── Working hours check ────────────────────────────────────────────────
+        // ── 10. Working hours check ────────────────────────────────────────────
         $dayKey   = strtolower($startsAt->format('l'));
         $shortKey = substr($dayKey, 0, 3);
         $hours    = $barber->working_hours;
@@ -118,39 +167,36 @@ class BookingController extends Controller
             } else {
                 [$windowStart, $windowEnd] = array_values($dayHours);
             }
-
             $t = $startsAt->format('H:i');
             if ($t < $windowStart || $t >= $windowEnd) {
                 return back()->withErrors(['starts_at' => 'The barber is not available at that time.']);
             }
         }
 
-        // ── Time-off check ─────────────────────────────────────────────────────
+        // ── 11. Time-off check ─────────────────────────────────────────────────
         $dateStr   = $startsAt->format('Y-m-d');
         $onTimeOff = DB::table('barber_time_offs')
             ->where('barber_id', $barber->id)
             ->where('starts_on', '<=', $dateStr)
             ->where('ends_on', '>=', $dateStr)
             ->exists();
-
         if ($onTimeOff) {
             return back()->withErrors(['starts_at' => 'The barber is on time off that day.']);
         }
 
-        // ── Double-booking check ───────────────────────────────────────────────
+        // ── 12. Double-booking check ───────────────────────────────────────────
         $conflict = Appointment::where('barber_id', $barber->id)
             ->whereNotIn('status', ['cancelled', 'no_show'])
             ->where('starts_at', '<', $endsAt)
             ->where('ends_at', '>', $startsAt)
             ->exists();
-
         if ($conflict) {
             return back()->withErrors(['starts_at' => 'That time slot has just been taken. Please choose another.']);
         }
 
-        // ── Phone trust / reputation check ─────────────────────────────────────
+        // ── 13. Phone trust + active appointment rules ─────────────────────────
         $existingCustomer = Customer::where('company_id', $company->id)
-            ->where('phone', $validated['customer_phone'])
+            ->where('phone', $phone)
             ->first();
 
         if ($existingCustomer) {
@@ -165,7 +211,6 @@ class BookingController extends Controller
                     ->whereIn('status', ['confirmed'])
                     ->where('starts_at', '>', now())
                     ->count();
-
                 if ($pendingCount >= 1) {
                     return back()->withErrors([
                         'customer_phone' => 'Your account requires manual approval due to past no-shows. Please call us.',
@@ -173,32 +218,42 @@ class BookingController extends Controller
                 }
             }
 
-            // Duplicate booking protection: max 3 future appointments
-            $futureCount = Appointment::where('customer_id', $existingCustomer->id)
-                ->whereIn('status', ['confirmed'])
+            // One active appointment rule
+            $activeCount = Appointment::where('customer_id', $existingCustomer->id)
+                ->whereNotIn('status', ['cancelled', 'no_show', 'completed'])
                 ->where('starts_at', '>', now())
                 ->count();
-
-            if ($futureCount >= 3) {
+            if ($activeCount >= 1) {
                 return back()->withErrors([
-                    'customer_phone' => 'You already have 3 upcoming appointments. Please call us to book more.',
+                    'customer_phone' => 'You already have an upcoming appointment. Please cancel it first or call us.',
+                ]);
+            }
+
+            // Duplicate: same phone + same barber + same time
+            $duplicate = Appointment::where('customer_id', $existingCustomer->id)
+                ->where('barber_id', $barber->id)
+                ->where('starts_at', $startsAt)
+                ->whereNotIn('status', ['cancelled', 'no_show'])
+                ->exists();
+            if ($duplicate) {
+                return back()->withErrors([
+                    'starts_at' => 'You already have a booking at this exact time with this barber.',
                 ]);
             }
         }
 
-        // ── Create / update customer ───────────────────────────────────────────
+        // ── 14. Create / update customer ───────────────────────────────────────
         $customer = Customer::firstOrCreate(
-            ['phone' => $validated['customer_phone'], 'company_id' => $company->id],
+            ['phone' => $phone, 'company_id' => $company->id],
             ['name'  => $validated['customer_name']]
         );
-
         $customer->fill(['name' => $validated['customer_name']])->save();
 
-        // ── Create appointment ─────────────────────────────────────────────────
+        // ── 15. Create appointment ─────────────────────────────────────────────
         $cancelToken   = Str::random(48);
         $cancelExpires = now()->addSeconds(60);
 
-        $isFirstTimer = ! $existingCustomer || $existingCustomer->booking_total < 1;
+        $isFirstTimer      = ! $existingCustomer || $existingCustomer->booking_total < 1;
         $appointmentStatus = $isFirstTimer ? 'pending' : 'confirmed';
 
         $appointment = Appointment::create([
@@ -220,19 +275,41 @@ class BookingController extends Controller
             $s->id => ['price' => $s->price, 'duration' => $s->duration]
         ])->all();
         $appointment->services()->attach($pivotData);
-
         $appointment->load(['barber.user', 'customer', 'service']);
 
-        // ── Notify barber and shop owners ──────────────────────────────────────
+        // ── 16. Notify barber + admins ─────────────────────────────────────────
         if ($barber->user) {
             $barber->user->notify(new NewPublicBooking($appointment));
         }
-
         User::where('company_id', $company->id)
             ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
             ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
 
-        // Increment booking total for trust tracking
+        // ── 17. Commit rate limits + update fingerprint ────────────────────────
+        RateLimiter::hit($phoneKey, $phoneWindow);
+        RateLimiter::hit($cooldownKey, 120);
+
+        if ($fingerprint) {
+            DB::table('booking_fingerprints')
+                ->where('id', $fingerprint->id)
+                ->update([
+                    'booking_count'   => $fingerprint->booking_count + 1,
+                    'last_booking_at' => now(),
+                    'user_agent'      => $userAgent,
+                    'updated_at'      => now(),
+                ]);
+        } else {
+            DB::table('booking_fingerprints')->insert([
+                'phone'           => $phone,
+                'ip_address'      => $ip,
+                'user_agent'      => $userAgent,
+                'booking_count'   => 1,
+                'last_booking_at' => now(),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+        }
+
         $customer->increment('booking_total');
 
         return redirect()->route('booking.confirmation', $slug)
@@ -245,9 +322,26 @@ class BookingController extends Controller
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         return Inertia::render('booking/Confirmation', [
-            'company'          => $company->only('id', 'name', 'slug', 'phone'),
-            'cancel_token'     => session('cancel_token'),
-            'cancel_expires_at'=> session('cancel_expires_at'),
+            'company'           => $company->only('id', 'name', 'slug', 'phone'),
+            'cancel_token'      => session('cancel_token'),
+            'cancel_expires_at' => session('cancel_expires_at'),
         ]);
+    }
+
+    private function verifyTurnstile(string $token, string $ip, string $secret): bool
+    {
+        if (empty($token)) {
+            return false;
+        }
+        try {
+            $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret'   => $secret,
+                'response' => $token,
+                'remoteip' => $ip,
+            ]);
+            return (bool) ($response->json('success') ?? false);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }
