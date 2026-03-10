@@ -88,14 +88,6 @@ export default function Show({
                         <ArrowLeft className="h-3.5 w-3.5" />
                         <span className="hidden sm:inline">{t('back')}</span>
                     </Link>
-                    {can_edit && appointment.status === 'pending' && (
-                        <button
-                            onClick={() => router.patch(route('appointments.confirm', appointment.id))}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-emerald-600 hover:bg-emerald-700 text-white h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
-                        >
-                            {t('confirm')}
-                        </button>
-                    )}
                     {can_edit && (
                         <Link
                             href={route('appointments.edit', appointment.id)}
@@ -135,6 +127,20 @@ export default function Show({
                 </div>
 
                 <TabsContent value="overview">
+                    {can_edit && appointment.status === 'pending' && (
+                        <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3">
+                            <div>
+                                <p className="text-sm font-semibold text-orange-800">New booking request</p>
+                                <p className="text-xs text-orange-600 mt-0.5">This appointment is waiting for your confirmation.</p>
+                            </div>
+                            <button
+                                onClick={() => router.patch(route('appointments.confirm', appointment.id))}
+                                className="shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 transition-colors"
+                            >
+                                {t('confirm')}
+                            </button>
+                        </div>
+                    )}
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="px-4 lg:px-6 pb-0 pt-4">
                             <div className="flex items-center justify-between">
