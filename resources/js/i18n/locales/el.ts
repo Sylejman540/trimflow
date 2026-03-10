@@ -258,6 +258,8 @@ export default {
         priceDollar: 'Τιμή (€)',
         stockQuantity: 'Ποσότητα αποθέματος',
         deleteConfirm: 'Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το προϊόν; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
+        namePlaceholder: 'π.χ. Πομάδα',
+        categoryPlaceholder: 'π.χ. Περιποίηση μαλλιών',
     },
 
     profile: {
