@@ -1,14 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import {
-    Building2, Users, CalendarDays, DollarSign, ExternalLink,
+    Building2, Users, CalendarDays, DollarSign,
     ToggleLeft, ToggleRight, ArrowUpRight, TrendingUp, TrendingDown,
-    Scissors, BarChart3, Activity, CheckCircle2, XCircle, Clock,
-    AlertTriangle, LogOut,
+    Scissors, BarChart3, Activity, Menu, X,
+    LogOut,
 } from 'lucide-react';
 import {
     AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-    Tooltip, ResponsiveContainer, Cell,
+    Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -73,14 +73,14 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
 }) {
     return (
         <div className={cn(
-            'rounded-2xl p-5 flex flex-col gap-4',
+            'rounded-2xl p-4 lg:p-5 flex flex-col gap-3 lg:gap-4',
             accent ? 'bg-slate-900' : 'bg-white border border-slate-100 shadow-sm'
         )}>
-            <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', accent ? 'bg-white/10' : 'bg-slate-50')}>
+            <div className={cn('flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center rounded-xl', accent ? 'bg-white/10' : 'bg-slate-50')}>
                 {icon}
             </div>
             <div>
-                <p className={cn('text-2xl font-bold tracking-tight', accent ? 'text-white' : 'text-slate-900')}>{value}</p>
+                <p className={cn('text-xl lg:text-2xl font-bold tracking-tight', accent ? 'text-white' : 'text-slate-900')}>{value}</p>
                 <p className={cn('text-xs font-medium mt-0.5', accent ? 'text-white/70' : 'text-slate-500')}>{label}</p>
                 {sub && !trend && <p className={cn('text-[11px] mt-0.5', accent ? 'text-white/40' : 'text-slate-400')}>{sub}</p>}
                 {trend && (
@@ -97,7 +97,7 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
 function SectionCard({ title, children, action }: { title: React.ReactNode; children: React.ReactNode; action?: React.ReactNode }) {
     return (
         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="px-4 lg:px-5 py-3 lg:py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
                 {action}
             </div>
@@ -107,10 +107,103 @@ function SectionCard({ title, children, action }: { title: React.ReactNode; chil
 }
 
 const NAV_ITEMS = [
-    { key: 'overview',  label: 'Overview',      icon: BarChart3 },
-    { key: 'shops',     label: 'Shops',         icon: Building2 },
-    { key: 'activity',  label: 'Activity',      icon: Activity },
+    { key: 'overview',  label: 'Overview',  icon: BarChart3 },
+    { key: 'shops',     label: 'Shops',     icon: Building2 },
+    { key: 'activity',  label: 'Activity',  icon: Activity  },
 ];
+
+const tooltipStyle = {
+    backgroundColor: '#ffffff',
+    border: '1px solid #e2e8f0',
+    borderRadius: '10px',
+    fontSize: '12px',
+    color: '#0f172a',
+    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07)',
+};
+
+// ── Sidebar content (shared between desktop & mobile drawer) ──────────────────
+function SidebarContent({
+    tab, setTab, totals, auth, onNavClick,
+}: {
+    tab: string;
+    setTab: (t: 'overview' | 'shops' | 'activity') => void;
+    totals: Totals;
+    auth: PageProps['auth'];
+    onNavClick?: () => void;
+}) {
+    return (
+        <>
+            {/* Logo */}
+            <div className="px-5 py-5 border-b border-slate-800">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0">
+                        <Scissors className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-white leading-none">TrimFlow</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Nav */}
+            <nav className="flex-1 px-3 py-4 space-y-1">
+                {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
+                    <button
+                        key={key}
+                        onClick={() => { setTab(key as typeof tab); onNavClick?.(); }}
+                        className={cn(
+                            'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left',
+                            tab === key
+                                ? 'bg-white/10 text-white font-medium'
+                                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        )}
+                    >
+                        <Icon className={cn('h-4 w-4 shrink-0', tab === key ? 'text-emerald-400' : '')} />
+                        {label}
+                    </button>
+                ))}
+            </nav>
+
+            {/* Stats summary */}
+            <div className="px-4 pb-4 space-y-2 border-t border-slate-800 pt-4">
+                <div className="flex justify-between text-[11px]">
+                    <span className="text-slate-500">Active shops</span>
+                    <span className="text-slate-300 font-medium">{totals.active_companies}/{totals.companies}</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                    <span className="text-slate-500">Today's bookings</span>
+                    <span className="text-slate-300 font-medium">{totals.appointments_today}</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                    <span className="text-slate-500">Cancel rate</span>
+                    <span className={cn('font-medium', totals.cancellation_rate > 20 ? 'text-red-400' : 'text-slate-300')}>{totals.cancellation_rate}%</span>
+                </div>
+            </div>
+
+            {/* User */}
+            <div className="px-4 py-4 border-t border-slate-800">
+                <div className="flex items-center gap-2.5 mb-3">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold shrink-0">
+                        {(auth.user.name ?? 'A').charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                        <p className="text-xs font-medium text-white truncate">{auth.user.name}</p>
+                        <p className="text-[10px] text-slate-500 truncate">{auth.user.email}</p>
+                    </div>
+                </div>
+                <Link
+                    href={route('logout')}
+                    method="post"
+                    as="button"
+                    className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                    <LogOut className="h-3 w-3" /> Sign out
+                </Link>
+            </div>
+        </>
+    );
+}
 
 // ── Main ───────────────────────────────────────────────────────────────────────
 export default function AdminDashboard({
@@ -124,6 +217,7 @@ export default function AdminDashboard({
 }) {
     const { auth } = usePage<PageProps>().props;
     const [tab, setTab] = useState<'overview' | 'shops' | 'activity'>('overview');
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const revTrend = revChange(totals.revenue_this_month, totals.revenue_prev_month);
     const maxRevenue = Math.max(...top_shops.map(s => s.revenue), 1);
 
@@ -131,104 +225,59 @@ export default function AdminDashboard({
         router.patch(route('admin.companies.toggle', id), {}, { preserveScroll: true });
     }
 
-    const tooltipStyle = {
-        backgroundColor: '#1e2130',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '10px',
-        fontSize: '12px',
-        color: '#fff',
-    };
+    const tabTitle = tab === 'overview' ? 'Platform Overview' : tab === 'shops' ? 'All Shops' : 'Recent Activity';
+    const tabSub = tab === 'overview'
+        ? `${totals.appointments.toLocaleString()} total bookings · ${formatCents(totals.revenue)} revenue`
+        : tab === 'shops'
+        ? `${totals.companies} shops · ${totals.active_companies} active`
+        : 'Last 30 bookings across all shops';
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
-            <Head title="Platform Admin — Freshio" />
+            <Head title="Platform Admin" />
 
-            {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-            <aside className="fixed inset-y-0 left-0 w-56 bg-slate-900 border-r border-slate-800 flex flex-col z-20">
-                {/* Logo */}
-                <div className="px-5 py-5 border-b border-slate-800">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0">
-                            <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">
-                                <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
-                                <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" opacity="0.5"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p className="text-sm font-bold text-white leading-none">Fresh<span className="text-emerald-400">io</span></p>
-                            <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
-                        </div>
-                    </div>
-                </div>
+            {/* ── Mobile overlay ────────────────────────────────────────────── */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
-                {/* Nav */}
-                <nav className="flex-1 px-3 py-4 space-y-1">
-                    {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
-                        <button
-                            key={key}
-                            onClick={() => setTab(key as typeof tab)}
-                            className={cn(
-                                'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left',
-                                tab === key
-                                    ? 'bg-white/10 text-white font-medium'
-                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                            )}
-                        >
-                            <Icon className={cn('h-4 w-4 shrink-0', tab === key ? 'text-emerald-400' : '')} />
-                            {label}
-                        </button>
-                    ))}
-                </nav>
-
-                {/* Stats summary */}
-                <div className="px-4 pb-4 space-y-2 border-t border-slate-800 pt-4">
-                    <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-500">Active shops</span>
-                        <span className="text-slate-300 font-medium">{totals.active_companies}/{totals.companies}</span>
-                    </div>
-                    <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-500">Today's bookings</span>
-                        <span className="text-slate-300 font-medium">{totals.appointments_today}</span>
-                    </div>
-                    <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-500">Cancel rate</span>
-                        <span className={cn('font-medium', totals.cancellation_rate > 20 ? 'text-red-400' : 'text-slate-300')}>{totals.cancellation_rate}%</span>
-                    </div>
-                </div>
-
-                {/* User */}
-                <div className="px-4 py-4 border-t border-slate-800">
-                    <div className="flex items-center gap-2.5 mb-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold shrink-0">
-                            {(auth.user.name ?? 'A').charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                            <p className="text-xs font-medium text-white truncate">{auth.user.name}</p>
-                            <p className="text-[10px] text-slate-500 truncate">{auth.user.email}</p>
-                        </div>
-                    </div>
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
-                    >
-                        <LogOut className="h-3 w-3" /> Sign out
-                    </Link>
-                </div>
+            {/* ── Desktop sidebar (fixed) ───────────────────────────────────── */}
+            <aside className="hidden lg:flex fixed inset-y-0 left-0 w-56 bg-slate-900 border-r border-slate-800 flex-col z-20">
+                <SidebarContent tab={tab} setTab={setTab} totals={totals} auth={auth} />
             </aside>
 
-            {/* ── Main ─────────────────────────────────────────────────────────── */}
-            <main className="ml-56 flex-1 min-h-screen">
+            {/* ── Mobile sidebar (drawer) ───────────────────────────────────── */}
+            <aside className={cn(
+                'fixed inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-40 transition-transform duration-200 lg:hidden',
+                sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            )}>
+                <div className="absolute top-4 right-4">
+                    <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-white">
+                        <X className="h-5 w-5" />
+                    </button>
+                </div>
+                <SidebarContent tab={tab} setTab={setTab} totals={totals} auth={auth} onNavClick={() => setSidebarOpen(false)} />
+            </aside>
+
+            {/* ── Main ──────────────────────────────────────────────────────── */}
+            <main className="lg:ml-56 flex-1 min-h-screen w-full">
                 {/* Top bar */}
-                <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-8 py-4 flex items-center justify-between shadow-sm">
-                    <div>
-                        <h1 className="text-sm font-semibold text-slate-900">{tab === 'overview' ? 'Platform Overview' : tab === 'shops' ? 'All Shops' : 'Recent Activity'}</h1>
-                        <p className="text-[11px] text-slate-400">
-                            {tab === 'overview' && `${totals.appointments.toLocaleString()} total bookings · ${formatCents(totals.revenue)} revenue`}
-                            {tab === 'shops' && `${totals.companies} shops · ${totals.active_companies} active`}
-                            {tab === 'activity' && `Last 30 bookings across all shops`}
-                        </p>
+                <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-4 lg:px-8 py-3 lg:py-4 flex items-center justify-between shadow-sm">
+                    <div className="flex items-center gap-3">
+                        {/* Hamburger (mobile only) */}
+                        <button
+                            onClick={() => setSidebarOpen(true)}
+                            className="lg:hidden text-slate-500 hover:text-slate-900 mr-1"
+                        >
+                            <Menu className="h-5 w-5" />
+                        </button>
+                        <div>
+                            <h1 className="text-sm font-semibold text-slate-900">{tabTitle}</h1>
+                            <p className="text-[11px] text-slate-400 hidden sm:block">{tabSub}</p>
+                        </div>
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
@@ -236,13 +285,13 @@ export default function AdminDashboard({
                     </div>
                 </div>
 
-                <div className="px-8 py-7 space-y-6">
+                <div className="px-4 lg:px-8 py-5 lg:py-7 space-y-5 lg:space-y-6">
 
                     {/* ── OVERVIEW TAB ──────────────────────────────────────── */}
                     {tab === 'overview' && (<>
 
                         {/* KPI row */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                             <KpiCard
                                 label="Total Revenue"
                                 value={formatCents(totals.revenue)}
@@ -255,117 +304,104 @@ export default function AdminDashboard({
                                 label="Total Bookings"
                                 value={totals.appointments.toLocaleString()}
                                 sub={`${totals.appointments_today} today`}
-                                icon={<CalendarDays className="h-4 w-4 text-white/60" />}
+                                icon={<CalendarDays className="h-4 w-4 text-slate-400" />}
                             />
                             <KpiCard
-                                label="Shops"
+                                label="Active Shops"
                                 value={totals.active_companies}
                                 sub={`${totals.companies} total · ${totals.companies - totals.active_companies} inactive`}
-                                icon={<Building2 className="h-4 w-4 text-white/60" />}
+                                icon={<Building2 className="h-4 w-4 text-slate-400" />}
                             />
                             <KpiCard
                                 label="Customers"
                                 value={totals.customers.toLocaleString()}
                                 sub={`${totals.cancellation_rate}% cancellation rate`}
-                                icon={<Users className="h-4 w-4 text-white/60" />}
+                                icon={<Users className="h-4 w-4 text-slate-400" />}
                             />
                         </div>
 
                         {/* Charts row */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                            {/* Bookings 30d area chart */}
-                            <div className="lg:col-span-2 bg-white/5 border border-white/8 rounded-2xl p-5">
-                                <div className="flex items-center justify-between mb-4">
-                                    <div>
-                                        <p className="text-sm font-semibold text-white">Bookings</p>
-                                        <p className="text-[11px] text-white/30">Last 30 days</p>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5">
+                            {/* Bookings 30d */}
+                            <div className="lg:col-span-2">
+                                <SectionCard title={<>Bookings <span className="text-slate-400 font-normal">· last 30 days</span></>}>
+                                    <div className="p-4 lg:p-5 pb-3">
+                                        <div className="h-[180px] lg:h-[200px]">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                <AreaChart data={chart_data} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+                                                    <defs>
+                                                        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                                                            <stop offset="5%"  stopColor="#10b981" stopOpacity={0.2} />
+                                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                                    <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} interval={4} />
+                                                    <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} />
+                                                    <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: '#e2e8f0' }} />
+                                                    <Area type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={2} fill="url(#areaGrad)" dot={false} />
+                                                </AreaChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+                                </SectionCard>
+                            </div>
+
+                            {/* Revenue 6-month */}
+                            <SectionCard title={<>Revenue <span className="text-slate-400 font-normal">· last 6 months</span></>}>
+                                <div className="p-4 lg:p-5 pb-3">
+                                    <div className="h-[180px] lg:h-[200px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={revenue_months} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                                                <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
+                                                <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={v => `$${(v/100).toFixed(0)}`} />
+                                                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCents(v), 'Revenue']} />
+                                                <Bar dataKey="revenue" fill="#0f172a" radius={[4,4,0,0]} />
+                                            </BarChart>
+                                        </ResponsiveContainer>
                                     </div>
                                 </div>
-                                <div className="h-[200px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <AreaChart data={chart_data} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
-                                            <defs>
-                                                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%"  stopColor="#10b981" stopOpacity={0.3} />
-                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                            <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} interval={4} />
-                                            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} allowDecimals={false} />
-                                            <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'rgba(255,255,255,0.1)' }} />
-                                            <Area type="monotone" dataKey="bookings" stroke="#10b981" strokeWidth={2} fill="url(#areaGrad)" dot={false} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            {/* Revenue 6-month bar chart */}
-                            <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
-                                <div className="mb-4">
-                                    <p className="text-sm font-semibold text-white">Revenue</p>
-                                    <p className="text-[11px] text-white/30">Last 6 months</p>
-                                </div>
-                                <div className="h-[200px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={revenue_months} margin={{ top: 4, right: 4, left: -28, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
-                                            <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} />
-                                            <YAxis tick={{ fontSize: 10, fill: 'rgba(255,255,255,0.3)' }} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={v => `$${(v/100).toFixed(0)}`} />
-                                            <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCents(v), 'Revenue']} />
-                                            <Bar dataKey="revenue" fill="#10b981" radius={[4,4,0,0]} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
+                            </SectionCard>
                         </div>
 
-                        {/* Top shops + status breakdown + new shops */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                            {/* Top shops bar */}
-                            <SectionCard title={<>Top Shops <span className="text-white/30 font-normal">· this month</span></>}>
-                                <div className="p-5 space-y-4">
-                                    {top_shops.length === 0 && <p className="text-xs text-white/30 text-center py-4">No data yet.</p>}
+                        {/* Top shops + status + new shops + recent */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+                            {/* Top shops */}
+                            <SectionCard title={<>Top Shops <span className="text-slate-400 font-normal">· this month</span></>}>
+                                <div className="p-4 lg:p-5 space-y-4">
+                                    {top_shops.length === 0 && <p className="text-xs text-slate-400 text-center py-4">No data yet.</p>}
                                     {top_shops.map((s, i) => (
                                         <div key={i}>
                                             <div className="flex items-center justify-between mb-1.5">
-                                                <span className="text-xs text-white/70 truncate max-w-[130px]">{s.name}</span>
-                                                <span className="text-xs font-semibold text-white">{formatCents(s.revenue)}</span>
+                                                <span className="text-xs text-slate-600 truncate max-w-[130px]">{s.name}</span>
+                                                <span className="text-xs font-semibold text-slate-900">{formatCents(s.revenue)}</span>
                                             </div>
-                                            <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                <div
-                                                    className="h-full bg-emerald-500 rounded-full"
-                                                    style={{ width: `${Math.round((s.revenue / maxRevenue) * 100)}%` }}
-                                                />
+                                            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div className="h-full bg-slate-900 rounded-full" style={{ width: `${Math.round((s.revenue / maxRevenue) * 100)}%` }} />
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </SectionCard>
 
-                            {/* Appointment status breakdown */}
+                            {/* Status breakdown */}
                             <SectionCard title="Status Breakdown">
-                                <div className="p-5 space-y-3">
+                                <div className="p-4 lg:p-5 space-y-3">
                                     {status_breakdown.filter(s => s.count > 0).map(s => {
                                         const total = status_breakdown.reduce((a, b) => a + b.count, 0);
                                         const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
                                         return (
                                             <div key={s.status}>
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-[11px] text-white/60 capitalize">{s.status.replace('_', ' ')}</span>
+                                                    <span className="text-[11px] text-slate-600 capitalize">{s.status.replace('_', ' ')}</span>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-[11px] text-white/30">{s.count}</span>
-                                                        <span className="text-[11px] font-semibold text-white/60 w-8 text-right">{pct}%</span>
+                                                        <span className="text-[11px] text-slate-400">{s.count}</span>
+                                                        <span className="text-[11px] font-semibold text-slate-500 w-8 text-right">{pct}%</span>
                                                     </div>
                                                 </div>
-                                                <div className="h-1 bg-white/5 rounded-full overflow-hidden">
-                                                    <div
-                                                        className="h-full rounded-full"
-                                                        style={{
-                                                            width: `${pct}%`,
-                                                            backgroundColor: STATUS_BAR_COLORS[s.status] ?? '#64748b',
-                                                        }}
-                                                    />
+                                                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                    <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: STATUS_BAR_COLORS[s.status] ?? '#64748b' }} />
                                                 </div>
                                             </div>
                                         );
@@ -373,25 +409,22 @@ export default function AdminDashboard({
                                 </div>
                             </SectionCard>
 
-                            {/* New shops this week */}
-                            <SectionCard title={<>New Shops <span className="text-white/30 font-normal">· last 7 days</span></>}>
-                                <div className="divide-y divide-white/5">
+                            {/* New shops */}
+                            <SectionCard title={<>New Shops <span className="text-slate-400 font-normal">· last 7 days</span></>}>
+                                <div className="divide-y divide-slate-100">
                                     {new_shops.length === 0 && (
-                                        <p className="text-xs text-white/30 text-center px-5 py-8">No new shops this week.</p>
+                                        <p className="text-xs text-slate-400 text-center px-5 py-8">No new shops this week.</p>
                                     )}
                                     {new_shops.map(s => (
-                                        <div key={s.id} className="flex items-center gap-3 px-5 py-3 hover:bg-white/5 transition-colors">
-                                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 shrink-0">
-                                                <Scissors className="h-3 w-3 text-white/30" />
+                                        <div key={s.id} className="flex items-center gap-3 px-4 lg:px-5 py-3 hover:bg-slate-50 transition-colors">
+                                            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 shrink-0">
+                                                <Scissors className="h-3 w-3 text-slate-400" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-medium text-white truncate">{s.name}</p>
-                                                <p className="text-[10px] text-white/30">{s.created_at}</p>
+                                                <p className="text-xs font-medium text-slate-800 truncate">{s.name}</p>
+                                                <p className="text-[10px] text-slate-400">{s.created_at}</p>
                                             </div>
-                                            <span className={cn(
-                                                'text-[10px] font-semibold px-1.5 py-0.5 rounded-full',
-                                                s.is_active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-white/30'
-                                            )}>
+                                            <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0', s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500')}>
                                                 {s.is_active ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
@@ -400,34 +433,28 @@ export default function AdminDashboard({
                             </SectionCard>
                         </div>
 
-                        {/* Recent activity preview */}
+                        {/* Recent bookings preview */}
                         <SectionCard
                             title="Recent Bookings"
                             action={
-                                <button onClick={() => setTab('activity')} className="text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors">
+                                <button onClick={() => setTab('activity')} className="text-[11px] text-slate-500 hover:text-slate-900 transition-colors">
                                     View all →
                                 </button>
                             }
                         >
-                            <div className="divide-y divide-white/5">
-                                {recent_activity.slice(0, 8).map(item => (
-                                    <div key={item.id} className="flex items-center gap-4 px-5 py-3 hover:bg-white/5 transition-colors">
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 shrink-0">
-                                            <Scissors className="h-3.5 w-3.5 text-white/20" />
-                                        </div>
+                            <div className="divide-y divide-slate-100">
+                                {recent_activity.slice(0, 6).map(item => (
+                                    <div key={item.id} className="flex items-center gap-3 px-4 lg:px-5 py-3 hover:bg-slate-50 transition-colors">
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <p className="text-xs font-medium text-white truncate">{item.customer}</p>
-                                                <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize shrink-0', STATUS_COLORS[item.status] ?? 'bg-white/10 text-white/40')}>
+                                                <p className="text-xs font-medium text-slate-800 truncate">{item.customer}</p>
+                                                <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize shrink-0', STATUS_COLORS[item.status] ?? 'bg-slate-100 text-slate-500')}>
                                                     {item.status.replace('_', ' ')}
                                                 </span>
                                             </div>
-                                            <p className="text-[11px] text-white/40 truncate">{item.service} · {item.company_name}</p>
+                                            <p className="text-[11px] text-slate-400 truncate">{item.service} · {item.company_name}</p>
                                         </div>
-                                        <div className="text-right shrink-0">
-                                            <p className="text-[11px] text-white/40">{item.starts_at}</p>
-                                            <p className="text-[10px] text-white/20">{item.created_at}</p>
-                                        </div>
+                                        <p className="text-[11px] text-slate-400 shrink-0 hidden sm:block">{item.starts_at}</p>
                                     </div>
                                 ))}
                             </div>
@@ -436,68 +463,64 @@ export default function AdminDashboard({
 
                     {/* ── SHOPS TAB ─────────────────────────────────────────── */}
                     {tab === 'shops' && (
-                        <div className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden">
-                            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                                <h2 className="text-sm font-semibold text-white">All Shops</h2>
-                                <span className="text-[10px] text-white/30">{companies.length} total</span>
+                        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
+                            <div className="px-4 lg:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                                <h2 className="text-sm font-semibold text-slate-900">All Shops</h2>
+                                <span className="text-[10px] text-slate-400">{companies.length} total</span>
                             </div>
                             <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
+                                <table className="w-full text-sm min-w-[600px]">
                                     <thead>
-                                        <tr className="border-b border-white/5">
-                                            {['SHOP', 'CONTACT', 'BARBERS', 'CUSTOMERS', 'APPTS', 'REVENUE', 'LAST BOOKING', 'STATUS', ''].map(h => (
+                                        <tr className="border-b border-slate-100 bg-slate-50">
+                                            {['SHOP', 'CONTACT', 'BARBERS', 'APPTS', 'REVENUE', 'LAST BOOKING', 'STATUS', ''].map(h => (
                                                 <th key={h} className={cn(
-                                                    'py-3 text-[10px] font-bold tracking-wider text-white/30',
-                                                    ['BARBERS','CUSTOMERS','APPTS'].includes(h) ? 'px-4 text-center' : 'px-4 text-left',
+                                                    'py-3 text-[10px] font-bold tracking-wider text-slate-400',
+                                                    ['BARBERS','APPTS'].includes(h) ? 'px-3 text-center' : 'px-3 text-left',
                                                     h === 'REVENUE' ? 'text-right' : '',
                                                     h === 'STATUS' ? 'text-center' : '',
                                                     h === '' ? 'w-8' : '',
-                                                    h === 'SHOP' ? 'pl-6' : '',
+                                                    h === 'SHOP' ? 'pl-4 lg:pl-6' : '',
                                                 )}>{h}</th>
                                             ))}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-slate-100">
                                         {companies.map(c => (
-                                            <tr key={c.id} className="hover:bg-white/5 transition-colors group">
-                                                <td className="pl-6 pr-4 py-3.5">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 shrink-0">
-                                                            <Scissors className="h-3 w-3 text-white/30" />
+                                            <tr key={c.id} className="hover:bg-slate-50 transition-colors group">
+                                                <td className="pl-4 lg:pl-6 pr-3 py-3.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 shrink-0">
+                                                            <Scissors className="h-3 w-3 text-slate-400" />
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs font-medium text-white">{c.name}</p>
-                                                            <p className="text-[10px] text-white/30">Joined {c.created_at}</p>
+                                                            <p className="text-xs font-medium text-slate-800">{c.name}</p>
+                                                            <p className="text-[10px] text-slate-400">Joined {c.created_at}</p>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 py-3.5">
-                                                    <p className="text-[11px] text-white/50 truncate max-w-[130px]">{c.email ?? '—'}</p>
-                                                    <p className="text-[10px] text-white/30">{c.phone ?? ''}</p>
+                                                <td className="px-3 py-3.5">
+                                                    <p className="text-[11px] text-slate-500 truncate max-w-[120px]">{c.email ?? '—'}</p>
                                                 </td>
-                                                <td className="px-4 py-3.5 text-center">
-                                                    <span className="text-xs text-white/60">{c.barbers_count}</span>
+                                                <td className="px-3 py-3.5 text-center">
+                                                    <span className="text-xs text-slate-600">{c.barbers_count}</span>
                                                 </td>
-                                                <td className="px-4 py-3.5 text-center">
-                                                    <span className="text-xs text-white/60">{c.customers_count}</span>
+                                                <td className="px-3 py-3.5 text-center">
+                                                    <span className="text-xs text-slate-600">{c.appointments_count}</span>
                                                 </td>
-                                                <td className="px-4 py-3.5 text-center">
-                                                    <span className="text-xs text-white/60">{c.appointments_count}</span>
+                                                <td className="px-3 py-3.5 text-right">
+                                                    <span className="text-xs font-semibold text-slate-900">{formatCents(c.revenue)}</span>
                                                 </td>
-                                                <td className="px-4 py-3.5 text-right">
-                                                    <span className="text-xs font-semibold text-white">{formatCents(c.revenue)}</span>
+                                                <td className="px-3 py-3.5">
+                                                    <span className="text-[11px] text-slate-400">{c.last_booking_at}</span>
                                                 </td>
-                                                <td className="px-4 py-3.5">
-                                                    <span className="text-[11px] text-white/30">{c.last_booking_at}</span>
-                                                </td>
-                                                <td className="px-4 py-3.5 text-center">
+                                                <td className="px-3 py-3.5 text-center">
                                                     <button
                                                         onClick={() => toggleCompany(c.id)}
                                                         className={cn(
                                                             'inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full transition-colors',
                                                             c.is_active
-                                                                ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-                                                                : 'bg-white/5 text-white/30 hover:bg-white/10 hover:text-white/60'
+                                                                ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                                                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                                         )}
                                                     >
                                                         {c.is_active
@@ -506,13 +529,12 @@ export default function AdminDashboard({
                                                         }
                                                     </button>
                                                 </td>
-                                                <td className="px-4 py-3.5">
+                                                <td className="px-3 py-3.5">
                                                     <a
                                                         href={`/book/${c.slug}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-white/20 hover:text-emerald-400 transition-colors opacity-0 group-hover:opacity-100"
-                                                        title="Open booking page"
+                                                        className="text-slate-300 hover:text-slate-700 transition-colors opacity-0 group-hover:opacity-100"
                                                     >
                                                         <ArrowUpRight className="h-3.5 w-3.5" />
                                                     </a>
@@ -527,36 +549,36 @@ export default function AdminDashboard({
 
                     {/* ── ACTIVITY TAB ──────────────────────────────────────── */}
                     {tab === 'activity' && (
-                        <div className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden">
-                            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                                <h2 className="text-sm font-semibold text-white">Recent Bookings</h2>
-                                <span className="text-[10px] text-white/30">Last 30</span>
+                        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
+                            <div className="px-4 lg:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                                <h2 className="text-sm font-semibold text-slate-900">Recent Bookings</h2>
+                                <span className="text-[10px] text-slate-400">Last 30</span>
                             </div>
-                            <div className="divide-y divide-white/5">
+                            <div className="divide-y divide-slate-100">
                                 {recent_activity.length === 0 && (
-                                    <p className="text-xs text-white/30 text-center px-6 py-12">No activity yet.</p>
+                                    <p className="text-xs text-slate-400 text-center px-6 py-12">No activity yet.</p>
                                 )}
                                 {recent_activity.map(item => (
-                                    <div key={item.id} className="flex items-center gap-4 px-6 py-4 hover:bg-white/5 transition-colors">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 shrink-0">
-                                            <Scissors className="h-4 w-4 text-white/20" />
+                                    <div key={item.id} className="flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3 lg:py-4 hover:bg-slate-50 transition-colors">
+                                        <div className="flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center rounded-xl bg-slate-100 shrink-0">
+                                            <Scissors className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-slate-400" />
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-0.5">
-                                                <p className="text-sm font-medium text-white">{item.customer}</p>
-                                                <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize shrink-0', STATUS_COLORS[item.status] ?? 'bg-white/10 text-white/40')}>
+                                                <p className="text-sm font-medium text-slate-800">{item.customer}</p>
+                                                <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full capitalize shrink-0', STATUS_COLORS[item.status] ?? 'bg-slate-100 text-slate-500')}>
                                                     {item.status.replace('_', ' ')}
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-white/40">{item.service} with {item.barber}</p>
+                                            <p className="text-xs text-slate-500">{item.service} with {item.barber}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5">
-                                                <Building2 className="h-3 w-3 text-white/20" />
-                                                <span className="text-[11px] text-white/30">{item.company_name}</span>
+                                                <Building2 className="h-3 w-3 text-slate-300" />
+                                                <span className="text-[11px] text-slate-400">{item.company_name}</span>
                                             </div>
                                         </div>
-                                        <div className="text-right shrink-0">
-                                            <p className="text-xs text-white/50">{item.starts_at}</p>
-                                            <p className="text-[11px] text-white/20 mt-0.5">booked {item.created_at}</p>
+                                        <div className="text-right shrink-0 hidden sm:block">
+                                            <p className="text-xs text-slate-500">{item.starts_at}</p>
+                                            <p className="text-[11px] text-slate-400 mt-0.5">booked {item.created_at}</p>
                                         </div>
                                     </div>
                                 ))}

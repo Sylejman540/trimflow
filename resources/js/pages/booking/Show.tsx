@@ -43,7 +43,11 @@ interface Service {
 const ANY_BARBER_ID = 0;
 
 function todayStr() {
-    return new Date().toISOString().split('T')[0];
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
 }
 
 export default function Show({ company, barbers: initialBarbers, services }: {
