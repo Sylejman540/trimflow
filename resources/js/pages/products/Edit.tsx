@@ -20,6 +20,7 @@ interface Product {
 }
 
 export default function Edit({ product }: { product: Product }) {
+    const { t } = useTranslation();
     const { data, setData, put, processing, errors } = useForm({
         name: product.name,
         category: product.category ?? '',
@@ -39,15 +40,15 @@ export default function Edit({ product }: { product: Product }) {
     }
 
     return (
-        <AppLayout title="Edit Product">
-            <Head title={`Edit ${product.name}`} />
+        <AppLayout title={t('prod.edit')}>
+            <Head title={`${t('prod.edit')} ${product.name}`} />
 
             <div className="mx-auto max-w-2xl">
                 {/* Header Section */}
                 <div className="mb-6 px-1">
-                    <h2 className="text-xl font-bold tracking-tight text-slate-900">Edit Product</h2>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('prod.edit')}</h2>
                     <p className="text-sm text-slate-500 mt-1">
-                        Update the details and stock levels for this product.
+                        {t('prod.editDesc')}
                     </p>
                 </div>
 
@@ -62,14 +63,14 @@ export default function Edit({ product }: { product: Product }) {
                                 htmlFor="name"
                                 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2"
                             >
-                                <Package size={12} /> Product Name
+                                <Package size={12} /> {t('prod.productName')}
                             </Label>
                             <Input
                                 id="name"
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Pomade"
+                                placeholder={t('prod.namePlaceholder')}
                                 required
                             />
                             {errors.name && (
@@ -82,14 +83,14 @@ export default function Edit({ product }: { product: Product }) {
                                 htmlFor="category"
                                 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2"
                             >
-                                <Tag size={12} /> Category
+                                <Tag size={12} /> {t('category')}
                             </Label>
                             <Input
                                 id="category"
                                 value={data.category}
                                 onChange={(e) => setData('category', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Hair Care"
+                                placeholder={t('prod.categoryPlaceholder')}
                             />
                             {errors.category && (
                                 <p className="text-xs text-red-500 font-medium">{errors.category}</p>
@@ -103,7 +104,7 @@ export default function Edit({ product }: { product: Product }) {
                             htmlFor="price"
                             className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2"
                         >
-                            <DollarSign size={12} /> Price ($)
+                            <DollarSign size={12} /> {t('prod.priceDollar')}
                         </Label>
                         <Input
                             id="price"
@@ -128,7 +129,7 @@ export default function Edit({ product }: { product: Product }) {
                                 htmlFor="stock_qty"
                                 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2"
                             >
-                                <ArchiveRestore size={12} /> Stock Quantity
+                                <ArchiveRestore size={12} /> {t('prod.stockQuantity')}
                             </Label>
                             <Input
                                 id="stock_qty"
@@ -151,7 +152,7 @@ export default function Edit({ product }: { product: Product }) {
                                 htmlFor="low_stock_threshold"
                                 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2"
                             >
-                                <AlertTriangle size={12} /> Low Stock Alert
+                                <AlertTriangle size={12} /> {t('prod.lowStockAlert')}
                             </Label>
                             <Input
                                 id="low_stock_threshold"
@@ -165,7 +166,7 @@ export default function Edit({ product }: { product: Product }) {
                                 required
                             />
                             <p className="text-[11px] text-slate-400">
-                                Show warning badge when stock falls to or below this number.
+                                {t('prod.lowStockHint')}
                             </p>
                             {errors.low_stock_threshold && (
                                 <p className="text-xs text-red-500 font-medium">
@@ -183,10 +184,10 @@ export default function Edit({ product }: { product: Product }) {
                             </div>
                             <div className="space-y-0.5">
                                 <Label htmlFor="is_active" className="text-sm font-bold text-slate-900">
-                                    Active Status
+                                    {t('prod.activeStatus')}
                                 </Label>
                                 <p className="text-xs text-slate-500">
-                                    Product will be available to add to appointments.
+                                    {t('prod.activeDesc')}
                                 </p>
                             </div>
                         </div>
@@ -204,7 +205,7 @@ export default function Edit({ product }: { product: Product }) {
                             disabled={processing}
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
                         >
-                            Update Product
+                            {t('prod.updateProduct')}
                         </Button>
                         <Link
                             href={route('products.index')}
@@ -213,7 +214,7 @@ export default function Edit({ product }: { product: Product }) {
                                 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-xs font-bold h-10 px-4',
                             )}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Link>
                     </div>
                 </form>
