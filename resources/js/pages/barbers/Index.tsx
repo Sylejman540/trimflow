@@ -34,8 +34,7 @@ function DeleteBarberModal({ barber, open, onOpenChange }: {
                 <DialogHeader>
                     <DialogTitle>{t('barber.edit')}</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to remove <span className="font-medium text-gray-900">{barber.user?.name}</span>?
-                        This will affect their availability and future schedule.
+                        {t('barber.deleteConfirm')}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -71,7 +70,7 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
                     </div>
                     <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-900 truncate">{row.original.user?.name}</p>
-                        <p className="text-[11px] text-slate-400 truncate">{row.original.specialty || 'Generalist'}</p>
+                        <p className="text-[11px] text-slate-400 truncate">{row.original.specialty || t('barber.generalist')}</p>
                     </div>
                 </div>
             ),

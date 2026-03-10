@@ -40,7 +40,7 @@ function DeleteModal({ service, open, onOpenChange }: {
                 <DialogHeader>
                     <DialogTitle>{t('delete')} {t('svc.title')}</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete <span className="font-medium text-gray-900">{service.name}</span>? This action cannot be undone.
+                        {t('svc.deleteConfirm')}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -76,7 +76,7 @@ export default function Index({ services }: { services: Service[] }) {
                         <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color && COLOR_HEX[color] ? COLOR_HEX[color] : '#cbd5e1' }} />
                         <div className="min-w-0">
                             <p className="text-sm font-medium text-slate-900 truncate">{row.original.name}</p>
-                            <p className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || 'Uncategorized'}</p>
+                            <p className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || t('svc.uncategorized')}</p>
                         </div>
                     </div>
                 );
@@ -172,7 +172,7 @@ export default function Index({ services }: { services: Service[] }) {
                                     <span className="w-3 h-3 rounded-full shrink-0 mt-0.5" style={{ background: color && COLOR_HEX[color] ? COLOR_HEX[color] : '#cbd5e1' }} />
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-slate-900 text-sm truncate">{service.name}</p>
-                                        <p className="text-xs text-slate-400 uppercase tracking-tight">{service.category || 'Uncategorized'}</p>
+                                        <p className="text-xs text-slate-400 uppercase tracking-tight">{service.category || t('svc.uncategorized')}</p>
                                     </div>
                                     <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
                                         service.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>

@@ -162,6 +162,15 @@ export default {
         selectBarber: 'Select barber',
         selectService: 'Select service',
         apptStatus: 'Appointment Status',
+        deleteAppt: 'Delete Appointment',
+        deleteConfirm: 'Are you sure you want to delete this appointment? This cannot be undone.',
+        deleteThisOnly: 'Delete this appointment only',
+        deleteThisFuture: 'Delete this and all future',
+        myAppointments: 'My Appointments',
+        allAppointments: 'All Appointments',
+        mine: 'Mine',
+        exportCsv: 'Export CSV',
+        view: 'View',
     },
 
     // Services
@@ -185,6 +194,10 @@ export default {
         updated: 'Service updated.',
         deleted: 'Service deleted.',
         updateService: 'Update Service',
+        uncategorized: 'Uncategorized',
+        clearColor: 'Clear',
+        descPlaceholder: 'Provide details about what this service entails…',
+        deleteConfirm: 'Are you sure you want to delete this service? This action cannot be undone.',
     },
 
     // Barbers
@@ -215,6 +228,10 @@ export default {
         newDesc: 'Create a new professional profile and login credentials for a barber.',
         editDesc: 'Modify barber profile details, contact information, and status.',
         updateBarber: 'Update Barber',
+        you: 'You',
+        generalist: 'Generalist',
+        deleteConfirm: 'Are you sure you want to remove this barber? This will affect their availability and future schedule.',
+        bioPlaceholder: "A brief description of the barber's background and style…",
     },
 
     // Customers
@@ -251,6 +268,10 @@ export default {
         newDesc: 'Add a retail product to your inventory for sale at appointments.',
         editDesc: 'Update the details and stock levels for this product.',
         updateProduct: 'Update Product',
+        uncategorized: 'Uncategorized',
+        priceDollar: 'Price ($)',
+        stockQuantity: 'Stock Quantity',
+        deleteConfirm: 'Are you sure you want to delete this product? This action cannot be undone.',
     },
 
     // Profile
@@ -309,6 +330,17 @@ export default {
         bookAnother: 'Book Another Appointment',
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'My Schedule',
+        allBarbers: 'All Barbers',
+        saving: 'Saving…',
+        noAppointments: 'No appointments this {view}.',
+        dragHint: 'Drag to reschedule · Click to view · Completed/cancelled cannot be moved',
+        am: 'am',
+        pm: 'pm',
     },
 
     // Walk-in modal (AppLayout)

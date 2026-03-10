@@ -147,6 +147,15 @@ export default {
         selectBarber: 'Zgjidhni berberin',
         selectService: 'Zgjidhni shërbimin',
         apptStatus: 'Statusi i terminit',
+        deleteAppt: 'Fshi Terminin',
+        deleteConfirm: 'Jeni të sigurt që doni të fshini këtë termin? Ky veprim nuk mund të kthehet.',
+        deleteThisOnly: 'Fshi vetëm këtë termin',
+        deleteThisFuture: 'Fshi këtë dhe të gjitha të ardhshmet',
+        myAppointments: 'Terminet e mia',
+        allAppointments: 'Të gjitha terminet',
+        mine: 'Të miat',
+        exportCsv: 'Eksporto CSV',
+        view: 'Shiko',
     },
 
     svc: {
@@ -165,6 +174,10 @@ export default {
         newDesc: 'Përcaktoni një ofertë të re për dyqanin tuaj, duke përfshirë kohëzgjatjen dhe çmimet.',
         editDesc: 'Përditëso detajet dhe çmimet për këtë shërbim.',
         updateService: 'Përditëso shërbimin',
+        uncategorized: 'Pa kategori',
+        clearColor: 'Pastro',
+        descPlaceholder: 'Jepni detaje rreth asaj që përfshin ky shërbim…',
+        deleteConfirm: 'Jeni të sigurt që doni të fshini këtë shërbim? Ky veprim nuk mund të kthehet.',
         noServices: 'Nuk ka shërbime ende.',
         created: 'Shërbimi u krijua.',
         updated: 'Shërbimi u përditësua.',
@@ -198,6 +211,10 @@ export default {
         newDesc: 'Krijo një profil të ri profesional dhe kredenciale hyrjeje për berberin.',
         editDesc: 'Modifiko detajet e profilit, informacionin e kontaktit dhe statusin.',
         updateBarber: 'Përditëso berberin',
+        you: 'Ti',
+        generalist: 'Gjeneralist',
+        deleteConfirm: 'Jeni të sigurt që doni të hiqni këtë berber? Kjo do të ndikojë në disponueshmërinë dhe orarin e tyre të ardhshëm.',
+        bioPlaceholder: 'Një përshkrim i shkurtër i sfondit dhe stilit të berberit…',
     },
 
     cust: {
@@ -232,6 +249,10 @@ export default {
         newDesc: 'Shto një produkt tregtar në inventarin tuaj për shitje në takime.',
         editDesc: 'Përditëso detajet dhe nivelet e stokut për këtë produkt.',
         updateProduct: 'Përditëso produktin',
+        uncategorized: 'Pa kategori',
+        priceDollar: 'Çmimi (€)',
+        stockQuantity: 'Sasia në stok',
+        deleteConfirm: 'Jeni të sigurt që doni të fshini këtë produkt? Ky veprim nuk mund të kthehet.',
     },
 
     profile: {
@@ -299,6 +320,17 @@ export default {
         to: 'Deri',
         reason: 'Arsyeja (opsionale)',
         reasonPlaceholder: 'p.sh. Pushime, sëmundje…',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Orari im',
+        allBarbers: 'Të gjithë berberët',
+        saving: 'Po ruhet…',
+        noAppointments: 'Nuk ka termina këtë {view}.',
+        dragHint: 'Tërhiq për të riplanifikuar · Kliko për të parë · Të përfunduara/anuluara nuk mund të zhvendosen',
+        am: 'paradite',
+        pm: 'pasdite',
     },
 
     // Walk-in modal

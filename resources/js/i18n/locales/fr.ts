@@ -146,6 +146,15 @@ export default {
         selectBarber: 'Sélectionner un barbier',
         selectService: 'Sélectionner un service',
         apptStatus: 'Statut du rendez-vous',
+        deleteAppt: 'Supprimer le rendez-vous',
+        deleteConfirm: 'Êtes-vous sûr de vouloir supprimer ce rendez-vous ? Cette action est irréversible.',
+        deleteThisOnly: 'Supprimer uniquement ce rendez-vous',
+        deleteThisFuture: 'Supprimer celui-ci et tous les suivants',
+        myAppointments: 'Mes rendez-vous',
+        allAppointments: 'Tous les rendez-vous',
+        mine: 'Les miens',
+        exportCsv: 'Exporter CSV',
+        view: 'Voir',
     },
 
     svc: {
@@ -164,6 +173,10 @@ export default {
         newDesc: 'Définissez une nouvelle offre pour votre salon, incluant la durée et les tarifs.',
         editDesc: 'Mettez à jour les détails et les tarifs de ce service.',
         updateService: 'Mettre à jour le service',
+        uncategorized: 'Sans catégorie',
+        clearColor: 'Effacer',
+        descPlaceholder: 'Fournissez des détails sur ce que comprend ce service…',
+        deleteConfirm: 'Êtes-vous sûr de vouloir supprimer ce service ? Cette action est irréversible.',
         noServices: 'Aucun service pour le moment.',
         created: 'Service créé.',
         updated: 'Service mis à jour.',
@@ -197,6 +210,10 @@ export default {
         newDesc: 'Créez un nouveau profil professionnel et des identifiants de connexion pour un barbier.',
         editDesc: 'Modifiez les détails du profil, les coordonnées et le statut du barbier.',
         updateBarber: 'Mettre à jour le barbier',
+        you: 'Vous',
+        generalist: 'Généraliste',
+        deleteConfirm: 'Êtes-vous sûr de vouloir retirer ce barbier ? Cela affectera ses disponibilités et son planning futur.',
+        bioPlaceholder: 'Une brève description du parcours et du style du barbier…',
     },
 
     cust: {
@@ -231,6 +248,10 @@ export default {
         newDesc: 'Ajoutez un produit de vente au détail à votre inventaire pour la vente lors des rendez-vous.',
         editDesc: 'Mettez à jour les détails et les niveaux de stock de ce produit.',
         updateProduct: 'Mettre à jour le produit',
+        uncategorized: 'Sans catégorie',
+        priceDollar: 'Prix (€)',
+        stockQuantity: 'Quantité en stock',
+        deleteConfirm: 'Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.',
     },
 
     profile: {
@@ -298,6 +319,17 @@ export default {
         to: 'À',
         reason: 'Motif (optionnel)',
         reasonPlaceholder: 'p.ex. Vacances, maladie…',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Mon planning',
+        allBarbers: 'Tous les barbiers',
+        saving: 'Enregistrement…',
+        noAppointments: 'Aucun rendez-vous ce(tte) {view}.',
+        dragHint: 'Glisser pour reprogrammer · Cliquer pour voir · Les terminés/annulés ne peuvent pas être déplacés',
+        am: 'am',
+        pm: 'pm',
     },
 
     // Walk-in modal

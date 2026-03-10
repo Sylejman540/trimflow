@@ -146,6 +146,15 @@ export default {
         selectBarber: 'Odaberi brijača',
         selectService: 'Odaberi uslugu',
         apptStatus: 'Status termina',
+        deleteAppt: 'Obriši termin',
+        deleteConfirm: 'Jeste li sigurni da želite obrisati ovaj termin? Ovo se ne može poništiti.',
+        deleteThisOnly: 'Obriši samo ovaj termin',
+        deleteThisFuture: 'Obriši ovaj i sve buduće',
+        myAppointments: 'Moji termini',
+        allAppointments: 'Svi termini',
+        mine: 'Moji',
+        exportCsv: 'Izvezi CSV',
+        view: 'Pregled',
     },
 
     svc: {
@@ -164,6 +173,10 @@ export default {
         newDesc: 'Definirajte novu ponudu za vaš salon, uključujući trajanje i cijene.',
         editDesc: 'Ažurirajte detalje i cijene za ovu uslugu.',
         updateService: 'Ažuriraj uslugu',
+        uncategorized: 'Bez kategorije',
+        clearColor: 'Očisti',
+        descPlaceholder: 'Navedite detalje o tome što ova usluga uključuje…',
+        deleteConfirm: 'Jeste li sigurni da želite izbrisati ovu uslugu? Ova akcija se ne može poništiti.',
         noServices: 'Nema usluga.',
         created: 'Usluga stvorena.',
         updated: 'Usluga ažurirana.',
@@ -197,6 +210,10 @@ export default {
         newDesc: 'Izradite novi profesionalni profil i vjerodajnice za prijavu za brijača.',
         editDesc: 'Izmijenite detalje profila, kontaktne informacije i status brijača.',
         updateBarber: 'Ažuriraj brijača',
+        you: 'Vi',
+        generalist: 'Generalist',
+        deleteConfirm: 'Jeste li sigurni da želite ukloniti ovog brijača? To će utjecati na njegovu dostupnost i buduće rasporede.',
+        bioPlaceholder: 'Kratki opis iskustva i stila brijača…',
     },
 
     cust: {
@@ -231,6 +248,10 @@ export default {
         newDesc: 'Dodajte maloprodajni proizvod u vaš inventar za prodaju na terminima.',
         editDesc: 'Ažurirajte detalje i razine zaliha za ovaj proizvod.',
         updateProduct: 'Ažuriraj proizvod',
+        uncategorized: 'Bez kategorije',
+        priceDollar: 'Cijena ($)',
+        stockQuantity: 'Količina na zalihama',
+        deleteConfirm: 'Jeste li sigurni da želite izbrisati ovaj proizvod? Ova akcija se ne može poništiti.',
     },
 
     profile: {
@@ -298,6 +319,17 @@ export default {
         to: 'Do',
         reason: 'Razlog (neobavezno)',
         reasonPlaceholder: 'npr. Odmor, bolovanje…',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Moj raspored',
+        allBarbers: 'Svi brijači',
+        saving: 'Spremanje…',
+        noAppointments: 'Nema termina ovaj {view}.',
+        dragHint: 'Povuci za promjenu termina · Klikni za pregled · Završeni/otkazani ne mogu se premještati',
+        am: 'prijepodne',
+        pm: 'poslijepodne',
     },
 
     // Walk-in modal

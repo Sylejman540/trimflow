@@ -87,11 +87,12 @@ interface DragState {
 }
 
 function TimeGutter() {
+    const { t } = useTranslation();
     return (
         <div className="w-12 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
             {Array.from({ length: TOTAL_HOURS }, (_, i) => (
                 <div key={i} className="absolute right-2 text-[10px] text-slate-400 font-medium" style={{ top: i * HOUR_HEIGHT - 7 }}>
-                    {((HOUR_START + i) % 12 || 12)}{HOUR_START + i < 12 ? 'am' : 'pm'}
+                    {((HOUR_START + i) % 12 || 12)}{HOUR_START + i < 12 ? t('schedule.am') : t('schedule.pm')}
                 </div>
             ))}
         </div>
@@ -179,7 +180,7 @@ function MobileListView({ appointments, date, navigate }: {
                 </button>
                 <div className="text-center">
                     <p className="text-sm font-semibold text-slate-900">{fmtDate(date)}</p>
-                    {date === todayStr && <p className="text-[11px] text-amber-600 font-medium">Today</p>}
+                    {date === todayStr && <p className="text-[11px] text-amber-600 font-medium">{t('today')}</p>}
                 </div>
                 <button onClick={() => navigate(1)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">
                     <ChevronRight className="h-4 w-4" />
@@ -408,8 +409,8 @@ export default function Index({
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
                             )}
                         >
-                            <span className="hidden sm:inline">{filter_mine ? 'My Schedule' : 'All Barbers'}</span>
-                            <span className="sm:hidden">{filter_mine ? 'Mine' : 'All'}</span>
+                            <span className="hidden sm:inline">{filter_mine ? t('schedule.mySchedule') : t('schedule.allBarbers')}</span>
+                            <span className="sm:hidden">{filter_mine ? t('appt.mine') : t('all')}</span>
                         </button>
                     )}
                     {!isMobile && (
@@ -431,7 +432,7 @@ export default function Index({
                             onClick={() => router.get(route('schedule.index'), { view: effectiveView, date: todayStr })}
                             className="h-9 px-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                         >
-                            Today
+                            {t('today')}
                         </button>
                         <button onClick={() => navigate(1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronRight className="h-4 w-4" />
@@ -456,7 +457,7 @@ export default function Index({
                         <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
                         <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
                     </svg>
-                    Saving…
+                    {t('schedule.saving')}
                 </div>
             )}
 
@@ -517,7 +518,7 @@ export default function Index({
 
                     {appointments.length === 0 && (
                         <div className="py-12 text-center text-sm text-slate-400 border-t border-slate-100">
-                            No appointments this {effectiveView}.
+                            {t('schedule.noAppointments', { view: effectiveView })}
                         </div>
                     )}
                 </div>
@@ -525,7 +526,7 @@ export default function Index({
 
             {!isMobile && (
                 <p className="mt-2 text-[11px] text-slate-400 text-center">
-                    Drag appointments to reschedule · Click to view details · Completed/cancelled cannot be moved
+                    {t('schedule.dragHint')}
                 </p>
             )}
         </AppLayout>

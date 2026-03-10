@@ -146,6 +146,15 @@ export default {
         selectBarber: 'Friseur auswählen',
         selectService: 'Leistung auswählen',
         apptStatus: 'Terminstatus',
+        deleteAppt: 'Termin löschen',
+        deleteConfirm: 'Sind Sie sicher, dass Sie diesen Termin löschen möchten? Dies kann nicht rückgängig gemacht werden.',
+        deleteThisOnly: 'Nur diesen Termin löschen',
+        deleteThisFuture: 'Diesen und alle zukünftigen löschen',
+        myAppointments: 'Meine Termine',
+        allAppointments: 'Alle Termine',
+        mine: 'Meine',
+        exportCsv: 'CSV exportieren',
+        view: 'Anzeigen',
     },
 
     svc: {
@@ -164,6 +173,10 @@ export default {
         newDesc: 'Definieren Sie ein neues Angebot für Ihren Salon, einschließlich Dauer und Preisgestaltung.',
         editDesc: 'Aktualisieren Sie die Details und Preise für dieses Leistungsangebot.',
         updateService: 'Leistung aktualisieren',
+        uncategorized: 'Ohne Kategorie',
+        clearColor: 'Zurücksetzen',
+        descPlaceholder: 'Beschreiben Sie, was diese Leistung beinhaltet…',
+        deleteConfirm: 'Sind Sie sicher, dass Sie diese Leistung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
         noServices: 'Noch keine Leistungen.',
         created: 'Leistung erstellt.',
         updated: 'Leistung aktualisiert.',
@@ -197,6 +210,10 @@ export default {
         newDesc: 'Erstellen Sie ein neues Berufsprofil und Anmeldedaten für einen Friseur.',
         editDesc: 'Ändern Sie Profildetails, Kontaktinformationen und Status des Friseurs.',
         updateBarber: 'Friseur aktualisieren',
+        you: 'Sie',
+        generalist: 'Allrounder',
+        deleteConfirm: 'Sind Sie sicher, dass Sie diesen Friseur entfernen möchten? Dies beeinflusst seine Verfügbarkeit und zukünftigen Zeitplan.',
+        bioPlaceholder: 'Eine kurze Beschreibung des Hintergrunds und Stils des Friseurs…',
     },
 
     cust: {
@@ -231,6 +248,10 @@ export default {
         newDesc: 'Fügen Sie ein Einzelhandelsprodukt zu Ihrem Inventar für den Verkauf bei Terminen hinzu.',
         editDesc: 'Aktualisieren Sie die Details und Lagerbestände für dieses Produkt.',
         updateProduct: 'Produkt aktualisieren',
+        uncategorized: 'Ohne Kategorie',
+        priceDollar: 'Preis (€)',
+        stockQuantity: 'Lagermenge',
+        deleteConfirm: 'Sind Sie sicher, dass Sie dieses Produkt löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
     },
 
     profile: {
@@ -298,6 +319,17 @@ export default {
         to: 'Bis',
         reason: 'Grund (optional)',
         reasonPlaceholder: 'z.B. Urlaub, Krankheit…',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Mein Zeitplan',
+        allBarbers: 'Alle Friseure',
+        saving: 'Speichern…',
+        noAppointments: 'Keine Termine diese {view}.',
+        dragHint: 'Ziehen zum Umplanen · Klicken zum Anzeigen · Abgeschlossene/stornierte können nicht verschoben werden',
+        am: 'Uhr',
+        pm: 'Uhr',
     },
 
     // Walk-in modal

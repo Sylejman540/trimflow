@@ -38,7 +38,7 @@ function DeleteModal({ product, open, onOpenChange }: {
                 <DialogHeader>
                     <DialogTitle>{t('delete')} {t('prod.title')}</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete <span className="font-medium text-gray-900">{product.name}</span>? This action cannot be undone.
+                        {t('prod.deleteConfirm')}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -74,7 +74,7 @@ export default function Index({ products }: { products: Product[] }) {
                     </div>
                     <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-900 truncate">{row.original.name}</p>
-                        <p className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || 'Uncategorized'}</p>
+                        <p className="text-[11px] text-slate-500 uppercase tracking-tight">{row.original.category || t('prod.uncategorized')}</p>
                     </div>
                 </div>
             ),
@@ -179,7 +179,7 @@ export default function Index({ products }: { products: Product[] }) {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="font-semibold text-slate-900 text-sm truncate">{product.name}</p>
-                                        <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || 'Uncategorized'}</p>
+                                        <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || t('prod.uncategorized')}</p>
                                     </div>
                                     <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
                                         product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>

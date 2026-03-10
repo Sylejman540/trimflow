@@ -100,6 +100,7 @@ function QuickBookModal({
     services: Service[];
     isBarber: boolean;
 }) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
         barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
         customer_name: '',
@@ -143,18 +144,18 @@ function QuickBookModal({
             <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" /> New Appointment
+                        <Plus className="h-4 w-4" /> {t('appt.new')}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-4 pt-1">
                     {!isBarber && (
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                                <User size={10} /> Barber
+                                <User size={10} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
                                 <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
+                                    <SelectValue placeholder={t('appt.selectBarber')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                     {barbers.map(b => (
@@ -169,7 +170,7 @@ function QuickBookModal({
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                                <User size={10} /> Customer Name
+                                <User size={10} /> {t('appt.customerName')}
                             </Label>
                             <Input
                                 value={data.customer_name}
@@ -183,7 +184,7 @@ function QuickBookModal({
                         </div>
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                                <Phone size={10} /> Phone
+                                <Phone size={10} /> {t('phone')}
                             </Label>
                             <Input
                                 value={data.customer_phone}
@@ -197,11 +198,11 @@ function QuickBookModal({
 
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                            <Scissors size={10} /> Service
+                            <Scissors size={10} /> {t('appt.service')}
                         </Label>
                         <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
                             <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder="Select service" />
+                                <SelectValue placeholder={t('appt.selectService')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                 {services.map(s => (
@@ -219,7 +220,7 @@ function QuickBookModal({
 
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
-                            <Calendar size={10} /> Date & Time
+                            <Calendar size={10} /> {t('appt.dateTime')}
                         </Label>
                         {/* Quick presets */}
                         <div className="flex gap-1.5 flex-wrap">
@@ -250,9 +251,9 @@ function QuickBookModal({
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">Cancel</Button>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">{t('cancel')}</Button>
                         <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
-                            Book Appointment
+                            {t('appt.bookAppointment')}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -287,23 +288,19 @@ function DeleteModal({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
                 <DialogHeader>
-                    <DialogTitle>Delete Appointment</DialogTitle>
+                    <DialogTitle>{t('appt.deleteAppt')}</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete the appointment for{' '}
-                        <span className="font-medium text-gray-900">
-                            {appointment.customer?.name ?? 'this customer'}
-                        </span>
-                        {' '}on {formatDateTime(appointment.starts_at)}?
+                        {t('appt.deleteConfirm')}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className={isRecurring ? 'flex-col gap-2 sm:flex-col' : ''}>
                     {isRecurring ? (
                         <>
                             <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none w-full">
-                                Delete this appointment only
+                                {t('appt.deleteThisOnly')}
                             </Button>
                             <Button variant="destructive" onClick={() => handleDelete('future')} disabled={processing} className="shadow-none w-full opacity-80">
-                                Delete this and all future
+                                {t('appt.deleteThisFuture')}
                             </Button>
                             <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none w-full">
                                 {t('cancel')}
@@ -496,14 +493,14 @@ export default function Index({
                                     : 'border-slate-200 text-slate-600',
                             )}
                         >
-                            <span className="hidden sm:inline">{filter_mine ? 'My Appointments' : 'All Appointments'}</span>
-                            <span className="sm:hidden">{filter_mine ? 'Mine' : 'All'}</span>
+                            <span className="hidden sm:inline">{filter_mine ? t('appt.myAppointments') : t('appt.allAppointments')}</span>
+                            <span className="sm:hidden">{filter_mine ? t('appt.mine') : t('all')}</span>
                         </button>
                     )}
                     <a
                         href={route('export.appointments')}
                         className={cn(buttonVariants({ variant: 'outline' }), 'h-9 w-9 p-0 flex items-center justify-center rounded-lg border-slate-200 shadow-none')}
-                        title="Export CSV"
+                        title={t('appt.exportCsv')}
                     >
                         <Download className="h-3.5 w-3.5" />
                     </a>
@@ -562,7 +559,7 @@ export default function Index({
                 {/* Mobile card list */}
                 <div className="sm:hidden space-y-2">
                     {filtered.length === 0 && (
-                        <p className="text-sm text-slate-400 text-center py-8">No appointments found.</p>
+                        <p className="text-sm text-slate-400 text-center py-8">{t('appt.noAppointments')}</p>
                     )}
                     {filtered.map(appt => (
                         <div key={appt.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
@@ -599,11 +596,11 @@ export default function Index({
                                         onClick={() => router.patch(route('appointments.confirm', appt.id))}
                                         className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg"
                                     >
-                                        <CheckCircle2 className="h-3.5 w-3.5" /> Confirm
+                                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                                     </button>
                                 )}
                                 <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
-                                    <Eye className="h-3.5 w-3.5 mr-1" /> View
+                                    <Eye className="h-3.5 w-3.5 mr-1" /> {t('appt.view')}
                                 </Link>
                                 {appt.status !== 'in_progress' && (
                                     <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
