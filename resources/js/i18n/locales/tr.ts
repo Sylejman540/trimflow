@@ -278,6 +278,8 @@ export default {
         priceDollar: 'Fiyat (₺)',
         stockQuantity: 'Stok Miktarı',
         deleteConfirm: 'Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+        namePlaceholder: 'örn. Pomad',
+        categoryPlaceholder: 'örn. Saç Bakımı',
     },
 
     // Profile
