@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\User;
+use App\Notifications\AppointmentStatusChanged;
 use Illuminate\Http\Request;
 
 class BookingCancelController extends Controller
@@ -18,11 +20,24 @@ class BookingCancelController extends Controller
             return back()->withErrors(['token' => 'The cancellation window has expired.']);
         }
 
+        $previousStatus = $appointment->status;
+
         $appointment->update([
             'status'                  => 'cancelled',
             'cancel_token'            => null,
             'cancel_token_expires_at' => null,
         ]);
+
+        // Notify shop admin and barber of public cancellation
+        $appointment->load(['customer', 'service', 'barber.user']);
+
+        User::where('company_id', $appointment->company_id)
+            ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
+            ->each(fn(User $u) => $u->notify(new AppointmentStatusChanged($appointment, $previousStatus)));
+
+        if ($appointment->barber?->user) {
+            $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
 
         return back()->with('cancelled', true);
     }

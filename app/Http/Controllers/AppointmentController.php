@@ -273,14 +273,15 @@ class AppointmentController extends Controller
                 });
         }
 
-        // Notify the shop admin when status changes
+        // Notify shop admin and barber when status changes
         if ($previousStatus !== $validated['status']) {
-            $appointment->load(['customer', 'service']);
-            $owner = \App\Models\User::where('company_id', $user->company_id)
-                ->role('shop-admin')
-                ->first();
+            $appointment->load(['customer', 'service', 'barber.user']);
+            $owner = \App\Models\User::where('company_id', $user->company_id)->role('shop-admin')->first();
             if ($owner && $owner->id !== $user->id) {
                 $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+            }
+            if ($appointment->barber?->user && $appointment->barber->user->id !== $user->id) {
+                $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
             }
         }
 
@@ -403,7 +404,18 @@ class AppointmentController extends Controller
             return back();
         }
 
+        $previousStatus = $appointment->status;
         $appointment->update(['status' => 'confirmed']);
+        $appointment->load(['customer', 'service', 'barber.user']);
+
+        $user = Auth::user();
+        $owner = \App\Models\User::where('company_id', $user->company_id)->role('shop-admin')->first();
+        if ($owner && $owner->id !== $user->id) {
+            $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
+        if ($appointment->barber?->user && $appointment->barber->user->id !== $user->id) {
+            $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
 
         return back()->with('success', 'Appointment confirmed.');
     }
