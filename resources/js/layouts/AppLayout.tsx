@@ -20,6 +20,7 @@ import {
     Zap,
     X,
     Package,
+    Phone,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
