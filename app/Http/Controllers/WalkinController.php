@@ -21,10 +21,9 @@ class WalkinController extends Controller
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
 
         $validated = $request->validate([
-            'customer_name'  => 'required|string|max:255',
-            'customer_phone' => 'nullable|string|max:50',
-            'service_id'     => 'required|exists:services,id',
-            'barber_id'      => 'nullable|exists:barbers,id',
+            'customer_name' => 'required|string|max:255',
+            'service_id'    => 'required|exists:services,id',
+            'barber_id'     => 'nullable|exists:barbers,id',
         ]);
 
         if ($isBarber) {
@@ -46,16 +45,9 @@ class WalkinController extends Controller
             }
         }
 
-        $phone = $validated['customer_phone'] ?? null;
-
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
-            ['phone' => $phone],
         );
-
-        if ($phone && $customer->phone !== $phone) {
-            $customer->update(['phone' => $phone]);
-        }
 
         $service = Service::where('id', $validated['service_id'])
             ->where('company_id', $user->company_id)
