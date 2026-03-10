@@ -178,6 +178,8 @@ export default {
         clearColor: 'Očisti',
         descPlaceholder: 'Navedite detalje o tome šta ova usluga podrazumeva…',
         deleteConfirm: 'Da li ste sigurni da želite da obrišete ovu uslugu? Ova akcija se ne može poništiti.',
+        serviceNamePlaceholder: 'npr. Klasično šišanje',
+        categoryPlaceholder: 'npr. Šišanja',
         noServices: 'Nema usluga još.',
         created: 'Usluga kreirana.',
         updated: 'Usluga ažurirana.',
@@ -215,6 +217,10 @@ export default {
         generalist: 'Generalista',
         deleteConfirm: 'Da li ste sigurni da želite da uklonite ovog berbera? Ovo će uticati na njegovu dostupnost i budući raspored.',
         bioPlaceholder: 'Kratki opis iskustva i stila berbera…',
+        namePlaceholder: 'npr. Marko Marković',
+        emailPlaceholder: 'berber@primer.rs',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'npr. Skin Fades, Oblikovanje brade',
     },
 
     cust: {
