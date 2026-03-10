@@ -50,7 +50,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Marcus Wright"
+                                placeholder={t('barber.namePlaceholder')}
                                 required
                             />
                             {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
@@ -66,7 +66,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="barber@example.com"
+                                placeholder={t('barber.emailPlaceholder')}
                                 required
                             />
                             {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email}</p>}
@@ -83,7 +83,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                             value={data.specialty}
                             onChange={(e) => setData('specialty', e.target.value)}
                             className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                            placeholder="e.g. Skin Fades, Beard Grooming, Scissor Cuts"
+                            placeholder={t('barber.specialtyPlaceholder')}
                         />
                         {errors.specialty && <p className="text-xs text-red-500 font-medium">{errors.specialty}</p>}
                     </div>
@@ -98,7 +98,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                             value={data.bio}
                             onChange={(e) => setData('bio', e.target.value)}
                             className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[100px] transition-all"
-                            placeholder="Tell customers a bit about this barber's experience..."
+                            placeholder={t('barber.bioPlaceholder')}
                             rows={4}
                         />
                         {errors.bio && <p className="text-xs text-red-500 font-medium">{errors.bio}</p>}

@@ -146,6 +146,15 @@ export default {
         selectBarber: 'Wybierz fryzjera',
         selectService: 'Wybierz usługę',
         apptStatus: 'Status wizyty',
+        deleteAppt: 'Usuń wizytę',
+        deleteConfirm: 'Czy na pewno chcesz usunąć tę wizytę? Tej operacji nie można cofnąć.',
+        deleteThisOnly: 'Usuń tylko tę wizytę',
+        deleteThisFuture: 'Usuń tę i wszystkie przyszłe',
+        myAppointments: 'Moje wizyty',
+        allAppointments: 'Wszystkie wizyty',
+        mine: 'Moje',
+        exportCsv: 'Eksportuj CSV',
+        view: 'Podgląd',
     },
 
     svc: {
@@ -164,6 +173,10 @@ export default {
         newDesc: 'Zdefiniuj nową ofertę dla salonu, w tym czas trwania i ceny.',
         editDesc: 'Zaktualizuj szczegóły i ceny tej usługi.',
         updateService: 'Zaktualizuj usługę',
+        uncategorized: 'Bez kategorii',
+        clearColor: 'Wyczyść',
+        descPlaceholder: 'Podaj szczegóły dotyczące tej usługi…',
+        deleteConfirm: 'Czy na pewno chcesz usunąć tę usługę? Tej operacji nie można cofnąć.',
         noServices: 'Brak usług.',
         created: 'Usługa utworzona.',
         updated: 'Usługa zaktualizowana.',
@@ -197,6 +210,10 @@ export default {
         newDesc: 'Utwórz nowy profil zawodowy i dane logowania dla fryzjera.',
         editDesc: 'Zmodyfikuj szczegóły profilu, dane kontaktowe i status fryzjera.',
         updateBarber: 'Zaktualizuj fryzjera',
+        you: 'Ty',
+        generalist: 'Generalista',
+        deleteConfirm: 'Czy na pewno chcesz usunąć tego fryzjera? Wpłynie to na jego dostępność i przyszły harmonogram.',
+        bioPlaceholder: 'Krótki opis doświadczenia i stylu fryzjera…',
     },
 
     cust: {
@@ -231,6 +248,10 @@ export default {
         newDesc: 'Dodaj produkt detaliczny do inwentarza do sprzedaży podczas wizyt.',
         editDesc: 'Zaktualizuj szczegóły i poziomy zapasów dla tego produktu.',
         updateProduct: 'Zaktualizuj produkt',
+        uncategorized: 'Bez kategorii',
+        priceDollar: 'Cena ($)',
+        stockQuantity: 'Ilość w magazynie',
+        deleteConfirm: 'Czy na pewno chcesz usunąć ten produkt? Tej operacji nie można cofnąć.',
     },
 
     profile: {
@@ -298,6 +319,17 @@ export default {
         to: 'Do',
         reason: 'Powód (opcjonalnie)',
         reasonPlaceholder: 'np. Urlop, choroba…',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Mój harmonogram',
+        allBarbers: 'Wszyscy fryzjerzy',
+        saving: 'Zapisywanie…',
+        noAppointments: 'Brak wizyt w tym {view}.',
+        dragHint: 'Przeciągnij, aby zmienić termin · Kliknij, aby wyświetlić · Zakończone/anulowane nie można przenosić',
+        am: 'przed południem',
+        pm: 'po południu',
     },
 
     // Walk-in modal

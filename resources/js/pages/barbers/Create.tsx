@@ -47,7 +47,7 @@ export default function Create() {
                             value={data.name}
                             onChange={(e) => setData('name', e.target.value)}
                             className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                            placeholder="e.g. Marcus Wright"
+                            placeholder={t('barber.namePlaceholder')}
                             required
                         />
                         {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
@@ -65,7 +65,7 @@ export default function Create() {
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="barber@example.com"
+                                placeholder={t('barber.emailPlaceholder')}
                                 required
                             />
                             {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email}</p>}
@@ -81,7 +81,7 @@ export default function Create() {
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="••••••••"
+                                placeholder={t('barber.passwordPlaceholder')}
                                 required
                             />
                             {errors.password && <p className="text-xs text-red-500 font-medium">{errors.password}</p>}
@@ -99,7 +99,7 @@ export default function Create() {
                                 value={data.specialty}
                                 onChange={(e) => setData('specialty', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Skin Fades, Beard Sculpting"
+                                placeholder={t('barber.specialtyPlaceholder')}
                             />
                             {errors.specialty && <p className="text-xs text-red-500 font-medium">{errors.specialty}</p>}
                         </div>
@@ -113,7 +113,7 @@ export default function Create() {
                                 value={data.bio}
                                 onChange={(e) => setData('bio', e.target.value)}
                                 className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[100px] transition-all"
-                                placeholder="A brief description of the barber's background and style..."
+                                placeholder={t('barber.bioPlaceholder')}
                                 rows={4}
                             />
                             {errors.bio && <p className="text-xs text-red-500 font-medium">{errors.bio}</p>}

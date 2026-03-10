@@ -162,6 +162,15 @@ export default {
         selectBarber: 'Selecionar barbeiro',
         selectService: 'Selecionar serviço',
         apptStatus: 'Status do Agendamento',
+        deleteAppt: 'Excluir Agendamento',
+        deleteConfirm: 'Tem certeza que deseja excluir este agendamento? Esta ação não pode ser desfeita.',
+        deleteThisOnly: 'Excluir apenas este agendamento',
+        deleteThisFuture: 'Excluir este e todos os futuros',
+        myAppointments: 'Meus Agendamentos',
+        allAppointments: 'Todos os Agendamentos',
+        mine: 'Meus',
+        exportCsv: 'Exportar CSV',
+        view: 'Ver',
     },
 
     // Services
@@ -185,6 +194,10 @@ export default {
         updated: 'Serviço atualizado.',
         deleted: 'Serviço excluído.',
         updateService: 'Atualizar Serviço',
+        uncategorized: 'Sem categoria',
+        clearColor: 'Limpar',
+        descPlaceholder: 'Forneça detalhes sobre o que este serviço inclui…',
+        deleteConfirm: 'Tem certeza que deseja excluir este serviço? Esta ação não pode ser desfeita.',
     },
 
     // Barbers
@@ -215,6 +228,10 @@ export default {
         newDesc: 'Crie um novo perfil profissional e credenciais de acesso para um barbeiro.',
         editDesc: 'Modifique os detalhes do perfil, informações de contato e status do barbeiro.',
         updateBarber: 'Atualizar Barbeiro',
+        you: 'Você',
+        generalist: 'Generalista',
+        deleteConfirm: 'Tem certeza que deseja remover este barbeiro? Isso afetará sua disponibilidade e agenda futura.',
+        bioPlaceholder: 'Uma breve descrição do histórico e estilo do barbeiro…',
     },
 
     // Customers
@@ -251,6 +268,10 @@ export default {
         newDesc: 'Adicione um produto ao seu inventário para venda nos agendamentos.',
         editDesc: 'Atualize os detalhes e níveis de estoque deste produto.',
         updateProduct: 'Atualizar Produto',
+        uncategorized: 'Sem categoria',
+        priceDollar: 'Preço (R$)',
+        stockQuantity: 'Quantidade em Estoque',
+        deleteConfirm: 'Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.',
     },
 
     // Profile
@@ -309,6 +330,17 @@ export default {
         bookAnother: 'Reservar Outro Agendamento',
         shopPhone: 'Telefone da Barbearia',
         windowExpired: 'O prazo para cancelamento expirou.',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Minha Agenda',
+        allBarbers: 'Todos os Barbeiros',
+        saving: 'Salvando…',
+        noAppointments: 'Nenhum agendamento nesta {view}.',
+        dragHint: 'Arraste os agendamentos para reagendar · Clique para ver detalhes · Concluídos/cancelados não podem ser movidos',
+        am: 'am',
+        pm: 'pm',
     },
 
     // Walk-in modal (AppLayout)

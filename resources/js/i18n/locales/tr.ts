@@ -162,6 +162,15 @@ export default {
         selectBarber: 'Berber seç',
         selectService: 'Hizmet seç',
         apptStatus: 'Randevu Durumu',
+        deleteAppt: 'Randevuyu Sil',
+        deleteConfirm: 'Bu randevuyu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+        deleteThisOnly: 'Yalnızca bu randevuyu sil',
+        deleteThisFuture: 'Bu ve gelecekteki tüm randevuları sil',
+        myAppointments: 'Randevularım',
+        allAppointments: 'Tüm Randevular',
+        mine: 'Benim',
+        exportCsv: 'CSV Dışa Aktar',
+        view: 'Gör',
     },
 
     // Services
@@ -185,6 +194,10 @@ export default {
         updated: 'Hizmet güncellendi.',
         deleted: 'Hizmet silindi.',
         updateService: 'Hizmeti Güncelle',
+        uncategorized: 'Kategorisiz',
+        clearColor: 'Temizle',
+        descPlaceholder: 'Bu hizmetin neleri kapsadığına dair ayrıntılar sağlayın…',
+        deleteConfirm: 'Bu hizmeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
     },
 
     // Barbers
@@ -215,6 +228,10 @@ export default {
         newDesc: 'Bir berber için yeni profesyonel profil ve giriş bilgileri oluşturun.',
         editDesc: 'Berberin profil detaylarını, iletişim bilgilerini ve durumunu düzenleyin.',
         updateBarber: 'Berberi Güncelle',
+        you: 'Sen',
+        generalist: 'Genel Uzman',
+        deleteConfirm: 'Bu berberi kaldırmak istediğinizden emin misiniz? Bu işlem müsaitliğini ve gelecekteki programını etkileyecektir.',
+        bioPlaceholder: 'Berberin geçmişi ve tarzı hakkında kısa bir açıklama…',
     },
 
     // Customers
@@ -251,6 +268,10 @@ export default {
         newDesc: 'Randevularda satış için envanterinize bir perakende ürün ekleyin.',
         editDesc: 'Bu ürünün detaylarını ve stok seviyelerini güncelleyin.',
         updateProduct: 'Ürünü Güncelle',
+        uncategorized: 'Kategorisiz',
+        priceDollar: 'Fiyat (₺)',
+        stockQuantity: 'Stok Miktarı',
+        deleteConfirm: 'Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
     },
 
     // Profile
@@ -309,6 +330,17 @@ export default {
         bookAnother: 'Başka Randevu Al',
         shopPhone: 'Dükkan Telefonu',
         windowExpired: 'İptal süresi doldu.',
+    },
+
+    // Schedule
+    schedule: {
+        mySchedule: 'Programım',
+        allBarbers: 'Tüm Berberler',
+        saving: 'Kaydediliyor…',
+        noAppointments: 'Bu {view} randevu yok.',
+        dragHint: 'Yeniden planlamak için randevuları sürükleyin · Detaylar için tıklayın · Tamamlanan/iptal edilenler taşınamaz',
+        am: 'öö',
+        pm: 'ös',
     },
 
     // Walk-in modal (AppLayout)

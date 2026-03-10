@@ -68,7 +68,7 @@ export default function Edit({ service }: { service: Service }) {
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Skin Fade"
+                                placeholder={t('svc.serviceNamePlaceholder')}
                                 required
                             />
                             {errors.name && <p className="text-xs text-red-500 font-medium">{errors.name}</p>}
@@ -83,7 +83,7 @@ export default function Edit({ service }: { service: Service }) {
                                 value={data.category}
                                 onChange={(e) => setData('category', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="e.g. Haircuts"
+                                placeholder={t('svc.categoryPlaceholder')}
                             />
                             {errors.category && <p className="text-xs text-red-500 font-medium">{errors.category}</p>}
                         </div>
@@ -107,7 +107,7 @@ export default function Edit({ service }: { service: Service }) {
                                 />
                             ))}
                             {data.color && (
-                                <button type="button" onClick={() => setData('color', '')} className="text-xs text-slate-400 hover:text-slate-700 ml-1">Clear</button>
+                                <button type="button" onClick={() => setData('color', '')} className="text-xs text-slate-400 hover:text-slate-700 ml-1">{t('svc.clearColor')}</button>
                             )}
                         </div>
                     </div>
@@ -157,7 +157,7 @@ export default function Edit({ service }: { service: Service }) {
                             value={data.description}
                             onChange={(e) => setData('description', e.target.value)}
                             className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[80px] transition-all"
-                            placeholder="Briefly describe what this service includes..."
+                            placeholder={t('svc.descPlaceholder')}
                             rows={3}
                         />
                         {errors.description && <p className="text-xs text-red-500 font-medium">{errors.description}</p>}
