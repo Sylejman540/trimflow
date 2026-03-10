@@ -299,4 +299,16 @@ export default {
         reason: 'Razlog (opciono)',
         reasonPlaceholder: 'npr. Odmor, bolovanje…',
     },
+
+    dm: {
+        bookingLink: 'Link za rezervaciju',
+        bookingLinkDesc: 'Podeli ovaj link sa klijentima ili koristi predloške poruka ispod.',
+        copyLink: 'Kopiraj link',
+        copied: 'Kopirano!',
+        dmTemplates: 'Brzi predlošci poruka',
+        template1: 'Rezerviši termin ovde 👇\n{url}',
+        template2: 'Izaberi svoje vreme ovde 👇\n{url}',
+        copy1: 'Kopiraj predložak 1',
+        copy2: 'Kopiraj predložak 2',
+    },
 } as const;

@@ -299,4 +299,16 @@ export default {
         reason: 'Motivo (opzionale)',
         reasonPlaceholder: 'es. Vacanze, malattia…',
     },
+
+    dm: {
+        bookingLink: 'Link di prenotazione',
+        bookingLinkDesc: 'Condividi questo link con i clienti o usa i template di messaggio qui sotto.',
+        copyLink: 'Copia link',
+        copied: 'Copiato!',
+        dmTemplates: 'Template rapidi per DM',
+        template1: 'Prenota il tuo appuntamento qui 👇\n{url}',
+        template2: 'Scegli il tuo orario qui 👇\n{url}',
+        copy1: 'Copia template 1',
+        copy2: 'Copia template 2',
+    },
 } as const;

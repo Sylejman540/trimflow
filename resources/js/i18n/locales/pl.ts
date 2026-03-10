@@ -299,4 +299,16 @@ export default {
         reason: 'Powód (opcjonalnie)',
         reasonPlaceholder: 'np. Urlop, choroba…',
     },
+
+    dm: {
+        bookingLink: 'Link do rezerwacji',
+        bookingLinkDesc: 'Udostępnij ten link klientom lub użyj szablonów wiadomości poniżej.',
+        copyLink: 'Kopiuj link',
+        copied: 'Skopiowano!',
+        dmTemplates: 'Szybkie szablony wiadomości',
+        template1: 'Zarezerwuj wizytę tutaj 👇\n{url}',
+        template2: 'Wybierz swój termin tutaj 👇\n{url}',
+        copy1: 'Kopiuj szablon 1',
+        copy2: 'Kopiuj szablon 2',
+    },
 } as const;

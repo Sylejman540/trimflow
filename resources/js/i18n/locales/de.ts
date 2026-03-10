@@ -299,4 +299,16 @@ export default {
         reason: 'Grund (optional)',
         reasonPlaceholder: 'z.B. Urlaub, Krankheit…',
     },
+
+    dm: {
+        bookingLink: 'Buchungslink',
+        bookingLinkDesc: 'Teile diesen Link mit Kunden oder nutze die DM-Vorlagen unten.',
+        copyLink: 'Link kopieren',
+        copied: 'Kopiert!',
+        dmTemplates: 'Schnelle DM-Vorlagen',
+        template1: 'Buche deinen Termin hier 👇\n{url}',
+        template2: 'Wähle deine Zeit hier 👇\n{url}',
+        copy1: 'Vorlage 1 kopieren',
+        copy2: 'Vorlage 2 kopieren',
+    },
 } as const;

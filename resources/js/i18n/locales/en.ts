@@ -310,4 +310,17 @@ export default {
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
     },
+
+    // Dashboard booking link / DM templates
+    dm: {
+        bookingLink: 'Booking Link',
+        bookingLinkDesc: 'Share this link with customers or use the DM templates below.',
+        copyLink: 'Copy Link',
+        copied: 'Copied!',
+        dmTemplates: 'Quick DM Templates',
+        template1: 'Book your appointment here 👇\n{url}',
+        template2: 'Choose your time here 👇\n{url}',
+        copy1: 'Copy Template 1',
+        copy2: 'Copy Template 2',
+    },
 } as const;

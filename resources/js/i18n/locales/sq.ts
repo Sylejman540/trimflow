@@ -300,4 +300,16 @@ export default {
         reason: 'Arsyeja (opsionale)',
         reasonPlaceholder: 'p.sh. Pushime, sëmundje…',
     },
+
+    dm: {
+        bookingLink: 'Linku i Rezervimit',
+        bookingLinkDesc: 'Ndaj këtë link me klientët ose përdor shabllonet e mesazhit më poshtë.',
+        copyLink: 'Kopjo Linkun',
+        copied: 'U kopjua!',
+        dmTemplates: 'Shabllone të Shpejta',
+        template1: 'Rezervo takimin tënd këtu 👇\n{url}',
+        template2: 'Zgjedh orarin tënd këtu 👇\n{url}',
+        copy1: 'Kopjo Shabllon 1',
+        copy2: 'Kopjo Shabllon 2',
+    },
 } as const;

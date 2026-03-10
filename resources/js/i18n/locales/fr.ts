@@ -299,4 +299,16 @@ export default {
         reason: 'Motif (optionnel)',
         reasonPlaceholder: 'p.ex. Vacances, maladie…',
     },
+
+    dm: {
+        bookingLink: 'Lien de réservation',
+        bookingLinkDesc: 'Partagez ce lien avec vos clients ou utilisez les modèles de message ci-dessous.',
+        copyLink: 'Copier le lien',
+        copied: 'Copié !',
+        dmTemplates: 'Modèles de message rapides',
+        template1: 'Réservez votre rendez-vous ici 👇\n{url}',
+        template2: 'Choisissez votre créneau ici 👇\n{url}',
+        copy1: 'Copier modèle 1',
+        copy2: 'Copier modèle 2',
+    },
 } as const;
