@@ -140,7 +140,7 @@ function SidebarContent({
                         <Scissors className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                        <p className="text-sm font-bold text-white leading-none">TrimFlow</p>
+                        <p className="text-sm font-bold text-white leading-none">Freshio</p>
                         <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
                     </div>
                 </div>

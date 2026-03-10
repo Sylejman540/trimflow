@@ -83,9 +83,24 @@ function SetupChecklist({ setup }: { setup: Setup }) {
     const [copied, setCopied] = useState(false);
 
     function copyLink() {
-        navigator.clipboard.writeText(setup.booking_link);
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(setup.booking_link).catch(() => fallbackCopy(setup.booking_link));
+        } else {
+            fallbackCopy(setup.booking_link);
+        }
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    }
+
+    function fallbackCopy(text: string) {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.style.position = 'fixed';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
     }
 
     const steps = [
