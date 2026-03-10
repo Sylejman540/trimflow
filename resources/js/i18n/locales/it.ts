@@ -258,6 +258,8 @@ export default {
         priceDollar: 'Prezzo (€)',
         stockQuantity: 'Quantità in magazzino',
         deleteConfirm: 'Sei sicuro di voler eliminare questo prodotto? Questa azione non può essere annullata.',
+        namePlaceholder: 'es. Pomata',
+        categoryPlaceholder: 'es. Cura dei capelli',
     },
 
     profile: {
