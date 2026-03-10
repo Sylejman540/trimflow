@@ -21,9 +21,10 @@ class WalkinController extends Controller
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
 
         $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'service_id'    => 'required|exists:services,id',
-            'barber_id'     => 'nullable|exists:barbers,id',
+            'customer_name'  => 'required|string|max:255',
+            'customer_phone' => 'nullable|string|max:50',
+            'service_id'     => 'required|exists:services,id',
+            'barber_id'      => 'nullable|exists:barbers,id',
         ]);
 
         if ($isBarber) {
@@ -36,13 +37,30 @@ class WalkinController extends Controller
             if (! $barberId) {
                 throw ValidationException::withMessages(['barber_id' => 'Please select a barber.']);
             }
+            // Ensure the selected barber belongs to this company
+            $barberExists = Barber::where('id', $barberId)
+                ->where('company_id', $user->company_id)
+                ->exists();
+            if (! $barberExists) {
+                throw ValidationException::withMessages(['barber_id' => 'Invalid barber selected.']);
+            }
         }
+
+        $phone = $validated['customer_phone'] ?? null;
 
         $customer = Customer::firstOrCreate(
             ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
+            ['phone' => $phone],
         );
 
-        $service  = Service::findOrFail($validated['service_id']);
+        if ($phone && $customer->phone !== $phone) {
+            $customer->update(['phone' => $phone]);
+        }
+
+        $service = Service::where('id', $validated['service_id'])
+            ->where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->firstOrFail();
         $startsAt = Carbon::now();
         $endsAt   = $startsAt->copy()->addMinutes($service->duration);
 

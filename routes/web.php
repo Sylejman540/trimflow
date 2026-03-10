@@ -44,8 +44,10 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('appointments', AppointmentController::class);
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
-    Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
-    Route::get('/export/customers', [ExportController::class, 'customers'])->name('export.customers');
+    Route::middleware('role:shop-admin|platform-admin')->group(function () {
+        Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
+        Route::get('/export/customers', [ExportController::class, 'customers'])->name('export.customers');
+    });
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/walkin', [WalkinController::class, 'store'])->name('walkin.store');

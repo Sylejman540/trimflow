@@ -9,38 +9,53 @@ class AppointmentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->hasAnyRole(['shop-admin', 'barber', 'platform-admin']);
     }
 
     public function view(User $user, Appointment $appointment): bool
     {
-        if ($user->hasRole('shop-admin')) {
+        // Must belong to the same company
+        if ($user->company_id !== $appointment->company_id) {
+            return false;
+        }
+
+        if ($user->hasAnyRole(['shop-admin', 'platform-admin'])) {
             return true;
         }
 
-        return $user->barber && $appointment->barber_id === $user->barber->id;
+        return $user->hasRole('barber') && $user->barber
+            && $appointment->barber_id === $user->barber->id;
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole('shop-admin') || $user->hasRole('barber');
+        return $user->hasAnyRole(['shop-admin', 'barber', 'platform-admin']);
     }
 
     public function update(User $user, Appointment $appointment): bool
     {
-        if ($user->hasRole('shop-admin')) {
+        if ($user->company_id !== $appointment->company_id) {
+            return false;
+        }
+
+        if ($user->hasAnyRole(['shop-admin', 'platform-admin'])) {
             return true;
         }
 
-        return $user->hasRole('barber') && $user->barber && $appointment->barber_id === $user->barber->id;
+        return $user->hasRole('barber') && $user->barber
+            && $appointment->barber_id === $user->barber->id;
     }
 
     public function delete(User $user, Appointment $appointment): bool
     {
+        if ($user->company_id !== $appointment->company_id) {
+            return false;
+        }
+
         if ($appointment->starts_at->isPast()) {
             return false;
         }
 
-        return $user->hasRole('shop-admin');
+        return $user->hasAnyRole(['shop-admin', 'platform-admin']);
     }
 }
