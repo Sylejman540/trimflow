@@ -45,6 +45,6 @@ class LowStockAlert extends Notification implements ShouldQueue
 
         return $mail
             ->action('View Products', url('/products'))
-            ->salutation('TrimFlow');
+            ->salutation('BarberFlow');
     }
 }
