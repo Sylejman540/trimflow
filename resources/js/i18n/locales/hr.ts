@@ -177,6 +177,8 @@ export default {
         clearColor: 'Očisti',
         descPlaceholder: 'Navedite detalje o tome što ova usluga uključuje…',
         deleteConfirm: 'Jeste li sigurni da želite izbrisati ovu uslugu? Ova akcija se ne može poništiti.',
+        serviceNamePlaceholder: 'npr. Klasično šišanje',
+        categoryPlaceholder: 'npr. Šišanja',
         noServices: 'Nema usluga.',
         created: 'Usluga stvorena.',
         updated: 'Usluga ažurirana.',
@@ -256,6 +258,8 @@ export default {
         priceDollar: 'Cijena ($)',
         stockQuantity: 'Količina na zalihama',
         deleteConfirm: 'Jeste li sigurni da želite izbrisati ovaj proizvod? Ova akcija se ne može poništiti.',
+        namePlaceholder: 'npr. Pomada',
+        categoryPlaceholder: 'npr. Njega kose',
     },
 
     profile: {
