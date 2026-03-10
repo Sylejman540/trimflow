@@ -10,6 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class SendAppointmentReminders implements ShouldQueue
 {
@@ -20,25 +22,37 @@ class SendAppointmentReminders implements ShouldQueue
         $windowStart = Carbon::now()->addMinutes(50);
         $windowEnd   = Carbon::now()->addMinutes(70);
 
-        Appointment::with(['customer.user', 'barber.user', 'service'])
-            ->whereIn('status', ['confirmed'])
+        Appointment::with(['customer.user', 'barber.user', 'service', 'company'])
+            ->whereIn('status', ['confirmed', 'pending'])
             ->whereBetween('starts_at', [$windowStart, $windowEnd])
+            ->whereNull('reminder_sent_at')
             ->get()
             ->each(function (Appointment $appointment) {
-                $notifiable = $appointment->customer?->user ?? $appointment->customer;
-                if (! $notifiable) return;
-
-                // Customer user account: use Laravel notifications
-                if ($appointment->customer?->user) {
-                    $appointment->customer->user->notify(new AppointmentReminder($appointment));
+                $customer = $appointment->customer;
+                if (! $customer) {
                     return;
                 }
 
-                // Guest customer with email only: send ad-hoc mail notification
-                if ($appointment->customer?->email) {
-                    \Illuminate\Support\Facades\Notification::route('mail', [
-                        $appointment->customer->email => $appointment->customer->name,
-                    ])->notify(new AppointmentReminder($appointment));
+                try {
+                    if ($customer->user) {
+                        // Registered user — full notification (database + mail + SMS if configured)
+                        $customer->user->notify(new AppointmentReminder($appointment));
+                    } elseif ($customer->email) {
+                        // Guest with email — send mail notification
+                        Notification::route('mail', [$customer->email => $customer->name])
+                            ->notify(new AppointmentReminder($appointment));
+                    } elseif ($customer->phone && config('services.twilio.sid')) {
+                        // Guest with phone only — SMS only
+                        Notification::route('twilio_sms', $customer->phone)
+                            ->notify(new AppointmentReminder($appointment));
+                    }
+
+                    $appointment->updateQuietly(['reminder_sent_at' => now()]);
+                } catch (\Throwable $e) {
+                    Log::error('Appointment reminder failed', [
+                        'appointment_id' => $appointment->id,
+                        'error'          => $e->getMessage(),
+                    ]);
                 }
             });
     }
