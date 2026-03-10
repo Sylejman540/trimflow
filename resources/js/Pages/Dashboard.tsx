@@ -13,10 +13,6 @@ import {
     BarChart3,
     Package,
     AlertTriangle,
-    Link2,
-    Copy,
-    Check,
-    MessageCircle,
 } from 'lucide-react';
 import {
     AreaChart,
@@ -72,6 +68,8 @@ interface BarberPerf {
     avg_rating: number;
 }
 
+interface ShopGoal { revenue_target: number; bookings_target: number; month: number; year: number; }
+
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-500/15 text-orange-700',
@@ -83,7 +81,6 @@ function statusColor(status: AppointmentStatus) {
     };
     return map[status];
 }
-
 
 function revenueChange(current: number, previous: number): { pct: number; up: boolean } {
     if (previous === 0) return { pct: current > 0 ? 100 : 0, up: true };
@@ -143,8 +140,6 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
         </Link>
     );
 }
-
-interface ShopGoal { revenue_target: number; bookings_target: number; month: number; year: number; }
 
 function GoalBar({ label, current, target }: { label: string; current: number; target: number }) {
     const pct = target > 0 ? Math.min(Math.round((current / target) * 100), 100) : 0;
@@ -206,129 +201,6 @@ function GoalSetModal({ goal, month, year, open, onClose }: {
 
 interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
 
-function CopyRow({ label, value }: { label: string; value: string }) {
-    const { t } = useTranslation();
-    const [copied, setCopied] = useState(false);
-    function copy() {
-        navigator.clipboard.writeText(value).catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = value; ta.style.position = 'fixed'; ta.style.opacity = '0';
-            document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); document.body.removeChild(ta);
-        });
-        setCopied(true); setTimeout(() => setCopied(false), 2000);
-    }
-    return (
-        <div className="space-y-1">
-            <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{label}</p>
-            <div className="flex items-center gap-2">
-                <div className="flex-1 rounded-lg bg-slate-50 border border-slate-200 px-3 py-2 text-sm text-slate-700 font-mono truncate select-all">
-                    {value}
-                </div>
-                <button
-                    onClick={copy}
-                    className="flex items-center gap-1.5 shrink-0 rounded-lg bg-slate-900 text-white text-xs font-semibold px-3 py-2 hover:bg-slate-700 transition-colors"
-                >
-                    {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                    {copied ? t('dm.copied') : t('dm.copyLink')}
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function BookingLinkCard({ slug }: { slug: string }) {
-    const { t } = useTranslation();
-    const [copiedTpl, setCopiedTpl] = useState<1 | 2 | null>(null);
-    const [manychatOpen, setManychatOpen] = useState(false);
-
-    const bookingUrl = `${window.location.origin}/book/${slug}`;
-    const webhookUrl = `${window.location.origin}/webhooks/manychat/${slug}`;
-
-    function copyTpl(text: string, which: 1 | 2) {
-        navigator.clipboard.writeText(text).catch(() => {
-            const ta = document.createElement('textarea');
-            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-            document.body.appendChild(ta); ta.select();
-            document.execCommand('copy'); document.body.removeChild(ta);
-        });
-        setCopiedTpl(which); setTimeout(() => setCopiedTpl(null), 2000);
-    }
-
-    const tpl1 = (t('dm.template1') as string).replace('{url}', bookingUrl);
-    const tpl2 = (t('dm.template2') as string).replace('{url}', bookingUrl);
-
-    return (
-        <Card className="border-slate-200 shadow-none">
-            <CardHeader className="pb-3 px-4 lg:px-6">
-                <div className="flex items-center gap-2">
-                    <Link2 className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <div>
-                        <CardTitle className="text-base">{t('dm.bookingLink')}</CardTitle>
-                        <CardDescription>{t('dm.bookingLinkDesc')}</CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="pt-0 px-4 lg:px-6 space-y-4">
-                {/* Booking URL */}
-                <CopyRow label={t('dm.bookingLink')} value={bookingUrl} />
-
-                {/* DM templates */}
-                <div className="space-y-2">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                        <MessageCircle className="h-3.5 w-3.5" /> {t('dm.dmTemplates')}
-                    </p>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                        {([tpl1, tpl2] as const).map((tpl, i) => (
-                            <div key={i} className="relative group rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                                <p className="text-xs text-slate-600 whitespace-pre-line pr-20 leading-relaxed">{tpl}</p>
-                                <button
-                                    onClick={() => copyTpl(tpl, (i + 1) as 1 | 2)}
-                                    className="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-white border border-slate-200 text-slate-600 text-[11px] font-semibold px-2 py-1 hover:bg-slate-100 transition-colors shadow-sm"
-                                >
-                                    {copiedTpl === i + 1 ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                                    {copiedTpl === i + 1 ? t('dm.copied') : (i === 0 ? t('dm.copy1') : t('dm.copy2'))}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* ManyChat setup */}
-                <div className="border-t border-slate-100 pt-3">
-                    <button
-                        onClick={() => setManychatOpen(v => !v)}
-                        className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-700 transition-colors"
-                    >
-                        <span>{manychatOpen ? '▾' : '▸'}</span>
-                        {t('dm.manychatSetup')}
-                    </button>
-                    {manychatOpen && (
-                        <div className="mt-3 space-y-3 rounded-xl bg-slate-50 border border-slate-200 p-4">
-                            <p className="text-xs text-slate-500 leading-relaxed">{t('dm.manychatDesc')}</p>
-                            <CopyRow label={t('dm.webhookUrl')} value={webhookUrl} />
-                            <div className="space-y-1">
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t('dm.secretHeader')}</p>
-                                <p className="rounded-lg bg-white border border-slate-200 px-3 py-2 text-xs font-mono text-slate-600">
-                                    X-Webhook-Secret: <span className="text-slate-400">{t('dm.secretValue')}</span>
-                                </p>
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{t('dm.responseKeys')}</p>
-                                <div className="rounded-lg bg-white border border-slate-200 px-3 py-2 font-mono text-xs text-slate-600 space-y-0.5">
-                                    <p><span className="text-amber-600">{'{{booking_url}}'}</span> — {t('dm.keyBookingUrl')}</p>
-                                    <p><span className="text-amber-600">{'{{message1}}'}</span> — {t('dm.keyMessage1')}</p>
-                                    <p><span className="text-amber-600">{'{{message2}}'}</span> — {t('dm.keyMessage2')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
 export default function Dashboard({
     is_barber, stats, chart_data, barber_performance,
     today_schedule, upcoming_appointments, goal, low_stock_products = [],
@@ -339,7 +211,6 @@ export default function Dashboard({
     low_stock_products?: LowStockProduct[];
 }) {
     const { t } = useTranslation();
-    const { auth } = usePage<{ auth: { company: { slug: string } | null } }>().props;
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
     const [goalOpen, setGoalOpen] = useState(false);
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
@@ -403,9 +274,6 @@ export default function Dashboard({
                         />
                     )}
                 </div>
-
-                {/* Booking Link */}
-                {auth.company?.slug && <BookingLinkCard slug={auth.company.slug} />}
 
                 {/* Popular service */}
                 {stats.popular_service && (
