@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Barber;
 use App\Models\Product;
+use App\Models\Service;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -59,9 +60,26 @@ class DashboardController extends Controller
             ->get(['id', 'name', 'stock_qty', 'low_stock_threshold'])
             ->toArray();
 
+        // Getting started checklist (admin only)
+        $setup = null;
+        if (!$isBarber) {
+            $company = $user->company;
+            $hasBarbers  = Barber::where('company_id', $company->id)->where('is_active', true)->exists();
+            $hasServices = Service::where('company_id', $company->id)->where('is_active', true)->exists();
+            $hasInfo     = !empty($company->phone) || !empty($company->address);
+            $setup = [
+                'shop_info'    => $hasInfo,
+                'has_barbers'  => $hasBarbers,
+                'has_services' => $hasServices,
+                'booking_link' => route('booking.show', $company->slug),
+                'all_done'     => $hasInfo && $hasBarbers && $hasServices,
+            ];
+        }
+
         return Inertia::render('Dashboard', [
             'is_barber'          => $isBarber,
             'low_stock_products' => $lowStockProducts,
+            'setup'              => $setup,
             'stats'              => $stats,
             'today_schedule'     => $todaySchedule,
             'upcoming_appointments' => $appointmentQuery()
