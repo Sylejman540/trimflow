@@ -10,6 +10,12 @@ import it from './locales/it';
 import el from './locales/el';
 import hr from './locales/hr';
 import pl from './locales/pl';
+import pt from './locales/pt';
+import es from './locales/es';
+import bg from './locales/bg';
+import tr from './locales/tr';
+import ru from './locales/ru';
+import sr from './locales/sr';
 
 export const LANGUAGES = [
     { code: 'en', label: 'English',    flag: '🇬🇧' },
@@ -20,6 +26,12 @@ export const LANGUAGES = [
     { code: 'el', label: 'Ελληνικά',   flag: '🇬🇷' },
     { code: 'hr', label: 'Hrvatski',   flag: '🇭🇷' },
     { code: 'pl', label: 'Polski',     flag: '🇵🇱' },
+    { code: 'pt', label: 'Português',  flag: '🇵🇹' },
+    { code: 'es', label: 'Español',    flag: '🇪🇸' },
+    { code: 'bg', label: 'Български',  flag: '🇧🇬' },
+    { code: 'tr', label: 'Türkçe',     flag: '🇹🇷' },
+    { code: 'ru', label: 'Русский',    flag: '🇷🇺' },
+    { code: 'sr', label: 'Srpski',     flag: '🇷🇸' },
 ] as const;
 
 i18n
@@ -35,9 +47,15 @@ i18n
             el: { translation: el },
             hr: { translation: hr },
             pl: { translation: pl },
+            pt: { translation: pt },
+            es: { translation: es },
+            bg: { translation: bg },
+            tr: { translation: tr },
+            ru: { translation: ru },
+            sr: { translation: sr },
         },
         fallbackLng: 'en',
-        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'hr', 'pl'],
+        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'hr', 'pl', 'pt', 'es', 'bg', 'tr', 'ru', 'sr'],
         interpolation: { escapeValue: false },
         initImmediate: false,
         detection: {

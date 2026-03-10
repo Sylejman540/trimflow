@@ -1,4 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
+import { QRCodeSVG } from 'qrcode.react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -13,6 +15,11 @@ import {
     BarChart3,
     Package,
     AlertTriangle,
+    Link2,
+    Copy,
+    Check,
+    MessageCircle,
+    ChevronDown,
 } from 'lucide-react';
 import {
     AreaChart,
@@ -80,6 +87,140 @@ function statusColor(status: AppointmentStatus) {
         no_show:     'bg-gray-500/15 text-gray-700',
     };
     return map[status];
+}
+
+const MANYCHAT_URL = 'https://manychat.com';
+
+const STEP_KEYS = [
+    { num: 1, titleKey: 'mc.step1Title', descKey: 'mc.step1Desc', actionKey: 'mc.step1Action', href: MANYCHAT_URL },
+    { num: 2, titleKey: 'mc.step2Title', descKey: 'mc.step2Desc', actionKey: null, href: null },
+    { num: 3, titleKey: 'mc.step3Title', descKey: 'mc.step3Desc', actionKey: null, href: null },
+    { num: 4, titleKey: 'mc.step4Title', descKey: 'mc.step4Desc', actionKey: null, href: null },
+    { num: 5, titleKey: 'mc.step5Title', descKey: 'mc.step5Desc', actionKey: null, href: null },
+];
+
+function BookingLinkCard({ slug }: { slug: string }) {
+    const { t } = useTranslation();
+    const bookingUrl = window.location.origin + '/book/' + slug;
+    const [copied, setCopied] = useState<string | null>(null);
+    const [guideOpen, setGuideOpen] = useState(false);
+
+    function copy(text: string, key: string) {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopied(key);
+            setTimeout(() => setCopied(null), 2000);
+        });
+    }
+
+    const template1 = (t('dm.template1') as string).replace('{url}', bookingUrl);
+    const template2 = (t('dm.template2') as string).replace('{url}', bookingUrl);
+
+    return (
+        <Card className="border-slate-200 shadow-none">
+            <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                    <Link2 className="h-4 w-4 text-slate-400" />
+                    <CardTitle className="text-sm font-bold">{t('dm.bookingLink')}</CardTitle>
+                </div>
+                <CardDescription className="text-xs">{t('dm.bookingLinkDesc')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+
+                {/* Booking URL */}
+                <div className="space-y-1.5">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('mc.yourBookingLink')}</p>
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                        <span className="flex-1 text-xs font-mono text-slate-600 truncate">{bookingUrl}</span>
+                        <button
+                            onClick={() => copy(bookingUrl, 'url')}
+                            className="shrink-0 flex items-center gap-1 text-[11px] font-bold text-slate-500 hover:text-slate-900 transition-colors"
+                        >
+                            {copied === 'url' ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                            {copied === 'url' ? t('dm.copied') : t('dm.copyLink')}
+                        </button>
+                    </div>
+                </div>
+
+                {/* DM Templates */}
+                <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">{t('dm.dmTemplates')}</p>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                        {[{ key: 't1', label: t('dm.copy1'), text: template1 }, { key: 't2', label: t('dm.copy2'), text: template2 }].map(tpl => (
+                            <div key={tpl.key} className="relative bg-slate-50 border border-slate-200 rounded-lg p-3">
+                                <div className="flex items-center gap-1.5 mb-1.5">
+                                    <MessageCircle className="h-3 w-3 text-slate-400" />
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{tpl.label}</span>
+                                </div>
+                                <p className="text-[11px] text-slate-600 whitespace-pre-line leading-relaxed">{tpl.text}</p>
+                                <button
+                                    onClick={() => copy(tpl.text, tpl.key)}
+                                    className="absolute top-2 right-2 flex items-center justify-center h-6 w-6 rounded-md hover:bg-slate-200 transition-colors"
+                                >
+                                    {copied === tpl.key ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3 text-slate-400" />}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ManyChat Setup Guide */}
+                <div className="border border-slate-200 rounded-xl overflow-hidden">
+                    <button
+                        onClick={() => setGuideOpen(!guideOpen)}
+                        className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <MessageCircle className="h-3.5 w-3.5 text-slate-400" />
+                            <span className="text-xs font-bold text-slate-700">{t('mc.igSetup')}</span>
+                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 rounded-md">{t('mc.free')}</span>
+                        </div>
+                        <ChevronDown className={cn("h-3.5 w-3.5 text-slate-400 transition-transform", guideOpen && "rotate-180")} />
+                    </button>
+
+                    {guideOpen && (
+                        <div className="p-4 space-y-1">
+                            {/* QR to ManyChat */}
+                            <div className="flex items-center gap-3 mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                                <div className="shrink-0 p-1.5 bg-white border border-slate-200 rounded-lg">
+                                    <QRCodeSVG value={MANYCHAT_URL} size={56} fgColor="#0f172a" bgColor="#ffffff" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs font-bold text-slate-700">{t('mc.scanToOpen')}</p>
+                                    <p className="text-[11px] text-slate-500 mt-0.5">{t('mc.scanHint')}</p>
+                                    <a href={MANYCHAT_URL} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">manychat.com →</a>
+                                </div>
+                            </div>
+
+                            {/* Steps */}
+                            <div className="space-y-3">
+                                {STEP_KEYS.map((step, i) => (
+                                    <div key={step.num} className="flex gap-3">
+                                        <div className="shrink-0 flex flex-col items-center">
+                                            <div className="h-6 w-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px] font-bold">
+                                                {step.num}
+                                            </div>
+                                            {i < STEP_KEYS.length - 1 && <div className="w-px flex-1 bg-slate-200 mt-1" />}
+                                        </div>
+                                        <div className="pb-3 min-w-0">
+                                            <p className="text-xs font-bold text-slate-800">{t(step.titleKey)}</p>
+                                            <p className="text-[11px] text-slate-500 mt-0.5">{t(step.descKey)}</p>
+                                            {step.actionKey && step.href && (
+                                                <a href={step.href} target="_blank" rel="noreferrer"
+                                                    className="inline-flex items-center mt-1.5 text-[11px] font-bold text-blue-600 hover:underline">
+                                                    {t(step.actionKey)}
+                                                </a>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+            </CardContent>
+        </Card>
+    );
 }
 
 function revenueChange(current: number, previous: number): { pct: number; up: boolean } {
@@ -211,6 +352,7 @@ export default function Dashboard({
     low_stock_products?: LowStockProduct[];
 }) {
     const { t } = useTranslation();
+    const { auth } = usePage<PageProps>().props;
     const revTrend = revenueChange(stats.monthly_revenue, stats.prev_month_revenue);
     const [goalOpen, setGoalOpen] = useState(false);
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
@@ -274,6 +416,11 @@ export default function Dashboard({
                         />
                     )}
                 </div>
+
+                {/* Booking Link */}
+                {!is_barber && auth.company?.slug && (
+                    <BookingLinkCard slug={auth.company.slug} />
+                )}
 
                 {/* Popular service */}
                 {stats.popular_service && (

@@ -93,7 +93,7 @@ export default function Show({
                             onClick={() => router.patch(route('appointments.confirm', appointment.id))}
                             className={cn(buttonVariants({ variant: 'default' }), 'bg-emerald-600 hover:bg-emerald-700 text-white h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
                         >
-                            Confirm
+                            {t('confirm')}
                         </button>
                     )}
                     {can_edit && (
@@ -113,7 +113,7 @@ export default function Show({
                 <div className="overflow-x-auto -mx-4 px-4 lg:mx-0 lg:px-0 no-scrollbar">
                 <TabsList className="bg-white border border-slate-200 rounded-xl p-1 h-auto gap-0.5 w-max lg:w-auto">
                     <TabsTrigger value="overview" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
-                        Overview
+                        {t('show.overview')}
                     </TabsTrigger>
                     <TabsTrigger value="customer" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none">
                         {t('appt.customer')}
@@ -126,7 +126,7 @@ export default function Show({
                     </TabsTrigger>
                     <TabsTrigger value="products" className="rounded-lg text-xs font-semibold whitespace-nowrap data-[state=active]:bg-slate-900 data-[state=active]:text-white data-[state=active]:shadow-none gap-1.5">
                         <Package className="h-3.5 w-3.5" />
-                        Products
+                        {t('show.products')}
                         {attachedProducts.length > 0 && (
                             <span className="bg-slate-200 text-slate-700 text-[10px] font-bold px-1.5 rounded-full">{attachedProducts.length}</span>
                         )}
@@ -153,13 +153,13 @@ export default function Show({
                             <InfoRow label={t('price')} value={formatCents(appointment.price)} />
                             {appointment.tip_amount > 0 && (
                                 <>
-                                    <InfoRow label="Tip" value={<span className="text-emerald-600 font-semibold">+{formatCents(appointment.tip_amount)}</span>} />
+                                    <InfoRow label={t('show.tip')} value={<span className="text-emerald-600 font-semibold">+{formatCents(appointment.tip_amount)}</span>} />
                                     <InfoRow label={t('total')} value={<span className="font-bold text-slate-900">{formatCents(appointment.price + appointment.tip_amount)}</span>} />
                                 </>
                             )}
                             {appointment.payment && (
                                 <InfoRow
-                                    label="Payment"
+                                    label={t('show.payment')}
                                     value={
                                         <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', appointment.payment.status === 'paid' ? 'bg-green-50 text-green-700 border-green-100' : 'bg-slate-50 text-slate-600 border-slate-100')}>
                                             {appointment.payment.status} · {appointment.payment.method}
@@ -174,7 +174,7 @@ export default function Show({
                 <TabsContent value="customer">
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="px-4 lg:px-6 pb-0 pt-4">
-                            <CardTitle className="text-base">Customer Information</CardTitle>
+                            <CardTitle className="text-base">{t('show.customerInfo')}</CardTitle>
                         </CardHeader>
                         <CardContent className="px-4 lg:px-6 divide-y divide-slate-100">
                             <InfoRow label={t('name')} value={appointment.customer?.name ?? '-'} />
@@ -187,7 +187,7 @@ export default function Show({
                         <Card className="mt-4 border-slate-200 shadow-none">
                             <CardHeader className="px-4 lg:px-6 pb-0 pt-4">
                                 <div className="flex items-center gap-2">
-                                    <CardTitle className="text-base">Review</CardTitle>
+                                    <CardTitle className="text-base">{t('show.review')}</CardTitle>
                                     <div className="flex items-center gap-0.5">
                                         {Array.from({ length: 5 }).map((_, i) => (
                                             <Star key={i} className={cn('h-3.5 w-3.5', i < appointment.review!.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200')} />
@@ -196,10 +196,10 @@ export default function Show({
                                 </div>
                             </CardHeader>
                             <CardContent className="px-4 lg:px-6 divide-y divide-slate-100">
-                                <InfoRow label="Rating" value={`${appointment.review.rating}/5`} />
+                                <InfoRow label={t('show.rating')} value={`${appointment.review.rating}/5`} />
                                 {appointment.review.comment && (
                                     <div className="py-2.5">
-                                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Comment</p>
+                                        <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('show.comment')}</p>
                                         <p className="text-sm text-slate-700">{appointment.review.comment}</p>
                                     </div>
                                 )}
@@ -211,12 +211,12 @@ export default function Show({
                 <TabsContent value="service">
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="px-4 lg:px-6 pb-0 pt-4">
-                            <CardTitle className="text-base">Service Details</CardTitle>
+                            <CardTitle className="text-base">{t('show.serviceDetails')}</CardTitle>
                         </CardHeader>
                         <CardContent className="px-4 lg:px-6 divide-y divide-slate-100">
                             <InfoRow label={t('appt.service')} value={appointment.service?.name ?? '-'} />
                             <InfoRow label={t('category')} value={appointment.service?.category ?? '-'} />
-                            <InfoRow label={t('duration')} value={appointment.service ? `${appointment.service.duration} min` : '-'} />
+                            <InfoRow label={t('duration')} value={appointment.service ? `${appointment.service.duration} ${t('show.min')}` : '-'} />
                             <InfoRow label={t('price')} value={appointment.service ? formatCents(appointment.service.price) : '-'} />
                             {appointment.service?.description && (
                                 <div className="py-2.5">
@@ -236,14 +236,14 @@ export default function Show({
                         <CardContent className="px-4 lg:px-6 space-y-4">
                             {appointment.notes ? (
                                 <div>
-                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Appointment Notes</p>
+                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('show.appointmentNotes')}</p>
                                     <p className="text-sm text-slate-700">{appointment.notes}</p>
                                 </div>
                             ) : null}
 
                             {appointment.barber_notes && appointment.barber_notes.length > 0 ? (
                                 <div className="space-y-2">
-                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Barber Notes</p>
+                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">{t('show.barberNotes')}</p>
                                     {appointment.barber_notes.map((note) => (
                                         <div key={note.id} className="rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2.5">
                                             <p className="text-sm text-slate-700">{note.notes}</p>
@@ -254,7 +254,7 @@ export default function Show({
                             ) : null}
 
                             {!appointment.notes && (!appointment.barber_notes || appointment.barber_notes.length === 0) && (
-                                <p className="text-sm text-muted-foreground py-2">No notes for this appointment.</p>
+                                <p className="text-sm text-muted-foreground py-2">{t('show.noNotes')}</p>
                             )}
                         </CardContent>
                     </Card>
@@ -263,10 +263,10 @@ export default function Show({
                 <TabsContent value="products">
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="px-4 lg:px-6 pb-0 pt-4 flex-row items-center justify-between">
-                            <CardTitle className="text-base">Products Sold</CardTitle>
+                            <CardTitle className="text-base">{t('show.productsSold')}</CardTitle>
                             {can_edit && (
                                 <Button size="sm" variant="outline" onClick={() => setAddingProduct(v => !v)} className="h-8 text-xs shadow-none border-slate-200">
-                                    <Plus className="h-3.5 w-3.5 mr-1" /> Add
+                                    <Plus className="h-3.5 w-3.5 mr-1" /> {t('show.add')}
                                 </Button>
                             )}
                         </CardHeader>
@@ -274,37 +274,37 @@ export default function Show({
                             {can_edit && addingProduct && (
                                 <form onSubmit={submitProduct} className="space-y-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
                                     <div className="space-y-1">
-                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Product</label>
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('show.product')}</label>
                                         <select
                                             value={data.product_id}
                                             onChange={e => setData('product_id', e.target.value)}
                                             className="w-full h-11 bg-white border border-slate-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                             required
                                         >
-                                            <option value="">Select product…</option>
+                                            <option value="">{t('show.selectProduct')}</option>
                                             {all_products.map(p => (
                                                 <option key={p.id} value={p.id} disabled={p.stock_qty === 0}>
-                                                    {p.name} ({formatCents(p.price)}) {p.stock_qty === 0 ? '— out of stock' : `— ${p.stock_qty} in stock`}
+                                                    {p.name} ({formatCents(p.price)}) {p.stock_qty === 0 ? t('show.outOfStock') : `— ${p.stock_qty} ${t('show.inStock')}`}
                                                 </option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="flex items-end gap-3">
                                         <div className="w-24 space-y-1">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Qty</label>
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('show.qty')}</label>
                                             <input
                                                 type="number" min={1} value={data.qty}
                                                 onChange={e => setData('qty', parseInt(e.target.value) || 1)}
                                                 className="w-full h-11 bg-white border border-slate-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                             />
                                         </div>
-                                        <Button type="submit" disabled={processing} className="flex-1 bg-slate-900 text-white hover:bg-slate-800 h-11 shadow-none">Add Product</Button>
+                                        <Button type="submit" disabled={processing} className="flex-1 bg-slate-900 text-white hover:bg-slate-800 h-11 shadow-none">{t('show.addProduct')}</Button>
                                     </div>
                                 </form>
                             )}
 
                             {attachedProducts.length === 0 && !addingProduct && (
-                                <p className="text-sm text-muted-foreground py-2">No products added to this appointment.</p>
+                                <p className="text-sm text-muted-foreground py-2">{t('show.noProducts')}</p>
                             )}
 
                             {attachedProducts.map(p => (

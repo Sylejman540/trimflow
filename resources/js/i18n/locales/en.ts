@@ -311,6 +311,67 @@ export default {
         windowExpired: 'The cancellation window has expired.',
     },
 
+    // Walk-in modal (AppLayout)
+    walkin: {
+        title: 'Walk-in Quick Book',
+        customerName: 'Customer Name',
+        namePlaceholder: 'e.g. John Doe',
+        service: 'Service',
+        selectService: 'Select service',
+        barber: 'Barber',
+        selectBarber: 'Select barber',
+        bookNow: 'Book Now',
+        button: 'Walk-in',
+        collapse: 'Collapse',
+    },
+
+    // Appointment Show page
+    show: {
+        overview: 'Overview',
+        products: 'Products',
+        customerInfo: 'Customer Information',
+        review: 'Review',
+        rating: 'Rating',
+        comment: 'Comment',
+        serviceDetails: 'Service Details',
+        tip: 'Tip',
+        payment: 'Payment',
+        appointmentNotes: 'Appointment Notes',
+        barberNotes: 'Barber Notes',
+        noNotes: 'No notes for this appointment.',
+        productsSold: 'Products Sold',
+        add: 'Add',
+        product: 'Product',
+        selectProduct: 'Select product…',
+        outOfStock: '— out of stock',
+        inStock: 'in stock',
+        qty: 'Qty',
+        addProduct: 'Add Product',
+        noProducts: 'No products added to this appointment.',
+        min: 'min',
+    },
+
+    // ManyChat / booking card
+    mc: {
+        yourBookingLink: 'Your booking link',
+        qrHint: 'Customers can scan this QR code to book directly — print it and put it in your shop.',
+        igSetup: 'Instagram Auto-Reply Setup (ManyChat)',
+        free: 'FREE',
+        scanToOpen: 'Scan to open ManyChat',
+        scanHint: 'Or click the link in Step 1 below',
+        step1Title: 'Create a ManyChat account',
+        step1Desc: 'Go to manychat.com and sign up for free. Then connect your Instagram account.',
+        step1Action: 'Open ManyChat →',
+        step2Title: 'Go to Automation → Keywords',
+        step2Desc: 'Inside ManyChat, click Automation in the left sidebar, then select Keywords.',
+        step3Title: 'Create a New Keyword Rule',
+        step3Desc: 'Click "New Rule". Add trigger words like: book, termin, rezervo, appointment',
+        step4Title: 'Set the auto-reply message',
+        step4Desc: 'Action → Send Message. Paste one of the DM templates below (they already include your booking link).',
+        step5Title: 'Publish',
+        step5Desc: 'Hit Publish. Done! Customers who DM you those keywords will instantly get your booking link.',
+    },
+
     // Dashboard booking link / DM templates
     dm: {
         bookingLink: 'Booking Link',

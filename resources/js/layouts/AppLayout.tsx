@@ -42,6 +42,7 @@ interface WalkinProps {
 }
 
 function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => void; walkin: WalkinProps }) {
+    const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
         customer_name: '',
         service_id: '',
@@ -60,26 +61,26 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
             <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 text-amber-500" /> Walk-in Quick Book
+                        <Zap className="h-4 w-4 text-amber-500" /> {t('walkin.title')}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-4 pt-2">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Customer Name</Label>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.customerName')}</Label>
                         <Input
                             value={data.customer_name}
                             onChange={e => setData('customer_name', e.target.value)}
                             className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            placeholder="e.g. John Doe"
+                            placeholder={t('walkin.namePlaceholder')}
                             required
                         />
                         {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Service</Label>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.service')}</Label>
                         <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
                             <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder="Select service" />
+                                <SelectValue placeholder={t('walkin.selectService')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
                                 {walkin.services.map(s => (
@@ -93,10 +94,10 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                     </div>
                     {!walkin.is_barber && (
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Barber</Label>
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.barber')}</Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
                                 <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder="Select barber" />
+                                    <SelectValue placeholder={t('walkin.selectBarber')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
                                     {walkin.barbers.map(b => (
@@ -108,9 +109,9 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                         </div>
                     )}
                     <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">Cancel</Button>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">{t('cancel')}</Button>
                         <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
-                            Book Now
+                            {t('walkin.bookNow')}
                         </Button>
                     </DialogFooter>
                 </form>
@@ -302,7 +303,7 @@ export default function AppLayout({
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         className="hidden lg:flex w-full items-center justify-center py-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                     >
-                        {isCollapsed ? <ChevronRight size={16} /> : <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"><ChevronLeft size={14} /> Collapse</div>}
+                        {isCollapsed ? <ChevronRight size={16} /> : <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"><ChevronLeft size={14} /> {t('walkin.collapse')}</div>}
                     </button>
                 </div>
             </aside>
@@ -401,7 +402,7 @@ export default function AppLayout({
                         className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-amber-500"
                     >
                         <Zap className="h-5 w-5" />
-                        Walk-in
+                        {t('walkin.button')}
                     </button>
                 )}
             </nav>
