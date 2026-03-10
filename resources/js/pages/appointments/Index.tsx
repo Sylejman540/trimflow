@@ -2,7 +2,7 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Plus, Trash2, Search, Download, CheckCircle2, RefreshCw, User, Scissors, Calendar, Phone } from 'lucide-react';
+import { Edit, Eye, Plus, Trash2, Search, CheckCircle2, RefreshCw, User, Scissors, Calendar, Phone } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
