@@ -3,6 +3,21 @@ import { Scissors, Phone } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { cn } from '@/lib/utils';
 
+function PoweredBy() {
+    return (
+        <div className="pt-2 text-center">
+            <a href="https://barberflow.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5 text-amber-500">
+                    <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+                    <line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/>
+                    <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+                </svg>
+                Powered by <span className="font-semibold text-slate-500">BarberFlow</span>
+            </a>
+        </div>
+    );
+}
+
 interface Company { id: number; name: string; slug: string; phone?: string; }
 
 export default function PortalShow({ company }: { company: Company }) {
@@ -74,6 +89,7 @@ export default function PortalShow({ company }: { company: Company }) {
                             Book an appointment
                         </a>
                     </p>
+                    <PoweredBy />
                 </div>
             </div>
         </div>
