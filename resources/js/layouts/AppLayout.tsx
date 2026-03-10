@@ -254,14 +254,13 @@ export default function AppLayout({
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                                <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
-                                <line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/>
-                                <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-sm">
+                            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                                <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
+                                <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
                             </svg>
                         </div>
-                        {!isCollapsed && <span className="text-lg font-bold tracking-tight">Barber<span className="text-amber-500">Flow</span></span>}
+                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-amber-500">io</span></span>}
                     </Link>
                     {/* Close button on mobile */}
                     <button

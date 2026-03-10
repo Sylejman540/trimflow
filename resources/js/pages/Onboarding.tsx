@@ -21,7 +21,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
     return (
         <div className="flex h-screen w-full overflow-hidden bg-white font-sans relative">
-            <Head title="Sign In | BarberFlow" />
+            <Head title="Sign In | Freshio" />
 
             {/* --- MOBILE LOGO --- */}
             <div className="absolute top-8 left-8 z-20 lg:hidden">
@@ -29,7 +29,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     <div className="w-8 h-8 bg-slate-950 rounded-lg flex items-center justify-center shadow-lg">
                         <Scissors className="text-white w-4 h-4" />
                     </div>
-                    <span className="text-sm font-black tracking-tighter text-slate-950 uppercase">BarberFlow</span>
+                    <span className="text-sm font-black tracking-tighter text-slate-950 uppercase">Freshio</span>
                 </Link>
             </div>
 
@@ -49,7 +49,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl">
                             <Scissors className="text-slate-900 w-5 h-5" />
                         </div>
-                        <span className="text-xl font-black tracking-tighter text-white uppercase">BarberFlow</span>
+                        <span className="text-xl font-black tracking-tighter text-white uppercase">Freshio</span>
                     </Link>
                 </div>
 
@@ -163,7 +163,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         </button>
 
                         <p className="text-center text-sm text-slate-500 pt-4">
-                            New to BarberFlow?{' '}
+                            New to Freshio?{' '}
                             <Link href={route('register')} className="font-bold text-slate-950 underline underline-offset-4">
                                 Create your shop
                             </Link>
