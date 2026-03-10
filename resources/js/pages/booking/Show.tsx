@@ -90,6 +90,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         notes: '',
         _hp: '',
         _t: '',
+        cf_turnstile_response: '',
     });
 
     const categories = useMemo(() => {
