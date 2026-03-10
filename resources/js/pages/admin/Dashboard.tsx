@@ -96,9 +96,9 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
 
 function SectionCard({ title, children, action }: { title: React.ReactNode; children: React.ReactNode; action?: React.ReactNode }) {
     return (
-        <div className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-white">{title}</h2>
+        <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
                 {action}
             </div>
             {children}
@@ -140,13 +140,13 @@ export default function AdminDashboard({
     };
 
     return (
-        <div className="min-h-screen bg-[#0f1117] flex">
+        <div className="min-h-screen bg-slate-50 flex">
             <Head title="Platform Admin — Freshio" />
 
             {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-            <aside className="fixed inset-y-0 left-0 w-56 bg-[#0a0c10] border-r border-white/5 flex flex-col z-20">
+            <aside className="fixed inset-y-0 left-0 w-56 bg-slate-900 border-r border-slate-800 flex flex-col z-20">
                 {/* Logo */}
-                <div className="px-5 py-5 border-b border-white/5">
+                <div className="px-5 py-5 border-b border-slate-800">
                     <div className="flex items-center gap-2.5">
                         <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 shrink-0">
                             <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">
@@ -156,7 +156,7 @@ export default function AdminDashboard({
                         </div>
                         <div>
                             <p className="text-sm font-bold text-white leading-none">Fresh<span className="text-emerald-400">io</span></p>
-                            <p className="text-[10px] text-white/30 mt-0.5">Super Admin</p>
+                            <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@ export default function AdminDashboard({
                                 'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left',
                                 tab === key
                                     ? 'bg-white/10 text-white font-medium'
-                                    : 'text-white/40 hover:text-white/70 hover:bg-white/5'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                             )}
                         >
                             <Icon className={cn('h-4 w-4 shrink-0', tab === key ? 'text-emerald-400' : '')} />
@@ -181,37 +181,37 @@ export default function AdminDashboard({
                 </nav>
 
                 {/* Stats summary */}
-                <div className="px-4 pb-4 space-y-2 border-t border-white/5 pt-4">
+                <div className="px-4 pb-4 space-y-2 border-t border-slate-800 pt-4">
                     <div className="flex justify-between text-[11px]">
-                        <span className="text-white/30">Active shops</span>
-                        <span className="text-white/60 font-medium">{totals.active_companies}/{totals.companies}</span>
+                        <span className="text-slate-500">Active shops</span>
+                        <span className="text-slate-300 font-medium">{totals.active_companies}/{totals.companies}</span>
                     </div>
                     <div className="flex justify-between text-[11px]">
-                        <span className="text-white/30">Today's bookings</span>
-                        <span className="text-white/60 font-medium">{totals.appointments_today}</span>
+                        <span className="text-slate-500">Today's bookings</span>
+                        <span className="text-slate-300 font-medium">{totals.appointments_today}</span>
                     </div>
                     <div className="flex justify-between text-[11px]">
-                        <span className="text-white/30">Cancel rate</span>
-                        <span className={cn('font-medium', totals.cancellation_rate > 20 ? 'text-red-400' : 'text-white/60')}>{totals.cancellation_rate}%</span>
+                        <span className="text-slate-500">Cancel rate</span>
+                        <span className={cn('font-medium', totals.cancellation_rate > 20 ? 'text-red-400' : 'text-slate-300')}>{totals.cancellation_rate}%</span>
                     </div>
                 </div>
 
                 {/* User */}
-                <div className="px-4 py-4 border-t border-white/5">
+                <div className="px-4 py-4 border-t border-slate-800">
                     <div className="flex items-center gap-2.5 mb-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold shrink-0">
                             {(auth.user.name ?? 'A').charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0">
                             <p className="text-xs font-medium text-white truncate">{auth.user.name}</p>
-                            <p className="text-[10px] text-white/30 truncate">{auth.user.email}</p>
+                            <p className="text-[10px] text-slate-500 truncate">{auth.user.email}</p>
                         </div>
                     </div>
                     <Link
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="flex items-center gap-1.5 text-[11px] text-white/30 hover:text-white/60 transition-colors"
+                        className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
                     >
                         <LogOut className="h-3 w-3" /> Sign out
                     </Link>
@@ -221,17 +221,17 @@ export default function AdminDashboard({
             {/* ── Main ─────────────────────────────────────────────────────────── */}
             <main className="ml-56 flex-1 min-h-screen">
                 {/* Top bar */}
-                <div className="sticky top-0 z-10 bg-[#0f1117]/90 backdrop-blur border-b border-white/5 px-8 py-4 flex items-center justify-between">
+                <div className="sticky top-0 z-10 bg-white border-b border-slate-100 px-8 py-4 flex items-center justify-between shadow-sm">
                     <div>
-                        <h1 className="text-sm font-semibold text-white capitalize">{tab === 'overview' ? 'Platform Overview' : tab === 'shops' ? 'All Shops' : 'Recent Activity'}</h1>
-                        <p className="text-[11px] text-white/30">
+                        <h1 className="text-sm font-semibold text-slate-900">{tab === 'overview' ? 'Platform Overview' : tab === 'shops' ? 'All Shops' : 'Recent Activity'}</h1>
+                        <p className="text-[11px] text-slate-400">
                             {tab === 'overview' && `${totals.appointments.toLocaleString()} total bookings · ${formatCents(totals.revenue)} revenue`}
                             {tab === 'shops' && `${totals.companies} shops · ${totals.active_companies} active`}
                             {tab === 'activity' && `Last 30 bookings across all shops`}
                         </p>
                     </div>
-                    <div className="flex items-center gap-2 text-[11px] text-white/30">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+                    <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
                         Live
                     </div>
                 </div>
