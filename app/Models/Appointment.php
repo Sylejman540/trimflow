@@ -31,6 +31,7 @@ class Appointment extends Model
         'recurrence_parent_id',
         'cancel_token',
         'cancel_token_expires_at',
+        'reminder_sent_at',
         'google_calendar_event_id',
     ];
 
@@ -40,6 +41,7 @@ class Appointment extends Model
             'starts_at'               => 'datetime',
             'ends_at'                 => 'datetime',
             'cancel_token_expires_at' => 'datetime',
+            'reminder_sent_at'        => 'datetime',
             'price'                   => 'integer',
             'tip_amount'              => 'integer',
         ];
