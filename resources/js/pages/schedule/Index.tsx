@@ -396,29 +396,30 @@ export default function Index({
         <AppLayout
             title={t('nav.schedule')}
             actions={
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     {is_owner_barber && (
                         <button
                             onClick={toggleMine}
                             className={cn(
                                 buttonVariants({ variant: 'outline' }),
-                                'h-9 px-3 rounded-lg text-xs font-bold shadow-none transition-colors',
+                                'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
                                 filter_mine
                                     ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white'
                                     : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
                             )}
                         >
-                            {filter_mine ? 'My Schedule' : 'All Barbers'}
+                            <span className="hidden sm:inline">{filter_mine ? 'My Schedule' : 'All Barbers'}</span>
+                            <span className="sm:hidden">{filter_mine ? 'Mine' : 'All'}</span>
                         </button>
                     )}
                     {!isMobile && (
                         <button
                             onClick={toggleView}
-                            className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-2')}
+                            className={cn(buttonVariants({ variant: 'outline' }), 'h-9 w-9 p-0 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
                         >
                             {effectiveView === 'week'
-                                ? <><CalendarDays className="h-3.5 w-3.5" /> Day</>
-                                : <><LayoutGrid className="h-3.5 w-3.5" /> Week</>
+                                ? <CalendarDays className="h-3.5 w-3.5" />
+                                : <LayoutGrid className="h-3.5 w-3.5" />
                             }
                         </button>
                     )}
@@ -428,7 +429,7 @@ export default function Index({
                         </button>
                         <button
                             onClick={() => router.get(route('schedule.index'), { view: effectiveView, date: todayStr })}
-                            className="h-9 px-3 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                            className="h-9 px-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                         >
                             Today
                         </button>

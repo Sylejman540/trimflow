@@ -484,33 +484,33 @@ export default function Index({
         <AppLayout
             title={t('appt.title')}
             actions={
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                     {is_owner_barber && (
                         <button
                             onClick={toggleMine}
                             className={cn(
                                 buttonVariants({ variant: 'outline' }),
-                                'h-9 px-3 rounded-lg text-xs font-bold shadow-none transition-colors',
+                                'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
                                 filter_mine
-                                    ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white'
-                                    : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
+                                    ? 'bg-slate-900 text-white border-slate-900'
+                                    : 'border-slate-200 text-slate-600',
                             )}
                         >
-                            {filter_mine ? 'My Appointments' : 'All Appointments'}
+                            <span className="hidden sm:inline">{filter_mine ? 'My Appointments' : 'All Appointments'}</span>
+                            <span className="sm:hidden">{filter_mine ? 'Mine' : 'All'}</span>
                         </button>
                     )}
                     <a
                         href={route('export.appointments')}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 w-9 p-0 flex items-center justify-center rounded-lg border-slate-200 shadow-none')}
                         title="Export CSV"
                     >
                         <Download className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline ml-2">Export</span>
                     </a>
                     {can_create && (
                         <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
                             <Plus className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline ml-2">{t('appt.new')}</span>
+                            <span className="hidden sm:inline ml-1.5">{t('appt.new')}</span>
                         </Link>
                     )}
                 </div>

@@ -23,6 +23,7 @@ use App\Http\Controllers\AppointmentProductController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerPortalController;
+use App\Http\Controllers\ManyChatWebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -93,5 +94,8 @@ Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->n
 Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');
 
 Route::get('/google/calendar/callback', [BarberGoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
+
+// ManyChat webhook — returns booking URL for use in ManyChat HTTP Request blocks
+Route::post('/webhooks/manychat/{slug}', ManyChatWebhookController::class)->name('webhooks.manychat');
 
 require __DIR__.'/auth.php';

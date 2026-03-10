@@ -321,6 +321,8 @@ export default function AppLayout({
                         <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
                     </div>
                     <div className="flex items-center gap-2 lg:gap-3">
+                        {actions}
+                        {actions && walkin && <div className="w-px h-5 bg-slate-200 shrink-0" />}
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
@@ -330,7 +332,6 @@ export default function AppLayout({
                                 <span className="hidden sm:inline">Walk-in</span>
                             </button>
                         )}
-                        {actions}
                         <LanguageSwitcher compact />
                         <Link
                             href={route('notifications.index')}

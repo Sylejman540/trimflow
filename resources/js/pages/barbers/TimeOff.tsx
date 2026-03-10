@@ -202,54 +202,50 @@ function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void 
 
     return (
         <div className={cn(
-            "group flex items-center gap-4 px-6 py-3 border-b border-slate-100 transition-colors duration-150",
+            "group flex items-start gap-3 px-4 sm:px-6 py-3 border-b border-slate-100 transition-colors duration-150",
             active ? "bg-amber-50/30" : "bg-white hover:bg-slate-50"
         )}>
-            {/* 1. Icon (Consistent with Notification Icon) */}
-            <div className="flex-none flex items-center justify-center">
+            {/* Icon */}
+            <div className="flex-none flex items-center justify-center pt-0.5">
                 <PalmtreeIcon className={cn("h-4 w-4 shrink-0", active ? "text-amber-500" : "text-slate-400")} />
             </div>
 
-            {/* 2. Content Area (Flex Grow) */}
-            <div className="flex-1 min-w-0 flex items-center gap-3">
-                <span className="text-[13px] font-bold text-slate-900 shrink-0">
-                    {entry.barber.user.name}
-                </span>
-
-                <div className="flex items-center gap-2 text-[13px] text-slate-500 truncate">
+            {/* Content */}
+            <div className="flex-1 min-w-0 space-y-0.5">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[13px] font-bold text-slate-900">
+                        {entry.barber.user.name}
+                    </span>
+                    {active && (
+                        <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
+                            {t('active')}
+                        </Badge>
+                    )}
+                    {future && (
+                        <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
+                            {t('upcoming')}
+                        </Badge>
+                    )}
+                </div>
+                <div className="flex items-center gap-1.5 text-[12px] text-slate-500">
                     <CalendarDays className="h-3 w-3 shrink-0" />
                     <span>{fmtDate(entry.starts_on)}</span>
                     <ArrowRight className="h-2.5 w-2.5 text-slate-300" />
                     <span>{fmtDate(entry.ends_on)}</span>
                 </div>
-
                 {entry.reason && (
-                    <span className="text-[11px] italic text-slate-400 truncate max-w-[200px]">
-                        — {entry.reason}
-                    </span>
+                    <p className="text-[11px] italic text-slate-400 truncate">
+                        {entry.reason}
+                    </p>
                 )}
             </div>
 
-            {/* 3. Badges */}
-            <div className="flex-none flex items-center gap-2">
-                {active && (
-                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                        {t('active')}
-                    </Badge>
-                )}
-                {future && (
-                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
-                        {t('upcoming')}
-                    </Badge>
-                )}
-            </div>
-
-            {/* 4. Actions (Delete button) */}
-            <div className="flex-none w-8 flex justify-end">
+            {/* Delete */}
+            <div className="flex-none">
                 <Button
-                    variant="ghost" 
+                    variant="ghost"
                     size="icon"
-                    className="h-7 w-7 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
+                    className="h-7 w-7 text-slate-300 sm:opacity-0 sm:group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
