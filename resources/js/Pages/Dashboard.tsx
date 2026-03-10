@@ -6,6 +6,12 @@ import {
     CheckCircle2,
     AlertTriangle,
     Package,
+    Rocket,
+    Building2,
+    Scissors,
+    Users,
+    Copy,
+    Check,
 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import {
@@ -24,6 +30,14 @@ interface Stats {
     today_pending: number;
     today_revenue: number;
     completion_rate: number;
+}
+
+interface Setup {
+    shop_info: boolean;
+    has_barbers: boolean;
+    has_services: boolean;
+    booking_link: string;
+    all_done: boolean;
 }
 
 function statusColor(status: AppointmentStatus) {
@@ -65,15 +79,113 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
     );
 }
 
+function SetupChecklist({ setup }: { setup: Setup }) {
+    const [copied, setCopied] = useState(false);
+
+    function copyLink() {
+        navigator.clipboard.writeText(setup.booking_link);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
+    const steps = [
+        {
+            done: setup.shop_info,
+            icon: Building2,
+            label: 'Fill in your shop info',
+            sub: 'Add your phone number and address',
+            href: route('settings.index'),
+            linkLabel: 'Go to Settings',
+        },
+        {
+            done: setup.has_barbers,
+            icon: Users,
+            label: 'Add your barbers',
+            sub: 'Set up barber profiles and working hours',
+            href: route('barbers.index'),
+            linkLabel: 'Add Barbers',
+        },
+        {
+            done: setup.has_services,
+            icon: Scissors,
+            label: 'Add your services',
+            sub: 'Define what you offer with prices and durations',
+            href: route('services.index'),
+            linkLabel: 'Add Services',
+        },
+    ];
+
+    const doneCount = steps.filter(s => s.done).length;
+
+    return (
+        <Card className="border-slate-200 shadow-none">
+            <CardHeader className="px-4 lg:px-6 pt-4 pb-3">
+                <div className="flex items-center gap-2">
+                    <Rocket className="h-4 w-4 text-slate-400" />
+                    <CardTitle className="text-base">Getting Started</CardTitle>
+                    <span className="ml-auto text-xs font-semibold text-slate-400">{doneCount}/{steps.length} done</span>
+                </div>
+                <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                        className="h-full bg-slate-900 rounded-full transition-all duration-500"
+                        style={{ width: `${(doneCount / steps.length) * 100}%` }}
+                    />
+                </div>
+            </CardHeader>
+            <CardContent className="px-4 lg:px-6 pb-4 space-y-3">
+                {steps.map((step, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                        <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                            step.done ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 bg-white'
+                        }`}>
+                            {step.done && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className={`text-sm font-medium ${step.done ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                                {step.label}
+                            </p>
+                            {!step.done && <p className="text-xs text-slate-400 mt-0.5">{step.sub}</p>}
+                        </div>
+                        {!step.done && (
+                            <Link href={step.href} className="shrink-0 text-xs font-semibold text-slate-900 hover:underline">
+                                {step.linkLabel} →
+                            </Link>
+                        )}
+                    </div>
+                ))}
+
+                {/* Booking link row */}
+                <div className="flex items-start gap-3 pt-1 border-t border-slate-100">
+                    <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500`}>
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-900">Share your booking link</p>
+                        <p className="text-xs text-slate-400 mt-0.5 truncate">{setup.booking_link}</p>
+                    </div>
+                    <button
+                        onClick={copyLink}
+                        className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-900 hover:underline"
+                    >
+                        {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                        {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
 interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
 
 export default function Dashboard({
-    is_barber, stats, today_schedule, upcoming_appointments, low_stock_products = [],
+    is_barber, stats, today_schedule, upcoming_appointments, low_stock_products = [], setup,
 }: {
     is_barber: boolean; stats: Stats;
     today_schedule: Appointment[];
     upcoming_appointments: Appointment[];
     low_stock_products?: LowStockProduct[];
+    setup?: Setup | null;
 }) {
     const { t } = useTranslation();
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
@@ -100,6 +212,11 @@ export default function Dashboard({
                             <button onClick={() => setLowStockDismissed(true)} className="text-xs text-amber-400 hover:text-amber-700">✕</button>
                         </div>
                     </div>
+                )}
+
+                {/* Getting started checklist */}
+                {!is_barber && setup && !setup.all_done && (
+                    <SetupChecklist setup={setup} />
                 )}
 
                 {/* KPI Cards */}
