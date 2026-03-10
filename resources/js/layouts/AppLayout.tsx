@@ -235,10 +235,14 @@ export default function AppLayout({
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-                            <Scissors size={16} />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                                <circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/>
+                                <line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/>
+                                <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+                            </svg>
                         </div>
-                        {!isCollapsed && <span className="text-lg font-semibold tracking-tight">BarberFlow</span>}
+                        {!isCollapsed && <span className="text-lg font-bold tracking-tight">Barber<span className="text-amber-500">Flow</span></span>}
                     </Link>
                     {/* Close button on mobile */}
                     <button
