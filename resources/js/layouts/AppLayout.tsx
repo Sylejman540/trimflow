@@ -89,7 +89,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                             <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue placeholder={t('walkin.selectService')} />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
+                            <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
                                 {walkin.services.map(s => (
                                     <SelectItem key={s.id} value={String(s.id)}>
                                         {s.name} — {formatCents(s.price)}
@@ -110,7 +110,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                                 <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                     <SelectValue placeholder={t('walkin.selectBarber')} />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
                                     {walkin.barbers.map(b => (
                                         <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
                                     ))}
