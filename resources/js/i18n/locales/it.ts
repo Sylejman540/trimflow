@@ -48,6 +48,10 @@ export default {
         schedule: 'Orario',
         waitlist: 'Lista d\'attesa',
         auditLogs: 'Registro audit',
+        workspace: 'Area di lavoro',
+        account: 'Account',
+        myProfile: 'Il mio profilo',
+        signOut: 'Esci',
     },
 
     dash: {

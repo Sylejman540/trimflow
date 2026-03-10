@@ -48,6 +48,10 @@ export default {
         schedule: 'Zeitplan',
         waitlist: 'Warteliste',
         auditLogs: 'Prüfprotokoll',
+        workspace: 'Arbeitsbereich',
+        account: 'Konto',
+        myProfile: 'Mein Profil',
+        signOut: 'Abmelden',
     },
 
     dash: {

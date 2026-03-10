@@ -215,11 +215,6 @@ export default function Show({ company, barbers: initialBarbers, services }: {
                 {/* Step 0: Barber */}
                 {step === 0 && (
                     <div className="space-y-4">
-                        <div className="text-center mb-2">
-                            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">You're booking at</p>
-                            <h2 className="text-2xl font-bold text-slate-900">{company.name}</h2>
-                            {company.address && <p className="text-xs text-slate-400 mt-0.5">{company.address}</p>}
-                        </div>
                         <div className="flex items-center justify-between">
                             <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseBarber')}</h2>
                             {availabilityLoading && (

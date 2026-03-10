@@ -48,6 +48,10 @@ export default {
         schedule: 'Raspored',
         waitlist: 'Lista čekanja',
         auditLogs: 'Revizijski zapisnik',
+        workspace: 'Radni prostor',
+        account: 'Račun',
+        myProfile: 'Moj profil',
+        signOut: 'Odjava',
     },
 
     dash: {

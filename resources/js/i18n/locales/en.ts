@@ -62,6 +62,10 @@ export default {
         schedule: 'Schedule',
         waitlist: 'Waitlist',
         auditLogs: 'Audit Logs',
+        workspace: 'Workspace',
+        account: 'Account',
+        myProfile: 'My Profile',
+        signOut: 'Sign Out',
     },
 
     // Dashboard

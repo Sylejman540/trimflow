@@ -48,6 +48,10 @@ export default {
         schedule: 'Πρόγραμμα',
         waitlist: 'Λίστα αναμονής',
         auditLogs: 'Αρχείο ελέγχου',
+        workspace: 'Χώρος εργασίας',
+        account: 'Λογαριασμός',
+        myProfile: 'Το προφίλ μου',
+        signOut: 'Αποσύνδεση',
     },
 
     dash: {

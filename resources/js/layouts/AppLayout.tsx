@@ -1,8 +1,8 @@
 import { Link, router, usePage, useForm } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect, FormEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
-import CommandPalette from '@/components/CommandPalette';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
     CalendarDays,
@@ -20,7 +20,6 @@ import {
     Zap,
     X,
     Package,
-    Search,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -128,63 +127,23 @@ interface NavItem {
     roles?: string[];
 }
 
-const navItems: NavItem[] = [
-    {
-        label: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutDashboard,
-        active: 'dashboard',
-    },
-    {
-        label: 'Appointments',
-        href: '/appointments',
-        icon: CalendarDays,
-        active: 'appointments.*',
-    },
-    {
-        label: 'Schedule',
-        href: '/schedule',
-        icon: LayoutGrid,
-        active: 'schedule.*',
-    },
-    {
-        label: 'Services',
-        href: '/services',
-        icon: Scissors,
-        active: 'services.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Products',
-        href: '/products',
-        icon: Package,
-        active: 'products.*',
-        roles: ['shop-admin', 'platform-admin'],
-    },
-    {
-        label: 'Barbers',
-        href: '/barbers',
-        icon: Briefcase,
-        active: 'barbers.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-    {
-        label: 'Time Off',
-        href: '/barbers/time-off',
-        icon: PalmtreeIcon,
-        active: 'barbers.time-off.*',
-        roles: ['platform-admin', 'shop-admin'],
-    },
-];
+const navConfig: Omit<NavItem, 'label'>[] = [
+    { href: '/dashboard',        icon: LayoutDashboard, active: 'dashboard',          labelKey: 'nav.dashboard' },
+    { href: '/appointments',     icon: CalendarDays,    active: 'appointments.*',     labelKey: 'nav.appointments' },
+    { href: '/schedule',         icon: LayoutGrid,      active: 'schedule.*',         labelKey: 'nav.schedule' },
+    { href: '/services',         icon: Scissors,        active: 'services.*',         labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
+    { href: '/products',         icon: Package,         active: 'products.*',         labelKey: 'nav.products',  roles: ['shop-admin', 'platform-admin'] },
+    { href: '/barbers',          icon: Briefcase,       active: 'barbers.*',          labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
+    { href: '/barbers/time-off', icon: PalmtreeIcon,    active: 'barbers.time-off.*', labelKey: 'timeoff.title', roles: ['platform-admin', 'shop-admin'] },
+] as any[];
 
-// Bottom nav items for mobile (most important 4)
-const mobileBottomNav: NavItem[] = [
-    { label: 'Home', href: '/dashboard', icon: LayoutDashboard, active: 'dashboard' },
-    { label: 'Appts', href: '/appointments', icon: CalendarDays, active: 'appointments.*' },
-    { label: 'Schedule', href: '/schedule', icon: LayoutGrid, active: 'schedule.*' },
-    { label: 'Products', href: '/products', icon: Package, active: 'products.*', roles: ['shop-admin', 'platform-admin'] },
-    { label: 'Profile', href: '/profile', icon: User, active: 'profile.*' },
-];
+const mobileNavConfig: Omit<NavItem, 'label'>[] = [
+    { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
+    { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
+    { href: '/schedule',     icon: LayoutGrid,      active: 'schedule.*',     labelKey: 'nav.schedule' },
+    { href: '/products',     icon: Package,         active: 'products.*',     labelKey: 'nav.products', roles: ['shop-admin', 'platform-admin'] },
+    { href: '/profile',      icon: User,            active: 'profile.*',      labelKey: 'profileLabel' },
+] as any[];
 
 export default function AppLayout({
     children,
@@ -195,6 +154,7 @@ export default function AppLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [walkinOpen, setWalkinOpen] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         setSidebarOpen(false);
@@ -205,13 +165,13 @@ export default function AppLayout({
         if (flash?.error) toast.error(flash.error);
     }, [flash]);
 
-    const visibleNavItems = navItems.filter(
-        (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
-    );
+    const visibleNavItems = navConfig
+        .filter((item: any) => !item.roles || item.roles.some((r: string) => auth.roles.includes(r)))
+        .map((item: any) => ({ ...item, label: t(item.labelKey) }));
 
-    const visibleMobileNav = mobileBottomNav.filter(
-        (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
-    );
+    const visibleMobileNav = mobileNavConfig
+        .filter((item: any) => !item.roles || item.roles.some((r: string) => auth.roles.includes(r)))
+        .map((item: any) => ({ ...item, label: t(item.labelKey) }));
 
     const SidebarLink = ({
         href,
@@ -291,7 +251,7 @@ export default function AppLayout({
                 {/* Workspace Nav */}
                 <div className="flex-1 px-4 py-6 overflow-y-auto space-y-8">
                     <div className="space-y-1">
-                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Workspace</h3>}
+                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('nav.workspace')}</h3>}
                         {visibleNavItems.map((item) => (
                             <SidebarLink
                                 key={item.href}
@@ -307,19 +267,19 @@ export default function AppLayout({
                 {/* Account Section */}
                 <div className="border-t border-slate-200 p-4 space-y-4">
                     <div className="space-y-1">
-                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">Account</h3>}
+                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('nav.account')}</h3>}
 
                         <SidebarLink
                             href={route('profile.edit')}
                             icon={User}
-                            label="My Profile"
+                            label={t('nav.myProfile')}
                             active={route().current('profile.edit')}
                         />
 
                         <SidebarLink
                             onClick={() => router.post(route('logout'))}
                             icon={LogOut}
-                            label="Sign Out"
+                            label={t('nav.signOut')}
                             variant="danger"
                         />
                     </div>
@@ -371,15 +331,6 @@ export default function AppLayout({
                             </button>
                         )}
                         {actions}
-                        <button
-                            type="button"
-                            onClick={() => document.dispatchEvent(new Event('open-command-palette'))}
-                            className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300 transition-colors text-xs"
-                            title="Search (Ctrl+K)"
-                        >
-                            <Search size={13} />
-                            <span className="text-[11px] font-medium">⌘K</span>
-                        </button>
                         <LanguageSwitcher compact />
                         <Link
                             href={route('notifications.index')}
@@ -439,7 +390,6 @@ export default function AppLayout({
                 />
             )}
 
-            <CommandPalette />
             <Toaster position="bottom-right" richColors closeButton />
         </div>
     );

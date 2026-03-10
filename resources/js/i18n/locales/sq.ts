@@ -49,6 +49,10 @@ export default {
         schedule: 'Orari',
         waitlist: 'Lista e pritjes',
         auditLogs: 'Regjistri i auditimit',
+        workspace: 'Hapsira e punës',
+        account: 'Llogaria',
+        myProfile: 'Profili im',
+        signOut: 'Dil',
     },
 
     dash: {
