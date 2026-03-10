@@ -14,8 +14,14 @@ class ExportController extends Controller
     {
         $this->authorize('viewAny', Appointment::class);
 
+        $user  = Auth::user();
         $query = Appointment::with(['barber.user', 'customer', 'service'])
             ->orderBy('starts_at', 'desc');
+
+        // Barbers can only export their own appointments
+        if ($user->hasRole('barber') && ! $user->hasRole('shop-admin') && $user->barber) {
+            $query->where('barber_id', $user->barber->id);
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -50,7 +56,8 @@ class ExportController extends Controller
 
     public function customers(): StreamedResponse
     {
-        $this->authorize('viewAny', Appointment::class);
+        // Only shop-admins and platform-admins can export customer data
+        abort_unless(Auth::user()->hasAnyRole(['shop-admin', 'platform-admin']), 403);
 
         $customers = Customer::with('favoriteBarber.user')
             ->withCount(['appointments as visit_count' => fn ($q) => $q->where('status', 'completed')])
