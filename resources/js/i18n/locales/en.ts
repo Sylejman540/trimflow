@@ -198,6 +198,8 @@ export default {
         clearColor: 'Clear',
         descPlaceholder: 'Provide details about what this service entails…',
         deleteConfirm: 'Are you sure you want to delete this service? This action cannot be undone.',
+        serviceNamePlaceholder: 'e.g. Classic Haircut',
+        categoryPlaceholder: 'e.g. Haircuts',
     },
 
     // Barbers
