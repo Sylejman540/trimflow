@@ -232,6 +232,10 @@ export default {
         generalist: 'Generalista',
         deleteConfirm: 'Tem certeza que deseja remover este barbeiro? Isso afetará sua disponibilidade e agenda futura.',
         bioPlaceholder: 'Uma breve descrição do histórico e estilo do barbeiro…',
+        namePlaceholder: 'ex. João Silva',
+        emailPlaceholder: 'barbeiro@exemplo.com.br',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'ex. Skin Fades, Modelagem de barba',
     },
 
     // Customers
