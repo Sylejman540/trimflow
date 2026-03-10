@@ -278,6 +278,8 @@ export default {
         priceDollar: 'Preço (R$)',
         stockQuantity: 'Quantidade em Estoque',
         deleteConfirm: 'Tem certeza que deseja excluir este produto? Esta ação não pode ser desfeita.',
+        namePlaceholder: 'ex. Pomada',
+        categoryPlaceholder: 'ex. Cuidados com cabelo',
     },
 
     // Profile
