@@ -87,14 +87,19 @@ interface DragState {
 }
 
 function TimeGutter() {
-    const { t } = useTranslation();
     return (
-        <div className="w-12 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
-            {Array.from({ length: TOTAL_HOURS }, (_, i) => (
-                <div key={i} className="absolute right-2 text-[10px] text-slate-400 font-medium" style={{ top: i * HOUR_HEIGHT - 7 }}>
-                    {((HOUR_START + i) % 12 || 12)}{HOUR_START + i < 12 ? t('schedule.am') : t('schedule.pm')}
-                </div>
-            ))}
+        <div className="w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
+            {Array.from({ length: TOTAL_HOURS }, (_, i) => {
+                const hour = HOUR_START + i;
+                const label = hour === 0 ? '12:00' : hour <= 12 ? `${hour}:00` : `${hour - 12}:00`;
+                const period = hour < 12 ? 'AM' : 'PM';
+                return (
+                    <div key={i} className="absolute right-2 text-right leading-none" style={{ top: i * HOUR_HEIGHT - 8 }}>
+                        <span className="text-[10px] text-slate-500 font-semibold">{label}</span>
+                        <span className="block text-[8px] text-slate-300 font-medium">{period}</span>
+                    </div>
+                );
+            })}
         </div>
     );
 }
@@ -474,7 +479,7 @@ export default function Index({
                     {/* Day headers */}
                     <div className="overflow-x-auto">
                         <div className="flex border-b border-slate-200" style={{ minWidth: effectiveView === 'week' ? days.length * DAY_COL_MIN_W + 48 : undefined }}>
-                            <div className="w-12 shrink-0 border-r border-slate-100" />
+                            <div className="w-14 shrink-0 border-r border-slate-100" />
                             {days.map(d => (
                                 <div
                                     key={d}
