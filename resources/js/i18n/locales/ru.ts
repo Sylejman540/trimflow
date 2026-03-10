@@ -232,6 +232,10 @@ export default {
         generalist: 'Универсал',
         deleteConfirm: 'Вы уверены, что хотите удалить этого барбера? Это повлияет на его доступность и будущее расписание.',
         bioPlaceholder: 'Краткое описание биографии и стиля барбера…',
+        namePlaceholder: 'напр. Иван Иванов',
+        emailPlaceholder: 'barber@primer.ru',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'напр. Скин Фейды, Оформление бороды',
     },
 
     // Customers
