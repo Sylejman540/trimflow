@@ -259,6 +259,8 @@ export default {
         priceDollar: 'Cena (€)',
         stockQuantity: 'Količina na zalihama',
         deleteConfirm: 'Da li ste sigurni da želite da obrišete ovaj proizvod? Ova akcija se ne može poništiti.',
+        namePlaceholder: 'npr. Pomada',
+        categoryPlaceholder: 'npr. Nega kose',
     },
 
     profile: {
