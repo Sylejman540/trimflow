@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToCompany;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,13 @@ class Appointment extends Model
             'price'                   => 'integer',
             'tip_amount'              => 'integer',
         ];
+    }
+
+    protected function serializeDate(\DateTimeInterface $date): string
+    {
+        // Serialize as local time without UTC conversion so the frontend
+        // receives the exact time stored in the DB (shop's local timezone).
+        return Carbon::instance($date)->format('Y-m-d\TH:i:s');
     }
 
     public function barber(): BelongsTo

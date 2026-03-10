@@ -1,5 +1,7 @@
 import { Link, router, usePage, useForm } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect, FormEvent } from 'react';
+import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import CommandPalette from '@/components/CommandPalette';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import {
@@ -197,7 +199,7 @@ export default function AppLayout({
     title,
     actions,
 }: PropsWithChildren<{ title?: string; actions?: ReactNode }>) {
-    const { auth, walkin } = usePage<PageProps & { walkin: WalkinProps | null }>().props;
+    const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [walkinOpen, setWalkinOpen] = useState(false);
@@ -205,6 +207,11 @@ export default function AppLayout({
     useEffect(() => {
         setSidebarOpen(false);
     }, [route().current()]);
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.error) toast.error(flash.error);
+    }, [flash]);
 
     const visibleNavItems = navItems.filter(
         (item) => !item.roles || item.roles.some((r) => auth.roles.includes(r)),
@@ -440,6 +447,7 @@ export default function AppLayout({
             )}
 
             <CommandPalette />
+            <Toaster position="bottom-right" richColors closeButton />
         </div>
     );
 }

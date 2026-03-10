@@ -189,7 +189,7 @@ export default function Index({
                 const timePart = formatTime(iso);
                 return (
                     <div className="whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1.5 bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                             {timePart}
                         </span>
                         <p className="text-xs text-slate-400 mt-0.5">{datePart}</p>
@@ -270,12 +270,16 @@ export default function Index({
                         <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
                             <Eye className="h-4 w-4" />
                         </Link>
-                        <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
-                            <Edit className="h-4 w-4" />
-                        </Link>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-red-600 hover:bg-red-50" onClick={() => setDeletingAppt(appt)}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {appt.status !== 'in_progress' && (
+                            <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
+                                <Edit className="h-4 w-4" />
+                            </Link>
+                        )}
+                        {appt.status !== 'in_progress' && (
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-red-600 hover:bg-red-50" onClick={() => setDeletingAppt(appt)}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        )}
                     </div>
                 );
             },
@@ -372,7 +376,7 @@ export default function Index({
                             </div>
                             <div className="flex items-center justify-between text-xs text-slate-500">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center bg-slate-900 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                                    <span className="inline-flex items-center bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                                         {formatTime(appt.starts_at)}
                                     </span>
                                     <span className="text-slate-400">
@@ -393,12 +397,16 @@ export default function Index({
                                 <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
                                     <Eye className="h-3.5 w-3.5 mr-1" /> View
                                 </Link>
-                                <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
-                                    <Edit className="h-3.5 w-3.5 mr-1" /> Edit
-                                </Link>
-                                <button onClick={() => setDeletingAppt(appt)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                </button>
+                                {appt.status !== 'in_progress' && (
+                                    <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
+                                        <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                                    </Link>
+                                )}
+                                {appt.status !== 'in_progress' && (
+                                    <button onClick={() => setDeletingAppt(appt)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))}

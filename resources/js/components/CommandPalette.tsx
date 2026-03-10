@@ -62,11 +62,8 @@ export default function CommandPalette() {
         setLoading(true);
         const timeout = setTimeout(async () => {
             try {
-                const res = await fetch(`/search?q=${encodeURIComponent(query)}`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                });
-                const data: SearchResults = await res.json();
-                setResults(data);
+                const res = await window.axios.get<SearchResults>(`/search?q=${encodeURIComponent(query)}`);
+                setResults(res.data);
             } catch {
                 // ignore
             } finally {

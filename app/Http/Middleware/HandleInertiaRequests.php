@@ -45,6 +45,10 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error'   => fn () => $request->session()->get('error'),
+            ],
             'walkin' => function () use ($request) {
                 $user = $request->user();
                 if (! $user || ! $user->can('create', \App\Models\Appointment::class)) {
