@@ -278,6 +278,8 @@ export default {
         priceDollar: 'Price ($)',
         stockQuantity: 'Stock Quantity',
         deleteConfirm: 'Are you sure you want to delete this product? This action cannot be undone.',
+        namePlaceholder: 'e.g. Pomade',
+        categoryPlaceholder: 'e.g. Hair Care',
     },
 
     // Profile
