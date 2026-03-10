@@ -198,6 +198,8 @@ export default {
         clearColor: 'Temizle',
         descPlaceholder: 'Bu hizmetin neleri kapsadığına dair ayrıntılar sağlayın…',
         deleteConfirm: 'Bu hizmeti silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+        serviceNamePlaceholder: 'örn. Klasik Saç Kesimi',
+        categoryPlaceholder: 'örn. Saç Kesimleri',
     },
 
     // Barbers
