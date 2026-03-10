@@ -61,7 +61,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
             <DialogContent className="sm:max-w-lg border-slate-200 shadow-sm">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-base font-bold">
-                        <Zap className="h-4 w-4 text-amber-500" /> {t('walkin.title')}
+                        <Zap className="h-4 w-4 text-emerald-500" /> {t('walkin.title')}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-5 pt-1">
@@ -254,13 +254,13 @@ export default function AppLayout({
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-sm">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                                 <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
                                 <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
                             </svg>
                         </div>
-                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-amber-500">io</span></span>}
+                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-emerald-500">io</span></span>}
                     </Link>
                     {/* Close button on mobile */}
                     <button
@@ -365,7 +365,7 @@ export default function AppLayout({
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
+                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
                                 <Zap className="h-3.5 w-3.5 fill-current" />
                                 <span className="hidden xs:inline">Walk-in</span>
@@ -421,7 +421,7 @@ export default function AppLayout({
                 {walkin && (
                     <button
                         onClick={() => setWalkinOpen(true)}
-                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-amber-500"
+                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-emerald-500"
                     >
                         <Zap className="h-5 w-5" />
                         {t('walkin.button')}
