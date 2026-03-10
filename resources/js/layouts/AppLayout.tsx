@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+    Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -46,6 +46,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
     const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
         customer_name: '',
+        customer_phone: '',
         service_id: '',
         barber_id: '',
     });
@@ -59,28 +60,49 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
 
     return (
         <Dialog open={open} onOpenChange={v => !v && onClose()}>
-            <DialogContent className="sm:max-w-lg border-slate-200 shadow-none">
+            <DialogContent className="sm:max-w-lg border-slate-200 shadow-sm">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+                    <DialogTitle className="flex items-center gap-2 text-base font-bold">
                         <Zap className="h-4 w-4 text-amber-500" /> {t('walkin.title')}
                     </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={submit} className="space-y-4 pt-2">
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.customerName')}</Label>
-                        <Input
-                            value={data.customer_name}
-                            onChange={e => setData('customer_name', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            placeholder={t('walkin.namePlaceholder')}
-                            required
-                        />
-                        {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
+                <form onSubmit={submit} className="space-y-5 pt-1">
+                    {/* Customer name + phone */}
+                    <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <User size={11} /> {t('walkin.customerName')}
+                            </Label>
+                            <Input
+                                value={data.customer_name}
+                                onChange={e => setData('customer_name', e.target.value)}
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder={t('walkin.namePlaceholder')}
+                                required
+                            />
+                            {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <Phone size={11} /> {t('appt.phoneNumber')}
+                            </Label>
+                            <Input
+                                value={data.customer_phone}
+                                onChange={e => setData('customer_phone', e.target.value)}
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="+1 (555) 000-0000"
+                            />
+                            {errors.customer_phone && <p className="text-xs text-red-500">{errors.customer_phone}</p>}
+                        </div>
                     </div>
+
+                    {/* Service */}
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.service')}</Label>
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                            <Scissors size={11} /> {t('walkin.service')}
+                        </Label>
                         <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                 <SelectValue placeholder={t('walkin.selectService')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
@@ -93,11 +115,15 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                         </Select>
                         {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
                     </div>
+
+                    {/* Barber (admin/owner only) */}
                     {!walkin.is_barber && (
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('walkin.barber')}</Label>
+                            <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                                <Briefcase size={11} /> {t('walkin.barber')}
+                            </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                     <SelectValue placeholder={t('walkin.selectBarber')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[320px]">
@@ -109,12 +135,20 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                             {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
                         </div>
                     )}
-                    <DialogFooter>
-                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500">{t('cancel')}</Button>
-                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
+
+                    <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
+                        <Button
+                            type="submit"
+                            disabled={processing}
+                            className="flex-1 sm:flex-none bg-slate-900 text-white hover:bg-slate-800 h-11 px-6 rounded-lg text-sm font-bold shadow-sm"
+                        >
+                            <Zap className="h-3.5 w-3.5 mr-1.5 fill-current" />
                             {t('walkin.bookNow')}
                         </Button>
-                    </DialogFooter>
+                        <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 h-11 px-4">
+                            {t('cancel')}
+                        </Button>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>
