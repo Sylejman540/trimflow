@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap, Shield, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
