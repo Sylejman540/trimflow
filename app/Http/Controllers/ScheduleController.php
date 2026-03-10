@@ -50,6 +50,25 @@ class ScheduleController extends Controller
                 'price'        => $a->price,
             ]);
 
+        // Compute earliest start / latest end across all active barbers' schedules
+        $allBarbers = Barber::where('is_active', true)->get(['working_hours']);
+        $hourStart = 8;
+        $hourEnd   = 20;
+
+        foreach ($allBarbers as $b) {
+            foreach (($b->working_hours ?? []) as $day) {
+                if (isset($day['enabled']) && ! $day['enabled']) continue;
+                $s = $day['start'] ?? ($day[0] ?? null);
+                $e = $day['end']   ?? ($day[1] ?? null);
+                if ($s) $hourStart = min($hourStart, (int) explode(':', $s)[0]);
+                if ($e) $hourEnd   = max($hourEnd,   (int) explode(':', $e)[0]);
+            }
+        }
+
+        // 1-hour buffer, clamped to valid range
+        $hourStart = max(0,  $hourStart - 1);
+        $hourEnd   = min(24, $hourEnd   + 1);
+
         return Inertia::render('schedule/Index', [
             'appointments'    => $appointments,
             'view'            => $view,
@@ -60,6 +79,8 @@ class ScheduleController extends Controller
             'is_barber'       => $isBarber,
             'is_owner_barber' => $isOwnerBarber,
             'filter_mine'     => $filterMine,
+            'hour_start'      => $hourStart,
+            'hour_end'        => $hourEnd,
         ]);
     }
 
