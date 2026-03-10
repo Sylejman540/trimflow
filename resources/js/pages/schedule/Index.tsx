@@ -423,7 +423,7 @@ export default function Index({
                             }
                         </button>
                     )}
-                    <div className="flex items-center gap-1">
+                    <div className="hidden sm:flex items-center gap-1">
                         <button onClick={() => navigate(-1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronLeft className="h-4 w-4" />
                         </button>
