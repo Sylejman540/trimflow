@@ -198,6 +198,8 @@ export default {
         clearColor: 'Borrar',
         descPlaceholder: 'Proporcione detalles sobre lo que incluye este servicio…',
         deleteConfirm: '¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer.',
+        serviceNamePlaceholder: 'ej. Corte Clásico',
+        categoryPlaceholder: 'ej. Cortes de cabello',
     },
 
     // Barbers
@@ -276,6 +278,8 @@ export default {
         priceDollar: 'Precio ($)',
         stockQuantity: 'Cantidad en Stock',
         deleteConfirm: '¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.',
+        namePlaceholder: 'ej. Pomada',
+        categoryPlaceholder: 'ej. Cuidado del cabello',
     },
 
     // Profile
