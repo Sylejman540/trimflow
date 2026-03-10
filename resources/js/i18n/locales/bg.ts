@@ -232,6 +232,10 @@ export default {
         generalist: 'Универсален',
         deleteConfirm: 'Сигурни ли сте, че искате да премахнете този бръснар? Това ще засегне неговата наличност и бъдещо разписание.',
         bioPlaceholder: 'Кратко описание на историята и стила на бръснара…',
+        namePlaceholder: 'напр. Иван Петров',
+        emailPlaceholder: 'brisnar@primer.bg',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'напр. Skin Fades, Оформяне на брада',
     },
 
     // Customers
