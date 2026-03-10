@@ -258,6 +258,8 @@ export default {
         priceDollar: 'Cena ($)',
         stockQuantity: 'Ilość w magazynie',
         deleteConfirm: 'Czy na pewno chcesz usunąć ten produkt? Tej operacji nie można cofnąć.',
+        namePlaceholder: 'np. Pomada',
+        categoryPlaceholder: 'np. Pielęgnacja włosów',
     },
 
     profile: {
