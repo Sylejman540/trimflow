@@ -178,6 +178,8 @@ export default {
         clearColor: 'Pastro',
         descPlaceholder: 'Jepni detaje rreth asaj që përfshin ky shërbim…',
         deleteConfirm: 'Jeni të sigurt që doni të fshini këtë shërbim? Ky veprim nuk mund të kthehet.',
+        serviceNamePlaceholder: 'p.sh. Prerje klasike',
+        categoryPlaceholder: 'p.sh. Prerje floku',
         noServices: 'Nuk ka shërbime ende.',
         created: 'Shërbimi u krijua.',
         updated: 'Shërbimi u përditësua.',
@@ -257,6 +259,8 @@ export default {
         priceDollar: 'Çmimi (€)',
         stockQuantity: 'Sasia në stok',
         deleteConfirm: 'Jeni të sigurt që doni të fshini këtë produkt? Ky veprim nuk mund të kthehet.',
+        namePlaceholder: 'p.sh. Pomadë',
+        categoryPlaceholder: 'p.sh. Kujdesi i flokëve',
     },
 
     profile: {

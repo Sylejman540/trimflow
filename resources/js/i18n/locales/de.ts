@@ -214,6 +214,10 @@ export default {
         generalist: 'Allrounder',
         deleteConfirm: 'Sind Sie sicher, dass Sie diesen Friseur entfernen möchten? Dies beeinflusst seine Verfügbarkeit und zukünftigen Zeitplan.',
         bioPlaceholder: 'Eine kurze Beschreibung des Hintergrunds und Stils des Friseurs…',
+        namePlaceholder: 'z.B. Max Mustermann',
+        emailPlaceholder: 'friseur@beispiel.de',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'z.B. Skin Fades, Bartpflege',
     },
 
     cust: {
