@@ -232,6 +232,10 @@ export default {
         generalist: 'Generalist',
         deleteConfirm: 'Are you sure you want to remove this barber? This will affect their availability and future schedule.',
         bioPlaceholder: "A brief description of the barber's background and style…",
+        namePlaceholder: 'e.g. Marcus Wright',
+        emailPlaceholder: 'barber@example.com',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'e.g. Skin Fades, Beard Sculpting',
     },
 
     // Customers
