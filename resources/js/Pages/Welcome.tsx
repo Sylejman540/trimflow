@@ -82,19 +82,10 @@ const Navbar = () => {
 };
 
 const Hero = () => (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-            <img
-                src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&q=80&w=2000"
-                className="w-full h-full object-cover"
-                alt="Barber Shop"
-            />
-            <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-[2px]" />
-        </div>
-
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-900">
         <div className="max-w-7xl mx-auto px-6 md:px-10 w-full text-center relative z-10 pt-20">
             <div className="inline-block mb-6">
-                <span className="bg-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30 backdrop-blur-md">
+                <span className="bg-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-emerald-500/30">
                     The New Standard in Shop Management
                 </span>
             </div>
@@ -102,7 +93,7 @@ const Hero = () => (
                 Simplify the <br />
                 <span className="text-emerald-400 italic font-light">modern shop.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-12 font-medium leading-relaxed">
                 Online bookings, schedule management, and revenue tracking — all in one clean dashboard.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

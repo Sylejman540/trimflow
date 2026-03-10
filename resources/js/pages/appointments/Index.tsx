@@ -124,7 +124,7 @@ function QuickBookModal({
         const base = new Date(now);
         base.setMinutes(rounded, 0, 0);
         return [
-            { label: 'Now', date: base },
+            { label: t('apptIndex.nowLabel'), date: base },
             { label: '+30m', date: new Date(base.getTime() + 30 * 60000) },
             { label: '+1h',  date: new Date(base.getTime() + 60 * 60000) },
             { label: '+2h',  date: new Date(base.getTime() + 120 * 60000) },
@@ -176,7 +176,7 @@ function QuickBookModal({
                                 value={data.customer_name}
                                 onChange={e => setData('customer_name', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder="John Doe"
+                                placeholder={t('apptIndex.namePlaceholder')}
                                 autoFocus
                                 required
                             />
@@ -190,7 +190,7 @@ function QuickBookModal({
                                 value={data.customer_phone}
                                 onChange={e => setData('customer_phone', e.target.value)}
                                 className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder="+1 555 000-0000"
+                                placeholder={t('apptIndex.phonePlaceholder')}
                                 inputMode="tel"
                             />
                         </div>
@@ -498,7 +498,7 @@ export default function Index({
                             <button
                                 onClick={() => router.patch(route('appointments.confirm', appt.id))}
                                 className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50")}
-                                title="Confirm appointment"
+                                title={t('apptIndex.confirmApptTooltip')}
                             >
                                 <CheckCircle2 className="h-4 w-4" />
                             </button>
@@ -582,12 +582,12 @@ export default function Index({
 
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-10 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{statusFilter === 'all' ? t('all') : capitalizeWords(statusFilter)}</SelectValue>
+                                <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 <SelectItem value="all">{t('all')}</SelectItem>
                                 {allStatuses.map((s) => (
-                                    <SelectItem key={s} value={s}>{capitalizeWords(s)}</SelectItem>
+                                    <SelectItem key={s} value={s}>{t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -597,26 +597,26 @@ export default function Index({
                 {/* Bulk action bar */}
                 {selectedIds.size > 0 && (
                     <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
-                        <span className="text-sm font-semibold flex-1">{selectedIds.size} selected</span>
+                        <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
                         <button
                             onClick={() => bulkAction('confirm')}
                             disabled={bulkProcessing}
                             className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
-                            <CheckCircle2 className="h-3.5 w-3.5" /> Confirm all
+                            <CheckCircle2 className="h-3.5 w-3.5" /> {t('apptIndex.confirmAll')}
                         </button>
                         <button
                             onClick={() => bulkAction('cancel')}
                             disabled={bulkProcessing}
                             className="flex items-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
-                            <Trash2 className="h-3.5 w-3.5" /> Cancel all
+                            <Trash2 className="h-3.5 w-3.5" /> {t('apptIndex.cancelAll')}
                         </button>
                         <button
                             onClick={() => setSelectedIds(new Set())}
                             className="text-xs text-white/60 hover:text-white transition-colors"
                         >
-                            Clear
+                            {t('apptIndex.clear')}
                         </button>
                     </div>
                 )}
@@ -640,7 +640,7 @@ export default function Index({
                                         </span>
                                     )}
                                     <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
-                                        {capitalizeWords(appt.status)}
+                                        {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
                                     </Badge>
                                 </div>
                             </div>
@@ -669,7 +669,7 @@ export default function Index({
                                 </Link>
                                 {appt.status !== 'in_progress' && (
                                     <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
-                                        <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                                        <Edit className="h-3.5 w-3.5 mr-1" /> {t('edit')}
                                     </Link>
                                 )}
                                 {appt.status !== 'in_progress' && (

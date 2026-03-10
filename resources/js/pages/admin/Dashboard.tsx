@@ -1,5 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Building2, Users, CalendarDays, DollarSign,
     ToggleLeft, ToggleRight, ArrowUpRight, TrendingUp, TrendingDown,
@@ -41,6 +42,8 @@ interface ActivityItem {
 interface NewShop { id: number; name: string; slug: string; is_active: boolean; created_at: string }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
+// Nav items built inside component to support i18n
+
 const STATUS_COLORS: Record<string, string> = {
     confirmed:   'bg-emerald-50 text-emerald-700',
     pending:     'bg-amber-50 text-amber-700',
@@ -86,7 +89,7 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
                 {trend && (
                     <div className={cn('flex items-center gap-1 text-[11px] font-semibold mt-1', trend.up ? 'text-emerald-600' : 'text-red-500')}>
                         {trend.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                        {trend.pct}% vs last month
+                        {trend.pct}%
                     </div>
                 )}
             </div>
@@ -106,11 +109,6 @@ function SectionCard({ title, children, action }: { title: React.ReactNode; chil
     );
 }
 
-const NAV_ITEMS = [
-    { key: 'overview',  label: 'Overview',  icon: BarChart3 },
-    { key: 'shops',     label: 'Shops',     icon: Building2 },
-    { key: 'activity',  label: 'Activity',  icon: Activity  },
-];
 
 const tooltipStyle = {
     backgroundColor: '#ffffff',
@@ -131,6 +129,12 @@ function SidebarContent({
     auth: PageProps['auth'];
     onNavClick?: () => void;
 }) {
+    const { t } = useTranslation();
+    const NAV_ITEMS = [
+        { key: 'overview',  label: t('admin.overview'),  icon: BarChart3 },
+        { key: 'shops',     label: t('admin.shops'),     icon: Building2 },
+        { key: 'activity',  label: t('admin.activity'),  icon: Activity  },
+    ];
     return (
         <>
             {/* Logo */}
@@ -141,7 +145,7 @@ function SidebarContent({
                     </div>
                     <div>
                         <p className="text-sm font-bold text-white leading-none">Freshio</p>
-                        <p className="text-[10px] text-slate-500 mt-0.5">Super Admin</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{t('admin.superAdmin')}</p>
                     </div>
                 </div>
             </div>
@@ -168,15 +172,15 @@ function SidebarContent({
             {/* Stats summary */}
             <div className="px-4 pb-4 space-y-2 border-t border-slate-800 pt-4">
                 <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-500">Active shops</span>
+                    <span className="text-slate-500">{t('admin.activeShopsLabel')}</span>
                     <span className="text-slate-300 font-medium">{totals.active_companies}/{totals.companies}</span>
                 </div>
                 <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-500">Today's bookings</span>
+                    <span className="text-slate-500">{t('admin.todayBookings')}</span>
                     <span className="text-slate-300 font-medium">{totals.appointments_today}</span>
                 </div>
                 <div className="flex justify-between text-[11px]">
-                    <span className="text-slate-500">Cancel rate</span>
+                    <span className="text-slate-500">{t('admin.cancelRate')}</span>
                     <span className={cn('font-medium', totals.cancellation_rate > 20 ? 'text-red-400' : 'text-slate-300')}>{totals.cancellation_rate}%</span>
                 </div>
             </div>
@@ -198,7 +202,7 @@ function SidebarContent({
                     as="button"
                     className="flex items-center gap-1.5 text-[11px] text-slate-500 hover:text-slate-300 transition-colors"
                 >
-                    <LogOut className="h-3 w-3" /> Sign out
+                    <LogOut className="h-3 w-3" /> {t('admin.signOut')}
                 </Link>
             </div>
         </>
@@ -216,6 +220,7 @@ export default function AdminDashboard({
     recent_activity: ActivityItem[]; new_shops: NewShop[];
 }) {
     const { auth } = usePage<PageProps>().props;
+    const { t } = useTranslation();
     const [tab, setTab] = useState<'overview' | 'shops' | 'activity'>('overview');
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const revTrend = revChange(totals.revenue_this_month, totals.revenue_prev_month);
@@ -225,16 +230,16 @@ export default function AdminDashboard({
         router.patch(route('admin.companies.toggle', id), {}, { preserveScroll: true });
     }
 
-    const tabTitle = tab === 'overview' ? 'Platform Overview' : tab === 'shops' ? 'All Shops' : 'Recent Activity';
+    const tabTitle = tab === 'overview' ? t('admin.platformOverview') : tab === 'shops' ? t('admin.allShops') : t('admin.recentActivity');
     const tabSub = tab === 'overview'
-        ? `${totals.appointments.toLocaleString()} total bookings · ${formatCents(totals.revenue)} revenue`
+        ? `${totals.appointments.toLocaleString()} ${t('admin.totalBookings')} · ${formatCents(totals.revenue)} ${t('admin.totalRevenue')}`
         : tab === 'shops'
-        ? `${totals.companies} shops · ${totals.active_companies} active`
-        : 'Last 30 bookings across all shops';
+        ? `${totals.companies} ${t('admin.shops')} · ${totals.active_companies} ${t('admin.activeShopsLabel')}`
+        : t('admin.last30');
 
     return (
         <div className="min-h-screen bg-slate-50 flex">
-            <Head title="Platform Admin" />
+            <Head title={t('admin.title')} />
 
             {/* ── Mobile overlay ────────────────────────────────────────────── */}
             {sidebarOpen && (
@@ -281,7 +286,7 @@ export default function AdminDashboard({
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-slate-400">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
-                        Live
+                        {t('admin.live')}
                     </div>
                 </div>
 
@@ -293,29 +298,29 @@ export default function AdminDashboard({
                         {/* KPI row */}
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                             <KpiCard
-                                label="Total Revenue"
+                                label={t('admin.totalRevenue')}
                                 value={formatCents(totals.revenue)}
-                                sub={`${formatCents(totals.revenue_this_month)} this month`}
+                                sub={`${formatCents(totals.revenue_this_month)} ${t('admin.vsLastMonth')}`}
                                 icon={<DollarSign className="h-4 w-4 text-white" />}
                                 accent
                                 trend={revTrend}
                             />
                             <KpiCard
-                                label="Total Bookings"
+                                label={t('admin.totalBookings')}
                                 value={totals.appointments.toLocaleString()}
-                                sub={`${totals.appointments_today} today`}
+                                sub={`${totals.appointments_today} ${t('admin.today')}`}
                                 icon={<CalendarDays className="h-4 w-4 text-slate-400" />}
                             />
                             <KpiCard
-                                label="Active Shops"
+                                label={t('admin.activeShops')}
                                 value={totals.active_companies}
-                                sub={`${totals.companies} total · ${totals.companies - totals.active_companies} inactive`}
+                                sub={`${totals.companies} ${t('admin.total')} · ${totals.companies - totals.active_companies} ${t('admin.inactiveLabel')}`}
                                 icon={<Building2 className="h-4 w-4 text-slate-400" />}
                             />
                             <KpiCard
-                                label="Customers"
+                                label={t('admin.customers')}
                                 value={totals.customers.toLocaleString()}
-                                sub={`${totals.cancellation_rate}% cancellation rate`}
+                                sub={`${totals.cancellation_rate}% ${t('admin.cancelRate')}`}
                                 icon={<Users className="h-4 w-4 text-slate-400" />}
                             />
                         </div>
@@ -324,7 +329,7 @@ export default function AdminDashboard({
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5">
                             {/* Bookings 30d */}
                             <div className="lg:col-span-2">
-                                <SectionCard title={<>Bookings <span className="text-slate-400 font-normal">· last 30 days</span></>}>
+                                <SectionCard title={<>{t('admin.bookings30d')}</>}>
                                     <div className="p-4 lg:p-5 pb-3">
                                         <div className="h-[180px] lg:h-[200px]">
                                             <ResponsiveContainer width="100%" height="100%">
@@ -348,7 +353,7 @@ export default function AdminDashboard({
                             </div>
 
                             {/* Revenue 6-month */}
-                            <SectionCard title={<>Revenue <span className="text-slate-400 font-normal">· last 6 months</span></>}>
+                            <SectionCard title={<>{t('admin.revenue6m')}</>}>
                                 <div className="p-4 lg:p-5 pb-3">
                                     <div className="h-[180px] lg:h-[200px]">
                                         <ResponsiveContainer width="100%" height="100%">
@@ -356,7 +361,7 @@ export default function AdminDashboard({
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                                                 <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
                                                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={v => `$${(v/100).toFixed(0)}`} />
-                                                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCents(v), 'Revenue']} />
+                                                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCents(v), t('admin.totalRevenue')]} />
                                                 <Bar dataKey="revenue" fill="#0f172a" radius={[4,4,0,0]} />
                                             </BarChart>
                                         </ResponsiveContainer>
@@ -368,9 +373,9 @@ export default function AdminDashboard({
                         {/* Top shops + status + new shops + recent */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
                             {/* Top shops */}
-                            <SectionCard title={<>Top Shops <span className="text-slate-400 font-normal">· this month</span></>}>
+                            <SectionCard title={<>{t('admin.topShops')}</>}>
                                 <div className="p-4 lg:p-5 space-y-4">
-                                    {top_shops.length === 0 && <p className="text-xs text-slate-400 text-center py-4">No data yet.</p>}
+                                    {top_shops.length === 0 && <p className="text-xs text-slate-400 text-center py-4">{t('admin.noData')}</p>}
                                     {top_shops.map((s, i) => (
                                         <div key={i}>
                                             <div className="flex items-center justify-between mb-1.5">
@@ -386,7 +391,7 @@ export default function AdminDashboard({
                             </SectionCard>
 
                             {/* Status breakdown */}
-                            <SectionCard title="Status Breakdown">
+                            <SectionCard title={t('admin.statusBreakdown')}>
                                 <div className="p-4 lg:p-5 space-y-3">
                                     {status_breakdown.filter(s => s.count > 0).map(s => {
                                         const total = status_breakdown.reduce((a, b) => a + b.count, 0);
@@ -410,10 +415,10 @@ export default function AdminDashboard({
                             </SectionCard>
 
                             {/* New shops */}
-                            <SectionCard title={<>New Shops <span className="text-slate-400 font-normal">· last 7 days</span></>}>
+                            <SectionCard title={<>{t('admin.newShops')}</>}>
                                 <div className="divide-y divide-slate-100">
                                     {new_shops.length === 0 && (
-                                        <p className="text-xs text-slate-400 text-center px-5 py-8">No new shops this week.</p>
+                                        <p className="text-xs text-slate-400 text-center px-5 py-8">{t('admin.noNewShops')}</p>
                                     )}
                                     {new_shops.map(s => (
                                         <div key={s.id} className="flex items-center gap-3 px-4 lg:px-5 py-3 hover:bg-slate-50 transition-colors">
@@ -425,7 +430,7 @@ export default function AdminDashboard({
                                                 <p className="text-[10px] text-slate-400">{s.created_at}</p>
                                             </div>
                                             <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0', s.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500')}>
-                                                {s.is_active ? 'Active' : 'Inactive'}
+                                                {s.is_active ? t('admin.activeShopsLabel') : t('admin.inactiveLabel')}
                                             </span>
                                         </div>
                                     ))}
@@ -435,10 +440,10 @@ export default function AdminDashboard({
 
                         {/* Recent bookings preview */}
                         <SectionCard
-                            title="Recent Bookings"
+                            title={t('admin.recentBookings')}
                             action={
                                 <button onClick={() => setTab('activity')} className="text-[11px] text-slate-500 hover:text-slate-900 transition-colors">
-                                    View all →
+                                    {t('admin.viewAll')}
                                 </button>
                             }
                         >
@@ -465,8 +470,8 @@ export default function AdminDashboard({
                     {tab === 'shops' && (
                         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
                             <div className="px-4 lg:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                                <h2 className="text-sm font-semibold text-slate-900">All Shops</h2>
-                                <span className="text-[10px] text-slate-400">{companies.length} total</span>
+                                <h2 className="text-sm font-semibold text-slate-900">{t('admin.allShops')}</h2>
+                                <span className="text-[10px] text-slate-400">{companies.length} {t('admin.total')}</span>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm min-w-[600px]">
@@ -494,7 +499,7 @@ export default function AdminDashboard({
                                                         </div>
                                                         <div>
                                                             <p className="text-xs font-medium text-slate-800">{c.name}</p>
-                                                            <p className="text-[10px] text-slate-400">Joined {c.created_at}</p>
+                                                            <p className="text-[10px] text-slate-400">{t('admin.joined')} {c.created_at}</p>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -524,8 +529,8 @@ export default function AdminDashboard({
                                                         )}
                                                     >
                                                         {c.is_active
-                                                            ? <><ToggleRight className="h-3 w-3" /> Active</>
-                                                            : <><ToggleLeft className="h-3 w-3" /> Inactive</>
+                                                            ? <><ToggleRight className="h-3 w-3" /> {t('admin.activeShopsLabel')}</>
+                                                            : <><ToggleLeft className="h-3 w-3" /> {t('admin.inactiveLabel')}</>
                                                         }
                                                     </button>
                                                 </td>
@@ -551,12 +556,12 @@ export default function AdminDashboard({
                     {tab === 'activity' && (
                         <div className="bg-white border border-slate-100 shadow-sm rounded-2xl overflow-hidden">
                             <div className="px-4 lg:px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                                <h2 className="text-sm font-semibold text-slate-900">Recent Bookings</h2>
-                                <span className="text-[10px] text-slate-400">Last 30</span>
+                                <h2 className="text-sm font-semibold text-slate-900">{t('admin.recentBookings')}</h2>
+                                <span className="text-[10px] text-slate-400">{t('admin.last30')}</span>
                             </div>
                             <div className="divide-y divide-slate-100">
                                 {recent_activity.length === 0 && (
-                                    <p className="text-xs text-slate-400 text-center px-6 py-12">No activity yet.</p>
+                                    <p className="text-xs text-slate-400 text-center px-6 py-12">{t('admin.noActivity')}</p>
                                 )}
                                 {recent_activity.map(item => (
                                     <div key={item.id} className="flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-3 lg:py-4 hover:bg-slate-50 transition-colors">
@@ -570,7 +575,7 @@ export default function AdminDashboard({
                                                     {item.status.replace('_', ' ')}
                                                 </span>
                                             </div>
-                                            <p className="text-xs text-slate-500">{item.service} with {item.barber}</p>
+                                            <p className="text-xs text-slate-500">{item.service} {t('admin.with')} {item.barber}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5">
                                                 <Building2 className="h-3 w-3 text-slate-300" />
                                                 <span className="text-[11px] text-slate-400">{item.company_name}</span>
@@ -578,7 +583,7 @@ export default function AdminDashboard({
                                         </div>
                                         <div className="text-right shrink-0 hidden sm:block">
                                             <p className="text-xs text-slate-500">{item.starts_at}</p>
-                                            <p className="text-[11px] text-slate-400 mt-0.5">booked {item.created_at}</p>
+                                            <p className="text-[11px] text-slate-400 mt-0.5">{t('admin.booked')} {item.created_at}</p>
                                         </div>
                                     </div>
                                 ))}

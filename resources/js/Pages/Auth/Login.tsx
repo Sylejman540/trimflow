@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, ShieldCheck, Eye, EyeOff, Star, AlertCircle } from 'lucide-react';
@@ -21,6 +22,7 @@ function FreshioLogo({ dark = false }: { dark?: boolean }) {
 }
 
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
+    const { t } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -37,18 +39,10 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
     return (
         <div className="flex min-h-screen w-full bg-white font-sans">
-            <Head title="Sign In | Freshio" />
+            <Head title={t('auth.signInTitle')} />
 
             {/* LEFT: Brand panel */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&q=80&w=2000"
-                        className="w-full h-full object-cover"
-                        alt="Barber Shop"
-                    />
-                    <div className="absolute inset-0 bg-slate-900/85 backdrop-blur-[2px]" />
-                </div>
+            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-slate-900">
 
                 <div className="relative z-10">
                     <FreshioLogo />
@@ -56,25 +50,25 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
                 <div className="relative z-10">
                     <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
-                        Welcome <br />
-                        <span className="text-emerald-400 italic font-light">back.</span>
+                        {t('auth.welcomeBack')} <br />
+                        <span className="text-emerald-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
                     </h1>
                     <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
-                        Manage your shop, appointments and team — all in one place.
+                        {t('auth.welcomeBackSub')}
                     </p>
 
                     <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
                         <div className="flex gap-1 mb-3">
                             {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-emerald-400" />)}
                         </div>
-                        <p className="text-white text-xs font-medium italic">"Saves me hours every week. My clients love being able to book online."</p>
-                        <span className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">— Shop Owner</span>
+                        <p className="text-white text-xs font-medium italic">"{t('auth.testimonialLogin')}"</p>
+                        <span className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
                     </div>
                 </div>
 
                 <div className="relative z-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Secure login</span>
+                    <span>{t('auth.secureLogin')}</span>
                 </div>
             </div>
 
@@ -87,8 +81,8 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
                 <div className="w-full max-w-[380px]">
                     <div className="mb-10">
-                        <h2 className="text-4xl font-bold tracking-tight text-slate-900 mb-2">Sign in</h2>
-                        <p className="text-slate-500 text-sm">Enter your credentials to access your dashboard.</p>
+                        <h2 className="text-4xl font-bold tracking-tight text-slate-900 mb-2">{t('auth.signInHeading')}</h2>
+                        <p className="text-slate-500 text-sm">{t('auth.signInSub')}</p>
                     </div>
 
                     {status && (
@@ -107,7 +101,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
                     <form onSubmit={submit} className="space-y-7">
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Email</Label>
+                            <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{t('email')}</Label>
                             <Input
                                 type="email"
                                 value={data.email}
@@ -123,10 +117,10 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Password</Label>
+                                <Label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{t('auth.password')}</Label>
                                 {canResetPassword && (
                                     <Link href={route('password.request')} className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors">
-                                        Forgot?
+                                        {t('auth.forgot')}
                                     </Link>
                                 )}
                             </div>
@@ -158,7 +152,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                 className="h-4 w-4 rounded border-slate-200 text-slate-900 cursor-pointer"
                             />
                             <label htmlFor="remember" className="text-xs text-slate-500 cursor-pointer select-none">
-                                Keep me signed in
+                                {t('auth.keepSignedIn')}
                             </label>
                         </div>
 
@@ -168,15 +162,15 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                 disabled={processing}
                                 className="group relative flex h-12 w-full items-center justify-center rounded-xl bg-slate-900 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-700 active:scale-[0.98] disabled:opacity-50"
                             >
-                                {processing ? 'Signing in...' : 'Sign In'}
+                                {processing ? t('auth.signingIn') : t('auth.signInButton')}
                                 {!processing && <ArrowRight className="absolute right-5 h-4 w-4 transition-transform group-hover:translate-x-1" />}
                             </button>
                         </div>
 
                         <p className="text-center text-xs text-slate-400 pt-2">
-                            Don't have an account?{' '}
+                            {t('auth.noAccount')}{' '}
                             <Link href={route('register')} className="font-semibold text-slate-900 hover:underline">
-                                Create one
+                                {t('auth.createOne')}
                             </Link>
                         </p>
                     </form>

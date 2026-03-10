@@ -42,8 +42,8 @@ export default function Index({ company }: { company: Company }) {
     }
 
     return (
-        <AppLayout title="Settings">
-            <Head title="Settings" />
+        <AppLayout title={t('settingsPage.title')}>
+            <Head title={t('settingsPage.title')} />
 
             <div className="max-w-2xl mx-auto space-y-6">
 
@@ -51,17 +51,17 @@ export default function Index({ company }: { company: Company }) {
                     <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
                         <div className="flex items-center gap-2">
                             <Building2 className="h-4 w-4 text-slate-400" />
-                            <CardTitle className="text-base">Shop Information</CardTitle>
+                            <CardTitle className="text-base">{t('settingsPage.shopInfo')}</CardTitle>
                         </div>
                         <CardDescription className="text-xs text-slate-400 mt-0.5">
-                            Basic details about your shop visible to customers.
+                            {t('settingsPage.shopInfoDesc')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="px-4 lg:px-6 pb-4">
                         <form onSubmit={submit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Shop Name *</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.shopName')} *</Label>
                                     <Input
                                         value={data.name}
                                         onChange={e => setData('name', e.target.value)}
@@ -71,7 +71,7 @@ export default function Index({ company }: { company: Company }) {
                                     {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Email</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('email')}</Label>
                                     <Input
                                         type="email"
                                         value={data.email}
@@ -80,7 +80,7 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Phone</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('phone')}</Label>
                                     <Input
                                         type="tel"
                                         value={data.phone}
@@ -89,16 +89,16 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Timezone</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.timezone')}</Label>
                                     <Input
                                         value={data.timezone}
                                         onChange={e => setData('timezone', e.target.value)}
-                                        placeholder="e.g. Europe/London"
+                                        placeholder={t('settingsPage.timezonePlaceholder')}
                                         className="h-10 border-slate-200 shadow-none"
                                     />
                                 </div>
                                 <div className="sm:col-span-2 space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Street Address</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.streetAddress')}</Label>
                                     <Input
                                         value={data.address}
                                         onChange={e => setData('address', e.target.value)}
@@ -106,7 +106,7 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">City</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.city')}</Label>
                                     <Input
                                         value={data.city}
                                         onChange={e => setData('city', e.target.value)}
@@ -114,7 +114,7 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">State / Region</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.stateRegion')}</Label>
                                     <Input
                                         value={data.state}
                                         onChange={e => setData('state', e.target.value)}
@@ -122,7 +122,7 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">ZIP / Postal Code</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.zipPostal')}</Label>
                                     <Input
                                         value={data.zip}
                                         onChange={e => setData('zip', e.target.value)}
@@ -130,7 +130,7 @@ export default function Index({ company }: { company: Company }) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">Country</Label>
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.country')}</Label>
                                     <Input
                                         value={data.country}
                                         onChange={e => setData('country', e.target.value)}

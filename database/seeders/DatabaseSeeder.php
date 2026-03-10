@@ -135,7 +135,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Appointments (past + upcoming)
-        $statuses = ['completed', 'completed', 'completed', 'scheduled', 'confirmed'];
+        $statuses = ['completed', 'completed', 'completed', 'pending', 'confirmed'];
 
         for ($i = 0; $i < 30; $i++) {
             $barber = $barbers[array_rand($barbers)];

@@ -1,18 +1,10 @@
 import { Head, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { BarChart2, TrendingUp, Users, CheckCircle2, XCircle, AlertTriangle, DollarSign } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import AppLayout from '@/layouts/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCents } from '@/lib/utils';
-
-const PERIODS = [
-    { value: 'today',      label: 'Today' },
-    { value: 'this_week',  label: 'This Week' },
-    { value: 'this_month', label: 'This Month' },
-    { value: 'last_month', label: 'Last Month' },
-    { value: 'last_week',  label: 'Last Week' },
-    { value: 'this_year',  label: 'This Year' },
-];
 
 interface DayData   { date: string; revenue: number; count: number }
 interface BarberData { name: string; revenue: number; count: number }
@@ -57,6 +49,17 @@ export default function Index({
     revenue_by_service: ServiceData[];
     totals: Totals;
 }) {
+    const { t } = useTranslation();
+
+    const PERIODS = [
+        { value: 'today',      label: t('reports.periods.today') },
+        { value: 'this_week',  label: t('reports.periods.this_week') },
+        { value: 'this_month', label: t('reports.periods.this_month') },
+        { value: 'last_month', label: t('reports.periods.last_month') },
+        { value: 'last_week',  label: t('reports.periods.last_week') },
+        { value: 'this_year',  label: t('reports.periods.this_year') },
+    ];
+
     function changePeriod(p: string) {
         router.get(route('reports.index'), { period: p }, { preserveState: false });
     }
@@ -66,8 +69,8 @@ export default function Index({
         : 0;
 
     return (
-        <AppLayout title="Reports">
-            <Head title="Reports" />
+        <AppLayout title={t('reports.title')}>
+            <Head title={t('reports.title')} />
 
             <div className="space-y-6">
                 {/* Period selector */}
@@ -90,39 +93,39 @@ export default function Index({
                 {/* Summary cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     <StatCard
-                        label="Revenue"
+                        label={t('reports.revenue')}
                         value={formatCents(totals.revenue)}
-                        sub={totals.tips > 0 ? `+${formatCents(totals.tips)} tips` : undefined}
+                        sub={totals.tips > 0 ? `+${formatCents(totals.tips)} ${t('reports.tipsLabel')}` : undefined}
                         icon={DollarSign}
                         color="bg-emerald-50 text-emerald-600"
                     />
                     <StatCard
-                        label="Appointments"
+                        label={t('reports.appointments')}
                         value={String(totals.total)}
-                        sub={`${completionRate}% completion rate`}
+                        sub={`${completionRate}% ${t('reports.completionRate')}`}
                         icon={BarChart2}
                         color="bg-blue-50 text-blue-600"
                     />
                     <StatCard
-                        label="Completed"
+                        label={t('reports.completed')}
                         value={String(totals.completed)}
                         icon={CheckCircle2}
                         color="bg-green-50 text-green-600"
                     />
                     <StatCard
-                        label="Cancelled"
+                        label={t('reports.cancelled')}
                         value={String(totals.cancelled)}
                         icon={XCircle}
                         color="bg-red-50 text-red-500"
                     />
                     <StatCard
-                        label="No-shows"
+                        label={t('reports.noShows')}
                         value={String(totals.no_shows)}
                         icon={AlertTriangle}
                         color="bg-orange-50 text-orange-500"
                     />
                     <StatCard
-                        label="Tips Collected"
+                        label={t('reports.tipsCollected')}
                         value={formatCents(totals.tips)}
                         icon={TrendingUp}
                         color="bg-amber-50 text-amber-600"
@@ -133,7 +136,7 @@ export default function Index({
                 {revenue_by_day.length > 0 && (
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
-                            <CardTitle className="text-base">Revenue — {period_label}</CardTitle>
+                            <CardTitle className="text-base">{t('reports.revenue')} — {period_label}</CardTitle>
                         </CardHeader>
                         <CardContent className="px-2 pb-4">
                             <ResponsiveContainer width="100%" height={220}>
@@ -146,7 +149,7 @@ export default function Index({
                                         axisLine={false} tickLine={false} width={48}
                                     />
                                     <Tooltip
-                                        formatter={(v: number) => [formatCents(v), 'Revenue']}
+                                        formatter={(v: number) => [formatCents(v), t('reports.revenue')]}
                                         contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
                                     />
                                     <Bar dataKey="revenue" fill="#0f172a" radius={[4, 4, 0, 0]} />
@@ -162,12 +165,12 @@ export default function Index({
                         <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
                             <div className="flex items-center gap-2">
                                 <Users className="h-4 w-4 text-slate-400" />
-                                <CardTitle className="text-base">By Barber</CardTitle>
+                                <CardTitle className="text-base">{t('reports.byBarber')}</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="px-4 lg:px-6 pb-4">
                             {revenue_by_barber.length === 0 ? (
-                                <p className="text-sm text-slate-400 py-4 text-center">No data for this period.</p>
+                                <p className="text-sm text-slate-400 py-4 text-center">{t('reports.noData')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {revenue_by_barber.map((b, i) => {
@@ -177,7 +180,7 @@ export default function Index({
                                             <div key={i} className="space-y-1">
                                                 <div className="flex items-center justify-between text-sm">
                                                     <span className="font-medium text-slate-900 truncate">{b.name}</span>
-                                                    <span className="text-slate-500 shrink-0 ml-2">{formatCents(b.revenue)} · {b.count} appts</span>
+                                                    <span className="text-slate-500 shrink-0 ml-2">{formatCents(b.revenue)} · {b.count} {t('reports.apptsLabel')}</span>
                                                 </div>
                                                 <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                                     <div className="h-full bg-slate-900 rounded-full" style={{ width: `${pct}%` }} />
@@ -195,12 +198,12 @@ export default function Index({
                         <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
                             <div className="flex items-center gap-2">
                                 <TrendingUp className="h-4 w-4 text-slate-400" />
-                                <CardTitle className="text-base">By Service</CardTitle>
+                                <CardTitle className="text-base">{t('reports.byService')}</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="px-4 lg:px-6 pb-4">
                             {revenue_by_service.length === 0 ? (
-                                <p className="text-sm text-slate-400 py-4 text-center">No data for this period.</p>
+                                <p className="text-sm text-slate-400 py-4 text-center">{t('reports.noData')}</p>
                             ) : (
                                 <div className="space-y-3">
                                     {revenue_by_service.map((s, i) => {

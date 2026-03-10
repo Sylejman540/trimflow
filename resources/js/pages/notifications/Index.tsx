@@ -1,4 +1,5 @@
 import { Head, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,8 @@ export default function Index({
     notifications: NotificationItem[];
     unread_count: number;
 }) {
+    const { t } = useTranslation();
+
     function markAll() {
         router.post(route('notifications.read'), {}, { preserveScroll: true });
     }
@@ -44,7 +47,7 @@ export default function Index({
 
     return (
         <AppLayout
-            title="Notifications"
+            title={t('notif.title')}
             actions={
                 unread_count > 0 ? (
                     <Button
@@ -53,12 +56,12 @@ export default function Index({
                         className="h-8 text-[11px] font-bold text-slate-500 hover:text-slate-900"
                         onClick={markAll}
                     >
-                        Mark all as read
+                        {t('notif.markAllRead')}
                     </Button>
                 ) : undefined
             }
         >
-            <Head title="Notifications" />
+            <Head title={t('notif.title')} />
 
             <div className="w-full">
                 {/* Full-width container with no max-width to allow flexing left-to-right */}
@@ -66,7 +69,7 @@ export default function Index({
                     {notifications.length === 0 && (
                         <div className="flex flex-col items-center justify-center py-24 text-center">
                             <BellOff className="h-10 w-10 text-slate-200 mb-4" />
-                            <p className="text-sm font-medium text-slate-500">No notifications yet</p>
+                            <p className="text-sm font-medium text-slate-500">{t('notif.noNotifications')}</p>
                         </div>
                     )}
 
@@ -97,7 +100,7 @@ export default function Index({
                                         onClick={() => router.visit(route('appointments.show', n.data.appointment_id!))}
                                         className="flex-none text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-0.5"
                                     >
-                                        View <ArrowRight className="h-3 w-3" />
+                                        {t('notif.view')} <ArrowRight className="h-3 w-3" />
                                     </button>
                                 )}
                             </div>
@@ -113,7 +116,7 @@ export default function Index({
                                     <button
                                         onClick={() => markOne(n.id)}
                                         className="h-6 w-6 flex items-center justify-center rounded-full hover:bg-blue-100 transition-all"
-                                        title="Mark as read"
+                                        title={t('notif.markAsRead')}
                                     >
                                         <div className="h-1.5 w-1.5 rounded-full bg-blue-600" />
                                     </button>

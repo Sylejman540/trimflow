@@ -130,8 +130,8 @@ export default function Show({
                     {can_edit && appointment.status === 'pending' && (
                         <div className="mb-4 flex items-center justify-between gap-4 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3">
                             <div>
-                                <p className="text-sm font-semibold text-orange-800">New booking request</p>
-                                <p className="text-xs text-orange-600 mt-0.5">This appointment is waiting for your confirmation.</p>
+                                <p className="text-sm font-semibold text-orange-800">{t('show.newBookingRequest')}</p>
+                                <p className="text-xs text-orange-600 mt-0.5">{t('show.newBookingRequestSub')}</p>
                             </div>
                             <button
                                 onClick={() => router.patch(route('appointments.confirm', appointment.id))}

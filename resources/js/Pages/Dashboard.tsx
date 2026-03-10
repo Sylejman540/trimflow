@@ -80,6 +80,7 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
 }
 
 function SetupChecklist({ setup }: { setup: Setup }) {
+    const { t } = useTranslation();
     const [copied, setCopied] = useState(false);
 
     function copyLink() {
@@ -107,26 +108,26 @@ function SetupChecklist({ setup }: { setup: Setup }) {
         {
             done: setup.shop_info,
             icon: Building2,
-            label: 'Fill in your shop info',
-            sub: 'Add your phone number and address',
+            label: t('setup.shopInfoLabel'),
+            sub: t('setup.shopInfoSub'),
             href: route('settings.index'),
-            linkLabel: 'Go to Settings',
+            linkLabel: t('setup.shopInfoLink'),
         },
         {
             done: setup.has_barbers,
             icon: Users,
-            label: 'Add your barbers',
-            sub: 'Set up barber profiles and working hours',
+            label: t('setup.barbersLabel'),
+            sub: t('setup.barbersSub'),
             href: route('barbers.index'),
-            linkLabel: 'Add Barbers',
+            linkLabel: t('setup.barbersLink'),
         },
         {
             done: setup.has_services,
             icon: Scissors,
-            label: 'Add your services',
-            sub: 'Define what you offer with prices and durations',
+            label: t('setup.servicesLabel'),
+            sub: t('setup.servicesSub'),
             href: route('services.index'),
-            linkLabel: 'Add Services',
+            linkLabel: t('setup.servicesLink'),
         },
     ];
 
@@ -137,8 +138,8 @@ function SetupChecklist({ setup }: { setup: Setup }) {
             <CardHeader className="px-4 lg:px-6 pt-4 pb-3">
                 <div className="flex items-center gap-2">
                     <Rocket className="h-4 w-4 text-slate-400" />
-                    <CardTitle className="text-base">Getting Started</CardTitle>
-                    <span className="ml-auto text-xs font-semibold text-slate-400">{doneCount}/{steps.length} done</span>
+                    <CardTitle className="text-base">{t('setup.title')}</CardTitle>
+                    <span className="ml-auto text-xs font-semibold text-slate-400">{doneCount}/{steps.length} {t('setup.done')}</span>
                 </div>
                 <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -171,11 +172,11 @@ function SetupChecklist({ setup }: { setup: Setup }) {
 
                 {/* Booking link row */}
                 <div className="flex items-start gap-3 pt-1 border-t border-slate-100">
-                    <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500`}>
+                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500">
                         <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900">Share your booking link</p>
+                        <p className="text-sm font-medium text-slate-900">{t('setup.shareLink')}</p>
                         <p className="text-xs text-slate-400 mt-0.5 truncate">{setup.booking_link}</p>
                     </div>
                     <button
@@ -183,7 +184,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
                         className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-900 hover:underline"
                     >
                         {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                        {copied ? 'Copied!' : 'Copy'}
+                        {copied ? t('setup.copied') : t('setup.copy')}
                     </button>
                 </div>
             </CardContent>

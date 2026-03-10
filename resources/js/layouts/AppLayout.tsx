@@ -373,7 +373,7 @@ export default function AppLayout({
                                 className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
                                 <Zap className="h-3.5 w-3.5 fill-current" />
-                                <span className="hidden xs:inline">Walk-in</span>
+                                <span className="hidden xs:inline">{t('dash.walkin')}</span>
                             </button>
                         )}
 
