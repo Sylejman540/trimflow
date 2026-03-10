@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\BarberController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
@@ -43,13 +42,11 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::resource('barbers', BarberController::class)->except(['show']);
     Route::get('/barbers/{barber}/schedule', [BarberController::class, 'schedule'])->name('barbers.schedule');
     Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
-    Route::resource('customers', CustomerController::class);
     Route::resource('appointments', AppointmentController::class);
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
     Route::post('appointments/bulk', [AppointmentController::class, 'bulkAction'])->name('appointments.bulk');
     Route::middleware('role:shop-admin|platform-admin')->group(function () {
         Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
-        Route::get('/export/customers', [ExportController::class, 'customers'])->name('export.customers');
     });
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
