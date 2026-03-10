@@ -615,9 +615,20 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                 <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errors.barber_id}</p>
                             )}
 
+                            {turnstile_site_key && (
+                                <div className="flex justify-center">
+                                    <Turnstile
+                                        siteKey={turnstile_site_key}
+                                        onSuccess={token => setData('cf_turnstile_response', token)}
+                                        onExpire={() => setData('cf_turnstile_response', '')}
+                                        onError={() => setData('cf_turnstile_response', '')}
+                                    />
+                                </div>
+                            )}
+
                             <Button
                                 type="submit"
-                                disabled={processing || !data.customer_name || !data.customer_phone}
+                                disabled={processing || !data.customer_name || !data.customer_phone || (!!turnstile_site_key && !data.cf_turnstile_response)}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (
