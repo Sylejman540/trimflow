@@ -74,17 +74,17 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
     return (
         <div className={cn(
             'rounded-2xl p-5 flex flex-col gap-4',
-            accent ? 'bg-emerald-500' : 'bg-white/5 border border-white/8'
+            accent ? 'bg-slate-900' : 'bg-white border border-slate-100 shadow-sm'
         )}>
-            <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', accent ? 'bg-white/20' : 'bg-white/10')}>
+            <div className={cn('flex h-9 w-9 items-center justify-center rounded-xl', accent ? 'bg-white/10' : 'bg-slate-50')}>
                 {icon}
             </div>
             <div>
-                <p className="text-2xl font-bold text-white tracking-tight">{value}</p>
-                <p className={cn('text-xs font-medium mt-0.5', accent ? 'text-white/80' : 'text-white/50')}>{label}</p>
-                {sub && !trend && <p className={cn('text-[11px] mt-0.5', accent ? 'text-white/60' : 'text-white/30')}>{sub}</p>}
+                <p className={cn('text-2xl font-bold tracking-tight', accent ? 'text-white' : 'text-slate-900')}>{value}</p>
+                <p className={cn('text-xs font-medium mt-0.5', accent ? 'text-white/70' : 'text-slate-500')}>{label}</p>
+                {sub && !trend && <p className={cn('text-[11px] mt-0.5', accent ? 'text-white/40' : 'text-slate-400')}>{sub}</p>}
                 {trend && (
-                    <div className={cn('flex items-center gap-1 text-[11px] font-semibold mt-1', trend.up ? 'text-emerald-300' : 'text-red-400')}>
+                    <div className={cn('flex items-center gap-1 text-[11px] font-semibold mt-1', trend.up ? 'text-emerald-600' : 'text-red-500')}>
                         {trend.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {trend.pct}% vs last month
                     </div>
