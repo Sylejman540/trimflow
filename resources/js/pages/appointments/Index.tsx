@@ -497,14 +497,7 @@ export default function Index({
                             <span className="sm:hidden">{filter_mine ? t('appt.mine') : t('all')}</span>
                         </button>
                     )}
-                    <a
-                        href={route('export.appointments')}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 w-9 p-0 flex items-center justify-center rounded-lg border-slate-200 shadow-none')}
-                        title={t('appt.exportCsv')}
-                    >
-                        <Download className="h-3.5 w-3.5" />
-                    </a>
-                    {can_create && (
+{can_create && (
                         <Link href={route('appointments.create')} className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
                             <Plus className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t('appt.new')}</span>
