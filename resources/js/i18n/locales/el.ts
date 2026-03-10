@@ -214,6 +214,10 @@ export default {
         generalist: 'Γενικός',
         deleteConfirm: 'Είστε σίγουροι ότι θέλετε να αφαιρέσετε αυτόν τον κουρέα; Αυτό θα επηρεάσει τη διαθεσιμότητά του και το μελλοντικό πρόγραμμά του.',
         bioPlaceholder: 'Μια σύντομη περιγραφή του υπόβαθρου και του στυλ του κουρέα…',
+        namePlaceholder: 'π.χ. Γιώργος Παπαδόπουλος',
+        emailPlaceholder: 'koureas@paradeigma.gr',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'π.χ. Skin Fades, Διαμόρφωση γενειάδας',
     },
 
     cust: {
