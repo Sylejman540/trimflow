@@ -177,6 +177,8 @@ export default {
         clearColor: 'Wyczyść',
         descPlaceholder: 'Podaj szczegóły dotyczące tej usługi…',
         deleteConfirm: 'Czy na pewno chcesz usunąć tę usługę? Tej operacji nie można cofnąć.',
+        serviceNamePlaceholder: 'np. Klasyczne strzyżenie',
+        categoryPlaceholder: 'np. Strzyżenia',
         noServices: 'Brak usług.',
         created: 'Usługa utworzona.',
         updated: 'Usługa zaktualizowana.',
