@@ -21,6 +21,8 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AppointmentProductController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\ManyChatWebhookController;
@@ -44,6 +46,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::resource('customers', CustomerController::class);
     Route::resource('appointments', AppointmentController::class);
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    Route::post('appointments/bulk', [AppointmentController::class, 'bulkAction'])->name('appointments.bulk');
     Route::middleware('role:shop-admin|platform-admin')->group(function () {
         Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
         Route::get('/export/customers', [ExportController::class, 'customers'])->name('export.customers');
@@ -66,6 +69,12 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
 
     Route::get('/search', SearchController::class)->name('search');
+
+    Route::middleware('role:shop-admin|platform-admin')->group(function () {
+        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::patch('/settings/company', [SettingsController::class, 'updateCompany'])->name('settings.company');
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    });
 });
 
 // Platform super-admin panel

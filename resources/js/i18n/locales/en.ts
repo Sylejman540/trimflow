@@ -66,6 +66,7 @@ export default {
         account: 'Account',
         myProfile: 'My Profile',
         signOut: 'Sign Out',
+        settings: 'Settings',
     },
 
     // Dashboard
@@ -75,6 +76,7 @@ export default {
         activeBarbers: 'Active Barbers',
         activeServices: 'Active Services',
         revenueToday: "Today's Revenue",
+        pendingConfirmation: 'Pending Confirmation',
         upcomingAppointments: 'Upcoming Appointments',
         recentActivity: 'Recent Activity',
         noUpcoming: 'No upcoming appointments.',

@@ -396,6 +396,43 @@ class AppointmentController extends Controller
         }
     }
 
+    public function bulkAction(Request $request)
+    {
+        $this->authorize('create', Appointment::class);
+
+        $validated = $request->validate([
+            'action' => 'required|in:confirm,cancel',
+            'ids'    => 'required|array|min:1|max:100',
+            'ids.*'  => 'integer',
+        ]);
+
+        $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
+
+        $query = Appointment::whereIn('id', $validated['ids']);
+
+        if ($isBarber && $user->barber) {
+            $query->where('barber_id', $user->barber->id);
+        }
+
+        $appointments = $query->get();
+
+        foreach ($appointments as $appointment) {
+            if (! $user->can('update', $appointment)) continue;
+
+            if ($validated['action'] === 'confirm' && $appointment->status === 'pending') {
+                $appointment->update(['status' => 'confirmed']);
+            } elseif ($validated['action'] === 'cancel' && ! in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
+                $appointment->update(['status' => 'cancelled']);
+            }
+        }
+
+        $count = $appointments->count();
+        $label = $validated['action'] === 'confirm' ? 'confirmed' : 'cancelled';
+
+        return back()->with('success', "{$count} appointment(s) {$label}.");
+    }
+
     public function confirm(Appointment $appointment)
     {
         $this->authorize('update', $appointment);

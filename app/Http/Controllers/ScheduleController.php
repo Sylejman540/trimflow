@@ -19,7 +19,7 @@ class ScheduleController extends Controller
         $filterMine    = $isOwnerBarber && $request->boolean('mine');
         $barberId      = ($isBarber || $filterMine) ? $user->barber?->id : null;
 
-        $view = $request->get('view', 'week'); // 'day' or 'week'
+        $view = $request->get('view', 'week'); // 'day', 'week', or 'month'
         $date = $request->get('date', Carbon::today()->toDateString());
 
         $anchor = Carbon::parse($date);
@@ -27,6 +27,9 @@ class ScheduleController extends Controller
         if ($view === 'week') {
             $start = $anchor->copy()->startOfWeek();
             $end   = $anchor->copy()->endOfWeek();
+        } elseif ($view === 'month') {
+            $start = $anchor->copy()->startOfMonth()->startOfWeek(); // include leading days from prev month
+            $end   = $anchor->copy()->endOfMonth()->endOfWeek();
         } else {
             $start = $anchor->copy()->startOfDay();
             $end   = $anchor->copy()->endOfDay();

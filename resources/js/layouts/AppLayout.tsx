@@ -20,6 +20,9 @@ import {
     Zap,
     X,
     Package,
+    Settings,
+    BarChart2,
+    Users,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -151,10 +154,13 @@ const navConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',        icon: LayoutDashboard, active: 'dashboard',          labelKey: 'nav.dashboard' },
     { href: '/appointments',     icon: CalendarDays,    active: 'appointments.*',     labelKey: 'nav.appointments' },
     { href: '/schedule',         icon: LayoutGrid,      active: 'schedule.*',         labelKey: 'nav.schedule' },
+    { href: '/customers',        icon: Users,           active: 'customers.*',        labelKey: 'nav.customers',  roles: ['platform-admin', 'shop-admin', 'barber'] },
     { href: '/services',         icon: Scissors,        active: 'services.*',         labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
     { href: '/products',         icon: Package,         active: 'products.*',         labelKey: 'nav.products',  roles: ['shop-admin', 'platform-admin'] },
     { href: '/barbers',          icon: Briefcase,       active: 'barbers.*',          labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
     { href: '/barbers/time-off', icon: PalmtreeIcon,    active: 'barbers.time-off.*', labelKey: 'timeoff.title', roles: ['platform-admin', 'shop-admin'] },
+    { href: '/reports',          icon: BarChart2,       active: 'reports.*',          labelKey: 'nav.reports',   roles: ['platform-admin', 'shop-admin'] },
+    { href: '/settings',         icon: Settings,        active: 'settings.*',         labelKey: 'nav.settings',  roles: ['platform-admin', 'shop-admin'] },
 ] as any[];
 
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [

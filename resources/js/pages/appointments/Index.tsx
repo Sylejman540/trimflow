@@ -347,6 +347,32 @@ export default function Index({
     const [globalSearch, setGlobalSearch] = useState(filters?.search ?? '');
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
     const [quickBookOpen, setQuickBookOpen] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+    const [bulkProcessing, setBulkProcessing] = useState(false);
+
+    function toggleSelect(id: number) {
+        setSelectedIds(prev => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+    }
+
+    function toggleSelectAll() {
+        if (selectedIds.size === filtered.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filtered.map(a => a.id)));
+        }
+    }
+
+    function bulkAction(action: 'confirm' | 'cancel') {
+        if (selectedIds.size === 0 || bulkProcessing) return;
+        setBulkProcessing(true);
+        router.post(route('appointments.bulk'), { action, ids: Array.from(selectedIds) }, {
+            onFinish: () => { setBulkProcessing(false); setSelectedIds(new Set()); },
+        });
+    }
 
     function toggleMine() {
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
@@ -370,6 +396,25 @@ export default function Index({
     });
 
     const columns: ColumnDef<Appointment>[] = [
+        {
+            id: 'select',
+            header: () => (
+                <input
+                    type="checkbox"
+                    checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                    onChange={toggleSelectAll}
+                    className="rounded border-slate-300 h-4 w-4 accent-slate-900"
+                />
+            ),
+            cell: ({ row }) => (
+                <input
+                    type="checkbox"
+                    checked={selectedIds.has(row.original.id)}
+                    onChange={() => toggleSelect(row.original.id)}
+                    className="rounded border-slate-300 h-4 w-4 accent-slate-900"
+                />
+            ),
+        },
         {
             accessorKey: 'starts_at',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.startsAt').toUpperCase()}</span>,
@@ -548,6 +593,33 @@ export default function Index({
                         </Select>
                     </div>
                 </div>
+
+                {/* Bulk action bar */}
+                {selectedIds.size > 0 && (
+                    <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
+                        <span className="text-sm font-semibold flex-1">{selectedIds.size} selected</span>
+                        <button
+                            onClick={() => bulkAction('confirm')}
+                            disabled={bulkProcessing}
+                            className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                        >
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Confirm all
+                        </button>
+                        <button
+                            onClick={() => bulkAction('cancel')}
+                            disabled={bulkProcessing}
+                            className="flex items-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                        >
+                            <Trash2 className="h-3.5 w-3.5" /> Cancel all
+                        </button>
+                        <button
+                            onClick={() => setSelectedIds(new Set())}
+                            className="text-xs text-white/60 hover:text-white transition-colors"
+                        >
+                            Clear
+                        </button>
+                    </div>
+                )}
 
                 {/* Mobile card list */}
                 <div className="sm:hidden space-y-2">

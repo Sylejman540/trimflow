@@ -15,8 +15,6 @@ import es from './locales/es';
 import bg from './locales/bg';
 import tr from './locales/tr';
 import ru from './locales/ru';
-import sr from './locales/sr';
-
 export const LANGUAGES = [
     { code: 'en', label: 'English',    flag: '🇬🇧' },
     { code: 'sq', label: 'Shqip',      flag: '🇦🇱' },
@@ -31,7 +29,6 @@ export const LANGUAGES = [
     { code: 'bg', label: 'Български',  flag: '🇧🇬' },
     { code: 'tr', label: 'Türkçe',     flag: '🇹🇷' },
     { code: 'ru', label: 'Русский',    flag: '🇷🇺' },
-    { code: 'sr', label: 'Srpski',     flag: '🇷🇸' },
 ] as const;
 
 i18n
@@ -52,10 +49,9 @@ i18n
             bg: { translation: bg },
             tr: { translation: tr },
             ru: { translation: ru },
-            sr: { translation: sr },
         },
         fallbackLng: 'en',
-        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'hr', 'pl', 'pt', 'es', 'bg', 'tr', 'ru', 'sr'],
+        supportedLngs: ['en', 'sq', 'de', 'fr', 'it', 'el', 'hr', 'pl', 'pt', 'es', 'bg', 'tr', 'ru'],
         interpolation: { escapeValue: false },
         initImmediate: false,
         detection: {

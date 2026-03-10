@@ -1,5 +1,5 @@
-import { Head, router } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid, GripVertical, Clock, User, Scissors } from 'lucide-react';
+import { Head, router, Link } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight, CalendarDays, LayoutGrid, GripVertical, Clock, User, Scissors, CalendarRange } from 'lucide-react';
 import { useMemo, useEffect, useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
@@ -238,6 +238,86 @@ function MobileListView({ appointments, date, navigate }: {
     );
 }
 
+function monthDates(anchorDate: string): string[] {
+    const d = new Date(anchorDate + 'T12:00:00');
+    const year = d.getFullYear();
+    const month = d.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    // pad start to Monday
+    const startPad = (firstDay.getDay() + 6) % 7;
+    const endPad = (7 - lastDay.getDay()) % 7;
+    const dates: string[] = [];
+    for (let i = -startPad; i <= lastDay.getDate() - 1 + endPad; i++) {
+        const dd = new Date(year, month, 1 + i);
+        dates.push(dd.toISOString().split('T')[0]);
+    }
+    return dates;
+}
+
+function fmtMonthYear(dateStr: string) {
+    return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function MonthView({ date, apptsByDay }: { date: string; apptsByDay: Record<string, ApptSlot[]> }) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const cells = monthDates(date);
+    const anchorMonth = new Date(date + 'T12:00:00').getMonth();
+
+    return (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="grid grid-cols-7 border-b border-slate-200">
+                {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d => (
+                    <div key={d} className="py-2 text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider border-r border-slate-100 last:border-r-0">
+                        {d}
+                    </div>
+                ))}
+            </div>
+            <div className="grid grid-cols-7">
+                {cells.map((cell, i) => {
+                    const isCurrentMonth = new Date(cell + 'T12:00:00').getMonth() === anchorMonth;
+                    const isToday = cell === todayStr;
+                    const appts = apptsByDay[cell] ?? [];
+                    return (
+                        <div
+                            key={cell}
+                            className={cn(
+                                'min-h-[80px] p-1.5 border-r border-b border-slate-100 last:border-r-0',
+                                !isCurrentMonth && 'bg-slate-50/50',
+                            )}
+                        >
+                            <div className={cn(
+                                'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold mb-1',
+                                isToday ? 'bg-slate-900 text-white' : isCurrentMonth ? 'text-slate-700' : 'text-slate-300',
+                            )}>
+                                {new Date(cell + 'T12:00:00').getDate()}
+                            </div>
+                            <div className="space-y-0.5">
+                                {appts.slice(0, 3).map(a => (
+                                    <Link
+                                        key={a.id}
+                                        href={route('appointments.show', a.id)}
+                                        className={cn(
+                                            'block truncate text-[10px] font-medium px-1 py-0.5 rounded leading-tight',
+                                            STATUS_COLORS[a.status] ?? 'bg-slate-50 border border-slate-200 text-slate-700',
+                                            'border',
+                                        )}
+                                    >
+                                        {fmtTime(a.starts_at)} {a.customer}
+                                    </Link>
+                                ))}
+                                {appts.length > 3 && (
+                                    <p className="text-[10px] text-slate-400 px-1">+{appts.length - 3} more</p>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
 export default function Index({
     appointments: initialAppointments,
     view,
@@ -249,7 +329,7 @@ export default function Index({
     hour_end = 21,
 }: {
     appointments: ApptSlot[];
-    view: 'day' | 'week';
+    view: 'day' | 'week' | 'month';
     date: string;
     start: string;
     end: string;
@@ -299,6 +379,12 @@ export default function Index({
     const effectiveView = isMobile ? 'day' : view;
     const days = effectiveView === 'week' ? weekDates(date) : [date];
 
+    function addMonths(dateStr: string, n: number) {
+        const d = new Date(dateStr + 'T12:00:00');
+        d.setMonth(d.getMonth() + n, 1);
+        return d.toISOString().split('T')[0];
+    }
+
     const apptsByDay = useMemo(() => {
         const map: Record<string, ApptSlot[]> = {};
         for (const appt of appointments) {
@@ -310,8 +396,19 @@ export default function Index({
     }, [appointments]);
 
     function navigate(delta: number) {
-        const newDate = effectiveView === 'week' ? addDays(start, delta * 7) : addDays(date, delta);
+        let newDate: string;
+        if (effectiveView === 'month') {
+            newDate = addMonths(date, delta);
+        } else if (effectiveView === 'week') {
+            newDate = addDays(start, delta * 7);
+        } else {
+            newDate = addDays(date, delta);
+        }
         router.get(route('schedule.index'), { view: effectiveView, date: newDate, ...(filter_mine ? { mine: '1' } : {}) }, { preserveState: false });
+    }
+
+    function setView(v: 'day' | 'week' | 'month') {
+        router.get(route('schedule.index'), { view: v, date, ...(filter_mine ? { mine: '1' } : {}) }, { preserveState: false });
     }
 
     function toggleView() {
@@ -429,15 +526,29 @@ export default function Index({
                         </button>
                     )}
                     {!isMobile && (
-                        <button
-                            onClick={toggleView}
-                            className={cn(buttonVariants({ variant: 'outline' }), 'h-9 w-9 p-0 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
-                        >
-                            {effectiveView === 'week'
-                                ? <CalendarDays className="h-3.5 w-3.5" />
-                                : <LayoutGrid className="h-3.5 w-3.5" />
-                            }
-                        </button>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden">
+                            <button
+                                onClick={() => setView('day')}
+                                title="Day view"
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'day' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                            >
+                                <CalendarDays className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                                onClick={() => setView('week')}
+                                title="Week view"
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'week' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                            >
+                                <LayoutGrid className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                                onClick={() => setView('month')}
+                                title="Month view"
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs transition-colors', effectiveView === 'month' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                            >
+                                <CalendarRange className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
                     )}
                     <div className="hidden sm:flex items-center gap-1">
                         <button onClick={() => navigate(-1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
@@ -476,6 +587,11 @@ export default function Index({
                 </div>
             )}
 
+            {/* Month label */}
+            {effectiveView === 'month' && (
+                <p className="text-sm font-semibold text-slate-700 mb-3">{fmtMonthYear(date)}</p>
+            )}
+
             {/* Mobile: card list */}
             {isMobile ? (
                 <MobileListView
@@ -483,6 +599,8 @@ export default function Index({
                     date={date}
                     navigate={navigate}
                 />
+            ) : effectiveView === 'month' ? (
+                <MonthView date={date} apptsByDay={apptsByDay} />
             ) : (
                 /* Desktop: time grid */
                 <div ref={gridRef} className={cn('bg-white border border-slate-200 rounded-xl overflow-hidden', dragging ? 'select-none cursor-grabbing' : '')}>
