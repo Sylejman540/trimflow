@@ -17,6 +17,7 @@ class AdminDashboardController extends Controller
     {
         abort_unless(auth()->user()->hasRole('platform-admin'), 403);
 
+        // ── Companies ─────────────────────────────────────────────────────────
         $companies = Company::withCount(['users', 'barbers', 'appointments', 'customers'])
             ->withSum(['appointments as revenue' => fn ($q) => $q->where('status', 'completed')], 'price')
             ->withMax('appointments as last_booking_at', 'created_at')
@@ -30,6 +31,7 @@ class AdminDashboardController extends Controller
                 'phone'              => $c->phone,
                 'address'            => $c->address,
                 'is_active'          => $c->is_active,
+                'created_at'         => Carbon::parse($c->created_at)->format('M j, Y'),
                 'users_count'        => $c->users_count,
                 'barbers_count'      => $c->barbers_count,
                 'appointments_count' => $c->appointments_count,
@@ -40,42 +42,77 @@ class AdminDashboardController extends Controller
                     : 'Never',
             ]);
 
-        // Platform-wide totals
+        // ── Platform-wide totals ───────────────────────────────────────────────
+        $totalAppts      = Appointment::count();
+        $cancelledAppts  = Appointment::whereIn('status', ['cancelled', 'no_show'])->count();
+        $todayAppts      = Appointment::whereDate('starts_at', today())->count();
+        $totalRevenue    = (int) Appointment::where('status', 'completed')->sum('price');
+        $monthRevenue    = (int) Appointment::where('status', 'completed')
+            ->whereMonth('starts_at', now()->month)
+            ->whereYear('starts_at', now()->year)
+            ->sum('price');
+        $prevMonthRevenue = (int) Appointment::where('status', 'completed')
+            ->whereMonth('starts_at', now()->subMonth()->month)
+            ->whereYear('starts_at', now()->subMonth()->year)
+            ->sum('price');
+
         $totals = [
-            'companies'            => Company::count(),
-            'active_companies'     => Company::where('is_active', true)->count(),
-            'users'                => User::count(),
-            'appointments'         => Appointment::count(),
-            'appointments_today'   => Appointment::whereDate('starts_at', today())->count(),
-            'revenue'              => (int) Appointment::where('status', 'completed')->sum('price'),
-            'revenue_this_month'   => (int) Appointment::where('status', 'completed')
-                ->whereMonth('starts_at', now()->month)
-                ->whereYear('starts_at', now()->year)
-                ->sum('price'),
-            'customers'            => Customer::count(),
-            'cancellation_rate'    => $this->cancellationRate(),
+            'companies'           => Company::count(),
+            'active_companies'    => Company::where('is_active', true)->count(),
+            'users'               => User::count(),
+            'appointments'        => $totalAppts,
+            'appointments_today'  => $todayAppts,
+            'revenue'             => $totalRevenue,
+            'revenue_this_month'  => $monthRevenue,
+            'revenue_prev_month'  => $prevMonthRevenue,
+            'customers'           => Customer::count(),
+            'cancellation_rate'   => $totalAppts > 0
+                ? (int) round($cancelledAppts / $totalAppts * 100)
+                : 0,
         ];
 
-        // Bookings per day for the last 14 days (sparkline data)
-        $bookingsByDay = Appointment::select(
+        // ── Bookings per day — last 30 days ────────────────────────────────────
+        $raw = Appointment::select(
                 DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as count')
+                DB::raw('COUNT(*) as bookings')
             )
-            ->where('created_at', '>=', now()->subDays(13)->startOfDay())
+            ->where('created_at', '>=', now()->subDays(29)->startOfDay())
             ->groupBy('date')
             ->orderBy('date')
             ->get()
-            ->keyBy('date')
-            ->map(fn ($r) => $r->count);
+            ->keyBy('date');
 
-        // Fill in zeros for missing days
-        $sparkline = [];
-        for ($i = 13; $i >= 0; $i--) {
+        $chartData = [];
+        for ($i = 29; $i >= 0; $i--) {
             $d = now()->subDays($i)->toDateString();
-            $sparkline[] = ['date' => $d, 'count' => (int) ($bookingsByDay[$d] ?? 0)];
+            $chartData[] = [
+                'date'     => now()->subDays($i)->format('M j'),
+                'bookings' => (int) ($raw[$d]->bookings ?? 0),
+            ];
         }
 
-        // Top 5 shops by revenue this month
+        // ── Revenue per month — last 6 months ─────────────────────────────────
+        $revenueMonths = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m   = now()->subMonths($i);
+            $rev = (int) Appointment::where('status', 'completed')
+                ->whereYear('starts_at', $m->year)
+                ->whereMonth('starts_at', $m->month)
+                ->sum('price');
+            $revenueMonths[] = ['month' => $m->format('M'), 'revenue' => $rev];
+        }
+
+        // ── Appointments by status (all time) ─────────────────────────────────
+        $byStatus = Appointment::select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+
+        $statusBreakdown = collect(['confirmed', 'completed', 'cancelled', 'pending', 'no_show', 'in_progress'])
+            ->map(fn ($s) => ['status' => $s, 'count' => (int) ($byStatus[$s]->count ?? 0)])
+            ->values();
+
+        // ── Top 5 shops by revenue this month ─────────────────────────────────
         $topShops = Company::withSum(
                 ['appointments as month_revenue' => fn ($q) => $q
                     ->where('status', 'completed')
@@ -91,10 +128,10 @@ class AdminDashboardController extends Controller
                 'revenue' => (int) ($c->month_revenue ?? 0),
             ]);
 
-        // Recent activity: last 25 appointments across all companies
+        // ── Recent activity ────────────────────────────────────────────────────
         $recentActivity = Appointment::with(['company', 'customer', 'service', 'barber.user'])
             ->latest()
-            ->limit(25)
+            ->limit(30)
             ->get()
             ->map(fn ($a) => [
                 'id'           => $a->id,
@@ -108,12 +145,27 @@ class AdminDashboardController extends Controller
                 'created_at'   => $a->created_at->diffForHumans(),
             ]);
 
+        // ── New shops — last 7 days ────────────────────────────────────────────
+        $newShops = Company::where('created_at', '>=', now()->subDays(7))
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($c) => [
+                'id'         => $c->id,
+                'name'       => $c->name,
+                'slug'       => $c->slug,
+                'is_active'  => $c->is_active,
+                'created_at' => Carbon::parse($c->created_at)->diffForHumans(),
+            ]);
+
         return Inertia::render('admin/Dashboard', [
-            'companies'       => $companies,
-            'totals'          => $totals,
-            'sparkline'       => $sparkline,
-            'top_shops'       => $topShops,
-            'recent_activity' => $recentActivity,
+            'companies'        => $companies,
+            'totals'           => $totals,
+            'chart_data'       => $chartData,
+            'revenue_months'   => $revenueMonths,
+            'status_breakdown' => $statusBreakdown,
+            'top_shops'        => $topShops,
+            'recent_activity'  => $recentActivity,
+            'new_shops'        => $newShops,
         ]);
     }
 
@@ -124,13 +176,5 @@ class AdminDashboardController extends Controller
         $company->update(['is_active' => ! $company->is_active]);
 
         return back()->with('success', $company->is_active ? 'Shop activated.' : 'Shop deactivated.');
-    }
-
-    private function cancellationRate(): int
-    {
-        $total = Appointment::whereIn('status', ['completed', 'cancelled', 'no_show'])->count();
-        if ($total === 0) return 0;
-        $cancelled = Appointment::whereIn('status', ['cancelled', 'no_show'])->count();
-        return (int) round($cancelled / $total * 100);
     }
 }
