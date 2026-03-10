@@ -214,6 +214,10 @@ export default {
         generalist: 'Generalista',
         deleteConfirm: 'Czy na pewno chcesz usunąć tego fryzjera? Wpłynie to na jego dostępność i przyszły harmonogram.',
         bioPlaceholder: 'Krótki opis doświadczenia i stylu fryzjera…',
+        namePlaceholder: 'np. Jan Kowalski',
+        emailPlaceholder: 'fryzjer@przyklad.pl',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'np. Skin Fades, Stylizacja brody',
     },
 
     cust: {
