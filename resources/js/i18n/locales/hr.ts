@@ -214,6 +214,10 @@ export default {
         generalist: 'Generalist',
         deleteConfirm: 'Jeste li sigurni da želite ukloniti ovog brijača? To će utjecati na njegovu dostupnost i buduće rasporede.',
         bioPlaceholder: 'Kratki opis iskustva i stila brijača…',
+        namePlaceholder: 'npr. Marko Horvat',
+        emailPlaceholder: 'brijac@primjer.hr',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'npr. Skin Fades, Oblikovanje brade',
     },
 
     cust: {
