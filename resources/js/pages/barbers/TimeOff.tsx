@@ -61,13 +61,13 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
         <AppLayout
             title={t('timeoff.title')}
             actions={
-                <Button
+                <button
                     onClick={() => setAddOpen(true)}
-                    className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-4 rounded-lg text-xs font-bold shadow-none flex items-center gap-2"
+                    className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm"
                 >
                     <Plus className="h-3.5 w-3.5" />
-                    <span>{t('timeoff.add')}</span>
-                </Button>
+                    <span className="hidden sm:inline">{t('timeoff.add')}</span>
+                </button>
             }
         >
             <Head title={t('timeoff.title')} />
@@ -121,14 +121,14 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                             {t('timeoff.add')}
                         </DialogTitle>
                     </DialogHeader>
-                    
+
                     <form onSubmit={submit} className="space-y-4 pt-2">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <User size={12} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg text-xs">
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs">
                                     <SelectValue placeholder={t('search')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -150,7 +150,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                                     type="date"
                                     value={data.starts_on}
                                     onChange={e => setData('starts_on', e.target.value)}
-                                    className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg text-xs font-medium"
+                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
                                     required
                                 />
                             </div>
@@ -164,7 +164,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                                     value={data.ends_on}
                                     min={data.starts_on}
                                     onChange={e => setData('ends_on', e.target.value)}
-                                    className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg text-xs font-medium"
+                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
                                     required
                                 />
                             </div>
@@ -176,14 +176,14 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                                 id="reason"
                                 value={data.reason}
                                 onChange={e => setData('reason', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg text-xs font-medium"
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
                                 placeholder={t('timeoff.reasonPlaceholder')}
                             />
                         </div>
 
                         <DialogFooter className="gap-2 sm:gap-0 mt-2">
-                            <Button type="button" variant="ghost" onClick={() => setAddOpen(false)} className="text-xs text-slate-500 font-bold">{t('cancel')}</Button>
-                            <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none text-xs font-bold">
+                            <Button type="button" variant="ghost" onClick={() => setAddOpen(false)} className="h-11 rounded-xl text-xs text-slate-500 font-bold">{t('cancel')}</Button>
+                            <Button type="submit" disabled={processing} className="h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 shadow-none text-xs font-bold">
                                 {t('save')}
                             </Button>
                         </DialogFooter>
@@ -206,52 +206,54 @@ function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void 
 
     return (
         <div className={cn(
-            "group flex items-start gap-3 px-4 sm:px-6 py-4 border-b border-slate-100 transition-colors duration-150",
-            active ? "bg-amber-50/40" : "bg-white hover:bg-slate-50/80"
+            "group flex items-center gap-4 px-6 py-3 border-b border-slate-100 transition-colors duration-150",
+            active ? "bg-amber-50/30" : "bg-white hover:bg-slate-50"
         )}>
-            <div className="flex-none pt-0.5">
-                <div className={cn(
-                    "p-2 rounded-lg",
-                    active ? "bg-amber-100 text-amber-600" : "bg-slate-100 text-slate-400"
-                )}>
-                    <PalmtreeIcon className="h-4 w-4 shrink-0" />
-                </div>
+            {/* Icon */}
+            <div className="flex-none flex items-center justify-center">
+                <PalmtreeIcon className={cn("h-4 w-4 shrink-0", active ? "text-amber-500" : "text-slate-400")} />
             </div>
 
-            <div className="flex-1 min-w-0 space-y-1">
-                <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[13px] font-bold text-slate-900 tracking-tight">
-                        {entry.barber.user.name}
-                    </span>
-                    {active && (
-                        <Badge className="text-[9px] font-bold uppercase tracking-widest rounded-md px-1.5 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                            {t('active')}
-                        </Badge>
-                    )}
-                    {future && (
-                        <Badge className="text-[9px] font-bold uppercase tracking-widest rounded-md px-1.5 py-0.5 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
-                            {t('upcoming')}
-                        </Badge>
-                    )}
-                </div>
-                <div className="flex items-center gap-2 text-[12px] text-slate-500 font-medium">
-                    <CalendarDays className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+            {/* Content */}
+            <div className="flex-1 min-w-0 flex items-center gap-3">
+                <span className="text-[13px] font-bold text-slate-900 shrink-0">
+                    {entry.barber.user.name}
+                </span>
+
+                <div className="flex items-center gap-2 text-[13px] text-slate-500 truncate">
+                    <CalendarDays className="h-3 w-3 shrink-0" />
                     <span>{fmtDate(entry.starts_on)}</span>
-                    <ArrowRight className="h-3 w-3 text-slate-300" />
+                    <ArrowRight className="h-2.5 w-2.5 text-slate-300" />
                     <span>{fmtDate(entry.ends_on)}</span>
                 </div>
+
                 {entry.reason && (
-                    <p className="text-[11px] text-slate-400 font-medium line-clamp-1">
-                        {entry.reason}
-                    </p>
+                    <span className="text-[11px] italic text-slate-400 truncate max-w-[200px]">
+                        — {entry.reason}
+                    </span>
                 )}
             </div>
 
-            <div className="flex-none self-center">
+            {/* Badges */}
+            <div className="flex-none flex items-center gap-2">
+                {active && (
+                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
+                        {t('active')}
+                    </Badge>
+                )}
+                {future && (
+                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
+                        {t('upcoming')}
+                    </Badge>
+                )}
+            </div>
+
+            {/* Delete */}
+            <div className="flex-none w-8 flex justify-end">
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-slate-300 sm:opacity-0 sm:group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                    className="h-7 w-7 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
                     onClick={onRemove}
                 >
                     <Trash2 className="h-3.5 w-3.5" />
