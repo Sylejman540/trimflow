@@ -189,7 +189,7 @@ export default function Index({
                 const timePart = formatTime(iso);
                 return (
                     <div className="whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                             {timePart}
                         </span>
                         <p className="text-xs text-slate-400 mt-0.5">{datePart}</p>
@@ -376,7 +376,7 @@ export default function Index({
                             </div>
                             <div className="flex items-center justify-between text-xs text-slate-500">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                                    <span className="inline-flex items-center bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                                         {formatTime(appt.starts_at)}
                                     </span>
                                     <span className="text-slate-400">

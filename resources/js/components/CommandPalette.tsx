@@ -64,8 +64,8 @@ export default function CommandPalette() {
             try {
                 const res = await window.axios.get<SearchResults>(`/search?q=${encodeURIComponent(query)}`);
                 setResults(res.data);
-            } catch {
-                // ignore
+            } catch (err) {
+                console.error('[Search error]', err);
             } finally {
                 setLoading(false);
             }

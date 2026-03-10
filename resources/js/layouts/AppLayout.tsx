@@ -21,7 +21,6 @@ import {
     X,
     Package,
     Search,
-    Users,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -161,13 +160,6 @@ const navItems: NavItem[] = [
         icon: Package,
         active: 'products.*',
         roles: ['shop-admin', 'platform-admin'],
-    },
-    {
-        label: 'Customers',
-        href: '/customers',
-        icon: Users,
-        active: 'customers.*',
-        roles: ['platform-admin', 'shop-admin'],
     },
     {
         label: 'Barbers',
@@ -380,6 +372,7 @@ export default function AppLayout({
                         )}
                         {actions}
                         <button
+                            type="button"
                             onClick={() => document.dispatchEvent(new Event('open-command-palette'))}
                             className="hidden sm:flex items-center gap-1.5 h-8 px-2.5 rounded-lg border border-slate-200 text-slate-400 hover:text-slate-700 hover:border-slate-300 transition-colors text-xs"
                             title="Search (Ctrl+K)"
