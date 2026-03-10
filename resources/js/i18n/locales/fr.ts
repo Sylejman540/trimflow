@@ -177,6 +177,8 @@ export default {
         clearColor: 'Effacer',
         descPlaceholder: 'Fournissez des détails sur ce que comprend ce service…',
         deleteConfirm: 'Êtes-vous sûr de vouloir supprimer ce service ? Cette action est irréversible.',
+        serviceNamePlaceholder: 'ex. Coupe classique',
+        categoryPlaceholder: 'ex. Coupes de cheveux',
         noServices: 'Aucun service pour le moment.',
         created: 'Service créé.',
         updated: 'Service mis à jour.',
@@ -214,6 +216,10 @@ export default {
         generalist: 'Généraliste',
         deleteConfirm: 'Êtes-vous sûr de vouloir retirer ce barbier ? Cela affectera ses disponibilités et son planning futur.',
         bioPlaceholder: 'Une brève description du parcours et du style du barbier…',
+        namePlaceholder: 'ex. Jean Dupont',
+        emailPlaceholder: 'barbier@exemple.fr',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'ex. Dégradés, Taille de barbe',
     },
 
     cust: {

@@ -177,6 +177,8 @@ export default {
         clearColor: 'Zurücksetzen',
         descPlaceholder: 'Beschreiben Sie, was diese Leistung beinhaltet…',
         deleteConfirm: 'Sind Sie sicher, dass Sie diese Leistung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+        serviceNamePlaceholder: 'z.B. Klassischer Haarschnitt',
+        categoryPlaceholder: 'z.B. Haarschnitte',
         noServices: 'Noch keine Leistungen.',
         created: 'Leistung erstellt.',
         updated: 'Leistung aktualisiert.',
@@ -256,6 +258,8 @@ export default {
         priceDollar: 'Preis (€)',
         stockQuantity: 'Lagermenge',
         deleteConfirm: 'Sind Sie sicher, dass Sie dieses Produkt löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
+        namePlaceholder: 'z.B. Pomade',
+        categoryPlaceholder: 'z.B. Haarpflege',
     },
 
     profile: {
