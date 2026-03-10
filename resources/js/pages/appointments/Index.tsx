@@ -508,9 +508,9 @@ export default function Index({
                         <Download className="h-3.5 w-3.5" />
                     </a>
                     {can_create && (
-                        <Link href={route('appointments.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
+                        <Link href={route('appointments.create')} className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
                             <Plus className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline ml-1.5">{t('appt.new')}</span>
+                            <span className="hidden sm:inline">{t('appt.new')}</span>
                         </Link>
                     )}
                 </div>

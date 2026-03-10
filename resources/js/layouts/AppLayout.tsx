@@ -311,39 +311,62 @@ export default function AppLayout({
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
                 {/* Header */}
                 <header className="flex h-14 lg:h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4 lg:px-8">
-                    <div className="flex items-center gap-3">
+                    {/* Krahu i Majtë: Menu & Titulli */}
+                    <div className="flex items-center gap-2">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 -ml-1 text-slate-600 hover:bg-slate-50 rounded-md"
+                            className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors"
                         >
                             <Menu size={20} />
                         </button>
-                        <h1 className="text-sm font-semibold text-slate-900">{title}</h1>
+                        <h1 className="text-sm font-bold text-slate-900 tracking-tight leading-none">
+                            {title}
+                        </h1>
                     </div>
-                    <div className="flex items-center gap-2 lg:gap-3">
-                        {actions}
-                        {actions && walkin && <div className="w-px h-5 bg-slate-200 shrink-0" />}
+
+                    {/* Krahu i Djathtë: Actions, Walk-in, Lang, Notifications */}
+                    <div className="flex items-center gap-1.5 sm:gap-3">
+                        {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
+                        {actions && (
+                            <div className="flex items-center gap-1.5">
+                                {actions}
+                            </div>
+                        )}
+
+                        {/* Ndarësi vizual nëse ka actions dhe walkin */}
+                        {actions && walkin && (
+                            <div className="w-px h-4 bg-slate-200 mx-1 hidden xs:block" />
+                        )}
+
+                        {/* Walk-in Button - Forcuam h-9 dhe font-bold */}
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-colors"
+                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
-                                <Zap className="h-3.5 w-3.5" />
-                                <span className="hidden sm:inline">Walk-in</span>
+                                <Zap className="h-3.5 w-3.5 fill-current" />
+                                <span className="hidden xs:inline">Walk-in</span>
                             </button>
                         )}
-                        <LanguageSwitcher compact />
-                        <Link
-                            href={route('notifications.index')}
-                            className="relative p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
-                        >
-                            <Bell size={18} />
-                            {auth.unread_notifications > 0 && (
-                                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white">
-                                    {auth.unread_notifications > 9 ? '9+' : auth.unread_notifications}
-                                </span>
-                            )}
-                        </Link>
+
+                        {/* Language & Notifications */}
+                        <div className="flex items-center gap-1">
+                            <div className="flex items-center h-9">
+                                <LanguageSwitcher compact />
+                            </div>
+                            
+                            <Link
+                                href={route('notifications.index')}
+                                className="relative flex items-center justify-center w-9 h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                            >
+                                <Bell size={18} />
+                                {auth.unread_notifications > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white ring-2 ring-white">
+                                        {auth.unread_notifications > 9 ? '9+' : auth.unread_notifications}
+                                    </span>
+                                )}
+                            </Link>
+                        </div>
                     </div>
                 </header>
 
