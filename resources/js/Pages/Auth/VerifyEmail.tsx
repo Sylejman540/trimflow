@@ -23,7 +23,7 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img 
-                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000" 
+                        src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&q=80&w=2000" 
                         className="w-full h-full object-cover"
                         alt="Barber Shop Interior"
                     />

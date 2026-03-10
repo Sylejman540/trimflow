@@ -6,7 +6,7 @@ import { ArrowRight, ShieldCheck, Eye, EyeOff, Star } from 'lucide-react';
 
 function FreshioLogo({ dark = false }: { dark?: boolean }) {
     return (
-        <div className="flex items-center gap-2.5">
+        <a href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm shrink-0">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                     <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
@@ -16,7 +16,7 @@ function FreshioLogo({ dark = false }: { dark?: boolean }) {
             <span className={`text-xl font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
                 Fresh<span className="text-emerald-500">io</span>
             </span>
-        </div>
+        </a>
     );
 }
 
@@ -46,7 +46,7 @@ export default function Register() {
             <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img
-                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&q=80&w=2000"
+                        src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&q=80&w=2000"
                         className="w-full h-full object-cover"
                         alt="Barber Shop"
                     />
@@ -60,7 +60,7 @@ export default function Register() {
                 <div className="relative z-10">
                     <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
                         Set up your <br />
-                        <span className="text-amber-400 italic font-light">shop.</span>
+                        <span className="text-emerald-400 italic font-light">shop.</span>
                     </h1>
                     <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
                         Create your account and start accepting bookings in minutes.
@@ -68,15 +68,15 @@ export default function Register() {
 
                     <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
                         <div className="flex gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-amber-400" />)}
+                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-emerald-400" />)}
                         </div>
                         <p className="text-white text-xs font-medium italic">"Set up in 5 minutes, fully running by end of day."</p>
-                        <span className="text-amber-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">— Shop Owner</span>
+                        <span className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">— Shop Owner</span>
                     </div>
                 </div>
 
                 <div className="relative z-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Secure registration</span>
                 </div>
             </div>
