@@ -215,6 +215,10 @@ export default {
         generalist: 'Gjeneralist',
         deleteConfirm: 'Jeni të sigurt që doni të hiqni këtë berber? Kjo do të ndikojë në disponueshmërinë dhe orarin e tyre të ardhshëm.',
         bioPlaceholder: 'Një përshkrim i shkurtër i sfondit dhe stilit të berberit…',
+        namePlaceholder: 'p.sh. Arben Gashi',
+        emailPlaceholder: 'berber@shembull.com',
+        passwordPlaceholder: '••••••••',
+        specialtyPlaceholder: 'p.sh. Prerje lëkure, Formësim mjekrë',
     },
 
     cust: {
