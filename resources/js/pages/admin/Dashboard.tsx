@@ -56,7 +56,7 @@ export default function AdminDashboard({ companies, totals }: { companies: Compa
                     <div className="flex items-center gap-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-slate-900 font-bold text-sm">T</div>
                         <div>
-                            <p className="text-sm font-bold text-white">TrimFlow</p>
+                            <p className="text-sm font-bold text-white">BarberFlow</p>
                             <p className="text-[11px] text-white/50">Super Admin</p>
                         </div>
                     </div>

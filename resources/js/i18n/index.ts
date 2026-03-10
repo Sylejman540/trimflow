@@ -61,7 +61,7 @@ i18n
         detection: {
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'],
-            lookupLocalStorage: 'trimflow_lang',
+            lookupLocalStorage: 'barberflow_lang',
         },
     });
 

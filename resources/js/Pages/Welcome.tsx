@@ -44,7 +44,7 @@ const Navbar = () => {
                 <Scissors className="text-white w-4 h-4" />
             </div>
             <span className={`text-lg font-bold tracking-tight transition-colors ${scrolled || isOpen ? "text-slate-900" : "text-white md:text-slate-900"}`}>
-              TrimFlow
+              BarberFlow
             </span>
           </div>
 
@@ -249,7 +249,7 @@ const Footer = () => (
             <div className="col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                     <div className="bg-slate-900 p-1 rounded-md"><Scissors size={14} className="text-white"/></div>
-                    <span className="text-xl font-bold tracking-tighter">TrimFlow</span>
+                    <span className="text-xl font-bold tracking-tighter">BarberFlow</span>
                 </div>
                 <p className="text-slate-400 text-[10px] font-bold uppercase tracking-[0.3em] max-w-xs leading-relaxed">Defining the aesthetic of modern management.</p>
             </div>
@@ -266,7 +266,7 @@ const Footer = () => (
             ))}
         </div>
         <div className="flex justify-between items-center text-[9px] font-bold text-slate-300 uppercase tracking-widest border-t border-slate-50 pt-10">
-            <span>© 2026 TrimFlow</span>
+            <span>© 2026 BarberFlow</span>
             <div className="flex gap-6">
                 <a href="#" className="hover:text-slate-900 transition-colors">Instagram</a>
                 <a href="#" className="hover:text-slate-900 transition-colors">Twitter</a>
@@ -277,7 +277,7 @@ const Footer = () => (
     </footer>
 );
 
-export default function TrimFlowSite() {
+export default function BarberFlowSite() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-600 selection:text-white">
       <FontImport />

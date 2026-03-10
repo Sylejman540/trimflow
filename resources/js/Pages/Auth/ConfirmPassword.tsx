@@ -19,7 +19,7 @@ export default function ConfirmPassword() {
 
     return (
         <div className="flex min-h-screen w-full bg-white font-sans selection:bg-blue-600 selection:text-white">
-            <Head title="Confirm Access | TrimFlow" />
+            <Head title="Confirm Access | BarberFlow" />
             
             {/* --- FONTS --- */}
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
@@ -40,7 +40,7 @@ export default function ConfirmPassword() {
                         <div className="bg-white p-1.5 rounded-lg">
                             <Scissors className="text-slate-900 w-4 h-4" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-white">TrimFlow</span>
+                        <span className="text-xl font-bold tracking-tight text-white">BarberFlow</span>
                     </Link>
                 </div>
 
@@ -55,7 +55,7 @@ export default function ConfirmPassword() {
                         <span className="text-blue-400 italic font-serif font-light">authority.</span>
                     </h1>
                     <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
-                        This is a secure area of the TrimFlow suite. Please verify your credentials to continue.
+                        This is a secure area of the BarberFlow suite. Please verify your credentials to continue.
                     </p>
                 </div>
 
@@ -75,7 +75,7 @@ export default function ConfirmPassword() {
                         <div className="bg-slate-900 p-1.5 rounded-lg">
                             <Scissors className="text-white w-4 h-4" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-slate-900">TrimFlow</span>
+                        <span className="text-xl font-bold tracking-tight text-slate-900">BarberFlow</span>
                     </Link>
                 </div>
 

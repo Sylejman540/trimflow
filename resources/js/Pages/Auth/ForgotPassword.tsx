@@ -28,7 +28,7 @@ export default function ResetPassword({
 
     return (
         <div className="flex min-h-screen w-full bg-white font-sans selection:bg-blue-600 selection:text-white">
-            <Head title="Reset Password | TrimFlow" />
+            <Head title="Reset Password | BarberFlow" />
             
             {/* --- FONTS --- */}
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet" />
@@ -49,7 +49,7 @@ export default function ResetPassword({
                         <div className="bg-white p-1.5 rounded-lg">
                             <Scissors className="text-slate-900 w-4 h-4" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-white">TrimFlow</span>
+                        <span className="text-xl font-bold tracking-tight text-white">BarberFlow</span>
                     </Link>
                 </div>
 
@@ -86,7 +86,7 @@ export default function ResetPassword({
                         <div className="bg-slate-900 p-1.5 rounded-lg">
                             <Scissors className="text-white w-4 h-4" />
                         </div>
-                        <span className="text-xl font-bold tracking-tight text-slate-900">TrimFlow</span>
+                        <span className="text-xl font-bold tracking-tight text-slate-900">BarberFlow</span>
                     </Link>
                 </div>
 
