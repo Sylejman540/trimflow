@@ -198,6 +198,8 @@ export default {
         clearColor: 'Очистить',
         descPlaceholder: 'Укажите подробности о том, что включает эта услуга…',
         deleteConfirm: 'Вы уверены, что хотите удалить эту услугу? Это действие нельзя отменить.',
+        serviceNamePlaceholder: 'напр. Классическая стрижка',
+        categoryPlaceholder: 'напр. Стрижки',
     },
 
     // Barbers
