@@ -245,6 +245,8 @@ export default function Index({
     start,
     is_owner_barber = false,
     filter_mine = false,
+    hour_start = 7,
+    hour_end = 21,
 }: {
     appointments: ApptSlot[];
     view: 'day' | 'week';
@@ -255,7 +257,14 @@ export default function Index({
     is_barber: boolean;
     is_owner_barber?: boolean;
     filter_mine?: boolean;
+    hour_start?: number;
+    hour_end?: number;
 }) {
+    // Apply dynamic range from server (based on barber schedules)
+    HOUR_START  = hour_start;
+    HOUR_END    = hour_end;
+    TOTAL_HOURS = hour_end - hour_start;
+
     const { t } = useTranslation();
     const [isMobile, setIsMobile] = useState(() =>
         typeof window !== 'undefined' ? window.innerWidth < 640 : false
