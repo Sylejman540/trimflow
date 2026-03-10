@@ -278,6 +278,8 @@ export default {
         priceDollar: 'Цена (₽)',
         stockQuantity: 'Количество на Складе',
         deleteConfirm: 'Вы уверены, что хотите удалить этот товар? Это действие нельзя отменить.',
+        namePlaceholder: 'напр. Помада',
+        categoryPlaceholder: 'напр. Уход за волосами',
     },
 
     // Profile
