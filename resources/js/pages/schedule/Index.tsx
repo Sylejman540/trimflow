@@ -17,9 +17,10 @@ interface ApptSlot {
     price: number;
 }
 
-const HOUR_START  = 7;
-const HOUR_END    = 21;
-const TOTAL_HOURS = HOUR_END - HOUR_START;
+// These are set dynamically from props — see Index component
+let HOUR_START  = 7;
+let HOUR_END    = 21;
+let TOTAL_HOURS = HOUR_END - HOUR_START;
 const HOUR_HEIGHT = 64;
 const SLOT_MINS   = 15;
 
