@@ -44,4 +44,8 @@ return [
         'secret_key' => env('TURNSTILE_SECRET_KEY', ''),
     ],
 
+    'meta' => [
+        'verify_token' => env('META_VERIFY_TOKEN', 'trimflow_verify'),
+    ],
+
 ];

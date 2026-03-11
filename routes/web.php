@@ -24,6 +24,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\ManyChatWebhookController;
+use App\Http\Controllers\InstagramWebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -102,5 +103,9 @@ Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('bookin
 
 // ManyChat webhook — returns booking URL for use in ManyChat HTTP Request blocks
 Route::post('/webhooks/manychat/{slug}', ManyChatWebhookController::class)->name('webhooks.manychat');
+
+// Meta Cloud API — Instagram DM AI Agent
+Route::get('/webhooks/instagram', [InstagramWebhookController::class, 'verify'])->name('webhooks.instagram.verify');
+Route::post('/webhooks/instagram', [InstagramWebhookController::class, 'receive'])->name('webhooks.instagram.receive');
 
 require __DIR__.'/auth.php';

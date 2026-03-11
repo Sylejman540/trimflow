@@ -23,12 +23,17 @@ class Company extends Model
         'logo',
         'timezone',
         'is_active',
+        'meta_access_token',
+        'meta_page_id',
+        'openai_api_key',
+        'instagram_agent_enabled',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
+            'is_active'               => 'boolean',
+            'instagram_agent_enabled' => 'boolean',
         ];
     }
 
