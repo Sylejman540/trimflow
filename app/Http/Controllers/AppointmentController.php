@@ -101,14 +101,7 @@ class AppointmentController extends Controller
         $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
         $phone = $validated['customer_phone'] ?? null;
 
-        $customer = Customer::firstOrCreate(
-            ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
-            ['phone' => $phone],
-        );
-
-        if ($phone && $customer->phone !== $phone) {
-            $customer->update(['phone' => $phone]);
-        }
+        $customer = $this->resolveCustomer($validated['customer_name'], $phone, $user->company_id);
 
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
@@ -212,14 +205,7 @@ class AppointmentController extends Controller
         $phone = $validated['customer_phone'] ?? null;
         $barberId = $isBarber ? $appointment->barber_id : $validated['barber_id'];
 
-        $customer = Customer::firstOrCreate(
-            ['name' => $validated['customer_name'], 'company_id' => $user->company_id],
-            ['phone' => $phone],
-        );
-
-        if ($phone && $customer->phone !== $phone) {
-            $customer->update(['phone' => $phone]);
-        }
+        $customer = $this->resolveCustomer($validated['customer_name'], $phone, $user->company_id);
 
         $service = Service::findOrFail($validated['service_id']);
         $startsAt = Carbon::parse($validated['starts_at']);
@@ -369,6 +355,24 @@ class AppointmentController extends Controller
                 'starts_at' => "The barber is on time off from {$onTimeOff->starts_on->format('M j')} to {$onTimeOff->ends_on->format('M j')}{$label}.",
             ]);
         }
+    }
+
+    private function resolveCustomer(string $name, ?string $phone, int $companyId): Customer
+    {
+        if ($phone) {
+            $customer = Customer::firstOrCreate(
+                ['phone' => $phone, 'company_id' => $companyId],
+                ['name' => $name],
+            );
+            if ($customer->name !== $name) {
+                $customer->update(['name' => $name]);
+            }
+            return $customer;
+        }
+
+        return Customer::firstOrCreate(
+            ['name' => $name, 'company_id' => $companyId],
+        );
     }
 
     private function validateNoConflict(?int $barberId, Carbon $startsAt, Carbon $endsAt, ?int $excludeId = null): void

@@ -64,8 +64,12 @@ export default function Index({
         instagram_agent_enabled: company.instagram_agent_enabled ?? false,
     });
 
-    function submit(e: React.FormEvent) {
+    function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
+        patch(route('settings.company'), { preserveScroll: true });
+    }
+
+    function saveSettings() {
         patch(route('settings.company'), { preserveScroll: true });
     }
 
@@ -86,7 +90,7 @@ export default function Index({
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="px-4 lg:px-6 pb-4">
-                        <form onSubmit={submit} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.shopName')} *</Label>
@@ -272,7 +276,7 @@ export default function Index({
                         <div className="pt-1">
                             <Button
                                 type="button"
-                                onClick={submit}
+                                onClick={saveSettings}
                                 disabled={processing}
                                 className="bg-slate-900 hover:bg-slate-800 text-white h-10 px-6 shadow-none"
                             >
