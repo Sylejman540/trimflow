@@ -165,7 +165,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="group relative flex h-12 w-full items-center justify-center rounded-xl bg-slate-900 text-[11px] font-bold uppercase tracking-widest text-white transition-all hover:bg-slate-700 active:scale-[0.98] disabled:opacity-50"
+                                className="group relative flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-[11px] font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] disabled:opacity-50"
                             >
                                 {processing ? t('auth.signingIn') : t('auth.signInButton')}
                                 {!processing && <ArrowRight className="absolute right-5 h-4 w-4 transition-transform group-hover:translate-x-1" />}

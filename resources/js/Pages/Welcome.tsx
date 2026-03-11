@@ -419,24 +419,49 @@ const Hero = () => {
     );
 };
 
-// ─── Stats bar ────────────────────────────────────────────────────────────────
+// ─── Marquee / Ad ticker ──────────────────────────────────────────────────────
+
+const ads = [
+    { emoji: '💈', text: 'Classic Cuts Barbershop — Open 7 days', sub: 'Book now →' },
+    { emoji: '✂️', text: 'Tony\'s Fade Studio — New clients welcome', sub: 'Book now →' },
+    { emoji: '🪒', text: 'The Shave Bar — Premium grooming experience', sub: 'Book now →' },
+    { emoji: '💈', text: 'Kings & Kutz — Walk-ins & bookings available', sub: 'Book now →' },
+    { emoji: '✂️', text: 'Fresh Edges Barbershop — Best fades in town', sub: 'Book now →' },
+    { emoji: '🪒', text: 'Elite Cuts — Beard trims & hot towel shaves', sub: 'Book now →' },
+    { emoji: '💈', text: 'The Barbery — Old school craft, modern booking', sub: 'Book now →' },
+    { emoji: '✂️', text: 'Sharp & Clean Studio — Same-day slots open', sub: 'Book now →' },
+];
 
 const Stats = () => (
-    <section className="py-12 bg-slate-50 border-y border-slate-100">
-        <div className="max-w-5xl mx-auto px-5">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                {[
-                    { val: '2,400+', label: 'Active Shops' },
-                    { val: '1.2M', label: 'Bookings Processed' },
-                    { val: '99.9%', label: 'Uptime' },
-                    { val: '4.9/5', label: 'Average Rating' },
-                ].map(s => (
-                    <div key={s.label}>
-                        <p className="text-2xl font-black text-slate-900 tracking-tight mb-1">{s.val}</p>
-                        <p className="text-xs text-slate-400 font-medium">{s.label}</p>
+    <section className="py-0 bg-white border-y border-slate-100 overflow-hidden">
+        {/* Label */}
+        <div className="text-center pt-5 pb-3">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Shops on Freshio</span>
+        </div>
+
+        {/* Marquee track */}
+        <div className="relative pb-5">
+            {/* Left fade */}
+            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            {/* Right fade */}
+            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+            <motion.div
+                className="flex gap-3 w-max"
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+            >
+                {/* Duplicate the list so the loop is seamless */}
+                {[...ads, ...ads].map((ad, i) => (
+                    <div key={i} className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 shrink-0 hover:border-emerald-200 hover:bg-emerald-50/40 transition-colors cursor-pointer group">
+                        <span className="text-lg leading-none">{ad.emoji}</span>
+                        <div>
+                            <p className="text-xs font-semibold text-slate-800 whitespace-nowrap">{ad.text}</p>
+                            <p className="text-[10px] text-emerald-600 font-bold group-hover:underline">{ad.sub}</p>
+                        </div>
                     </div>
                 ))}
-            </div>
+            </motion.div>
         </div>
     </section>
 );
