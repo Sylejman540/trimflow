@@ -46,6 +46,7 @@ export default {
         services: 'Shërbimet',
         products: 'Produktet',
         reports: 'Raportet',
+        ads: 'Tregu',
         schedule: 'Orari',
         waitlist: 'Lista e pritjes',
         auditLogs: 'Regjistri i auditimit',
