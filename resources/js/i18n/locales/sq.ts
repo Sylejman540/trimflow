@@ -329,6 +329,7 @@ export default {
         bookAnother: 'Rezervo një takim tjetër',
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
+        viewMyAppts: 'Shiko terminet e mia',
     },
 
     // Time Off

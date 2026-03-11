@@ -353,6 +353,7 @@ export default {
         bookAnother: 'Book Another Appointment',
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
+        viewMyAppts: 'View My Appointments',
     },
 
     // Schedule

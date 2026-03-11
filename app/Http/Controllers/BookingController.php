@@ -328,6 +328,9 @@ class BookingController extends Controller
             'company'           => $company->only('id', 'name', 'slug', 'phone'),
             'cancel_token'      => session('cancel_token'),
             'cancel_expires_at' => session('cancel_expires_at'),
+            'appt_starts_at'    => session('appt_starts_at'),
+            'appt_barber_name'  => session('appt_barber_name'),
+            'appt_services'     => session('appt_services'),
         ]);
     }
 

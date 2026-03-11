@@ -1,6 +1,6 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Scissors, CalendarDays, X, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Scissors, CalendarDays, X, AlertCircle, Calendar, User } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -27,16 +27,38 @@ interface Company {
     phone?: string;
 }
 
+function formatApptDate(startsAt: string | null | undefined, lang: string) {
+    if (!startsAt) return null;
+    const [datePart, timePart] = startsAt.split(' ');
+    const [y, m, d] = datePart.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    const localeMap: Record<string, string> = {
+        sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
+        el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
+        es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
+    };
+    const locale = localeMap[lang] ?? lang;
+    const dayLabel = date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    return { day: dayLabel, time: timePart };
+}
+
 export default function Confirmation({
     company,
     cancel_token,
     cancel_expires_at,
+    appt_starts_at,
+    appt_barber_name,
+    appt_services,
 }: {
     company: Company;
     cancel_token?: string | null;
     cancel_expires_at?: string | null;
+    appt_starts_at?: string | null;
+    appt_barber_name?: string | null;
+    appt_services?: string | null;
 }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const apptDate = formatApptDate(appt_starts_at, i18n.language);
     const { props } = usePage();
     const cancelled = (props as any).flash?.cancelled ?? false;
 
@@ -130,6 +152,27 @@ export default function Confirmation({
                         <h2 className="text-2xl font-semibold text-slate-900">{t('booking.confirmed')}</h2>
                         <p className="text-sm text-slate-500">{t('booking.confirmedDesc')}</p>
                     </div>
+
+                    {apptDate && (
+                        <div className="bg-slate-900 rounded-xl p-4 text-left space-y-2 w-full">
+                            {appt_services && (
+                                <p className="text-sm font-semibold text-white flex items-center gap-2">
+                                    <Scissors className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                    {appt_services}
+                                </p>
+                            )}
+                            {appt_barber_name && (
+                                <p className="text-xs text-slate-300 flex items-center gap-2">
+                                    <User className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                    {appt_barber_name}
+                                </p>
+                            )}
+                            <p className="text-xs text-slate-300 flex items-center gap-2">
+                                <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                                <span>{apptDate.day} · <span className="font-bold text-white">{apptDate.time}</span></span>
+                            </p>
+                        </div>
+                    )}
 
                     {company.phone && (
                         <p className="text-xs text-slate-400">
