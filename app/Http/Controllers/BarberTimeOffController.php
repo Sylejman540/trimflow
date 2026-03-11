@@ -60,4 +60,38 @@ class BarberTimeOffController extends Controller
 
         return back()->with('success', 'Time off removed.');
     }
+
+    /**
+     * POST /barbers/{barber}/toggle-availability
+     * Toggles today's availability for a barber:
+     *   - If barber is off today → remove the today-only time-off
+     *   - If barber is available → add a today-only time-off
+     */
+    public function toggle(Barber $barber)
+    {
+        $this->authorize('create', Barber::class);
+
+        $today = now()->toDateString();
+
+        $existing = BarberTimeOff::where('barber_id', $barber->id)
+            ->where('starts_on', $today)
+            ->where('ends_on', $today)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $available = true;
+        } else {
+            BarberTimeOff::create([
+                'barber_id'  => $barber->id,
+                'company_id' => $barber->company_id,
+                'starts_on'  => $today,
+                'ends_on'    => $today,
+                'reason'     => 'Unavailable today',
+            ]);
+            $available = false;
+        }
+
+        return back()->with('success', $available ? 'Barber is now available.' : 'Barber marked unavailable for today.');
+    }
 }

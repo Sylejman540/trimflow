@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Plus, Trash2, Search, User, Clock, Mail } from 'lucide-react';
+import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -46,11 +46,15 @@ function DeleteBarberModal({ barber, open, onOpenChange }: {
     );
 }
 
-export default function Index({ barbers }: { barbers: Barber[] }) {
+export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber[]; off_today_ids?: number[] }) {
     const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
     const [deletingBarber, setDeletingBarber] = useState<Barber | null>(null);
+
+    function toggleAvailability(barberId: number) {
+        router.post(route('barbers.toggle-availability', barberId), {}, { preserveScroll: true });
+    }
 
     const filtered = barbers.filter((b) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? b.is_active : !b.is_active);
@@ -63,17 +67,27 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
         {
             accessorKey: 'user.name',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('name').toUpperCase()}</span>,
-            cell: ({ row }) => (
+            cell: ({ row }) => {
+                const isOff = off_today_ids.includes(row.original.id);
+                return (
                 <div className="flex items-center gap-2.5">
                     <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
                         <User className="h-4 w-4" />
                     </div>
                     <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{row.original.user?.name}</p>
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-medium text-slate-900 truncate">{row.original.user?.name}</p>
+                            {isOff && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 shrink-0">
+                                    {t('barber.offToday')}
+                                </span>
+                            )}
+                        </div>
                         <p className="text-[11px] text-slate-400 truncate">{row.original.specialty || t('barber.generalist')}</p>
                     </div>
                 </div>
-            ),
+                );
+            },
         },
         {
             accessorKey: 'user.email',
@@ -100,8 +114,18 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
             header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">{t('actions').toUpperCase()}</div>,
             cell: ({ row }) => {
                 const barber = row.original;
+                const isOff = off_today_ids.includes(barber.id);
                 return (
                     <div className="flex items-center justify-end gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn("h-8 w-8 transition-colors", isOff ? "text-amber-500 hover:text-amber-700 hover:bg-amber-50" : "text-slate-300 hover:text-slate-600 hover:bg-slate-100")}
+                            title={isOff ? t('barber.markAvailable') : t('barber.markUnavailable')}
+                            onClick={() => toggleAvailability(barber.id)}
+                        >
+                            <PowerOff className="h-4 w-4" />
+                        </Button>
                         <Link href={route('barbers.schedule', barber.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")} title="Schedule">
                             <Clock className="h-4 w-4" />
                         </Link>
@@ -155,8 +179,10 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
                     {filtered.length === 0 && (
                         <p className="text-sm text-slate-400 text-center py-10">{t('barber.noBarbers')}</p>
                     )}
-                    {filtered.map(barber => (
-                        <div key={barber.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+                    {filtered.map(barber => {
+                        const isOff = off_today_ids.includes(barber.id);
+                        return (
+                        <div key={barber.id} className={cn("bg-white border rounded-xl p-4 space-y-3", isOff ? "border-amber-200 bg-amber-50/30" : "border-slate-200")}>
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
                                     <User className="h-5 w-5" />
@@ -165,15 +191,30 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
                                     <p className="font-semibold text-slate-900 text-sm truncate">{barber.user?.name}</p>
                                     <p className="text-xs text-slate-400 truncate">{barber.user?.email}</p>
                                 </div>
-                                <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
-                                    barber.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
-                                    {barber.is_active ? t('active') : t('inactive')}
-                                </Badge>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                    {isOff && (
+                                        <Badge className="text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
+                                            {t('barber.offToday')}
+                                        </Badge>
+                                    )}
+                                    <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border",
+                                        barber.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                                        {barber.is_active ? t('active') : t('inactive')}
+                                    </Badge>
+                                </div>
                             </div>
                             {barber.specialty && (
                                 <p className="text-xs text-slate-500 italic">{barber.specialty}</p>
                             )}
                             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                <button
+                                    onClick={() => toggleAvailability(barber.id)}
+                                    className={cn("h-9 w-9 flex items-center justify-center rounded-lg border transition-colors shrink-0",
+                                        isOff ? "text-amber-600 border-amber-200 bg-amber-50 hover:bg-amber-100" : "text-slate-400 border-slate-200 hover:text-slate-700 hover:bg-slate-50")}
+                                    title={isOff ? t('barber.markAvailable') : t('barber.markUnavailable')}
+                                >
+                                    <PowerOff className="h-3.5 w-3.5" />
+                                </button>
                                 <Link href={route('barbers.schedule', barber.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
                                     <Clock className="h-3.5 w-3.5" /> {t('barber.schedule')}
                                 </Link>
@@ -185,7 +226,8 @@ export default function Index({ barbers }: { barbers: Barber[] }) {
                                 </button>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Desktop table */}

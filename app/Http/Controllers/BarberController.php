@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barber;
+use App\Models\BarberTimeOff;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -16,8 +18,15 @@ class BarberController extends Controller
     {
         $this->authorize('viewAny', Barber::class);
 
+        $today = Carbon::today()->toDateString();
+        $offTodayIds = BarberTimeOff::where('starts_on', '<=', $today)
+            ->where('ends_on', '>=', $today)
+            ->pluck('barber_id')
+            ->toArray();
+
         return Inertia::render('barbers/Index', [
-            'barbers' => Barber::with('user')->orderBy('created_at', 'desc')->get(),
+            'barbers'      => Barber::with('user')->orderBy('created_at', 'desc')->get(),
+            'off_today_ids' => $offTodayIds,
         ]);
     }
 

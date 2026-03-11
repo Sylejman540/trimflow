@@ -32,7 +32,6 @@ class Appointment extends Model
         'cancel_token',
         'cancel_token_expires_at',
         'reminder_sent_at',
-        'google_calendar_event_id',
     ];
 
     protected function casts(): array

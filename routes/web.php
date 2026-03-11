@@ -14,7 +14,6 @@ use App\Http\Controllers\BookingAvailabilityController;
 use App\Http\Controllers\WalkinController;
 use App\Http\Controllers\BarberTimeOffController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\BarberGoogleCalendarController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ProductController;
@@ -54,12 +53,11 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/barbers/time-off', [BarberTimeOffController::class, 'index'])->name('barbers.time-off.index');
     Route::post('/barbers/time-off', [BarberTimeOffController::class, 'store'])->name('barbers.time-off.store');
     Route::delete('/barbers/time-off/{timeOff}', [BarberTimeOffController::class, 'destroy'])->name('barbers.time-off.destroy');
+    Route::post('/barbers/{barber}/toggle-availability', [BarberTimeOffController::class, 'toggle'])->name('barbers.toggle-availability');
     Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule.index');
     Route::patch('/schedule/{appointment}/reschedule', [ScheduleController::class, 'reschedule'])->name('schedule.reschedule');
     Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
 
-    Route::get('/barbers/{barber}/google/connect', [BarberGoogleCalendarController::class, 'connect'])->name('barbers.google.connect');
-    Route::post('/barbers/{barber}/google/disconnect', [BarberGoogleCalendarController::class, 'disconnect'])->name('barbers.google.disconnect');
 
     Route::resource('products', ProductController::class)->except(['show']);
     Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
@@ -101,8 +99,6 @@ Route::get('/book/{slug}/confirmed', [BookingController::class, 'confirmation'])
 Route::get('/book/{slug}/slots', BookingSlotsController::class)->name('booking.slots');
 Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->name('booking.availability');
 Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');
-
-Route::get('/google/calendar/callback', [BarberGoogleCalendarController::class, 'callback'])->name('google.calendar.callback');
 
 // ManyChat webhook — returns booking URL for use in ManyChat HTTP Request blocks
 Route::post('/webhooks/manychat/{slug}', ManyChatWebhookController::class)->name('webhooks.manychat');

@@ -35,12 +35,6 @@ return [
         ],
     ],
 
-    'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT_URI', '/google/calendar/callback'),
-    ],
-
     'manychat' => [
         'webhook_secret' => env('MANYCHAT_WEBHOOK_SECRET'),
     ],
