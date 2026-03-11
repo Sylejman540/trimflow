@@ -4,7 +4,7 @@ import {
     Calendar, BarChart3, Check, ArrowRight, Menu, X,
     Zap, Shield, Users, Clock, Bell, Link2,
     MessageCircleX, CalendarX2, Repeat2, BotOff,
-    Scissors, ChevronRight, Star, Sparkles, TrendingUp,
+    ChevronRight, Star, Sparkles, TrendingUp,
     CheckCircle2, Activity, GitBranch,
 } from 'lucide-react';
 
@@ -41,11 +41,14 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 function TrimFlowLogo({ dark = true }: { dark?: boolean }) {
     return (
         <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 flex items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-green-600 shadow-md shrink-0">
-                <Scissors className="h-4 w-4 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm shrink-0">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                    <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
+                    <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
+                </svg>
             </div>
             <span className={`text-base font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
-                Trim<span className="text-emerald-600">Flow</span>
+                Fresh<span className="text-emerald-500">io</span>
             </span>
         </div>
     );
@@ -273,110 +276,69 @@ const Hero = () => {
     return (
         <section className="relative min-h-screen flex items-center overflow-hidden bg-white pt-16">
 
-            {/* Stripe-style diagonal stripes */}
+            {/* SVG Stripe-style diagonal stripes — Stripe.com inspired */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {/* Stripe 1 — widest, most transparent, furthest back */}
-                <motion.div
-                    animate={{ x: [0, 18, 0], y: [0, -10, 0] }}
-                    transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{
-                        position: 'absolute',
-                        top: '-30%',
-                        right: '-8%',
-                        width: '55%',
-                        height: '180%',
-                        background: 'linear-gradient(135deg, #22c55e, #4ade80)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '60px',
-                        opacity: 0.08,
-                        filter: 'blur(60px)',
-                    }}
-                />
-                {/* Stripe 2 — medium, mid opacity */}
-                <motion.div
-                    animate={{ x: [0, -14, 0], y: [0, 14, 0] }}
-                    transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                    style={{
-                        position: 'absolute',
-                        top: '-10%',
-                        right: '10%',
-                        width: '18%',
-                        height: '160%',
-                        background: 'linear-gradient(135deg, #16a34a, #22c55e)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '40px',
-                        opacity: 0.28,
-                        filter: 'blur(48px)',
-                    }}
-                />
-                {/* Stripe 3 — thin, sharper, most visible */}
-                <motion.div
-                    animate={{ x: [0, 10, 0], y: [0, -18, 0] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                    style={{
-                        position: 'absolute',
-                        top: '5%',
-                        right: '22%',
-                        width: '10%',
-                        height: '130%',
-                        background: 'linear-gradient(135deg, #4ade80, #22c55e)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '30px',
-                        opacity: 0.45,
-                        filter: 'blur(36px)',
-                    }}
-                />
-                {/* Stripe 4 — very thin accent line */}
-                <motion.div
-                    animate={{ x: [0, -8, 0], y: [0, 12, 0] }}
-                    transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
-                    style={{
-                        position: 'absolute',
-                        top: '20%',
-                        right: '32%',
-                        width: '5%',
-                        height: '100%',
-                        background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '20px',
-                        opacity: 0.22,
-                        filter: 'blur(28px)',
-                    }}
-                />
-                {/* Stripe 5 — far right, wide soft glow */}
-                <motion.div
-                    animate={{ x: [0, 20, 0], y: [0, -8, 0] }}
-                    transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                    style={{
-                        position: 'absolute',
-                        top: '-20%',
-                        right: '-5%',
-                        width: '30%',
-                        height: '150%',
-                        background: 'linear-gradient(135deg, #4ade80, #bbf7d0)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '50px',
-                        opacity: 0.18,
-                        filter: 'blur(70px)',
-                    }}
-                />
-                {/* Stripe 6 — bottom right fill, very soft */}
-                <motion.div
-                    animate={{ x: [0, -12, 0], y: [0, 16, 0] }}
-                    transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-                    style={{
-                        position: 'absolute',
-                        bottom: '-20%',
-                        right: '5%',
-                        width: '40%',
-                        height: '80%',
-                        background: 'linear-gradient(135deg, #22c55e, #4ade80)',
-                        transform: 'rotate(-15deg)',
-                        borderRadius: '50px',
-                        opacity: 0.1,
-                        filter: 'blur(80px)',
-                    }}
-                />
+                <motion.svg
+                    className="absolute inset-0 w-full h-full"
+                    xmlns="http://www.w3.org/2000/svg"
+                    preserveAspectRatio="xMidYMid slice"
+                    viewBox="0 0 1440 900"
+                    animate={{ x: [0, 14, 0], y: [0, -8, 0] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                    <defs>
+                        <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.55" />
+                            <stop offset="100%" stopColor="#4ade80" stopOpacity="0.15" />
+                        </linearGradient>
+                        <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.45" />
+                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0.10" />
+                        </linearGradient>
+                        <linearGradient id="sg3" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#4ade80" stopOpacity="0.60" />
+                            <stop offset="100%" stopColor="#bbf7d0" stopOpacity="0.08" />
+                        </linearGradient>
+                        <linearGradient id="sg4" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.30" />
+                            <stop offset="100%" stopColor="#4ade80" stopOpacity="0.05" />
+                        </linearGradient>
+                        <linearGradient id="sg5" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.20" />
+                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0.04" />
+                        </linearGradient>
+                        <filter id="gblur-heavy">
+                            <feGaussianBlur stdDeviation="28" />
+                        </filter>
+                        <filter id="gblur-med">
+                            <feGaussianBlur stdDeviation="14" />
+                        </filter>
+                        <filter id="gblur-light">
+                            <feGaussianBlur stdDeviation="6" />
+                        </filter>
+                    </defs>
+
+                    {/* All stripes grouped and rotated -20deg around center-right */}
+                    <g transform="rotate(-20, 1100, 450)">
+                        {/* Stripe A — wide background fill, heavy blur */}
+                        <rect x="720" y="-300" width="340" height="1600" rx="60" fill="url(#sg5)" filter="url(#gblur-heavy)" />
+                        {/* Stripe B — wide mid, heavy blur */}
+                        <rect x="860" y="-200" width="220" height="1400" rx="50" fill="url(#sg4)" filter="url(#gblur-heavy)" />
+                        {/* Stripe C — main vivid stripe, med blur */}
+                        <rect x="1010" y="-100" width="110" height="1200" rx="40" fill="url(#sg1)" filter="url(#gblur-med)" />
+                        {/* Stripe D — thin sharp accent, light blur */}
+                        <rect x="1140" y="0" width="56" height="1100" rx="28" fill="url(#sg2)" filter="url(#gblur-light)" />
+                        {/* Stripe E — hairline, crisp */}
+                        <rect x="1216" y="80" width="28" height="980" rx="14" fill="url(#sg3)" filter="url(#gblur-light)" />
+                        {/* Stripe F — far right whisper */}
+                        <rect x="1270" y="160" width="180" height="900" rx="40" fill="url(#sg4)" filter="url(#gblur-heavy)" />
+                        {/* Stripe G — extra depth behind C */}
+                        <rect x="950" y="-180" width="60" height="1300" rx="30" fill="url(#sg2)" filter="url(#gblur-med)" />
+                    </g>
+                </motion.svg>
+
+                {/* Hard left mask — keeps text area pure white */}
+                <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-white via-white/95 to-transparent pointer-events-none" />
             </div>
 
             <div className="relative z-10 max-w-6xl mx-auto px-5 w-full grid md:grid-cols-2 gap-12 items-center py-20">
@@ -443,27 +405,6 @@ const Hero = () => {
                         No credit card required · Free forever for 1 barber
                     </motion.p>
 
-                    {/* Social proof */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.75 }}
-                        className="flex items-center gap-4 mt-10 pt-10 border-t border-slate-100"
-                    >
-                        <div className="flex -space-x-2">
-                            {['#22c55e', '#16a34a', '#4ade80', '#15803d', '#86efac'].map((c, i) => (
-                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-[10px] font-bold" style={{ backgroundColor: c }}>
-                                    {['J', 'M', 'A', 'R', 'S'][i]}
-                                </div>
-                            ))}
-                        </div>
-                        <div>
-                            <div className="flex gap-0.5 mb-0.5">
-                                {[...Array(5)].map((_, j) => <Star key={j} className="h-3 w-3 fill-emerald-500 text-emerald-500" />)}
-                            </div>
-                            <p className="text-xs text-slate-500"><span className="font-semibold text-slate-700">2,400+</span> barbershops trust TrimFlow</p>
-                        </div>
-                    </motion.div>
                 </div>
 
                 {/* Right: floating product cards */}
@@ -850,32 +791,6 @@ const Testimonials = () => (
     </section>
 );
 
-// ─── Final CTA ─────────────────────────────────────────────────────────────────
-
-const FinalCTA = () => (
-    <section className="py-32 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-emerald-400/10 blur-[80px] rounded-full" />
-        </div>
-        <FadeIn className="relative max-w-2xl mx-auto px-5 text-center">
-            <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
-                Start managing your barbershop<br />
-                <span className="bg-gradient-to-r from-emerald-500 to-green-600 bg-clip-text text-transparent">
-                    the smart way
-                </span>
-            </h2>
-            <p className="text-slate-400 text-base mb-10">
-                Join thousands of barbershops already using TrimFlow. Set up in minutes.
-            </p>
-            <a href="/register"
-               className="group inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold px-8 py-4 rounded-xl transition-all shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 text-base">
-                Create Your Barbershop
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-            </a>
-            <p className="text-slate-400 text-xs mt-4">No credit card required · Free plan available</p>
-        </FadeIn>
-    </section>
-);
 
 // ─── Footer ────────────────────────────────────────────────────────────────────
 
@@ -956,7 +871,7 @@ const Footer = () => (
         {/* Bottom bar */}
         <div className="border-t border-slate-100">
             <div className="max-w-6xl mx-auto px-5 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-xs text-slate-400">© 2026 TrimFlow. All rights reserved.</p>
+                <p className="text-xs text-slate-400">© 2026 Freshio. All rights reserved.</p>
                 <div className="flex items-center gap-5 text-xs text-slate-400">
                     <a href="#" className="hover:text-slate-900 transition-colors">Privacy Policy</a>
                     <a href="#" className="hover:text-slate-900 transition-colors">Terms of Service</a>
@@ -979,9 +894,8 @@ export default function Welcome() {
             <Features />
             <BookingDemo />
             <HowItWorks />
-            <Pricing />
             <Testimonials />
-            <FinalCTA />
+            <Pricing />
             <Footer />
         </div>
     );
