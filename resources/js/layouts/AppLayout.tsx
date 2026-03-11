@@ -179,7 +179,19 @@ export default function AppLayout({
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [walkinOpen, setWalkinOpen] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    // Per-user language: load the user's saved language on mount
+    useEffect(() => {
+        const userLangKey = `freshio_lang_${auth.user.id}`;
+        const userLang = localStorage.getItem(userLangKey);
+        if (userLang && userLang !== i18n.language) {
+            i18n.changeLanguage(userLang);
+        } else if (!userLang) {
+            // First time this user — default to English
+            i18n.changeLanguage('en');
+        }
+    }, [auth.user.id]);
 
     useEffect(() => {
         setSidebarOpen(false);
@@ -305,7 +317,11 @@ export default function AppLayout({
                         />
 
                         <SidebarLink
-                            onClick={() => router.post(route('logout'))}
+                            onClick={() => {
+                                i18n.changeLanguage('en');
+                                localStorage.setItem('freshio_lang', 'en');
+                                router.post(route('logout'));
+                            }}
                             icon={LogOut}
                             label={t('nav.signOut')}
                             variant="danger"
@@ -380,7 +396,7 @@ export default function AppLayout({
                         {/* Language & Notifications */}
                         <div className="flex items-center gap-1">
                             <div className="flex items-center h-9">
-                                <LanguageSwitcher compact />
+                                <LanguageSwitcher compact userId={auth.user.id} />
                             </div>
                             
                             <Link

@@ -375,6 +375,7 @@ export default function Index({
     }
 
     function toggleMine() {
+        // default = all (no param), mine = pass mine=1
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
     }
 
@@ -438,7 +439,7 @@ export default function Index({
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.customer').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm font-medium text-slate-900">{row.original.customer?.name ?? '-'}</span>,
         },
-        ...(!is_barber ? [{
+        ...(!is_barber || is_owner_barber ? [{
             id: 'barber',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.barber').toUpperCase()}</span>,
             cell: ({ row }: { row: { original: Appointment } }) => <span className="text-sm text-slate-600">{row.original.barber?.user?.name ?? '-'}</span>,
@@ -511,7 +512,7 @@ export default function Index({
                                 <Edit className="h-4 w-4" />
                             </Link>
                         )}
-                        {appt.status !== 'in_progress' && (
+                        {appt.status !== 'in_progress' && appt.can_delete && (
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-300 hover:text-red-600 hover:bg-red-50" onClick={() => setDeletingAppt(appt)}>
                                 <Trash2 className="h-4 w-4" />
                             </Button>
@@ -538,8 +539,8 @@ export default function Index({
                                     : 'border-slate-200 text-slate-600',
                             )}
                         >
-                            <span className="hidden sm:inline">{filter_mine ? t('appt.myAppointments') : t('appt.allAppointments')}</span>
-                            <span className="sm:hidden">{filter_mine ? t('appt.mine') : t('all')}</span>
+                            <span className="hidden sm:inline">{filter_mine ? t('appt.allAppointments') : t('appt.myAppointments')}</span>
+                            <span className="sm:hidden">{filter_mine ? t('all') : t('appt.mine') }</span>
                         </button>
                     )}
 {can_create && (
@@ -631,7 +632,7 @@ export default function Index({
                             <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
                                     <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
-                                    <p className="text-xs text-slate-400 mt-0.5">{appt.service?.name ?? '-'}{!is_barber && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">{appt.service?.name ?? '-'}{(!is_barber || is_owner_barber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}</p>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0">
                                     {appt.recurrence_rule && appt.recurrence_rule !== 'none' && (
@@ -672,7 +673,7 @@ export default function Index({
                                         <Edit className="h-3.5 w-3.5 mr-1" /> {t('edit')}
                                     </Link>
                                 )}
-                                {appt.status !== 'in_progress' && (
+                                {appt.status !== 'in_progress' && appt.can_delete && (
                                     <button onClick={() => setDeletingAppt(appt)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
                                         <Trash2 className="h-3.5 w-3.5" />
                                     </button>

@@ -6,9 +6,10 @@ import { cn } from '@/lib/utils';
 
 interface Props {
     compact?: boolean;
+    userId?: number;
 }
 
-export default function LanguageSwitcher({ compact = false }: Props) {
+export default function LanguageSwitcher({ compact = false, userId }: Props) {
     const { i18n } = useTranslation();
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -24,6 +25,13 @@ export default function LanguageSwitcher({ compact = false }: Props) {
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
+
+    function changeLanguage(code: string) {
+        i18n.changeLanguage(code);
+        const key = userId ? `freshio_lang_${userId}` : 'freshio_lang';
+        localStorage.setItem(key, code);
+        setOpen(false);
+    }
 
     return (
         <div ref={ref} className="relative">
@@ -45,10 +53,7 @@ export default function LanguageSwitcher({ compact = false }: Props) {
                     {LANGUAGES.map(lang => (
                         <button
                             key={lang.code}
-                            onClick={() => {
-                                i18n.changeLanguage(lang.code);
-                                setOpen(false);
-                            }}
+                            onClick={() => changeLanguage(lang.code)}
                             className={cn(
                                 'w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors',
                                 i18n.language === lang.code

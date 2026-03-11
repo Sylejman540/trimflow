@@ -22,6 +22,8 @@ class DashboardController extends Controller
 
         $today    = Carbon::today();
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+        $isOwnerBarber = $user->hasRole('shop-admin') && $user->hasRole('barber') && $user->barber;
+        // Plain barbers see only their own appointments; owner-barbers see the whole shop
         $barberId = $isBarber ? $user->barber?->id : null;
 
         $appointmentQuery = fn () => Appointment::query()
@@ -53,16 +55,16 @@ class DashboardController extends Controller
             ->each(fn (Appointment $a) => $a->resolveStatus())
             ->map(fn (Appointment $a) => $this->mapAppointment($a));
 
-        // Low-stock products alert (admin only)
-        $lowStockProducts = $isBarber ? [] : Product::where('is_active', true)
+        // Low-stock products alert (admin only, not plain barbers)
+        $lowStockProducts = ($isBarber && !$isOwnerBarber) ? [] : Product::where('is_active', true)
             ->whereColumn('stock_qty', '<=', 'low_stock_threshold')
             ->orderBy('stock_qty')
             ->get(['id', 'name', 'stock_qty', 'low_stock_threshold'])
             ->toArray();
 
-        // Getting started checklist (admin only)
+        // Getting started checklist (admin only, including owner-barbers)
         $setup = null;
-        if (!$isBarber) {
+        if (!$isBarber || $isOwnerBarber) {
             $company = $user->company;
             $hasBarbers  = Barber::where('company_id', $company->id)->where('is_active', true)->exists();
             $hasServices = Service::where('company_id', $company->id)->where('is_active', true)->exists();
@@ -77,7 +79,7 @@ class DashboardController extends Controller
         }
 
         return Inertia::render('Dashboard', [
-            'is_barber'          => $isBarber,
+            'is_barber'          => $isBarber && !$isOwnerBarber,
             'low_stock_products' => $lowStockProducts,
             'setup'              => $setup,
             'stats'              => $stats,

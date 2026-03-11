@@ -28,7 +28,7 @@ class AppointmentController extends Controller
         $isBarber     = $user->hasRole('barber') && !$user->hasRole('shop-admin');
         $isOwnerBarber = $user->hasRole('shop-admin') && $user->hasRole('barber') && $user->barber;
 
-        // "mine" filter: owner-barbers can toggle between all and their own appointments
+        // owner-barbers default to ALL appointments, can toggle to "mine" only
         $filterMine = $isOwnerBarber && request()->boolean('mine');
         $barberId   = ($isBarber || $filterMine) ? $user->barber?->id : null;
 

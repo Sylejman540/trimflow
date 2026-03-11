@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,12 +22,17 @@ function FreshioLogo({ dark = false }: { dark?: boolean }) {
 }
 
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
+
+    useEffect(() => {
+        i18n.changeLanguage('en');
+        localStorage.setItem('freshio_lang', 'en');
+    }, []);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
-        remember: false as boolean,
+        remember: true as boolean,
     });
 
     const submit: FormEventHandler = (e) => {
