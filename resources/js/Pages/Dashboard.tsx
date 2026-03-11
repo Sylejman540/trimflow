@@ -14,6 +14,10 @@ import {
     Check,
     Store,
     User,
+    MessageCircle,
+    ChevronDown,
+    ChevronUp,
+    ExternalLink,
 } from 'lucide-react';
 
 import AppLayout from '@/layouts/AppLayout';
@@ -195,6 +199,94 @@ function SetupChecklist({ setup }: { setup: Setup }) {
     );
 }
 
+function ManyChatGuide({ bookingLink }: { bookingLink: string }) {
+    const { t } = useTranslation();
+    const [open, setOpen] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    function copyLink() {
+        navigator.clipboard?.writeText(bookingLink).catch(() => {
+            const el = document.createElement('textarea');
+            el.value = bookingLink;
+            el.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
+    const steps = [
+        { n: 1, label: t('manychat.step1'), sub: t('manychat.step1sub') },
+        { n: 2, label: t('manychat.step2'), sub: t('manychat.step2sub') },
+        { n: 3, label: t('manychat.step3'), sub: t('manychat.step3sub') },
+        { n: 4, label: t('manychat.step4'), sub: t('manychat.step4sub') },
+        { n: 5, label: t('manychat.step5'), sub: t('manychat.step5sub') },
+    ];
+
+    return (
+        <Card className="border-slate-200 shadow-none">
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="w-full text-left"
+            >
+                <CardHeader className="px-4 lg:px-6 pt-4 pb-3">
+                    <div className="flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4 text-pink-500" />
+                        <CardTitle className="text-base">{t('manychat.title')}</CardTitle>
+                        <span className="ml-auto text-xs text-slate-400">{t('manychat.free')}</span>
+                        {open ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
+                    </div>
+                    <CardDescription className="mt-0.5">{t('manychat.desc')}</CardDescription>
+                </CardHeader>
+            </button>
+
+            {open && (
+                <CardContent className="px-4 lg:px-6 pb-5 space-y-4">
+                    {/* Booking link copy row */}
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                        <p className="flex-1 text-xs text-slate-500 truncate">{bookingLink}</p>
+                        <button
+                            onClick={copyLink}
+                            className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-700 hover:text-slate-900"
+                        >
+                            {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                            {copied ? t('setup.copied') : t('setup.copy')}
+                        </button>
+                    </div>
+
+                    {/* Steps */}
+                    <ol className="space-y-3">
+                        {steps.map(step => (
+                            <li key={step.n} className="flex items-start gap-3">
+                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-pink-100 text-[11px] font-bold text-pink-600 mt-0.5">
+                                    {step.n}
+                                </span>
+                                <div>
+                                    <p className="text-sm font-medium text-slate-900">{step.label}</p>
+                                    <p className="text-xs text-slate-500 mt-0.5">{step.sub}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ol>
+
+                    <a
+                        href="https://manychat.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-pink-600 hover:text-pink-700"
+                    >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        {t('manychat.openManyChat')}
+                    </a>
+                </CardContent>
+            )}
+        </Card>
+    );
+}
+
 interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
 
 export default function Dashboard({
@@ -249,6 +341,11 @@ export default function Dashboard({
                 {/* Getting started checklist */}
                 {!is_barber && setup && !setup.all_done && (
                     <SetupChecklist setup={setup} />
+                )}
+
+                {/* ManyChat Instagram DM guide */}
+                {!is_barber && setup && (
+                    <ManyChatGuide bookingLink={setup.booking_link} />
                 )}
 
                 {/* Owner-barber view toggle */}

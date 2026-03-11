@@ -103,6 +103,23 @@ export default {
         walkin: 'Pa rezervim',
     },
 
+    manychat: {
+        title: 'Përgjigje automatike në Instagram DM',
+        desc: 'Dërgoni linkun e rezervimit automatikisht kur dikush ju shkruan në Instagram.',
+        free: 'Falas · ManyChat',
+        step1: 'Krijoni llogari falas në ManyChat',
+        step1sub: 'Shkoni te manychat.com dhe regjistrohuni me llogarinë tuaj Facebook.',
+        step2: 'Lidhni faqen tuaj Instagram',
+        step2sub: 'Në ManyChat → Cilësimet → Instagram, lidhni llogarinë tuaj Instagram biznes.',
+        step3: 'Krijoni një Flow të ri',
+        step3sub: 'Shkoni te Flows → Flow i Ri → zgjidhni "Instagram DM" si shkaktues.',
+        step4: 'Shtoni fjalë kyçe si shkaktues',
+        step4sub: 'Vendosni fjalë si "rezervo", "termin", "berber" — kur dikush i shkruan, përgjigja dërgohet automatikisht.',
+        step5: 'Shtoni linkun e rezervimit në përgjigje',
+        step5sub: 'Në veprimin e mesazhit, ngjisni linkun tuaj të rezervimit. Kopjoni atë më poshtë dhe përdoreni në Flow.',
+        openManyChat: 'Hapni ManyChat',
+    },
+
     appt: {
         title: 'Terminet',
         new: 'Termin i ri',

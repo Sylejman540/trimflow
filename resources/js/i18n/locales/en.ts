@@ -119,6 +119,24 @@ export default {
         walkin: 'Walk-in',
     },
 
+    // ManyChat Instagram guide
+    manychat: {
+        title: 'Auto-reply Instagram DMs',
+        desc: 'Send your booking link automatically when someone messages you on Instagram.',
+        free: 'Free · ManyChat',
+        step1: 'Create a free ManyChat account',
+        step1sub: 'Go to manychat.com and sign up with your Facebook account.',
+        step2: 'Connect your Instagram page',
+        step2sub: 'In ManyChat → Settings → Instagram, link your Instagram business account.',
+        step3: 'Create a new Flow',
+        step3sub: 'Go to Flows → New Flow → choose "Instagram DM" as the trigger.',
+        step4: 'Add a keyword trigger',
+        step4sub: 'Set keywords like "book", "appointment", "haircut" — when someone types these, the auto-reply fires.',
+        step5: 'Add your booking link to the reply',
+        step5sub: 'In the message action, paste your booking link below. Copy it and use it in the Flow.',
+        openManyChat: 'Open ManyChat',
+    },
+
     // Appointments
     appt: {
         title: 'Appointments',
