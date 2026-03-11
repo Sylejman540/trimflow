@@ -168,27 +168,20 @@ const Hero = () => (
                 </a>
             </motion.div>
 
-            {/* Hero showcase box */}
+            {/* Hero showcase — mobile: center phone only; desktop: full floating layout */}
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="relative mx-auto rounded-3xl bg-slate-400 overflow-visible mt-20"
-                style={{ width: '100%', height: '360px' }}
+                className="w-full mt-20"
             >
-                {/* Left phone — sticks out top and bottom */}
-                <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20" style={{ width: '260px' }}>
-                    <div className="rounded-[36px] p-[1.5px] shadow-2xl" style={{ height: '480px', background: 'rgba(255,255,255,0.25)', marginTop: '-60px' }}>
-                        <div className="rounded-[35px] overflow-hidden w-full h-full">
-                            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80" alt="Barber" className="w-full h-full object-cover" />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Center phone — sticks out top and bottom more */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20" style={{ width: '300px' }}>
-                    <div className="rounded-[40px] p-[1.5px] shadow-2xl" style={{ height: '620px', background: 'rgba(255,255,255,0.25)', marginTop: '-140px' }}>
-                        <div className="rounded-[39px] overflow-hidden w-full h-full bg-zinc-900">
+                {/* Mobile: single centered phone over gray box */}
+                <div className="flex md:hidden justify-center relative" style={{ height: '340px' }}>
+                    {/* Gray background box */}
+                    <div className="absolute left-0 right-0 rounded-3xl bg-slate-400" style={{ top: '60px', bottom: '60px' }} />
+                    {/* Phone */}
+                    <div className="relative z-10 rounded-[20px] p-[1.5px] shadow-[0_40px_80px_rgba(0,0,0,0.5)]" style={{ width: '180px', height: '340px', background: 'rgba(255,255,255,0.3)' }}>
+                        <div className="rounded-[19px] overflow-hidden w-full h-full bg-zinc-900">
                             <video autoPlay loop muted playsInline className="w-full h-full object-cover">
                                 <source src="/videos/haircut.mp4" type="video/mp4" />
                             </video>
@@ -196,11 +189,40 @@ const Hero = () => (
                     </div>
                 </div>
 
-                {/* Right phone — sticks out top and bottom */}
-                <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20" style={{ width: '260px' }}>
-                    <div className="rounded-[36px] p-[1.5px] shadow-2xl" style={{ height: '480px', background: 'rgba(255,255,255,0.25)', marginTop: '-60px' }}>
-                        <div className="rounded-[35px] overflow-hidden w-full h-full">
-                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80" alt="Barbershop" className="w-full h-full object-cover" />
+                {/* Desktop: full floating layout */}
+                <div className="hidden md:block relative" style={{ height: '500px' }}>
+                    {/* Gray background box */}
+                    <div
+                        className="absolute left-0 right-0 rounded-3xl bg-slate-400"
+                        style={{ top: '80px', bottom: '80px' }}
+                    />
+
+                    {/* Left phone */}
+                    <div className="absolute z-20" style={{ left: '6%', top: '0', width: '260px' }}>
+                        <div className="rounded-[20px] p-[1.5px] shadow-[0_30px_60px_rgba(0,0,0,0.4)]" style={{ height: '500px', background: 'rgba(255,255,255,0.3)' }}>
+                            <div className="rounded-[19px] overflow-hidden w-full h-full">
+                                <img src="/left-side.png" alt="App screen" className="w-full h-full object-cover" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Center phone — tallest, most prominent */}
+                    <div className="absolute left-1/2 -translate-x-1/2 z-30" style={{ top: '-40px', width: '300px' }}>
+                        <div className="rounded-[20px] p-[1.5px] shadow-[0_40px_80px_rgba(0,0,0,0.5)]" style={{ height: '580px', background: 'rgba(255,255,255,0.3)' }}>
+                            <div className="rounded-[19px] overflow-hidden w-full h-full bg-zinc-900">
+                                <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                                    <source src="/videos/haircut.mp4" type="video/mp4" />
+                                </video>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right phone */}
+                    <div className="absolute z-20" style={{ right: '6%', top: '0', width: '260px' }}>
+                        <div className="rounded-[20px] p-[1.5px] shadow-[0_30px_60px_rgba(0,0,0,0.4)]" style={{ height: '500px', background: 'rgba(255,255,255,0.3)' }}>
+                            <div className="rounded-[19px] overflow-hidden w-full h-full">
+                                <img src="/right-side.png" alt="App screen" className="w-full h-full object-cover" />
+                            </div>
                         </div>
                     </div>
                 </div>

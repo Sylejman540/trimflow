@@ -135,17 +135,18 @@ class DatabaseSeeder extends Seeder
         }
 
         // Appointments (past + upcoming)
-        $statuses = ['completed', 'completed', 'completed', 'pending', 'confirmed'];
+        $statuses = ['completed', 'completed', 'completed', 'completed', 'pending', 'confirmed', 'confirmed', 'no_show'];
 
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 120; $i++) {
             $barber = $barbers[array_rand($barbers)];
             $customer = $customers[array_rand($customers)];
             $service = $services[array_rand($services)];
             $status = $statuses[array_rand($statuses)];
 
-            $startsAt = $status === 'completed'
-                ? now()->subDays(rand(1, 60))->setHour(rand(9, 16))->setMinute(0)->setSecond(0)
-                : now()->addDays(rand(1, 14))->setHour(rand(9, 16))->setMinute(0)->setSecond(0);
+            $minutes = [0, 15, 30, 45][array_rand([0, 15, 30, 45])];
+            $startsAt = in_array($status, ['completed', 'no_show'])
+                ? now()->subDays(rand(1, 90))->setHour(rand(8, 18))->setMinute($minutes)->setSecond(0)
+                : now()->addDays(rand(0, 21))->setHour(rand(8, 18))->setMinute($minutes)->setSecond(0);
 
             $appointment = Appointment::create([
                 'company_id' => $company->id,
