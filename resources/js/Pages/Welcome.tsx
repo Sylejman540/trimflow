@@ -40,7 +40,7 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 function Logo() {
     return (
         <div className="flex items-center gap-2.5">
-            <span className="text-2xl font-black tracking-tight text-white">
+            <span className="text-2xl font-black tracking-tight text-white bg-blue-600 px-3 py-1 rounded-xl">
                 Freshio
             </span>
         </div>
