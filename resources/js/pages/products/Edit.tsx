@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Package, Tag, DollarSign, ArchiveRestore, AlertTriangle, Info } from 'lucide-react';
+import { NumberStepper } from '@/components/ui/number-stepper';
 
 interface Product {
     id: number;
