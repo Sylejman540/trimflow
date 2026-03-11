@@ -463,25 +463,25 @@ const GetFree = () => (
                 {/* Left: phone mockup */}
                 <div className="relative z-10 shrink-0">
                     <div className="bg-slate-900 rounded-[36px] p-3 shadow-2xl w-[200px]">
-                        <div className="bg-gray-100 rounded-[26px] overflow-hidden" style={{ height: '380px' }}>
+                        <div className="bg-zinc-800 rounded-[26px] overflow-hidden" style={{ height: '380px' }}>
                             <div className="bg-blue-700 px-4 py-5">
                                 <div className="text-white text-xs font-bold">Freshio Booking</div>
                                 <div className="text-blue-200 text-[10px] mt-0.5">Marcus's Barbershop</div>
                             </div>
                             <div className="p-3 space-y-2">
-                                <div className="bg-white rounded-xl p-3 shadow-sm">
-                                    <p className="text-[9px] text-gray-400 mb-1">Select service</p>
+                                <div className="bg-zinc-900 rounded-xl p-3 shadow-sm">
+                                    <p className="text-[9px] text-zinc-500 mb-1">Select service</p>
                                     <div className="space-y-1.5">
                                         {['Classic Haircut — $25', 'Beard Trim — $15', 'Full Package — $35'].map((s, i) => (
-                                            <div key={i} className={`rounded-lg px-2 py-1.5 text-[8px] font-medium ${i === 0 ? 'bg-blue-600 text-white' : 'bg-gray-50 text-slate-700'}`}>{s}</div>
+                                            <div key={i} className={`rounded-lg px-2 py-1.5 text-[8px] font-medium ${i === 0 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-300'}`}>{s}</div>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="bg-white rounded-xl p-3 shadow-sm">
-                                    <p className="text-[9px] text-gray-400 mb-1.5">Pick a time</p>
+                                <div className="bg-zinc-900 rounded-xl p-3 shadow-sm">
+                                    <p className="text-[9px] text-zinc-500 mb-1.5">Pick a time</p>
                                     <div className="grid grid-cols-3 gap-1">
                                         {['9:00', '10:30', '12:00', '2:00', '3:30', '5:00'].map((t, i) => (
-                                            <div key={i} className={`rounded-md py-1 text-center text-[7px] font-semibold ${i === 2 ? 'bg-blue-600 text-white' : 'bg-gray-50 text-slate-700'}`}>{t}</div>
+                                            <div key={i} className={`rounded-md py-1 text-center text-[7px] font-semibold ${i === 2 ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-300'}`}>{t}</div>
                                         ))}
                                     </div>
                                 </div>
