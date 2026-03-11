@@ -59,6 +59,7 @@ export default {
         services: 'Services',
         products: 'Products',
         reports: 'Reports',
+        ads: 'Marketplace',
         schedule: 'Schedule',
         waitlist: 'Waitlist',
         auditLogs: 'Audit Logs',
