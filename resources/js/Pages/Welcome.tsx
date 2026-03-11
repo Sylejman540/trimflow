@@ -8,8 +8,7 @@ if (typeof document !== 'undefined') {
 }
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
-    ArrowRight, Menu, X, Star, Check, ChevronRight, Scissors,
-    BarChart3,
+    ArrowRight, Menu, X, Star, Scissors,
 } from 'lucide-react';
 
 interface Props {
@@ -264,7 +263,7 @@ const Marquee = () => (
 const LockInLoyalty = () => (
     <section className="py-32 bg-black" id="features">
         <div className="max-w-7xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-20 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
 
                 {/* LEFT: marketing content */}
                 <FadeIn>
@@ -295,74 +294,53 @@ const LockInLoyalty = () => (
 
                 {/* RIGHT: layered visual */}
                 <FadeIn delay={0.15}>
-                    <div className="relative flex items-center justify-center" style={{ height: '480px' }}>
+                    <div className="relative flex items-center justify-center mt-16 md:mt-0" style={{ height: '480px' }}>
 
                         {/* Element 1: Background card */}
                         <div
                             className="absolute bg-pink-400 rounded-3xl"
                             style={{
-                                width: '560px',
+                                width: '100%',
+                                maxWidth: '560px',
                                 height: '340px',
                                 top: '70px',
                                 right: '0',
                             }}
                         />
 
-                        {/* Element 2: Barber photo — top right, overlapping card */}
+                        {/* Element 2: Dashboard — top right, overlapping card */}
                         <div
                             className="absolute overflow-hidden shadow-2xl"
                             style={{
                                 width: '320px',
-                                height: '340px',
                                 borderRadius: '20px',
                                 top: '0',
                                 right: '80px',
                             }}
                         >
                             <img
-                                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=700&q=80"
-                                alt="Barber"
-                                className="w-full h-full object-cover"
+                                src="/dashboard.png"
+                                alt="Dashboard"
+                                className="w-full h-auto object-contain"
                             />
                         </div>
 
-                        {/* Element 3: Phone UI — front, center-bottom */}
+                        {/* Element 3: Barber photo — front, bottom-left */}
                         <div
-                            className="absolute z-20 bg-zinc-900 shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
+                            className="absolute z-20 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
                             style={{
-                                width: '200px',
-                                borderRadius: '28px',
+                                width: '230px',
+                                height: '290px',
+                                borderRadius: '20px',
                                 bottom: '0',
                                 left: '60px',
-                                padding: '16px',
                             }}
                         >
-                            {/* Phone notch */}
-                            <div className="flex justify-center mb-3">
-                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full" />
-                            </div>
-                            {/* App icons grid */}
-                            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mb-3 text-center">Add to Home Screen</p>
-                            <div className="grid grid-cols-3 gap-2 mb-4">
-                                {[
-                                    { color: 'bg-blue-600', label: 'Book' },
-                                    { color: 'bg-pink-500', label: 'Style' },
-                                    { color: 'bg-amber-500', label: 'Pay' },
-                                    { color: 'bg-green-600', label: 'Chat' },
-                                    { color: 'bg-purple-600', label: 'Tips' },
-                                    { color: 'bg-red-500', label: 'Pass' },
-                                ].map(({ color, label }) => (
-                                    <div key={label} className="flex flex-col items-center gap-1">
-                                        <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shadow-md`}>
-                                            <span className="text-white text-[8px] font-bold">{label[0]}</span>
-                                        </div>
-                                        <span className="text-[7px] text-zinc-400">{label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="bg-blue-600 rounded-xl py-2 text-center">
-                                <span className="text-white text-[9px] font-bold">Book Now →</span>
-                            </div>
+                            <img
+                                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=500&q=80"
+                                alt="Barber"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
 
                     </div>
@@ -376,57 +354,58 @@ const LockInLoyalty = () => (
 // ─── Barbers & Clients ────────────────────────────────────────────────────────
 
 const BarbersClients = () => (
-    <section className="py-28 bg-zinc-950" id="barbers">
+    <section className="py-32 bg-black" id="barbers">
         <div className="max-w-7xl mx-auto px-6">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Platform</p>
-                <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-                    Built for barbers and their clients
+
+            {/* Top label */}
+            <FadeIn>
+                <p className="text-xs uppercase tracking-widest text-white font-bold mb-6">For</p>
+            </FadeIn>
+
+            {/* Interactive headline */}
+            <FadeIn>
+                <h2
+                    className="text-7xl md:text-8xl leading-none mb-16"
+                    style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.01em' }}
+                >
+                    <span className="text-blue-500 hover:text-white transition-colors duration-300 cursor-default">Barbers </span>
+                    <span className="text-zinc-500 hover:text-white transition-colors duration-300 cursor-default">
+                        Business Clients
+                    </span>
                 </h2>
             </FadeIn>
 
-            <div className="grid md:grid-cols-2 gap-8 items-stretch">
-                {/* Left: image */}
+            {/* Content block */}
+            <div className="grid grid-cols-1 md:grid-cols-[3fr_1fr] items-stretch">
+
+                {/* Left: barber image — no right border radius */}
                 <FadeIn>
                     <img
-                        src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80"
-                        alt="Barber cutting hair"
-                        className="w-full h-full rounded-3xl object-cover shadow-xl"
-                        style={{ minHeight: '440px' }}
+                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80"
+                        alt="Barber"
+                        className="w-full object-cover shadow-xl"
+                        style={{ aspectRatio: '21/9', borderRadius: '12px 0 0 12px' }}
                     />
                 </FadeIn>
 
-                {/* Right: gray box */}
+                {/* Right: dark card — no left border radius */}
                 <FadeIn delay={0.1}>
-                    <div className="bg-zinc-800 rounded-3xl p-10 flex flex-col justify-center h-full">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white mb-6">
-                            <BarChart3 className="h-6 w-6" />
-                        </div>
-                        <h3 className="text-2xl font-black text-white mb-4">Everything your shop needs</h3>
-                        <p className="text-zinc-400 leading-relaxed mb-6">
-                            Freshio gives barbers a full business toolkit — bookings, payments, client management, and analytics — while giving clients the smoothest booking experience they've ever had. No app downloads required.
+                    <div className="bg-neutral-900 p-6 shadow-xl h-full flex flex-col justify-center" style={{ borderRadius: '0 12px 12px 0' }}>
+                        <p className="text-zinc-300 text-sm leading-relaxed mb-6">
+                            Take control of your schedule, clients, money, and brand.
                         </p>
-                        <ul className="space-y-3 mb-8">
-                            {[
-                                'Online booking page shared via link',
-                                'Real-time calendar for each barber',
-                                'Automated payment collection',
-                                'Revenue and performance reports',
-                            ].map(item => (
-                                <li key={item} className="flex items-center gap-3 text-sm text-zinc-300">
-                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600 shrink-0">
-                                        <Check className="h-3 w-3" />
-                                    </div>
-                                    {item}
-                                </li>
-                            ))}
-                        </ul>
-                        <a href="/register"
-                            className="inline-flex items-center gap-2 bg-slate-900 text-white font-semibold px-6 py-3.5 rounded-xl text-sm hover:bg-slate-800 transition-all w-fit">
-                            Find out how <ChevronRight className="h-4 w-4" />
+                        <a
+                            href="/register"
+                            className="inline-flex items-center gap-2 border border-zinc-600 text-zinc-400 rounded-full px-4 py-1.5 text-xs font-bold hover:border-white hover:text-white transition-all duration-200 w-fit"
+                        >
+                            Find out how
+                            <span className="flex items-center justify-center bg-blue-600 rounded-full h-5 w-5">
+                                <ArrowRight className="h-3 w-3 text-white" />
+                            </span>
                         </a>
                     </div>
                 </FadeIn>
+
             </div>
         </div>
     </section>
@@ -441,7 +420,7 @@ const stories = [
         avatar: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=100&q=80',
         text: "Before Freshio, I was managing bookings through Instagram DMs at midnight. Now my schedule fills itself. Revenue is up 40% in three months.",
         rating: 5,
-        height: 'h-auto',
+        image: null,
     },
     {
         name: 'David Kowalski',
@@ -449,7 +428,7 @@ const stories = [
         avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&q=80',
         text: "The client profiles are a game changer. I know every regular's preferences before they even sit down. It's made my work so much more personal and efficient.",
         rating: 5,
-        height: 'h-auto',
+        image: null,
     },
     {
         name: 'Arben Gashi',
@@ -457,7 +436,31 @@ const stories = [
         avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80',
         text: "Set up in 10 minutes. My clients love the booking link. No-shows dropped from 3-4 a week to almost zero. Simple, fast, professional.",
         rating: 5,
-        height: 'h-auto',
+        image: null,
+    },
+    {
+        name: 'Luca Ferretti',
+        shop: 'Blade & Brush Milano',
+        avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&q=80',
+        text: "Freshio turned my shop into a fully booked machine. Clients love the experience and I love not dealing with missed calls.",
+        rating: 5,
+        image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&q=80',
+    },
+    {
+        name: 'Jordan Blake',
+        shop: 'Uptown Fades Chicago',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80',
+        text: "I was skeptical at first but within a week my calendar was full. The reminders alone cut my no-shows in half. Couldn't go back.",
+        rating: 5,
+        image: null,
+    },
+    {
+        name: 'Yusuf Al-Amin',
+        shop: 'The Lineup Dubai',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
+        text: "Running three chairs is now manageable. Every barber has their own schedule, clients book who they want. It just works.",
+        rating: 5,
+        image: null,
     },
 ];
 
@@ -473,18 +476,23 @@ const ShopStories = () => (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 {stories.map((s, i) => (
                     <FadeIn key={s.name} delay={i * 0.1}>
-                        <div className={`bg-zinc-900 rounded-2xl p-6 border border-zinc-800 ${i === 1 ? 'md:mt-8' : ''}`}>
-                            <div className="flex gap-1 mb-4">
-                                {Array.from({ length: s.rating }).map((_, j) => (
-                                    <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                                ))}
-                            </div>
-                            <p className="text-zinc-300 text-sm leading-relaxed mb-6">"{s.text}"</p>
-                            <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
-                                <img src={s.avatar} alt={s.name} className="h-10 w-10 rounded-full object-cover" />
-                                <div>
-                                    <p className="font-semibold text-white text-sm">{s.name}</p>
-                                    <p className="text-xs text-zinc-500">{s.shop}</p>
+                        <div className={`bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden ${i === 1 || i === 4 ? 'md:mt-8' : ''}`}>
+                            {s.image && (
+                                <img src={s.image} alt="Barbershop" className="w-full h-48 object-cover" />
+                            )}
+                            <div className="p-6">
+                                <div className="flex gap-1 mb-4">
+                                    {Array.from({ length: s.rating }).map((_, j) => (
+                                        <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                                    ))}
+                                </div>
+                                <p className="text-zinc-300 text-sm leading-relaxed mb-6">"{s.text}"</p>
+                                <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
+                                    <img src={s.avatar} alt={s.name} className="h-10 w-10 rounded-full object-cover" />
+                                    <div>
+                                        <p className="font-semibold text-white text-sm">{s.name}</p>
+                                        <p className="text-xs text-zinc-500">{s.shop}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -494,6 +502,97 @@ const ShopStories = () => (
         </div>
     </section>
 );
+
+// ─── Mid CTA ──────────────────────────────────────────────────────────────────
+
+const BrowserFrame = ({ src, url, alt }: { src: string; url: string; alt: string }) => (
+    <div className="rounded-2xl bg-zinc-900 shadow-[0_40px_80px_rgba(0,0,0,0.7)] ring-1 ring-white/10 overflow-hidden">
+        <div className="flex items-center gap-2 px-4 py-3 bg-white border-b border-zinc-200">
+            <div className="flex gap-1.5">
+                <div className="h-3 w-3 rounded-full bg-red-500/70" />
+                <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
+                <div className="h-3 w-3 rounded-full bg-green-500/70" />
+            </div>
+            <div className="flex-1 bg-zinc-100 rounded-md h-5 mx-3 flex items-center px-3">
+                <span className="text-[9px] text-zinc-500">{url}</span>
+            </div>
+        </div>
+        <img src={src} alt={alt} className="w-full h-auto" />
+    </div>
+);
+
+const MidCTA = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
+
+    // freshio slides in at 0–0.3, reports slides in at 0.5–0.8
+    const freshioX = useTransform(scrollYProgress, [0, 0.3], [120, 0]);
+    const freshioOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+    const reportsX = useTransform(scrollYProgress, [0.5, 0.8], [-120, 0]);
+    const reportsOpacity = useTransform(scrollYProgress, [0.5, 0.8], [0, 1]);
+    const ctaOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
+    const ctaY = useTransform(scrollYProgress, [0, 0.1], [30, 0]);
+
+    return (
+        <section ref={containerRef} className="bg-black" style={{ height: '300vh' }}>
+            {/* Sticky viewport */}
+            <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
+
+                {/* Center CTA */}
+                <motion.div
+                    style={{ opacity: ctaOpacity, y: ctaY, zIndex: 10, position: 'relative' }}
+                    className="flex flex-col items-center text-center px-6"
+                >
+                    <h2
+                        className="text-[72px] md:text-[100px] leading-none text-white mb-8"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em' }}
+                    >
+                        Get Freshio
+                    </h2>
+                    <a
+                        href="/register"
+                        className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-full shadow-lg transition-all text-base"
+                    >
+                        Start for free
+                    </a>
+                </motion.div>
+
+                {/* Right — freshio.png, scroll in at 0–30% */}
+                <motion.div
+                    style={{ opacity: freshioOpacity, x: freshioX }}
+                    className="hidden md:block absolute"
+                    css={{}}
+                    {...{ style: { opacity: freshioOpacity, x: freshioX, position: 'absolute', right: '-60px', top: 0, bottom: 0, width: '480px', display: 'flex', alignItems: 'center', zIndex: 1 } }}
+                >
+                    <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
+                        <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Freshio Dashboard" />
+                    </motion.div>
+                </motion.div>
+
+                {/* Left — reports.png, scroll in at 50–80% */}
+                <motion.div
+                    style={{ opacity: reportsOpacity, x: reportsX, position: 'absolute', left: '-60px', top: 0, bottom: 0, width: '480px', display: 'flex', alignItems: 'center', zIndex: 1 }}
+                    className="hidden md:block"
+                >
+                    <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
+                        <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
+                    </motion.div>
+                </motion.div>
+
+            </div>
+
+            {/* Mobile: stacked */}
+            <div className="md:hidden px-6 py-20 space-y-6">
+                <div className="flex flex-col items-center text-center mb-10">
+                    <h2 className="text-[72px] leading-none text-white mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Get Freshio</h2>
+                    <a href="/register" className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-full shadow-lg transition-all text-base">Start for free</a>
+                </div>
+                <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Freshio Dashboard" />
+                <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
+            </div>
+        </section>
+    );
+};
 
 // ─── Get Freshio Free ─────────────────────────────────────────────────────────
 
@@ -714,6 +813,7 @@ export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
             <LockInLoyalty />
             <BarbersClients />
             <ShopStories />
+            <MidCTA />
             <GetFree />
             <ScrollDemo />
             <Footer />
