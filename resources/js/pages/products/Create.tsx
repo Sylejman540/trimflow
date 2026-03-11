@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Package, Tag, DollarSign, ArchiveRestore, AlertTriangle, Info } from 'lucide-react';
+import { NumberStepper } from '@/components/ui/number-stepper';
 
 export default function Create() {
     const { t } = useTranslation();
@@ -96,16 +97,13 @@ export default function Create() {
                         >
                             <DollarSign size={12} /> {t('prod.priceDollar')}
                         </Label>
-                        <Input
+                        <NumberStepper
                             id="price"
-                            type="number"
-                            step="0.01"
-                            min="0"
                             value={data.price}
-                            onChange={(e) => setData('price', parseFloat(e.target.value) || 0)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                            placeholder="0.00"
-                            required
+                            onChange={v => setData('price', v)}
+                            min={0}
+                            step={0.5}
+                            decimal
                         />
                         {errors.price && (
                             <p className="text-xs text-red-500 font-medium">{errors.price}</p>
