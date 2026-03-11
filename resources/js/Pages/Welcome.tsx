@@ -130,7 +130,7 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.05] mb-6 max-w-4xl"
+                className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-4xl"
             >
                 The easiest way to manage{' '}
                 <span className="text-blue-600">barber appointments</span>
@@ -140,7 +140,7 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.25 }}
-                className="text-lg text-gray-500 max-w-xl mb-10 leading-relaxed"
+                className="text-lg text-zinc-400 max-w-xl mb-10 leading-relaxed"
             >
                 Let clients book in seconds, reduce no-shows, and grow your barbershop — all from one simple dashboard.
             </motion.p>
@@ -157,7 +157,7 @@ const Hero = () => (
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
                 <a href="#features"
-                    className="flex items-center justify-center gap-2 text-gray-700 border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 px-8 py-4 rounded-xl transition-all font-medium text-sm">
+                    className="flex items-center justify-center gap-2 text-zinc-300 border border-zinc-700 hover:border-zinc-500 bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl transition-all font-medium text-sm">
                     See how it works
                 </a>
             </motion.div>
@@ -167,22 +167,22 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="relative bg-gray-200 rounded-3xl w-full max-w-5xl mx-auto"
+                className="relative bg-zinc-700 rounded-3xl w-full max-w-5xl mx-auto"
                 style={{ paddingTop: '80px', paddingBottom: '0', minHeight: '400px' }}
             >
                 {/* Left phone */}
                 <div className="absolute -top-16 left-[8%] w-[140px] z-20">
                     <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
-                        <div className="bg-gray-100 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
+                        <div className="bg-zinc-800 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
                             <div className="bg-blue-600 px-3 py-4">
                                 <div className="text-white text-[9px] font-bold">Freshio</div>
                                 <div className="text-white/70 text-[7px] mt-0.5">My appointments</div>
                             </div>
                             <div className="p-2 space-y-1.5">
                                 {['10:00 AM — Haircut', '2:00 PM — Beard trim', '4:30 PM — Fade'].map((t, i) => (
-                                    <div key={i} className="bg-white rounded-lg p-2 shadow-sm">
-                                        <div className="text-[7px] font-semibold text-slate-800">{t}</div>
-                                        <div className="text-[6px] text-gray-400 mt-0.5">Confirmed ✓</div>
+                                    <div key={i} className="bg-zinc-900 rounded-lg p-2 shadow-sm">
+                                        <div className="text-[7px] font-semibold text-zinc-200">{t}</div>
+                                        <div className="text-[6px] text-zinc-500 mt-0.5">Confirmed ✓</div>
                                     </div>
                                 ))}
                             </div>
@@ -203,16 +203,16 @@ const Hero = () => (
                 {/* Right phone */}
                 <div className="absolute -top-16 right-[8%] w-[140px] z-20">
                     <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
-                        <div className="bg-gray-100 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
+                        <div className="bg-zinc-800 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
                             <div className="bg-slate-800 px-3 py-4">
                                 <div className="text-white text-[9px] font-bold">Book Now</div>
                                 <div className="text-white/70 text-[7px] mt-0.5">Choose a barber</div>
                             </div>
                             <div className="p-2 space-y-1.5">
                                 {['Marcus J. ⭐ 4.9', 'David K. ⭐ 4.8', 'Arben G. ⭐ 5.0'].map((b, i) => (
-                                    <div key={i} className="bg-white rounded-lg p-2 flex items-center gap-1.5 shadow-sm">
+                                    <div key={i} className="bg-zinc-900 rounded-lg p-2 flex items-center gap-1.5 shadow-sm">
                                         <div className="w-5 h-5 rounded-full bg-blue-100 shrink-0" />
-                                        <div className="text-[7px] font-semibold text-slate-800">{b}</div>
+                                        <div className="text-[7px] font-semibold text-zinc-200">{b}</div>
                                     </div>
                                 ))}
                             </div>
@@ -242,23 +242,23 @@ const Marquee = ({ ads }: { ads: Props['ads'] }) => {
     const doubled = [...items, ...items];
 
     return (
-        <section className="py-0 bg-white border-y border-gray-100 overflow-hidden">
+        <section className="py-0 bg-black border-y border-zinc-800 overflow-hidden">
             <div className="text-center pt-5 pb-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Shops on Freshio</span>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Shops on Freshio</span>
             </div>
             <div className="relative pb-5">
-                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
                 <motion.div
                     className="flex gap-3 w-max"
                     animate={{ x: ['0%', '-50%'] }}
                     transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
                 >
                     {doubled.map((ad, i) => (
-                        <div key={i} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 shrink-0 hover:border-blue-200 hover:bg-blue-50/40 transition-colors cursor-pointer group">
+                        <div key={i} className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-3 shrink-0 hover:border-blue-200 hover:bg-blue-50/40 transition-colors cursor-pointer group">
                             <span className="text-lg">{ad.emoji}</span>
                             <div>
-                                <p className="text-xs font-semibold text-slate-800 whitespace-nowrap">{ad.headline}</p>
+                                <p className="text-xs font-semibold text-zinc-200 whitespace-nowrap">{ad.headline}</p>
                                 <p className="text-[10px] text-blue-600 font-bold group-hover:underline">{ad.sub}</p>
                             </div>
                         </div>
@@ -272,13 +272,13 @@ const Marquee = ({ ads }: { ads: Props['ads'] }) => {
 // ─── Lock in Loyalty ──────────────────────────────────────────────────────────
 
 const LockInLoyalty = () => (
-    <section className="py-28 bg-white" id="features">
+    <section className="py-28 bg-black" id="features">
         <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-2 gap-16 items-center">
                 {/* Left */}
                 <FadeIn>
                     <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-4">Retention</p>
-                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">
+                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-6">
                         Lock in loyalty
                     </h2>
                     <div className="space-y-4 mb-8">
@@ -288,13 +288,13 @@ const LockInLoyalty = () => (
                             { icon: Star, title: 'Loyalty rewards', text: 'Build a points system that keeps clients coming back. Reward your best customers automatically.' },
                             { icon: Users, title: 'Client profiles', text: 'Every client has a profile with their history, preferences, and notes. Know your regulars.' },
                         ].map(({ icon: Icon, title, text }) => (
-                            <div key={title} className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors group">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <div key={title} className="flex gap-4 p-4 rounded-xl hover:bg-zinc-800 transition-colors group">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-950 text-blue-400 shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                                     <Icon className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-slate-900 text-sm mb-0.5">{title}</p>
-                                    <p className="text-sm text-gray-500 leading-relaxed">{text}</p>
+                                    <p className="font-semibold text-white text-sm mb-0.5">{title}</p>
+                                    <p className="text-sm text-zinc-400 leading-relaxed">{text}</p>
                                 </div>
                             </div>
                         ))}
@@ -314,9 +314,9 @@ const LockInLoyalty = () => (
                             style={{ height: '560px' }}
                         />
                         {/* Floating stat card */}
-                        <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
-                            <p className="text-3xl font-black text-slate-900">60%</p>
-                            <p className="text-xs text-gray-500 mt-1">fewer no-shows<br />on average</p>
+                        <div className="absolute -bottom-6 -left-6 bg-zinc-900 rounded-2xl p-5 shadow-xl border border-zinc-800">
+                            <p className="text-3xl font-black text-white">60%</p>
+                            <p className="text-xs text-zinc-400 mt-1">fewer no-shows<br />on average</p>
                         </div>
                         <div className="absolute -top-6 -right-6 bg-blue-600 rounded-2xl p-5 shadow-xl">
                             <p className="text-3xl font-black text-white">4.9</p>
@@ -332,11 +332,11 @@ const LockInLoyalty = () => (
 // ─── Barbers & Clients ────────────────────────────────────────────────────────
 
 const BarbersClients = () => (
-    <section className="py-28 bg-gray-50" id="barbers">
+    <section className="py-28 bg-zinc-950" id="barbers">
         <div className="max-w-7xl mx-auto px-6">
             <FadeIn className="text-center mb-16">
                 <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Platform</p>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">
                     Built for barbers and their clients
                 </h2>
             </FadeIn>
@@ -354,12 +354,12 @@ const BarbersClients = () => (
 
                 {/* Right: gray box */}
                 <FadeIn delay={0.1}>
-                    <div className="bg-gray-100 rounded-3xl p-10 flex flex-col justify-center h-full">
+                    <div className="bg-zinc-800 rounded-3xl p-10 flex flex-col justify-center h-full">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white mb-6">
                             <BarChart3 className="h-6 w-6" />
                         </div>
-                        <h3 className="text-2xl font-black text-slate-900 mb-4">Everything your shop needs</h3>
-                        <p className="text-gray-600 leading-relaxed mb-6">
+                        <h3 className="text-2xl font-black text-white mb-4">Everything your shop needs</h3>
+                        <p className="text-zinc-400 leading-relaxed mb-6">
                             Freshio gives barbers a full business toolkit — bookings, payments, client management, and analytics — while giving clients the smoothest booking experience they've ever had. No app downloads required.
                         </p>
                         <ul className="space-y-3 mb-8">
@@ -369,7 +369,7 @@ const BarbersClients = () => (
                                 'Automated payment collection',
                                 'Revenue and performance reports',
                             ].map(item => (
-                                <li key={item} className="flex items-center gap-3 text-sm text-slate-700">
+                                <li key={item} className="flex items-center gap-3 text-sm text-zinc-300">
                                     <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600 shrink-0">
                                         <Check className="h-3 w-3" />
                                     </div>
@@ -418,29 +418,29 @@ const stories = [
 ];
 
 const ShopStories = () => (
-    <section className="py-28 bg-white" id="stories">
+    <section className="py-28 bg-black" id="stories">
         <div className="max-w-7xl mx-auto px-6">
             <FadeIn className="text-center mb-16">
                 <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Testimonials</p>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Shop stories</h2>
-                <p className="text-gray-500 mt-4 max-w-md mx-auto">Real barbers, real results.</p>
+                <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">Shop stories</h2>
+                <p className="text-zinc-400 mt-4 max-w-md mx-auto">Real barbers, real results.</p>
             </FadeIn>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 {stories.map((s, i) => (
                     <FadeIn key={s.name} delay={i * 0.1}>
-                        <div className={`bg-gray-50 rounded-2xl p-6 border border-gray-100 ${i === 1 ? 'md:mt-8' : ''}`}>
+                        <div className={`bg-zinc-900 rounded-2xl p-6 border border-zinc-800 ${i === 1 ? 'md:mt-8' : ''}`}>
                             <div className="flex gap-1 mb-4">
                                 {Array.from({ length: s.rating }).map((_, j) => (
                                     <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
                                 ))}
                             </div>
-                            <p className="text-slate-700 text-sm leading-relaxed mb-6">"{s.text}"</p>
-                            <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                            <p className="text-zinc-300 text-sm leading-relaxed mb-6">"{s.text}"</p>
+                            <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
                                 <img src={s.avatar} alt={s.name} className="h-10 w-10 rounded-full object-cover" />
                                 <div>
-                                    <p className="font-semibold text-slate-900 text-sm">{s.name}</p>
-                                    <p className="text-xs text-gray-500">{s.shop}</p>
+                                    <p className="font-semibold text-white text-sm">{s.name}</p>
+                                    <p className="text-xs text-zinc-500">{s.shop}</p>
                                 </div>
                             </div>
                         </div>
