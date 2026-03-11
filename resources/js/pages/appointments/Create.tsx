@@ -1,5 +1,5 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { FormEvent, useState, useMemo } from 'react';
+import { FormEvent, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Tag } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2 } from 'lucide-react';
 
 export default function Create({
     barbers,
@@ -26,6 +26,7 @@ export default function Create({
 }) {
     const { auth } = usePage<PageProps>().props;
     const isBarber = auth.roles.includes('barber') && !auth.roles.includes('shop-admin');
+    const companySlug = (auth as any).company?.slug as string;
     const { t } = useTranslation();
 
     const { data, setData, post, processing, errors } = useForm({
@@ -52,29 +53,76 @@ export default function Create({
         [services, categoryFilter],
     );
 
-    const selectedService = services.find(
-        (s) => s.id === Number(data.service_id),
-    );
+    const selectedService = services.find(s => s.id === Number(data.service_id));
+
+    // --- Slot picker state ---
+    const [selectedDate, setSelectedDate] = useState('');
+    const [slots, setSlots] = useState<string[] | null>(null);
+    const [slotsLoading, setSlotsLoading] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState('');
+
+    // Today's date as min for date input
+    const todayStr = useMemo(() => {
+        const d = new Date();
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }, []);
+
+    // Fetch available slots whenever barber + service + date are all set
+    useEffect(() => {
+        if (!data.barber_id || !data.service_id || !selectedDate || !companySlug) {
+            setSlots(null);
+            setSelectedSlot('');
+            setData('starts_at', '');
+            return;
+        }
+
+        setSlotsLoading(true);
+        setSlots(null);
+        setSelectedSlot('');
+        setData('starts_at', '');
+
+        const params = new URLSearchParams({
+            barber_id: data.barber_id,
+            date: selectedDate,
+        });
+        params.append('service_ids[]', data.service_id);
+
+        fetch(route('booking.slots', companySlug) + '?' + params.toString())
+            .then(r => r.json())
+            .then((json: { slots: string[] }) => {
+                setSlots(json.slots ?? []);
+            })
+            .catch(() => setSlots([]))
+            .finally(() => setSlotsLoading(false));
+    }, [data.barber_id, data.service_id, selectedDate]);
+
+    function pickSlot(slot: string) {
+        setSelectedSlot(slot);
+        // Combine date + slot into datetime-local format for the form
+        setData('starts_at', `${selectedDate}T${slot}`);
+    }
 
     function submit(e: FormEvent) {
         e.preventDefault();
         post(route('appointments.store'));
     }
 
+    const canShowSlots = !!(data.barber_id && data.service_id);
+
     return (
         <AppLayout title={t('appt.new')}>
             <Head title={t('appt.new')} />
-            
+
             <div className="mx-auto max-w-2xl">
-                {/* Header Section */}
                 <div className="mb-6 px-1">
                     <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('appt.bookingDetails')}</h2>
                     <p className="text-sm text-slate-500 mt-1">{t('appt.bookingDetailsDesc')}</p>
                 </div>
 
                 <form onSubmit={submit} className="space-y-6 bg-white border border-slate-200 rounded-xl p-4 sm:p-8 shadow-sm">
-                    
-                    {/* Barber Selection (If applicable) */}
+
+                    {/* Barber Selection */}
                     {!isBarber && (
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
@@ -186,35 +234,78 @@ export default function Create({
                         {errors.service_id && <p className="text-xs text-red-500 font-medium">{errors.service_id}</p>}
                     </div>
 
-                    {/* Time & Notes */}
-                    <div className="grid gap-6 sm:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="starts_at" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <Calendar size={12} />{' '}{t('appt.dateTime')}
-                            </Label>
-                            <Input
-                                id="starts_at"
-                                type="datetime-local"
-                                value={data.starts_at}
-                                onChange={(e) => setData('starts_at', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                required
-                            />
-                            {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                                <AlignLeft size={12} />{' '}{t('appt.internalNotes')}
-                            </Label>
-                            <Textarea
-                                id="notes"
-                                value={data.notes}
-                                onChange={(e) => setData('notes', e.target.value)}
-                                className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
-                                placeholder={t('appt.notesPlaceholder')}
-                                rows={1}
-                            />
-                        </div>
+                    {/* Date + Slot Picker */}
+                    <div className="space-y-3">
+                        <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <Calendar size={12} />{' '}{t('appt.dateTime')}
+                        </Label>
+
+                        <Input
+                            type="date"
+                            value={selectedDate}
+                            min={todayStr}
+                            onChange={e => setSelectedDate(e.target.value)}
+                            className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg w-full sm:w-56"
+                            disabled={!canShowSlots}
+                        />
+
+                        {!canShowSlots && (
+                            <p className="text-xs text-slate-400">{t('appt.selectBarberAndServiceFirst')}</p>
+                        )}
+
+                        {canShowSlots && selectedDate && (
+                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                {slotsLoading && (
+                                    <div className="flex items-center gap-2 py-3 justify-center text-xs text-slate-400">
+                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                        {t('appt.checkingAvailability')}
+                                    </div>
+                                )}
+
+                                {!slotsLoading && slots !== null && slots.length === 0 && (
+                                    <p className="text-xs text-slate-500 text-center py-3 font-medium">
+                                        {t('appt.noSlotsOnDate')}
+                                    </p>
+                                )}
+
+                                {!slotsLoading && slots !== null && slots.length > 0 && (
+                                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                                        {slots.map(slot => (
+                                            <button
+                                                key={slot}
+                                                type="button"
+                                                onClick={() => pickSlot(slot)}
+                                                className={cn(
+                                                    'h-9 rounded-lg text-xs font-bold border transition-all',
+                                                    selectedSlot === slot
+                                                        ? 'bg-slate-900 text-white border-slate-900'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50',
+                                                )}
+                                            >
+                                                {slot}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
+                    </div>
+
+                    {/* Notes */}
+                    <div className="space-y-2">
+                        <Label htmlFor="notes" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                            <AlignLeft size={12} />{' '}{t('appt.internalNotes')}
+                        </Label>
+                        <Textarea
+                            id="notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            className="bg-slate-50 border-slate-200 focus:bg-white rounded-lg min-h-[42px] transition-all"
+                            placeholder={t('appt.notesPlaceholder')}
+                            rows={1}
+                        />
                     </div>
 
                     {/* Recurrence */}
@@ -242,7 +333,7 @@ export default function Create({
                     <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                         <Button
                             type="submit"
-                            disabled={processing}
+                            disabled={processing || !data.starts_at}
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
                             {t('appt.bookAppointment')}
