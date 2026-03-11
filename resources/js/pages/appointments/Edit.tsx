@@ -16,6 +16,7 @@ import {
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Appointment, Barber, Service } from '@/types';
 import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign, RefreshCw } from 'lucide-react';
+import { NumberStepper } from '@/components/ui/number-stepper';
 
 const statuses = [
     'confirmed',
@@ -210,15 +211,14 @@ export default function Edit({
                             <Label htmlFor="tip_amount" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <DollarSign size={12} />{' '}{t('appt.tip')}
                             </Label>
-                            <Input
+                            <NumberStepper
                                 id="tip_amount"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                value={data.tip_amount}
-                                onChange={(e) => setData('tip_amount', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder="0.00"
+                                value={Number(data.tip_amount) || 0}
+                                onChange={v => setData('tip_amount', String(v))}
+                                min={0}
+                                step={0.5}
+                                decimal
+                                className="h-11"
                             />
                             {errors.tip_amount && <p className="text-xs text-red-500 font-medium">{errors.tip_amount}</p>}
                         </div>

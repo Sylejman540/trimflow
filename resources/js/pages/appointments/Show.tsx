@@ -1,5 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Package, Trash2, Plus, Star } from 'lucide-react';
+import { NumberStepper } from '@/components/ui/number-stepper';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
@@ -296,12 +297,13 @@ export default function Show({
                                         </select>
                                     </div>
                                     <div className="flex items-end gap-3">
-                                        <div className="w-24 space-y-1">
+                                        <div className="w-32 space-y-1">
                                             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('show.qty')}</label>
-                                            <input
-                                                type="number" min={1} value={data.qty}
-                                                onChange={e => setData('qty', parseInt(e.target.value) || 1)}
-                                                className="w-full h-11 bg-white border border-slate-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                            <NumberStepper
+                                                value={data.qty}
+                                                onChange={v => setData('qty', v)}
+                                                min={1}
+                                                className="h-11"
                                             />
                                         </div>
                                         <Button type="submit" disabled={processing} className="flex-1 bg-slate-900 text-white hover:bg-slate-800 h-11 shadow-none">{t('show.addProduct')}</Button>
