@@ -87,9 +87,17 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                         )}
                     </div>
 
-                    <button className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white" onClick={() => setOpen(v => !v)}>
-                        {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                    </button>
+                    <div className="flex md:hidden items-center gap-2">
+                        {canLogin && (
+                            <a href="/login" className="text-sm font-medium text-white px-3 py-1.5">Login</a>
+                        )}
+                        {canRegister && (
+                            <a href="/register" className="text-sm font-semibold bg-blue-600 text-white px-4 py-1.5 rounded-full">Get Started</a>
+                        )}
+                        <button className="p-2 text-white" onClick={() => setOpen(v => !v)}>
+                            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </button>
+                    </div>
                 </div>
             </nav>
 
@@ -123,7 +131,7 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[1.05] mb-6 max-w-3xl mt-16"
+                className="text-6xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[1.05] mb-6 max-w-3xl mt-16"
                 style={{ fontFamily: "'Bebas Neue', sans-serif" }}
             >
                 The easiest way to manage{' '}
