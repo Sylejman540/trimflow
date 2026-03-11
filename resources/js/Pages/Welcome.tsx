@@ -9,7 +9,7 @@ if (typeof document !== 'undefined') {
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
     ArrowRight, Menu, X, Star, Check, ChevronRight, Scissors,
-    Calendar, Users, Bell, BarChart3,
+    BarChart3,
 } from 'lucide-react';
 
 interface Props {
@@ -173,14 +173,14 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full mt-20"
+                className="w-full mt-8 md:mt-20"
             >
                 {/* Mobile: single centered phone over gray box */}
-                <div className="flex md:hidden justify-center relative" style={{ height: '340px' }}>
+                <div className="flex md:hidden justify-center relative" style={{ height: '420px' }}>
                     {/* Gray background box */}
                     <div className="absolute left-0 right-0 rounded-3xl bg-slate-400" style={{ top: '60px', bottom: '60px' }} />
                     {/* Phone */}
-                    <div className="relative z-10 rounded-[20px] p-[1.5px] shadow-[0_40px_80px_rgba(0,0,0,0.5)]" style={{ width: '180px', height: '340px', background: 'rgba(255,255,255,0.3)' }}>
+                    <div className="relative z-10 rounded-[20px] p-[1.5px] shadow-[0_40px_80px_rgba(0,0,0,0.5)]" style={{ width: '220px', height: '420px', background: 'rgba(255,255,255,0.3)' }}>
                         <div className="rounded-[19px] overflow-hidden w-full h-full bg-zinc-900">
                             <video autoPlay loop muted playsInline className="w-full h-full object-cover">
                                 <source src="/videos/haircut.mp4" type="video/mp4" />
@@ -232,61 +232,142 @@ const Hero = () => (
 );
 
 
+// ─── Marquee ──────────────────────────────────────────────────────────────────
+
+const marqueeItems = [
+    'Elite Cuts', 'The Fade Room', 'Sharp & Co.', 'Classic Barbers', 'Blade & Brush',
+    'The Cut Lab', 'Fresh Edges', 'Crown Cuts', 'Prestige Barbershop', 'The Lineup',
+    'Gents Only', 'Studio 305', 'Uptown Fades', 'The Gentleman\'s Club', 'Zero Fade',
+];
+
+const Marquee = () => (
+    <div className="mt-20 py-10 bg-black border-y border-zinc-900 overflow-hidden">
+        <div className="flex w-max animate-[marquee_30s_linear_infinite]">
+            {[...marqueeItems, ...marqueeItems].map((name, i) => (
+                <div key={i} className="flex items-center gap-6 px-8">
+                    <span className="text-sm font-semibold text-zinc-500 whitespace-nowrap tracking-wide uppercase">{name}</span>
+                    <span className="h-1 w-1 rounded-full bg-zinc-700 shrink-0" />
+                </div>
+            ))}
+        </div>
+        <style>{`
+            @keyframes marquee {
+                from { transform: translateX(0); }
+                to { transform: translateX(-50%); }
+            }
+        `}</style>
+    </div>
+);
+
 // ─── Lock in Loyalty ──────────────────────────────────────────────────────────
 
 const LockInLoyalty = () => (
-    <section className="py-28 bg-black" id="features">
+    <section className="py-32 bg-black" id="features">
         <div className="max-w-7xl mx-auto px-6">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-                {/* Left */}
+            <div className="grid md:grid-cols-2 gap-20 items-center">
+
+                {/* LEFT: marketing content */}
                 <FadeIn>
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-4">Retention</p>
-                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight mb-6">
-                        Lock in loyalty
+                    {/* Label */}
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-4">Retention</p>
+
+                    {/* Headline */}
+                    <h2
+                        className="text-[80px] leading-none text-white mb-6"
+                        style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.01em' }}
+                    >
+                        Lock in<br />loyalty
                     </h2>
-                    <div className="space-y-4 mb-8">
-                        {[
-                            { icon: Bell, title: 'Automated reminders', text: 'SMS and email reminders reduce no-shows by up to 60%. Clients never forget their appointment.' },
-                            { icon: Calendar, title: 'Easy rebooking', text: 'One tap to rebook their last service. Returning clients book 3x faster than new ones.' },
-                            { icon: Star, title: 'Loyalty rewards', text: 'Build a points system that keeps clients coming back. Reward your best customers automatically.' },
-                            { icon: Users, title: 'Client profiles', text: 'Every client has a profile with their history, preferences, and notes. Know your regulars.' },
-                        ].map(({ icon: Icon, title, text }) => (
-                            <div key={title} className="flex gap-4 p-4 rounded-xl hover:bg-zinc-800 transition-colors group">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-950 text-blue-400 shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                                    <Icon className="h-5 w-5" />
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-white text-sm mb-0.5">{title}</p>
-                                    <p className="text-sm text-zinc-400 leading-relaxed">{text}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <a href="/register" className="inline-flex items-center gap-2 bg-slate-900 text-white border border-slate-700 font-semibold px-6 py-3 rounded-xl text-sm hover:bg-slate-800 transition-all">
-                        Learn more <ArrowRight className="h-4 w-4" />
+
+                    {/* Paragraph */}
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-10 max-w-xs">
+                        Launch your own booking app so clients can tap your icon on their phone and book instantly. No app store needed — it lives right on their home screen.
+                    </p>
+
+                    {/* CTA Button */}
+                    <a
+                        href="/register"
+                        className="inline-flex items-center gap-2 border border-white text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white hover:text-black transition-all duration-200"
+                    >
+                        Be an icon <ArrowRight className="h-4 w-4" />
                     </a>
                 </FadeIn>
 
-                {/* Right */}
+                {/* RIGHT: layered visual */}
                 <FadeIn delay={0.15}>
-                    <div className="relative">
-                        <img
-                            src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80"
-                            alt="Barbershop"
-                            className="w-full rounded-3xl object-cover shadow-2xl"
-                            style={{ height: '560px' }}
+                    <div className="relative flex items-center justify-center" style={{ height: '480px' }}>
+
+                        {/* Element 1: Background card */}
+                        <div
+                            className="absolute bg-pink-400 rounded-3xl"
+                            style={{
+                                width: '560px',
+                                height: '340px',
+                                top: '70px',
+                                right: '0',
+                            }}
                         />
-                        {/* Floating stat card */}
-                        <div className="absolute -bottom-6 -left-6 bg-zinc-900 rounded-2xl p-5 shadow-xl border border-zinc-800">
-                            <p className="text-3xl font-black text-white">60%</p>
-                            <p className="text-xs text-zinc-400 mt-1">fewer no-shows<br />on average</p>
+
+                        {/* Element 2: Barber photo — top right, overlapping card */}
+                        <div
+                            className="absolute overflow-hidden shadow-2xl"
+                            style={{
+                                width: '320px',
+                                height: '340px',
+                                borderRadius: '20px',
+                                top: '0',
+                                right: '80px',
+                            }}
+                        >
+                            <img
+                                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=700&q=80"
+                                alt="Barber"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
-                        <div className="absolute -top-6 -right-6 bg-blue-600 rounded-2xl p-5 shadow-xl">
-                            <p className="text-3xl font-black text-white">4.9</p>
-                            <p className="text-xs text-blue-200 mt-1">average shop<br />rating</p>
+
+                        {/* Element 3: Phone UI — front, center-bottom */}
+                        <div
+                            className="absolute z-20 bg-zinc-900 shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
+                            style={{
+                                width: '200px',
+                                borderRadius: '28px',
+                                bottom: '0',
+                                left: '60px',
+                                padding: '16px',
+                            }}
+                        >
+                            {/* Phone notch */}
+                            <div className="flex justify-center mb-3">
+                                <div className="w-16 h-1.5 bg-zinc-700 rounded-full" />
+                            </div>
+                            {/* App icons grid */}
+                            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mb-3 text-center">Add to Home Screen</p>
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                                {[
+                                    { color: 'bg-blue-600', label: 'Book' },
+                                    { color: 'bg-pink-500', label: 'Style' },
+                                    { color: 'bg-amber-500', label: 'Pay' },
+                                    { color: 'bg-green-600', label: 'Chat' },
+                                    { color: 'bg-purple-600', label: 'Tips' },
+                                    { color: 'bg-red-500', label: 'Pass' },
+                                ].map(({ color, label }) => (
+                                    <div key={label} className="flex flex-col items-center gap-1">
+                                        <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shadow-md`}>
+                                            <span className="text-white text-[8px] font-bold">{label[0]}</span>
+                                        </div>
+                                        <span className="text-[7px] text-zinc-400">{label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="bg-blue-600 rounded-xl py-2 text-center">
+                                <span className="text-white text-[9px] font-bold">Book Now →</span>
+                            </div>
                         </div>
+
                     </div>
                 </FadeIn>
+
             </div>
         </div>
     </section>
@@ -629,6 +710,7 @@ export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
         <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />
             <Hero />
+            <Marquee />
             <LockInLoyalty />
             <BarbersClients />
             <ShopStories />
