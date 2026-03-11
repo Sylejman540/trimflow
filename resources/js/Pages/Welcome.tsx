@@ -38,14 +38,11 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
     );
 }
 
-function Logo({ dark = false }: { dark?: boolean }) {
+function Logo() {
     return (
         <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm shrink-0">
-                <Scissors className="h-4 w-4" />
-            </div>
-            <span className={`text-base font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
-                Fresh<span className="text-blue-500">io</span>
+            <span className="text-base font-black tracking-tight text-white">
+                Freshio
             </span>
         </div>
     );
@@ -60,31 +57,31 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
     return (
         <>
             <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${
-                scrolled ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm' : 'bg-transparent'
+                scrolled ? 'bg-black/95 backdrop-blur-xl border-b border-zinc-800' : 'bg-transparent'
             }`}>
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <Logo dark={scrolled} />
+                    <Logo />
 
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
-                        {['Features', 'Pricing', 'Barbers', 'Clients', 'Stories'].map(l => (
-                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-gray-900 transition-colors">{l}</a>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
+                        {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
+                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-white transition-colors">{l}</a>
                         ))}
                     </div>
 
                     <div className="hidden md:flex items-center gap-3">
                         {canLogin && (
-                            <a href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
+                            <a href="/login" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors px-4 py-2">
                                 Login
                             </a>
                         )}
                         {canRegister && (
-                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md">
+                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all">
                                 Get Started
                             </a>
                         )}
                     </div>
 
-                    <button className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => setOpen(v => !v)}>
+                    <button className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white" onClick={() => setOpen(v => !v)}>
                         {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </button>
                 </div>
@@ -92,15 +89,15 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
 
             {/* Mobile menu */}
             {open && (
-                <div className="fixed inset-0 z-[99] bg-white pt-16 flex flex-col p-6 gap-4">
-                    {['Features', 'Pricing', 'Barbers', 'Clients', 'Stories'].map(l => (
+                <div className="fixed inset-0 z-[99] bg-black pt-16 flex flex-col p-6 gap-4">
+                    {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
                         <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
-                            className="text-lg font-medium text-gray-800 hover:text-blue-600 py-2 border-b border-gray-100">
+                            className="text-lg font-medium text-zinc-300 hover:text-white py-2 border-b border-zinc-800">
                             {l}
                         </a>
                     ))}
                     <div className="mt-4 flex flex-col gap-3">
-                        {canLogin && <a href="/login" className="text-center py-3 border border-gray-200 rounded-xl font-medium text-gray-700">Login</a>}
+                        {canLogin && <a href="/login" className="text-center py-3 border border-zinc-700 rounded-xl font-medium text-zinc-300">Login</a>}
                         {canRegister && <a href="/register" className="text-center py-3 bg-blue-600 text-white rounded-xl font-semibold">Get Started</a>}
                     </div>
                 </div>
@@ -112,9 +109,9 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
 const Hero = () => (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50 pt-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black pt-16 overflow-hidden">
         {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:64px_64px] opacity-40" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:64px_64px] opacity-40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-center text-center">
             {/* Badge */}
@@ -454,82 +451,6 @@ const ShopStories = () => (
     </section>
 );
 
-// ─── Pricing ──────────────────────────────────────────────────────────────────
-
-const plans = [
-    {
-        name: 'Starter',
-        price: 'Free',
-        sub: 'Forever free',
-        features: ['1 barber', 'Online booking page', 'Up to 50 appointments/mo', 'Basic analytics', 'Email support'],
-        cta: 'Get started',
-        highlight: false,
-    },
-    {
-        name: 'Pro',
-        price: '$29',
-        sub: 'per month',
-        features: ['Up to 5 barbers', 'Unlimited appointments', 'SMS reminders', 'Advanced analytics', 'Priority support', 'Custom booking page'],
-        cta: 'Start free trial',
-        highlight: true,
-    },
-    {
-        name: 'Scale',
-        price: '$79',
-        sub: 'per month',
-        features: ['Unlimited barbers', 'Everything in Pro', 'Multi-location', 'API access', 'Dedicated account manager', 'White-label option'],
-        cta: 'Contact us',
-        highlight: false,
-    },
-];
-
-const Pricing = () => (
-    <section className="py-28 bg-gray-50" id="pricing">
-        <div className="max-w-7xl mx-auto px-6">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Pricing</p>
-                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Simple, honest pricing</h2>
-                <p className="text-gray-500 mt-4">No hidden fees. Cancel anytime.</p>
-            </FadeIn>
-
-            <div className="grid md:grid-cols-3 gap-6 items-start">
-                {plans.map((plan, i) => (
-                    <FadeIn key={plan.name} delay={i * 0.1}>
-                        <div className={`rounded-2xl p-8 ${plan.highlight
-                            ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30 scale-105'
-                            : 'bg-white border border-gray-200'
-                        }`}>
-                            <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${plan.highlight ? 'text-blue-200' : 'text-gray-500'}`}>{plan.name}</p>
-                            <div className="flex items-end gap-1 mb-1">
-                                <span className={`text-4xl font-black ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>{plan.price}</span>
-                                {plan.price !== 'Free' && <span className={`text-sm mb-1 ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>/mo</span>}
-                            </div>
-                            <p className={`text-sm mb-8 ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>{plan.sub}</p>
-                            <ul className="space-y-3 mb-8">
-                                {plan.features.map(f => (
-                                    <li key={f} className="flex items-center gap-3 text-sm">
-                                        <div className={`flex h-5 w-5 items-center justify-center rounded-full shrink-0 ${plan.highlight ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'}`}>
-                                            <Check className="h-3 w-3" />
-                                        </div>
-                                        <span className={plan.highlight ? 'text-blue-100' : 'text-slate-700'}>{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <a href="/register" className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
-                                plan.highlight
-                                    ? 'bg-white text-blue-600 hover:bg-blue-50'
-                                    : 'bg-slate-900 text-white hover:bg-slate-800'
-                            }`}>
-                                {plan.cta}
-                            </a>
-                        </div>
-                    </FadeIn>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
 // ─── Get Freshio Free ─────────────────────────────────────────────────────────
 
 const GetFree = () => (
@@ -754,7 +675,6 @@ export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
             <ShopStories />
             <GetFree />
             <ScrollDemo />
-            <Pricing />
             <Footer />
         </div>
     );
