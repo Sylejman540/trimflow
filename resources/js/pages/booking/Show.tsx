@@ -51,6 +51,14 @@ function todayStr() {
     return `${yyyy}-${mm}-${dd}`;
 }
 
+function formatDateWithDay(dateStr: string) {
+    if (!dateStr) return '';
+    // Parse as local date to avoid timezone shift
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
 export default function Show({ company, barbers: initialBarbers, services, turnstile_site_key }: {
     company: Company;
     barbers: Barber[];
@@ -407,10 +415,10 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     <Zap className="h-5 w-5 text-emerald-500" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-semibold text-slate-900">Any Available Barber</p>
-                                    <p className="text-xs text-slate-500">First available slot among all barbers</p>
+                                    <p className="text-sm font-semibold text-slate-900">{t('booking.anyBarber')}</p>
+                                    <p className="text-xs text-slate-500">{t('booking.anyBarberDesc')}</p>
                                 </div>
-                                <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded-full shrink-0">Fastest</span>
+                                <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded-full shrink-0">{t('booking.anyBarberFastest')}</span>
                             </button>
 
                             {barbers.map(b => (
@@ -453,7 +461,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                         {isAnyBarber && (
                             <div className="flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
                                 <Zap className="h-3.5 w-3.5 shrink-0" />
-                                The best available barber will be auto-assigned when you pick a time.
+                                {t('booking.anyBarberAutoAssign')}
                             </div>
                         )}
 
@@ -470,6 +478,9 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     onChange={e => setSelectedDate(e.target.value)}
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                 />
+                                {selectedDate && (
+                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate)}</p>
+                                )}
                             </div>
 
                             <div>
@@ -542,12 +553,12 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                 <p className="text-xs text-slate-300 flex items-center gap-1">
                                     <User className="h-3 w-3" />
                                     {isAnyBarber && !selectedBarber
-                                        ? 'Any Available Barber'
+                                        ? t('booking.anyBarber')
                                         : selectedBarber?.user.name}
                                     {selectedBarber?.specialty && <span className="text-white/40"> · {selectedBarber.specialty}</span>}
                                 </p>
                                 <p className="text-xs text-slate-300 flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" /> {selectedDate} · {selectedTime}
+                                    <Calendar className="h-3 w-3" /> {formatDateWithDay(selectedDate)} · {selectedTime}
                                 </p>
                             </div>
                         </div>
