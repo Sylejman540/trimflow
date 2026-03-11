@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
-    Calendar, BarChart3, Check, ArrowRight, Menu, X,
-    Zap, Shield, Users, Clock, Bell, Link2,
-    MessageCircleX, CalendarX2, Repeat2, BotOff,
-    ChevronRight, Star, Sparkles, TrendingUp,
-    CheckCircle2, Activity, GitBranch,
+    ArrowRight, Menu, X, Check, Star, Scissors,
+    Calendar, Users, Bell, BarChart3, ChevronRight,
+    Instagram, Twitter, Youtube, Shield, Zap, Clock,
 } from 'lucide-react';
 
-// ─── helpers ─────────────────────────────────────────────────────────────────
+interface Props {
+    canLogin: boolean;
+    canRegister: boolean;
+    ads?: Array<{ id: number; headline: string; sub: string | null; emoji: string }>;
+}
 
 function useScrolled(threshold = 40) {
     const [scrolled, setScrolled] = useState(false);
@@ -22,13 +24,13 @@ function useScrolled(threshold = 40) {
 
 function FadeIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
     const ref = useRef(null);
-    const inView = useInView(ref, { once: true, margin: '-80px' });
+    const inView = useInView(ref, { once: true, margin: '-60px' });
     return (
         <motion.div
             ref={ref}
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
             className={className}
         >
             {children}
@@ -36,19 +38,14 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
     );
 }
 
-// ─── Logo ─────────────────────────────────────────────────────────────────────
-
-function TrimFlowLogo({ dark = true }: { dark?: boolean }) {
+function Logo({ dark = false }: { dark?: boolean }) {
     return (
         <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm shrink-0">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                    <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
-                    <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
-                </svg>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm shrink-0">
+                <Scissors className="h-4 w-4" />
             </div>
             <span className={`text-base font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
-                Fresh<span className="text-emerald-500">io</span>
+                Fresh<span className="text-blue-500">io</span>
             </span>
         </div>
     );
@@ -56,870 +53,707 @@ function TrimFlowLogo({ dark = true }: { dark?: boolean }) {
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-const Navbar = () => {
+const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boolean }) => {
     const [open, setOpen] = useState(false);
     const scrolled = useScrolled();
 
     return (
         <>
-            <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-500 ${
-                scrolled ? 'bg-white/90 backdrop-blur-xl border-b border-slate-100 shadow-sm' : 'bg-transparent'
+            <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${
+                scrolled ? 'bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm' : 'bg-transparent'
             }`}>
-                <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-                    <TrimFlowLogo dark />
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+                    <Logo dark={scrolled} />
 
-                    <div className="hidden md:flex items-center gap-8 text-sm text-slate-500">
-                        {[
-                            { label: 'Features', href: '#features' },
-                            { label: 'Pricing', href: '#pricing' },
-                            { label: 'How it works', href: '#how-it-works' },
-                        ].map(l => (
-                            <a key={l.label} href={l.href} className="hover:text-slate-900 transition-colors">{l.label}</a>
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-500">
+                        {['Features', 'Pricing', 'Barbers', 'Clients', 'Stories'].map(l => (
+                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-gray-900 transition-colors">{l}</a>
                         ))}
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <a href="/login" className="hidden sm:block text-sm text-slate-500 hover:text-slate-900 transition-colors px-3 py-1.5">
-                            Sign in
-                        </a>
-                        <a href="/register"
-                           className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/40">
-                            Start free
-                        </a>
-                        <button onClick={() => setOpen(!open)} className="md:hidden text-slate-600 hover:text-slate-900 p-1">
-                            {open ? <X size={20} /> : <Menu size={20} />}
-                        </button>
+                    <div className="hidden md:flex items-center gap-3">
+                        {canLogin && (
+                            <a href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2">
+                                Login
+                            </a>
+                        )}
+                        {canRegister && (
+                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md">
+                                Get Started
+                            </a>
+                        )}
                     </div>
+
+                    <button className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100" onClick={() => setOpen(v => !v)}>
+                        {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                    </button>
                 </div>
             </nav>
 
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.2 }}
-                        className="fixed inset-x-0 top-16 z-[99] bg-white border-b border-slate-100 shadow-lg px-5 py-6 flex flex-col gap-5 md:hidden"
-                    >
-                        {['Features', 'Pricing', 'How it works'].map(l => (
-                            <a key={l} href="#" onClick={() => setOpen(false)}
-                               className="text-slate-700 hover:text-slate-900 text-base font-medium transition-colors">{l}</a>
-                        ))}
-                        <div className="pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <a href="/login" className="text-slate-500 text-sm text-center py-2">Sign in</a>
-                            <a href="/register" className="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold py-3 rounded-lg text-center">
-                                Start free
-                            </a>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* Mobile menu */}
+            {open && (
+                <div className="fixed inset-0 z-[99] bg-white pt-16 flex flex-col p-6 gap-4">
+                    {['Features', 'Pricing', 'Barbers', 'Clients', 'Stories'].map(l => (
+                        <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
+                            className="text-lg font-medium text-gray-800 hover:text-blue-600 py-2 border-b border-gray-100">
+                            {l}
+                        </a>
+                    ))}
+                    <div className="mt-4 flex flex-col gap-3">
+                        {canLogin && <a href="/login" className="text-center py-3 border border-gray-200 rounded-xl font-medium text-gray-700">Login</a>}
+                        {canRegister && <a href="/register" className="text-center py-3 bg-blue-600 text-white rounded-xl font-semibold">Get Started</a>}
+                    </div>
+                </div>
+            )}
         </>
     );
 };
 
-// ─── Floating UI Cards ────────────────────────────────────────────────────────
-
-const FloatingCard = ({ children, className = '', delay = 0, floatY = 8 }: {
-    children: React.ReactNode; className?: string; delay?: number; floatY?: number;
-}) => (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-        className={`absolute bg-white rounded-2xl shadow-xl border border-slate-100/80 ${className}`}
-    >
-        <motion.div
-            animate={{ y: [0, -floatY, 0] }}
-            transition={{ duration: 3.5 + delay, repeat: Infinity, ease: 'easeInOut', delay: delay * 0.5 }}
-        >
-            {children}
-        </motion.div>
-    </motion.div>
-);
-
-const ProductVisual = () => (
-    <div className="relative w-full h-[540px] md:h-[620px]">
-
-        {/* Main dashboard card */}
-        <FloatingCard delay={0.5} floatY={6} className="right-0 top-8 w-72 p-4 z-20">
-            <div className="flex items-center justify-between mb-4">
-                <div>
-                    <p className="text-xs text-slate-400 font-medium">Today's Revenue</p>
-                    <p className="text-2xl font-black text-slate-900 tracking-tight">$2,840</p>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-emerald-600" />
-                </div>
-            </div>
-            {/* Mini bar chart */}
-            <div className="flex items-end gap-1 h-14 mb-2">
-                {[40, 65, 45, 80, 55, 90, 72, 85, 60, 95, 70, 100].map((h, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ scaleY: 0 }}
-                        animate={{ scaleY: 1 }}
-                        transition={{ duration: 0.4, delay: 0.8 + i * 0.05, ease: 'easeOut' }}
-                        style={{ height: `${h}%` }}
-                        className={`flex-1 rounded-sm origin-bottom ${i === 11 ? 'bg-emerald-500' : 'bg-emerald-100'}`}
-                    />
-                ))}
-            </div>
-            <div className="flex items-center gap-1.5">
-                <span className="text-xs font-semibold text-emerald-600">+18%</span>
-                <span className="text-xs text-slate-400">vs last week</span>
-            </div>
-        </FloatingCard>
-
-        {/* Booking confirmed card */}
-        <FloatingCard delay={0.7} floatY={10} className="left-0 top-0 w-64 p-4 z-20">
-            <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-900">Booking Confirmed</p>
-                    <p className="text-xs text-slate-400 mt-0.5 truncate">James W. · Haircut + Beard</p>
-                    <div className="flex items-center gap-1.5 mt-2">
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center">
-                            <span className="text-[8px] font-bold text-white">A</span>
-                        </div>
-                        <span className="text-[10px] text-slate-500">Alex · Today 10:30</span>
-                    </div>
-                </div>
-            </div>
-        </FloatingCard>
-
-        {/* Schedule card */}
-        <FloatingCard delay={0.9} floatY={7} className="left-4 top-40 w-60 p-4 z-10">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Today's Schedule</p>
-            <div className="space-y-2.5">
-                {[
-                    { name: 'James Wilson', time: '09:00', color: 'bg-emerald-500' },
-                    { name: 'Marco Silva', time: '10:30', color: 'bg-green-400' },
-                    { name: 'David Park', time: '12:00', color: 'bg-emerald-300' },
-                ].map((a, i) => (
-                    <div key={i} className="flex items-center gap-2.5">
-                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${a.color}`} />
-                        <span className="text-xs text-slate-700 flex-1 font-medium">{a.name}</span>
-                        <span className="text-[10px] text-slate-400 font-mono">{a.time}</span>
-                    </div>
-                ))}
-            </div>
-        </FloatingCard>
-
-        {/* Activity feed */}
-        <FloatingCard delay={1.1} floatY={9} className="right-4 bottom-28 w-56 p-4 z-10">
-            <div className="flex items-center gap-2 mb-3">
-                <Activity className="h-3.5 w-3.5 text-emerald-500" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Live Activity</p>
-            </div>
-            <div className="space-y-2">
-                {[
-                    { text: 'New booking via link', time: '2m ago' },
-                    { text: 'Ryan completed a cut', time: '8m ago' },
-                    { text: '$60 payment received', time: '15m ago' },
-                ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                            <div className="w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
-                            <span className="text-[10px] text-slate-600 truncate">{item.text}</span>
-                        </div>
-                        <span className="text-[9px] text-slate-400 shrink-0">{item.time}</span>
-                    </div>
-                ))}
-            </div>
-        </FloatingCard>
-
-        {/* Barbers online pill */}
-        <FloatingCard delay={1.3} floatY={5} className="right-0 bottom-10 w-48 px-4 py-3 z-20">
-            <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                    {['A', 'R', 'J'].map((l, i) => (
-                        <div key={i} className={`w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[9px] font-bold text-white ${
-                            i === 0 ? 'bg-emerald-500' : i === 1 ? 'bg-green-400' : 'bg-teal-500'
-                        }`}>{l}</div>
-                    ))}
-                </div>
-                <div>
-                    <p className="text-xs font-bold text-slate-900">3 barbers</p>
-                    <div className="flex items-center gap-1">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <p className="text-[10px] text-emerald-600 font-medium">online now</p>
-                    </div>
-                </div>
-            </div>
-        </FloatingCard>
-
-        {/* Booking link card */}
-        <FloatingCard delay={1.5} floatY={8} className="left-8 bottom-8 w-56 px-4 py-3 z-20">
-            <div className="flex items-center gap-2 mb-2">
-                <Link2 className="h-3.5 w-3.5 text-emerald-500" />
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Your booking link</p>
-            </div>
-            <div className="bg-emerald-50 rounded-lg px-3 py-1.5">
-                <p className="text-[10px] text-emerald-700 font-mono truncate">trimflow.app/book/yourshop</p>
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-                <TrendingUp className="h-3 w-3 text-emerald-500" />
-                <span className="text-[10px] text-slate-500">24 bookings today</span>
-            </div>
-        </FloatingCard>
-    </div>
-);
-
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-const Hero = () => {
+const Hero = () => (
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gray-50 pt-16 overflow-hidden">
+        {/* Subtle grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:64px_64px] opacity-40" />
 
-    return (
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-white pt-16">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-center text-center">
+            {/* Badge */}
+            <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest mb-8"
+            >
+                <Zap className="h-3 w-3" />
+                Now with AI booking assistant
+            </motion.div>
 
-            {/* SVG Stripe-style diagonal stripes — Stripe.com inspired */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <motion.svg
-                    className="absolute inset-0 w-full h-full"
-                    xmlns="http://www.w3.org/2000/svg"
-                    preserveAspectRatio="xMidYMid slice"
-                    viewBox="0 0 1440 900"
-                    animate={{ x: [0, 14, 0], y: [0, -8, 0] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                    <defs>
-                        <linearGradient id="sg1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.55" />
-                            <stop offset="100%" stopColor="#4ade80" stopOpacity="0.15" />
-                        </linearGradient>
-                        <linearGradient id="sg2" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.45" />
-                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0.10" />
-                        </linearGradient>
-                        <linearGradient id="sg3" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#4ade80" stopOpacity="0.60" />
-                            <stop offset="100%" stopColor="#bbf7d0" stopOpacity="0.08" />
-                        </linearGradient>
-                        <linearGradient id="sg4" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#22c55e" stopOpacity="0.30" />
-                            <stop offset="100%" stopColor="#4ade80" stopOpacity="0.05" />
-                        </linearGradient>
-                        <linearGradient id="sg5" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#16a34a" stopOpacity="0.20" />
-                            <stop offset="100%" stopColor="#22c55e" stopOpacity="0.04" />
-                        </linearGradient>
-                        <filter id="gblur-heavy">
-                            <feGaussianBlur stdDeviation="28" />
-                        </filter>
-                        <filter id="gblur-med">
-                            <feGaussianBlur stdDeviation="14" />
-                        </filter>
-                        <filter id="gblur-light">
-                            <feGaussianBlur stdDeviation="6" />
-                        </filter>
-                    </defs>
+            {/* Headline */}
+            <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+                className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.05] mb-6 max-w-4xl"
+            >
+                The easiest way to manage{' '}
+                <span className="text-blue-600">barber appointments</span>
+            </motion.h1>
 
-                    {/* All stripes grouped and rotated -20deg around center-right */}
-                    <g transform="rotate(-20, 1100, 450)">
-                        {/* Stripe A — wide background fill, heavy blur */}
-                        <rect x="720" y="-300" width="340" height="1600" rx="60" fill="url(#sg5)" filter="url(#gblur-heavy)" />
-                        {/* Stripe B — wide mid, heavy blur */}
-                        <rect x="860" y="-200" width="220" height="1400" rx="50" fill="url(#sg4)" filter="url(#gblur-heavy)" />
-                        {/* Stripe C — main vivid stripe, med blur */}
-                        <rect x="1010" y="-100" width="110" height="1200" rx="40" fill="url(#sg1)" filter="url(#gblur-med)" />
-                        {/* Stripe D — thin sharp accent, light blur */}
-                        <rect x="1140" y="0" width="56" height="1100" rx="28" fill="url(#sg2)" filter="url(#gblur-light)" />
-                        {/* Stripe E — hairline, crisp */}
-                        <rect x="1216" y="80" width="28" height="980" rx="14" fill="url(#sg3)" filter="url(#gblur-light)" />
-                        {/* Stripe F — far right whisper */}
-                        <rect x="1270" y="160" width="180" height="900" rx="40" fill="url(#sg4)" filter="url(#gblur-heavy)" />
-                        {/* Stripe G — extra depth behind C */}
-                        <rect x="950" y="-180" width="60" height="1300" rx="30" fill="url(#sg2)" filter="url(#gblur-med)" />
-                    </g>
-                </motion.svg>
-
-                {/* Hard left mask — keeps text area pure white */}
-                <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-white via-white/95 to-transparent pointer-events-none" />
-            </div>
-
-            <div className="relative z-10 max-w-6xl mx-auto px-5 w-full grid md:grid-cols-2 gap-12 items-center py-20">
-
-                {/* Left: copy */}
-                <div>
-                    <motion.div
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
-                        className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-full px-4 py-1.5 mb-8"
-                    >
-                        <Sparkles className="h-3 w-3 text-emerald-600" />
-                        <span className="text-xs text-emerald-700 font-semibold">The smarter way to run your barbershop</span>
-                    </motion.div>
-
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        className="text-5xl sm:text-6xl md:text-[64px] font-black tracking-tight text-slate-900 leading-[1.04] mb-6"
-                    >
-                        The Modern<br />
-                        <span className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 bg-clip-text text-transparent">
-                            Booking System
-                        </span><br />
-                        for Barbershops
-                    </motion.h1>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.35 }}
-                        className="text-lg text-slate-500 leading-relaxed mb-10 max-w-md"
-                    >
-                        Stop managing appointments through Instagram DMs.
-                        Let clients book their haircut in seconds — from your link, any device, any time.
-                    </motion.p>
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.45 }}
-                        className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6"
-                    >
-                        <a href="/register"
-                           className="group flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-semibold px-7 py-3.5 rounded-xl transition-all shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5 text-sm">
-                            Start free
-                            <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-                        </a>
-                        <a href="#features"
-                           className="flex items-center gap-2 text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-7 py-3.5 rounded-xl transition-all font-medium text-sm bg-white/70 hover:bg-white">
-                            See how it works
-                            <ChevronRight className="h-4 w-4" />
-                        </a>
-                    </motion.div>
-
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="text-xs text-slate-400 font-medium"
-                    >
-                        No credit card required · Free forever for 1 barber
-                    </motion.p>
-
-                </div>
-
-                {/* Right: floating product cards */}
-                <div className="relative hidden md:block">
-                    <ProductVisual />
-                </div>
-            </div>
-
-            {/* Bottom fade */}
-            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent pointer-events-none" />
-        </section>
-    );
-};
-
-// ─── Marquee / Ad ticker ──────────────────────────────────────────────────────
-
-const ads = [
-    { emoji: '💈', text: 'Classic Cuts Barbershop — Open 7 days', sub: 'Book now →' },
-    { emoji: '✂️', text: 'Tony\'s Fade Studio — New clients welcome', sub: 'Book now →' },
-    { emoji: '🪒', text: 'The Shave Bar — Premium grooming experience', sub: 'Book now →' },
-    { emoji: '💈', text: 'Kings & Kutz — Walk-ins & bookings available', sub: 'Book now →' },
-    { emoji: '✂️', text: 'Fresh Edges Barbershop — Best fades in town', sub: 'Book now →' },
-    { emoji: '🪒', text: 'Elite Cuts — Beard trims & hot towel shaves', sub: 'Book now →' },
-    { emoji: '💈', text: 'The Barbery — Old school craft, modern booking', sub: 'Book now →' },
-    { emoji: '✂️', text: 'Sharp & Clean Studio — Same-day slots open', sub: 'Book now →' },
-];
-
-const Stats = () => (
-    <section className="py-0 bg-white border-y border-slate-100 overflow-hidden">
-        {/* Label */}
-        <div className="text-center pt-5 pb-3">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Shops on Freshio</span>
-        </div>
-
-        {/* Marquee track */}
-        <div className="relative pb-5">
-            {/* Left fade */}
-            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-            {/* Right fade */}
-            <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+            <motion.p
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.25 }}
+                className="text-lg text-gray-500 max-w-xl mb-10 leading-relaxed"
+            >
+                Let clients book in seconds, reduce no-shows, and grow your barbershop — all from one simple dashboard.
+            </motion.p>
 
             <motion.div
-                className="flex gap-3 w-max"
-                animate={{ x: ['0%', '-50%'] }}
-                transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.35 }}
+                className="flex flex-col sm:flex-row gap-3 mb-20"
             >
-                {/* Duplicate the list so the loop is seamless */}
-                {[...ads, ...ads].map((ad, i) => (
-                    <div key={i} className="flex items-center gap-3 bg-slate-50 border border-slate-100 rounded-xl px-5 py-3 shrink-0 hover:border-emerald-200 hover:bg-emerald-50/40 transition-colors cursor-pointer group">
-                        <span className="text-lg leading-none">{ad.emoji}</span>
-                        <div>
-                            <p className="text-xs font-semibold text-slate-800 whitespace-nowrap">{ad.text}</p>
-                            <p className="text-[10px] text-emerald-600 font-bold group-hover:underline">{ad.sub}</p>
+                <a href="/register"
+                    className="group flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 hover:-translate-y-0.5 text-sm">
+                    Get Started Today
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+                <a href="#features"
+                    className="flex items-center justify-center gap-2 text-gray-700 border border-gray-300 hover:border-gray-400 bg-white hover:bg-gray-50 px-8 py-4 rounded-xl transition-all font-medium text-sm">
+                    See how it works
+                </a>
+            </motion.div>
+
+            {/* Hero image showcase */}
+            <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="relative bg-gray-200 rounded-3xl w-full max-w-5xl mx-auto"
+                style={{ paddingTop: '80px', paddingBottom: '0', minHeight: '400px' }}
+            >
+                {/* Left phone */}
+                <div className="absolute -top-16 left-[8%] w-[140px] z-20">
+                    <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
+                        <div className="bg-gray-100 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
+                            <div className="bg-blue-600 px-3 py-4">
+                                <div className="text-white text-[9px] font-bold">Freshio</div>
+                                <div className="text-white/70 text-[7px] mt-0.5">My appointments</div>
+                            </div>
+                            <div className="p-2 space-y-1.5">
+                                {['10:00 AM — Haircut', '2:00 PM — Beard trim', '4:30 PM — Fade'].map((t, i) => (
+                                    <div key={i} className="bg-white rounded-lg p-2 shadow-sm">
+                                        <div className="text-[7px] font-semibold text-slate-800">{t}</div>
+                                        <div className="text-[6px] text-gray-400 mt-0.5">Confirmed ✓</div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                ))}
+                </div>
+
+                {/* Center main image */}
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[52%] z-10">
+                    <img
+                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80"
+                        alt="Barber at work"
+                        className="w-full rounded-2xl shadow-2xl object-cover"
+                        style={{ height: '360px' }}
+                    />
+                </div>
+
+                {/* Right phone */}
+                <div className="absolute -top-16 right-[8%] w-[140px] z-20">
+                    <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
+                        <div className="bg-gray-100 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
+                            <div className="bg-slate-800 px-3 py-4">
+                                <div className="text-white text-[9px] font-bold">Book Now</div>
+                                <div className="text-white/70 text-[7px] mt-0.5">Choose a barber</div>
+                            </div>
+                            <div className="p-2 space-y-1.5">
+                                {['Marcus J. ⭐ 4.9', 'David K. ⭐ 4.8', 'Arben G. ⭐ 5.0'].map((b, i) => (
+                                    <div key={i} className="bg-white rounded-lg p-2 flex items-center gap-1.5 shadow-sm">
+                                        <div className="w-5 h-5 rounded-full bg-blue-100 shrink-0" />
+                                        <div className="text-[7px] font-semibold text-slate-800">{b}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Spacer so container has height */}
+                <div style={{ height: '280px' }} />
             </motion.div>
         </div>
     </section>
 );
 
-// ─── Problem section ──────────────────────────────────────────────────────────
+// ─── Marquee ──────────────────────────────────────────────────────────────────
 
-const Problems = () => (
-    <section className="py-28 bg-white" id="features">
-        <div className="max-w-5xl mx-auto px-5">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">The old way</p>
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                    Still managing bookings in DMs?
-                </h2>
-                <p className="text-slate-400 mt-4 max-w-md mx-auto text-base leading-relaxed">
-                    Every barbershop owner knows the chaos. Here's what you're dealing with every single day.
-                </p>
-            </FadeIn>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {[
-                    { icon: MessageCircleX, title: 'Endless DMs', desc: 'Spending hours replying to Instagram and WhatsApp just to schedule one haircut.' },
-                    { icon: CalendarX2, title: 'Double Bookings', desc: 'Two clients show up at the same time. Awkward conversations, lost trust.' },
-                    { icon: BotOff, title: 'No-Shows', desc: 'Clients forget. You lose money and time with zero way to prevent it.' },
-                    { icon: Repeat2, title: 'Schedule Chaos', desc: 'Paper notes, phone reminders, spreadsheets — nothing works together.' },
-                ].map(({ icon: Icon, title, desc }, i) => (
-                    <FadeIn key={i} delay={i * 0.08}>
-                        <div className="group relative bg-white border border-slate-100 rounded-2xl p-6 hover:border-red-100 hover:shadow-lg transition-all duration-300">
-                            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4 group-hover:bg-red-100 transition-colors">
-                                <Icon className="h-5 w-5 text-red-400" />
-                            </div>
-                            <h3 className="text-slate-900 font-bold text-sm mb-2">{title}</h3>
-                            <p className="text-slate-400 text-xs leading-relaxed">{desc}</p>
-                        </div>
-                    </FadeIn>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-// ─── Features ─────────────────────────────────────────────────────────────────
-
-const Features = () => (
-    <section className="py-28 bg-slate-50">
-        <div className="max-w-5xl mx-auto px-5">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">The TrimFlow way</p>
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                    TrimFlow fixes it instantly
-                </h2>
-            </FadeIn>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                    { icon: Link2, title: 'Instant Booking Link', desc: 'Share one link anywhere — Instagram bio, WhatsApp, stories. Clients book without calling.', bg: 'bg-emerald-50', hover: 'hover:border-emerald-200', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
-                    { icon: Zap, title: 'Smart Availability', desc: 'Real-time slot detection. No double bookings. Ever. The system handles everything automatically.', bg: 'bg-white', hover: 'hover:border-green-200', iconBg: 'bg-green-100', iconColor: 'text-green-600' },
-                    { icon: Bell, title: 'Auto Notifications', desc: 'SMS and email reminders sent to clients before their appointment. No-shows drop dramatically.', bg: 'bg-white', hover: 'hover:border-teal-200', iconBg: 'bg-teal-100', iconColor: 'text-teal-600' },
-                    { icon: Shield, title: 'Anti-Spam Protection', desc: 'Phone verification and booking limits prevent fake bookings from blocking your schedule.', bg: 'bg-white', hover: 'hover:border-amber-200', iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
-                    { icon: Users, title: 'Multi-Barber Scheduling', desc: 'Manage your entire team. Each barber has their own calendar, hours, and services.', bg: 'bg-white', hover: 'hover:border-blue-200', iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
-                    { icon: BarChart3, title: 'Revenue Reports', desc: 'See exactly how much each barber earns, which services are popular, and track growth over time.', bg: 'bg-white', hover: 'hover:border-purple-200', iconBg: 'bg-purple-100', iconColor: 'text-purple-600' },
-                ].map(({ icon: Icon, title, desc, bg, hover, iconBg, iconColor }, i) => (
-                    <FadeIn key={i} delay={i * 0.07}>
-                        <div className={`${bg} border border-slate-100 ${hover} rounded-2xl p-6 transition-all duration-300 hover:shadow-lg h-full`}>
-                            <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center mb-4`}>
-                                <Icon className={`h-5 w-5 ${iconColor}`} />
-                            </div>
-                            <h3 className="text-slate-900 font-bold text-sm mb-2">{title}</h3>
-                            <p className="text-slate-400 text-xs leading-relaxed">{desc}</p>
-                        </div>
-                    </FadeIn>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-// ─── Booking Demo ──────────────────────────────────────────────────────────────
-
-const BookingDemo = () => {
-    const [step, setStep] = useState(0);
-
-    useEffect(() => {
-        const t = setInterval(() => setStep(s => (s + 1) % 4), 2200);
-        return () => clearInterval(t);
-    }, []);
-
-    const steps = [
-        { label: 'Select a barber', icon: Users },
-        { label: 'Choose a time slot', icon: Clock },
-        { label: 'Enter your number', icon: Bell },
-        { label: 'Booking confirmed!', icon: Check },
+const Marquee = ({ ads }: { ads: Props['ads'] }) => {
+    const defaultAds = [
+        { id: 1, emoji: '💈', headline: 'Classic Cuts Barbershop — Open 7 days', sub: 'Book now →' },
+        { id: 2, emoji: '✂️', headline: "Tony's Fade Studio — New clients welcome", sub: 'Book now →' },
+        { id: 3, emoji: '🪒', headline: 'The Shave Bar — Premium grooming', sub: 'Book now →' },
+        { id: 4, emoji: '💈', headline: 'Kings & Kutz — Walk-ins available', sub: 'Book now →' },
+        { id: 5, emoji: '✂️', headline: 'Fresh Edges — Best fades in town', sub: 'Book now →' },
+        { id: 6, emoji: '🪒', headline: 'Elite Cuts — Beard trims & hot towel', sub: 'Book now →' },
     ];
-
-    const barbers = ['Alex Martinez', 'Ryan Chen', 'Jordan Blake'];
-    const slots = ['09:00', '10:30', '12:00', '14:30', '16:00'];
+    const items = (ads && ads.length > 0 ? ads : defaultAds);
+    const doubled = [...items, ...items];
 
     return (
-        <section className="py-28 bg-white overflow-hidden">
-            <div className="max-w-5xl mx-auto px-5">
-                <FadeIn className="text-center mb-16">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">Live preview</p>
-                    <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                        What your clients see
-                    </h2>
-                    <p className="text-slate-400 mt-4 text-base max-w-md mx-auto">
-                        A clean, mobile-first booking experience. Book in under 30 seconds.
-                    </p>
-                </FadeIn>
-
-                <div className="grid md:grid-cols-2 gap-12 items-center">
-                    {/* Steps list */}
-                    <FadeIn delay={0.1}>
-                        <div className="space-y-3">
-                            {steps.map((s, i) => {
-                                const Icon = s.icon;
-                                const active = i === step;
-                                const done = i < step;
-                                return (
-                                    <div key={i} onClick={() => setStep(i)}
-                                         className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all duration-300 ${
-                                             active ? 'bg-emerald-50 border-emerald-200' :
-                                             done ? 'bg-slate-50 border-slate-100' :
-                                             'border-transparent opacity-50'
-                                         }`}>
-                                        <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all ${
-                                            done ? 'bg-emerald-100' : active ? 'bg-emerald-500' : 'bg-slate-100'
-                                        }`}>
-                                            {done ? <Check className="h-4 w-4 text-emerald-600" /> :
-                                             <Icon className={`h-4 w-4 ${active ? 'text-white' : 'text-slate-400'}`} />}
-                                        </div>
-                                        <div>
-                                            <p className={`text-sm font-bold ${active ? 'text-slate-900' : 'text-slate-400'}`}>Step {i + 1}</p>
-                                            <p className={`text-xs ${active ? 'text-emerald-600' : 'text-slate-400'}`}>{s.label}</p>
-                                        </div>
-                                        {active && <div className="ml-auto w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
-                                    </div>
-                                );
-                            })}
+        <section className="py-0 bg-white border-y border-gray-100 overflow-hidden">
+            <div className="text-center pt-5 pb-3">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Shops on Freshio</span>
+            </div>
+            <div className="relative pb-5">
+                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+                <motion.div
+                    className="flex gap-3 w-max"
+                    animate={{ x: ['0%', '-50%'] }}
+                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+                >
+                    {doubled.map((ad, i) => (
+                        <div key={i} className="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-xl px-5 py-3 shrink-0 hover:border-blue-200 hover:bg-blue-50/40 transition-colors cursor-pointer group">
+                            <span className="text-lg">{ad.emoji}</span>
+                            <div>
+                                <p className="text-xs font-semibold text-slate-800 whitespace-nowrap">{ad.headline}</p>
+                                <p className="text-[10px] text-blue-600 font-bold group-hover:underline">{ad.sub}</p>
+                            </div>
                         </div>
-                    </FadeIn>
+                    ))}
+                </motion.div>
+            </div>
+        </section>
+    );
+};
 
-                    {/* Phone mockup */}
-                    <FadeIn delay={0.2}>
-                        <div className="relative mx-auto w-[260px]">
-                            <div className="relative bg-slate-900 border border-slate-700 rounded-[2.5rem] p-3 shadow-2xl">
-                                <div className="w-20 h-5 bg-slate-800 rounded-full mx-auto mb-3" />
-                                <div className="bg-white rounded-[1.75rem] overflow-hidden min-h-[400px] p-4">
-                                    <AnimatePresence mode="wait">
-                                        {step === 0 && (
-                                            <motion.div key="s0"
-                                                initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                                                transition={{ duration: 0.3 }} className="space-y-3">
-                                                <p className="text-slate-900 text-xs font-bold mb-4">Choose your barber</p>
-                                                {barbers.map((b, i) => (
-                                                    <div key={b} className={`flex items-center gap-3 p-3 rounded-xl border ${i === 0 ? 'border-emerald-300 bg-emerald-50' : 'border-slate-100'}`}>
-                                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-green-600 flex items-center justify-center">
-                                                            <span className="text-xs font-bold text-white">{b[0]}</span>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-slate-900 text-[10px] font-semibold">{b}</p>
-                                                            <p className="text-slate-400 text-[9px]">Available today</p>
-                                                        </div>
-                                                        {i === 0 && <Check className="h-3.5 w-3.5 text-emerald-500 ml-auto" />}
-                                                    </div>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                        {step === 1 && (
-                                            <motion.div key="s1"
-                                                initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                                                transition={{ duration: 0.3 }} className="space-y-2">
-                                                <p className="text-slate-900 text-xs font-bold mb-4">Pick a time slot</p>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {slots.map((s, i) => (
-                                                        <div key={s} className={`py-2 rounded-lg text-center text-[10px] font-semibold border ${i === 1 ? 'border-emerald-400 bg-emerald-50 text-emerald-700' : 'border-slate-100 text-slate-500'}`}>{s}</div>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                        {step === 2 && (
-                                            <motion.div key="s2"
-                                                initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-                                                transition={{ duration: 0.3 }} className="space-y-4">
-                                                <p className="text-slate-900 text-xs font-bold mb-4">Your phone number</p>
-                                                <div className="bg-slate-50 border border-slate-200 rounded-xl p-3">
-                                                    <p className="text-slate-600 text-[10px]">+1 (555) 000-0000</p>
-                                                </div>
-                                                <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl py-3 text-center">
-                                                    <p className="text-white text-[10px] font-bold">Confirm Booking</p>
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                        {step === 3 && (
-                                            <motion.div key="s3"
-                                                initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-                                                transition={{ duration: 0.4 }} className="flex flex-col items-center justify-center h-full gap-4 pt-12">
-                                                <motion.div
-                                                    initial={{ scale: 0 }} animate={{ scale: 1 }}
-                                                    transition={{ type: 'spring', delay: 0.1 }}
-                                                    className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center"
-                                                >
-                                                    <Check className="h-8 w-8 text-emerald-600" />
-                                                </motion.div>
-                                                <p className="text-slate-900 font-black text-sm">Booking Confirmed!</p>
-                                                <p className="text-slate-400 text-[10px] text-center">Alex · Haircut · Wed 10:30</p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+// ─── Lock in Loyalty ──────────────────────────────────────────────────────────
+
+const LockInLoyalty = () => (
+    <section className="py-28 bg-white" id="features">
+        <div className="max-w-7xl mx-auto px-6">
+            <div className="grid md:grid-cols-2 gap-16 items-center">
+                {/* Left */}
+                <FadeIn>
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-4">Retention</p>
+                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-6">
+                        Lock in loyalty
+                    </h2>
+                    <div className="space-y-4 mb-8">
+                        {[
+                            { icon: Bell, title: 'Automated reminders', text: 'SMS and email reminders reduce no-shows by up to 60%. Clients never forget their appointment.' },
+                            { icon: Calendar, title: 'Easy rebooking', text: 'One tap to rebook their last service. Returning clients book 3x faster than new ones.' },
+                            { icon: Star, title: 'Loyalty rewards', text: 'Build a points system that keeps clients coming back. Reward your best customers automatically.' },
+                            { icon: Users, title: 'Client profiles', text: 'Every client has a profile with their history, preferences, and notes. Know your regulars.' },
+                        ].map(({ icon: Icon, title, text }) => (
+                            <div key={title} className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors group">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    <Icon className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="font-semibold text-slate-900 text-sm mb-0.5">{title}</p>
+                                    <p className="text-sm text-gray-500 leading-relaxed">{text}</p>
                                 </div>
                             </div>
-                            <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-40 h-10 bg-emerald-400/20 blur-2xl rounded-full" />
+                        ))}
+                    </div>
+                    <a href="/register" className="inline-flex items-center gap-2 bg-slate-900 text-white border border-slate-700 font-semibold px-6 py-3 rounded-xl text-sm hover:bg-slate-800 transition-all">
+                        Learn more <ArrowRight className="h-4 w-4" />
+                    </a>
+                </FadeIn>
+
+                {/* Right */}
+                <FadeIn delay={0.15}>
+                    <div className="relative">
+                        <img
+                            src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80"
+                            alt="Barbershop"
+                            className="w-full rounded-3xl object-cover shadow-2xl"
+                            style={{ height: '560px' }}
+                        />
+                        {/* Floating stat card */}
+                        <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-5 shadow-xl border border-gray-100">
+                            <p className="text-3xl font-black text-slate-900">60%</p>
+                            <p className="text-xs text-gray-500 mt-1">fewer no-shows<br />on average</p>
+                        </div>
+                        <div className="absolute -top-6 -right-6 bg-blue-600 rounded-2xl p-5 shadow-xl">
+                            <p className="text-3xl font-black text-white">4.9</p>
+                            <p className="text-xs text-blue-200 mt-1">average shop<br />rating</p>
+                        </div>
+                    </div>
+                </FadeIn>
+            </div>
+        </div>
+    </section>
+);
+
+// ─── Barbers & Clients ────────────────────────────────────────────────────────
+
+const BarbersClients = () => (
+    <section className="py-28 bg-gray-50" id="barbers">
+        <div className="max-w-7xl mx-auto px-6">
+            <FadeIn className="text-center mb-16">
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Platform</p>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">
+                    Built for barbers and their clients
+                </h2>
+            </FadeIn>
+
+            <div className="grid md:grid-cols-2 gap-8 items-stretch">
+                {/* Left: image */}
+                <FadeIn>
+                    <img
+                        src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80"
+                        alt="Barber cutting hair"
+                        className="w-full h-full rounded-3xl object-cover shadow-xl"
+                        style={{ minHeight: '440px' }}
+                    />
+                </FadeIn>
+
+                {/* Right: gray box */}
+                <FadeIn delay={0.1}>
+                    <div className="bg-gray-100 rounded-3xl p-10 flex flex-col justify-center h-full">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white mb-6">
+                            <BarChart3 className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-900 mb-4">Everything your shop needs</h3>
+                        <p className="text-gray-600 leading-relaxed mb-6">
+                            Freshio gives barbers a full business toolkit — bookings, payments, client management, and analytics — while giving clients the smoothest booking experience they've ever had. No app downloads required.
+                        </p>
+                        <ul className="space-y-3 mb-8">
+                            {[
+                                'Online booking page shared via link',
+                                'Real-time calendar for each barber',
+                                'Automated payment collection',
+                                'Revenue and performance reports',
+                            ].map(item => (
+                                <li key={item} className="flex items-center gap-3 text-sm text-slate-700">
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-600 shrink-0">
+                                        <Check className="h-3 w-3" />
+                                    </div>
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                        <a href="/register"
+                            className="inline-flex items-center gap-2 bg-slate-900 text-white font-semibold px-6 py-3.5 rounded-xl text-sm hover:bg-slate-800 transition-all w-fit">
+                            Find out how <ChevronRight className="h-4 w-4" />
+                        </a>
+                    </div>
+                </FadeIn>
+            </div>
+        </div>
+    </section>
+);
+
+// ─── Shop Stories ─────────────────────────────────────────────────────────────
+
+const stories = [
+    {
+        name: 'Marcus Johnson',
+        shop: 'Classic Cuts NYC',
+        avatar: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=100&q=80',
+        text: "Before Freshio, I was managing bookings through Instagram DMs at midnight. Now my schedule fills itself. Revenue is up 40% in three months.",
+        rating: 5,
+        height: 'h-auto',
+    },
+    {
+        name: 'David Kowalski',
+        shop: 'The Fade Factory',
+        avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&q=80',
+        text: "The client profiles are a game changer. I know every regular's preferences before they even sit down. It's made my work so much more personal and efficient.",
+        rating: 5,
+        height: 'h-auto',
+    },
+    {
+        name: 'Arben Gashi',
+        shop: 'Fresh Edges Prishtina',
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80',
+        text: "Set up in 10 minutes. My clients love the booking link. No-shows dropped from 3-4 a week to almost zero. Simple, fast, professional.",
+        rating: 5,
+        height: 'h-auto',
+    },
+];
+
+const ShopStories = () => (
+    <section className="py-28 bg-white" id="stories">
+        <div className="max-w-7xl mx-auto px-6">
+            <FadeIn className="text-center mb-16">
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Testimonials</p>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Shop stories</h2>
+                <p className="text-gray-500 mt-4 max-w-md mx-auto">Real barbers, real results.</p>
+            </FadeIn>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                {stories.map((s, i) => (
+                    <FadeIn key={s.name} delay={i * 0.1}>
+                        <div className={`bg-gray-50 rounded-2xl p-6 border border-gray-100 ${i === 1 ? 'md:mt-8' : ''}`}>
+                            <div className="flex gap-1 mb-4">
+                                {Array.from({ length: s.rating }).map((_, j) => (
+                                    <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                                ))}
+                            </div>
+                            <p className="text-slate-700 text-sm leading-relaxed mb-6">"{s.text}"</p>
+                            <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                                <img src={s.avatar} alt={s.name} className="h-10 w-10 rounded-full object-cover" />
+                                <div>
+                                    <p className="font-semibold text-slate-900 text-sm">{s.name}</p>
+                                    <p className="text-xs text-gray-500">{s.shop}</p>
+                                </div>
+                            </div>
                         </div>
                     </FadeIn>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
+// ─── Pricing ──────────────────────────────────────────────────────────────────
+
+const plans = [
+    {
+        name: 'Starter',
+        price: 'Free',
+        sub: 'Forever free',
+        features: ['1 barber', 'Online booking page', 'Up to 50 appointments/mo', 'Basic analytics', 'Email support'],
+        cta: 'Get started',
+        highlight: false,
+    },
+    {
+        name: 'Pro',
+        price: '$29',
+        sub: 'per month',
+        features: ['Up to 5 barbers', 'Unlimited appointments', 'SMS reminders', 'Advanced analytics', 'Priority support', 'Custom booking page'],
+        cta: 'Start free trial',
+        highlight: true,
+    },
+    {
+        name: 'Scale',
+        price: '$79',
+        sub: 'per month',
+        features: ['Unlimited barbers', 'Everything in Pro', 'Multi-location', 'API access', 'Dedicated account manager', 'White-label option'],
+        cta: 'Contact us',
+        highlight: false,
+    },
+];
+
+const Pricing = () => (
+    <section className="py-28 bg-gray-50" id="pricing">
+        <div className="max-w-7xl mx-auto px-6">
+            <FadeIn className="text-center mb-16">
+                <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">Pricing</p>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Simple, honest pricing</h2>
+                <p className="text-gray-500 mt-4">No hidden fees. Cancel anytime.</p>
+            </FadeIn>
+
+            <div className="grid md:grid-cols-3 gap-6 items-start">
+                {plans.map((plan, i) => (
+                    <FadeIn key={plan.name} delay={i * 0.1}>
+                        <div className={`rounded-2xl p-8 ${plan.highlight
+                            ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/30 scale-105'
+                            : 'bg-white border border-gray-200'
+                        }`}>
+                            <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${plan.highlight ? 'text-blue-200' : 'text-gray-500'}`}>{plan.name}</p>
+                            <div className="flex items-end gap-1 mb-1">
+                                <span className={`text-4xl font-black ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>{plan.price}</span>
+                                {plan.price !== 'Free' && <span className={`text-sm mb-1 ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>/mo</span>}
+                            </div>
+                            <p className={`text-sm mb-8 ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>{plan.sub}</p>
+                            <ul className="space-y-3 mb-8">
+                                {plan.features.map(f => (
+                                    <li key={f} className="flex items-center gap-3 text-sm">
+                                        <div className={`flex h-5 w-5 items-center justify-center rounded-full shrink-0 ${plan.highlight ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600'}`}>
+                                            <Check className="h-3 w-3" />
+                                        </div>
+                                        <span className={plan.highlight ? 'text-blue-100' : 'text-slate-700'}>{f}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <a href="/register" className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
+                                plan.highlight
+                                    ? 'bg-white text-blue-600 hover:bg-blue-50'
+                                    : 'bg-slate-900 text-white hover:bg-slate-800'
+                            }`}>
+                                {plan.cta}
+                            </a>
+                        </div>
+                    </FadeIn>
+                ))}
+            </div>
+        </div>
+    </section>
+);
+
+// ─── Get Freshio Free ─────────────────────────────────────────────────────────
+
+const GetFree = () => (
+    <section className="py-28 bg-white" id="clients">
+        <div className="max-w-7xl mx-auto px-6">
+            <div className="bg-blue-600 rounded-3xl px-8 py-16 md:px-16 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative">
+                {/* Background pattern */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+                {/* Left: phone mockup */}
+                <div className="relative z-10 shrink-0">
+                    <div className="bg-slate-900 rounded-[36px] p-3 shadow-2xl w-[200px]">
+                        <div className="bg-gray-100 rounded-[26px] overflow-hidden" style={{ height: '380px' }}>
+                            <div className="bg-blue-700 px-4 py-5">
+                                <div className="text-white text-xs font-bold">Freshio Booking</div>
+                                <div className="text-blue-200 text-[10px] mt-0.5">Marcus's Barbershop</div>
+                            </div>
+                            <div className="p-3 space-y-2">
+                                <div className="bg-white rounded-xl p-3 shadow-sm">
+                                    <p className="text-[9px] text-gray-400 mb-1">Select service</p>
+                                    <div className="space-y-1.5">
+                                        {['Classic Haircut — $25', 'Beard Trim — $15', 'Full Package — $35'].map((s, i) => (
+                                            <div key={i} className={`rounded-lg px-2 py-1.5 text-[8px] font-medium ${i === 0 ? 'bg-blue-600 text-white' : 'bg-gray-50 text-slate-700'}`}>{s}</div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-white rounded-xl p-3 shadow-sm">
+                                    <p className="text-[9px] text-gray-400 mb-1.5">Pick a time</p>
+                                    <div className="grid grid-cols-3 gap-1">
+                                        {['9:00', '10:30', '12:00', '2:00', '3:30', '5:00'].map((t, i) => (
+                                            <div key={i} className={`rounded-md py-1 text-center text-[7px] font-semibold ${i === 2 ? 'bg-blue-600 text-white' : 'bg-gray-50 text-slate-700'}`}>{t}</div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-blue-600 rounded-xl py-2.5 text-center text-white text-[9px] font-bold">
+                                    Confirm Booking →
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right: text */}
+                <div className="relative z-10 text-white max-w-lg">
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-200 mb-4">Start today</p>
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight mb-6">
+                        Get Freshio<br />for free
+                    </h2>
+                    <p className="text-blue-100 text-lg leading-relaxed mb-8">
+                        Set up your booking page in under 10 minutes. No credit card required. Start accepting appointments today.
+                    </p>
+                    <a href="/register"
+                        className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold px-8 py-4 rounded-xl hover:bg-blue-50 transition-all shadow-lg text-sm">
+                        Start now <ArrowRight className="h-4 w-4" />
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+);
+
+// ─── Scroll Feature Demo ──────────────────────────────────────────────────────
+
+const ScrollDemo = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
+    const screen = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, 1]);
+    const [showSecond, setShowSecond] = useState(false);
+    useEffect(() => screen.on('change', v => setShowSecond(v > 0.5)), [screen]);
+
+    return (
+        <section ref={containerRef} className="relative bg-slate-950" style={{ height: '200vh' }} id="how-it-works">
+            <div className="sticky top-0 h-screen flex overflow-hidden">
+                {/* Left sticky title */}
+                <div className="w-1/3 flex flex-col justify-center px-12 shrink-0">
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">How it works</p>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shrink-0">
+                            <Scissors className="h-4 w-4" />
+                        </div>
+                        <span className="text-2xl font-black text-white">Fresh<span className="text-blue-400">io</span></span>
+                    </div>
+                    <h2 className="text-3xl font-black text-white leading-tight mb-6">
+                        {showSecond ? 'Manage every appointment' : 'Your shop, fully online'}
+                    </h2>
+                    <p className="text-slate-400 text-sm leading-relaxed mb-8">
+                        {showSecond
+                            ? 'View, confirm, and manage every booking from a clean dashboard. Get notified instantly.'
+                            : 'Share your booking link and clients book themselves. Zero back-and-forth.'}
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        {[
+                            { label: 'Booking page', active: !showSecond },
+                            { label: 'Dashboard', active: showSecond },
+                        ].map(({ label, active }) => (
+                            <div key={label} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${active ? 'bg-blue-600/20 border border-blue-500/30' : 'border border-transparent'}`}>
+                                <div className={`h-2 w-2 rounded-full ${active ? 'bg-blue-400' : 'bg-slate-700'}`} />
+                                <span className={`text-sm font-medium ${active ? 'text-white' : 'text-slate-500'}`}>{label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Right: screenshots */}
+                <div className="flex-1 flex items-center justify-center px-8 relative">
+                    <AnimatePresence mode="wait">
+                        {!showSecond ? (
+                            <motion.div key="screen1"
+                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl"
+                            >
+                                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+                                    <div className="h-3 w-3 rounded-full bg-red-500/70" />
+                                    <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
+                                    <div className="h-3 w-3 rounded-full bg-green-500/70" />
+                                    <div className="flex-1 bg-slate-800 rounded-md h-5 mx-4 flex items-center px-3">
+                                        <span className="text-[9px] text-slate-500">freshio.app/book/marcus-barbershop</span>
+                                    </div>
+                                </div>
+                                <img
+                                    src="https://images.unsplash.com/photo-1560066984-138daaa0ad8a?w=900&q=80"
+                                    alt="Booking interface"
+                                    className="w-full object-cover"
+                                    style={{ height: '420px' }}
+                                />
+                            </motion.div>
+                        ) : (
+                            <motion.div key="screen2"
+                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                                className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl"
+                            >
+                                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+                                    <div className="h-3 w-3 rounded-full bg-red-500/70" />
+                                    <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
+                                    <div className="h-3 w-3 rounded-full bg-green-500/70" />
+                                    <div className="flex-1 bg-slate-800 rounded-md h-5 mx-4 flex items-center px-3">
+                                        <span className="text-[9px] text-slate-500">app.freshio.com/dashboard</span>
+                                    </div>
+                                </div>
+                                <img
+                                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80"
+                                    alt="Dashboard"
+                                    className="w-full object-cover"
+                                    style={{ height: '420px' }}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </section>
     );
 };
 
-// ─── How it works ──────────────────────────────────────────────────────────────
-
-const HowItWorks = () => (
-    <section className="py-28 bg-slate-900" id="how-it-works">
-        <div className="max-w-5xl mx-auto px-5">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400 mb-3">Setup</p>
-                <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">Up and running in 5 minutes</h2>
-            </FadeIn>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                    { n: '01', title: 'Create your barbershop', desc: 'Sign up, name your shop, add your barbers and services. Takes under 5 minutes.' },
-                    { n: '02', title: 'Share your booking link', desc: 'Put your unique link in your Instagram bio, WhatsApp status, or anywhere online.' },
-                    { n: '03', title: 'Clients book instantly', desc: 'They pick a barber, choose a time, confirm. You get notified. That\'s it.' },
-                ].map((s, i) => (
-                    <FadeIn key={i} delay={i * 0.1}>
-                        <div className="relative bg-white/[0.04] border border-white/[0.08] rounded-2xl p-7 group hover:border-emerald-500/30 transition-all">
-                            <span className="text-5xl font-black text-white/[0.04] absolute top-5 right-6 leading-none select-none">{s.n}</span>
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-5">
-                                <span className="text-emerald-400 font-bold text-sm">{s.n}</span>
-                            </div>
-                            <h3 className="text-white font-bold text-sm mb-3">{s.title}</h3>
-                            <p className="text-white/40 text-xs leading-relaxed">{s.desc}</p>
-                        </div>
-                    </FadeIn>
-                ))}
-            </div>
-        </div>
-    </section>
-);
-
-// ─── Pricing ───────────────────────────────────────────────────────────────────
-
-const Pricing = () => (
-    <section className="py-28 bg-white" id="pricing">
-        <div className="max-w-4xl mx-auto px-5">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">Pricing</p>
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">Simple, honest pricing</h2>
-                <p className="text-slate-400 mt-4 text-base">No hidden fees. No surprises.</p>
-            </FadeIn>
-
-            <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                <FadeIn delay={0.05}>
-                    <div className="bg-white border border-slate-200 rounded-2xl p-8 flex flex-col h-full">
-                        <p className="text-slate-500 text-sm font-semibold mb-1">Starter</p>
-                        <div className="flex items-end gap-1 mb-6">
-                            <span className="text-4xl font-black text-slate-900">Free</span>
-                            <span className="text-slate-400 text-sm mb-1.5">forever</span>
-                        </div>
-                        <ul className="space-y-3 flex-1 mb-8">
-                            {['1 barber', 'Unlimited bookings', 'Booking link', 'Basic reports'].map(f => (
-                                <li key={f} className="flex items-center gap-2.5 text-sm text-slate-600">
-                                    <Check className="h-4 w-4 text-slate-300 shrink-0" /> {f}
-                                </li>
-                            ))}
-                        </ul>
-                        <a href="/register" className="w-full py-3 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold text-center hover:border-slate-300 hover:bg-slate-50 transition-all">
-                            Get started free
-                        </a>
-                    </div>
-                </FadeIn>
-
-                <FadeIn delay={0.1}>
-                    <div className="relative bg-slate-900 rounded-2xl p-8 flex flex-col h-full overflow-hidden">
-                        <div className="absolute top-4 right-4 bg-gradient-to-r from-emerald-400 to-green-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
-                            POPULAR
-                        </div>
-                        <div className="absolute -top-16 -right-16 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-                        <p className="text-white text-sm font-semibold mb-1">Pro</p>
-                        <div className="flex items-end gap-1 mb-6">
-                            <span className="text-4xl font-black text-white">$10</span>
-                            <span className="text-slate-400 text-sm mb-1.5">/month</span>
-                        </div>
-                        <ul className="space-y-3 flex-1 mb-8">
-                            {[
-                                'Up to 10 barbers',
-                                'Unlimited bookings',
-                                'Customer portal',
-                                'Advanced reports',
-                                'Notification reminders',
-                                'Priority support',
-                            ].map(f => (
-                                <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
-                                    <Check className="h-4 w-4 text-emerald-400 shrink-0" /> {f}
-                                </li>
-                            ))}
-                        </ul>
-                        <a href="/register" className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white text-sm font-bold text-center transition-all shadow-lg shadow-emerald-500/20">
-                            Start with Pro
-                        </a>
-                    </div>
-                </FadeIn>
-            </div>
-        </div>
-    </section>
-);
-
-// ─── Testimonials ──────────────────────────────────────────────────────────────
-
-const Testimonials = () => (
-    <section className="py-28 bg-slate-50 overflow-hidden">
-        <div className="max-w-5xl mx-auto px-5">
-            <FadeIn className="text-center mb-16">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">Reviews</p>
-                <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                    Loved by shop owners
-                </h2>
-            </FadeIn>
-            <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x">
-                {[
-                    { name: 'Julian P.', role: 'Lead Barber', text: 'We went from 20 DMs a day to zero. Clients book themselves and everything just works.' },
-                    { name: 'Elena S.', role: 'Studio Owner', text: 'The dashboard is so clean. I can see my whole day at a glance. Never going back.' },
-                    { name: 'Marcus W.', role: 'Senior Stylist', text: 'Double bookings were killing us. Since TrimFlow — not a single one in 6 months.' },
-                    { name: 'David L.', role: 'Shop Director', text: "Managing four locations used to be a nightmare. Now it's just a few taps." },
-                    { name: 'Sofia R.', role: 'Barbershop Owner', text: 'My clients love the booking link. I share it on Instagram and they book in seconds.' },
-                ].map((r, i) => (
-                    <div key={i} className="flex-none w-72 snap-center bg-white border border-slate-100 rounded-2xl p-6 hover:border-emerald-100 hover:shadow-lg transition-all">
-                        <div className="flex gap-0.5 mb-4">
-                            {[...Array(5)].map((_, j) => <Star key={j} className="h-3.5 w-3.5 fill-emerald-500 text-emerald-500" />)}
-                        </div>
-                        <p className="text-slate-600 text-sm leading-relaxed mb-5">"{r.text}"</p>
-                        <div className="pt-4 border-t border-slate-50">
-                            <p className="text-slate-900 text-xs font-bold">{r.name}</p>
-                            <p className="text-emerald-600 text-[10px] font-medium mt-0.5">{r.role}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-        <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}` }} />
-    </section>
-);
-
-
-// ─── Footer ────────────────────────────────────────────────────────────────────
+// ─── Footer ───────────────────────────────────────────────────────────────────
 
 const Footer = () => (
-    <footer className="bg-slate-50 border-t border-slate-100">
-        {/* Main footer grid */}
-        <div className="max-w-6xl mx-auto px-5 pt-20 pb-12">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-12 md:gap-8">
-
-                {/* Col 1 — Brand (spans 2 cols on md) */}
-                <div className="md:col-span-2">
-                    <TrimFlowLogo dark />
-                    <p className="mt-4 text-sm text-slate-400 leading-relaxed max-w-xs">
-                        The modern booking and management platform built for barbershops. Run your shop smarter.
+    <footer className="bg-slate-950 text-slate-400 pt-16 pb-8">
+        <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+                <div className="col-span-2">
+                    <div className="flex items-center gap-2.5 mb-4">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shrink-0">
+                            <Scissors className="h-4 w-4" />
+                        </div>
+                        <span className="text-base font-bold text-white">Fresh<span className="text-blue-400">io</span></span>
+                    </div>
+                    <p className="text-sm leading-relaxed max-w-xs">
+                        The modern appointment platform built for barbershops. Simple, fast, and reliable.
                     </p>
-                    {/* Social icons */}
-                    <div className="flex items-center gap-3 mt-6">
-                        {[
-                            { label: 'Instagram', svg: <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/> },
-                            { label: 'Twitter/X', svg: <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/> },
-                        ].map(({ label, svg }) => (
-                            <a key={label} href="#" aria-label={label}
-                               className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600 flex items-center justify-center text-slate-400 transition-colors">
-                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">{svg}</svg>
+                    <div className="flex gap-3 mt-5">
+                        {[Instagram, Twitter, Youtube].map((Icon, i) => (
+                            <a key={i} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors">
+                                <Icon className="h-4 w-4" />
                             </a>
                         ))}
                     </div>
                 </div>
 
-                {/* Col 2 — Product */}
-                <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-5">Product</p>
-                    <ul className="space-y-3">
-                        {[
-                            { label: 'Features', href: '#features' },
-                            { label: 'Pricing', href: '#pricing' },
-                            { label: 'How it works', href: '#how-it-works' },
-                            { label: 'Integrations', href: '#' },
-                        ].map(l => (
-                            <li key={l.label}>
-                                <a href={l.href} className="text-sm text-slate-400 hover:text-slate-900 transition-colors">{l.label}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Col 3 — Company */}
-                <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-5">Company</p>
-                    <ul className="space-y-3">
-                        {['About', 'Careers', 'Blog', 'Press'].map(l => (
-                            <li key={l}>
-                                <a href="#" className="text-sm text-slate-400 hover:text-slate-900 transition-colors">{l}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-
-                {/* Col 4 — Resources */}
-                <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-slate-900 mb-5">Resources</p>
-                    <ul className="space-y-3">
-                        {[
-                            { label: 'Documentation', href: '#' },
-                            { label: 'Help Center', href: '#' },
-                            { label: 'Contact', href: '#' },
-                            { label: 'Sign in', href: '/login' },
-                        ].map(l => (
-                            <li key={l.label}>
-                                <a href={l.href} className="text-sm text-slate-400 hover:text-slate-900 transition-colors">{l.label}</a>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                {[
+                    { title: 'Product', links: ['Features', 'Pricing', 'Changelog', 'Roadmap'] },
+                    { title: 'Company', links: ['About', 'Blog', 'Careers', 'Press'] },
+                    { title: 'Resources', links: ['Docs', 'Help Center', 'API', 'Status'] },
+                ].map(col => (
+                    <div key={col.title}>
+                        <p className="text-white font-semibold text-sm mb-4">{col.title}</p>
+                        <ul className="space-y-2.5">
+                            {col.links.map(link => (
+                                <li key={link}>
+                                    <a href="#" className="text-sm hover:text-white transition-colors">{link}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
             </div>
-        </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-slate-100">
-            <div className="max-w-6xl mx-auto px-5 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p className="text-xs text-slate-400">© 2026 Freshio. All rights reserved.</p>
-                <div className="flex items-center gap-5 text-xs text-slate-400">
-                    <a href="#" className="hover:text-slate-900 transition-colors">Privacy Policy</a>
-                    <a href="#" className="hover:text-slate-900 transition-colors">Terms of Service</a>
-                    <a href="#" className="hover:text-slate-900 transition-colors">Cookie Policy</a>
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+                <p>© 2026 Freshio. All rights reserved.</p>
+                <div className="flex gap-6">
+                    <a href="#" className="hover:text-slate-400 transition-colors">Privacy</a>
+                    <a href="#" className="hover:text-slate-400 transition-colors">Terms</a>
+                    <a href="#" className="hover:text-slate-400 transition-colors">Cookies</a>
                 </div>
             </div>
         </div>
     </footer>
 );
 
-// ─── Page ──────────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function Welcome() {
+export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
     return (
-        <div className="min-h-screen bg-white font-sans text-slate-900">
-            <Navbar />
+        <div className="min-h-screen font-sans antialiased">
+            <Navbar canLogin={canLogin} canRegister={canRegister} />
             <Hero />
-            <Stats />
-            <Problems />
-            <Features />
-            <BookingDemo />
-            <HowItWorks />
-            <Testimonials />
+            <Marquee ads={ads} />
+            <LockInLoyalty />
+            <BarbersClients />
+            <ShopStories />
+            <GetFree />
+            <ScrollDemo />
             <Pricing />
             <Footer />
         </div>
