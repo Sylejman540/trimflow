@@ -68,51 +68,60 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Logo />
 
+                    {/* Desktop links */}
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white">
                         {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
-                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-white transition-colors">{l}</a>
+                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-zinc-300 transition-colors">{l}</a>
                         ))}
                     </div>
 
+                    {/* Desktop auth */}
                     <div className="hidden md:flex items-center gap-3">
                         {canLogin && (
-                            <a href="/login" className="text-sm font-medium text-white hover:text-zinc-300 transition-colors px-4 py-2">
-                                Login
-                            </a>
+                            <a href="/login" className="text-sm font-medium text-white hover:text-zinc-300 transition-colors px-4 py-2">Login</a>
                         )}
                         {canRegister && (
-                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all">
-                                Get Started
-                            </a>
+                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all">Get Started</a>
                         )}
                     </div>
 
-                    <div className="flex md:hidden items-center gap-2">
-                        {canLogin && (
-                            <a href="/login" className="text-sm font-medium text-white px-3 py-1.5">Login</a>
-                        )}
-                        {canRegister && (
-                            <a href="/register" className="text-sm font-semibold bg-blue-600 text-white px-4 py-1.5 rounded-full">Get Started</a>
-                        )}
-                        <button className="p-2 text-white" onClick={() => setOpen(v => !v)}>
+                    {/* Mobile: Login + Sign Up + hamburger */}
+                    <div className="flex md:hidden items-center gap-3">
+                        {canLogin && <a href="/login" className="text-sm font-medium text-white border border-zinc-600 px-4 py-1.5 rounded-full hover:border-zinc-400 transition-all">Login</a>}
+                        {canRegister && <a href="/register" className="text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full transition-all">Sign Up</a>}
+                        <button className="p-1 text-white" onClick={() => setOpen(v => !v)}>
                             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </button>
                     </div>
                 </div>
             </nav>
 
-            {/* Mobile menu */}
+            {/* Mobile dropdown */}
             {open && (
-                <div className="fixed inset-0 z-[99] bg-black pt-16 flex flex-col p-6 gap-4">
-                    {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
-                        <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
-                            className="text-lg font-medium text-zinc-300 hover:text-white py-2 border-b border-zinc-800">
-                            {l}
-                        </a>
-                    ))}
-                    <div className="mt-4 flex flex-col gap-3">
-                        {canLogin && <a href="/login" className="text-center py-3 border border-zinc-700 rounded-xl font-medium text-zinc-300">Login</a>}
-                        {canRegister && <a href="/register" className="text-center py-3 bg-blue-600 text-white rounded-xl font-semibold">Get Started</a>}
+                <div className="fixed inset-0 z-[99] bg-black flex flex-col" style={{ paddingTop: '64px' }}>
+                    {/* Nav links */}
+                    <div className="flex flex-col px-6 pt-8 gap-1 flex-1">
+                        {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
+                            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
+                                className="text-2xl font-light text-white hover:text-zinc-400 py-3 border-b border-zinc-900 tracking-wide">
+                                {l}
+                            </a>
+                        ))}
+                    </div>
+
+                    {/* Bottom CTA */}
+                    <div className="px-6 pb-10 space-y-3">
+                        <p className="text-xs text-zinc-600 uppercase tracking-widest mb-4">Get started today</p>
+                        {canLogin && (
+                            <a href="/login" className="block text-center py-3 border border-zinc-700 rounded-full text-sm font-medium text-white hover:border-zinc-500 transition-all">
+                                Login
+                            </a>
+                        )}
+                        {canRegister && (
+                            <a href="/register" className="block text-center py-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-semibold text-white transition-all">
+                                Create Account
+                            </a>
+                        )}
                     </div>
                 </div>
             )}
@@ -123,7 +132,7 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
 const Hero = () => (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black pt-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black pt-16">
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-center text-center">
             {/* Headline */}
@@ -151,7 +160,7 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.35 }}
-                className="mb-24"
+                className="mb-48"
             >
                 <a href="/register"
                     className="text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white px-12 py-3 rounded-full transition-all">
@@ -159,87 +168,39 @@ const Hero = () => (
                 </a>
             </motion.div>
 
-            {/* Hero phone showcase */}
+            {/* Hero showcase box */}
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="relative w-full flex items-end justify-center gap-6 pb-0"
-                style={{ minHeight: '520px' }}
+                className="relative mx-auto rounded-3xl bg-slate-400 overflow-visible mt-20"
+                style={{ width: '100%', height: '360px' }}
             >
-                {/* Left phone 1 — taller, slightly back */}
-                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '0px' }}>
-                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
-                        <div className="rounded-[32px] overflow-hidden" style={{ height: '420px' }}>
-                            <img
-                                src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&q=80"
-                                alt="Barber at work"
-                                className="w-full h-full object-cover"
-                            />
+                {/* Left phone — sticks out top and bottom */}
+                <div className="absolute left-8 top-1/2 -translate-y-1/2 z-20" style={{ width: '260px' }}>
+                    <div className="rounded-[36px] p-[1.5px] shadow-2xl" style={{ height: '480px', background: 'rgba(255,255,255,0.25)', marginTop: '-60px' }}>
+                        <div className="rounded-[35px] overflow-hidden w-full h-full">
+                            <img src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&q=80" alt="Barber" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 </div>
 
-                {/* Left phone 2 — slightly shorter */}
-                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '40px' }}>
-                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
-                        <div className="rounded-[32px] overflow-hidden" style={{ height: '380px' }}>
-                            <img
-                                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&q=80"
-                                alt="Barbershop"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Center phone — biggest, video */}
-                <div className="relative z-20 shrink-0" style={{ width: '260px', marginBottom: '0px' }}>
-                    <div className="bg-slate-400 rounded-[48px] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
-                        {/* Notch */}
-                        <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-400 rounded-full z-30" />
-                        <div className="rounded-[38px] overflow-hidden" style={{ height: '520px' }}>
-                            <video
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                className="w-full h-full object-cover"
-                            >
-                                <source src="/videos/app-demo.mp4" type="video/mp4" />
-                                {/* Fallback */}
-                                <img
-                                    src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&q=80"
-                                    alt="App demo"
-                                    className="w-full h-full object-cover"
-                                />
+                {/* Center phone — sticks out top and bottom more */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20" style={{ width: '300px' }}>
+                    <div className="rounded-[40px] p-[1.5px] shadow-2xl" style={{ height: '620px', background: 'rgba(255,255,255,0.25)', marginTop: '-140px' }}>
+                        <div className="rounded-[39px] overflow-hidden w-full h-full bg-zinc-900">
+                            <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                                <source src="/videos/haircut.mp4" type="video/mp4" />
                             </video>
                         </div>
                     </div>
                 </div>
 
-                {/* Right phone — mirror of left 2 */}
-                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '40px' }}>
-                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
-                        <div className="rounded-[32px] overflow-hidden" style={{ height: '380px' }}>
-                            <img
-                                src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&q=80"
-                                alt="Haircut"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right phone — mirror of left 1 */}
-                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '0px' }}>
-                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
-                        <div className="rounded-[32px] overflow-hidden" style={{ height: '420px' }}>
-                            <img
-                                src="https://images.unsplash.com/photo-1596728325488-58c87691e9af?w=400&q=80"
-                                alt="Barber shop"
-                                className="w-full h-full object-cover"
-                            />
+                {/* Right phone — sticks out top and bottom */}
+                <div className="absolute right-8 top-1/2 -translate-y-1/2 z-20" style={{ width: '260px' }}>
+                    <div className="rounded-[36px] p-[1.5px] shadow-2xl" style={{ height: '480px', background: 'rgba(255,255,255,0.25)', marginTop: '-60px' }}>
+                        <div className="rounded-[35px] overflow-hidden w-full h-full">
+                            <img src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&q=80" alt="Barbershop" className="w-full h-full object-cover" />
                         </div>
                     </div>
                 </div>
@@ -248,47 +209,6 @@ const Hero = () => (
     </section>
 );
 
-// ─── Marquee ──────────────────────────────────────────────────────────────────
-
-const Marquee = ({ ads }: { ads: Props['ads'] }) => {
-    const defaultAds = [
-        { id: 1, emoji: '💈', headline: 'Classic Cuts Barbershop — Open 7 days', sub: 'Book now →' },
-        { id: 2, emoji: '✂️', headline: "Tony's Fade Studio — New clients welcome", sub: 'Book now →' },
-        { id: 3, emoji: '🪒', headline: 'The Shave Bar — Premium grooming', sub: 'Book now →' },
-        { id: 4, emoji: '💈', headline: 'Kings & Kutz — Walk-ins available', sub: 'Book now →' },
-        { id: 5, emoji: '✂️', headline: 'Fresh Edges — Best fades in town', sub: 'Book now →' },
-        { id: 6, emoji: '🪒', headline: 'Elite Cuts — Beard trims & hot towel', sub: 'Book now →' },
-    ];
-    const items = (ads && ads.length > 0 ? ads : defaultAds);
-    const doubled = [...items, ...items];
-
-    return (
-        <section className="py-0 bg-black border-y border-zinc-800 overflow-hidden">
-            <div className="text-center pt-5 pb-3">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Shops on Freshio</span>
-            </div>
-            <div className="relative pb-5">
-                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
-                <motion.div
-                    className="flex gap-3 w-max"
-                    animate={{ x: ['0%', '-50%'] }}
-                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-                >
-                    {doubled.map((ad, i) => (
-                        <div key={i} className="flex items-center gap-3 bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-3 shrink-0 hover:border-blue-200 hover:bg-blue-50/40 transition-colors cursor-pointer group">
-                            <span className="text-lg">{ad.emoji}</span>
-                            <div>
-                                <p className="text-xs font-semibold text-zinc-200 whitespace-nowrap">{ad.headline}</p>
-                                <p className="text-[10px] text-blue-600 font-bold group-hover:underline">{ad.sub}</p>
-                            </div>
-                        </div>
-                    ))}
-                </motion.div>
-            </div>
-        </section>
-    );
-};
 
 // ─── Lock in Loyalty ──────────────────────────────────────────────────────────
 
@@ -687,7 +607,6 @@ export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
         <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />
             <Hero />
-            <Marquee ads={ads} />
             <LockInLoyalty />
             <BarbersClients />
             <ShopStories />
