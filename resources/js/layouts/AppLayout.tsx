@@ -22,6 +22,7 @@ import {
     Package,
     Settings,
     BarChart2,
+    Megaphone,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
