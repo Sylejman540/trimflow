@@ -160,6 +160,7 @@ const navConfig: Omit<NavItem, 'label'>[] = [
     { href: '/barbers',          icon: Briefcase,       active: 'barbers.*',          labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
     { href: '/barbers/time-off', icon: PalmtreeIcon,    active: 'barbers.time-off.*', labelKey: 'timeoff.title', roles: ['platform-admin', 'shop-admin'] },
     { href: '/reports',          icon: BarChart2,       active: 'reports.*',          labelKey: 'nav.reports',   roles: ['platform-admin', 'shop-admin'] },
+    { href: '/ads',              icon: Megaphone,       active: 'ads.*',              labelKey: 'nav.ads',       roles: ['platform-admin', 'shop-admin'] },
     { href: '/settings',         icon: Settings,        active: 'settings.*',         labelKey: 'nav.settings',  roles: ['platform-admin', 'shop-admin'] },
 ] as any[];
 
