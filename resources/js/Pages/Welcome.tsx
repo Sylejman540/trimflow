@@ -559,10 +559,8 @@ const MidCTA = () => {
 
                 {/* Right — freshio.png, scroll in at 0–30% */}
                 <motion.div
-                    style={{ opacity: freshioOpacity, x: freshioX }}
-                    className="hidden md:block absolute"
-                    css={{}}
-                    {...{ style: { opacity: freshioOpacity, x: freshioX, position: 'absolute', right: '-60px', top: 0, bottom: 0, width: '480px', display: 'flex', alignItems: 'center', zIndex: 1 } }}
+                    className="hidden md:flex items-center absolute"
+                    style={{ opacity: freshioOpacity, x: freshioX, right: '-60px', top: 0, bottom: 0, width: '480px', zIndex: 1 }}
                 >
                     <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
                         <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Freshio Dashboard" />
@@ -571,8 +569,8 @@ const MidCTA = () => {
 
                 {/* Left — reports.png, scroll in at 50–80% */}
                 <motion.div
-                    style={{ opacity: reportsOpacity, x: reportsX, position: 'absolute', left: '-60px', top: 0, bottom: 0, width: '480px', display: 'flex', alignItems: 'center', zIndex: 1 }}
-                    className="hidden md:block"
+                    className="hidden md:flex items-center absolute"
+                    style={{ opacity: reportsOpacity, x: reportsX, left: '-60px', top: 0, bottom: 0, width: '480px', zIndex: 1 }}
                 >
                     <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
                         <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
