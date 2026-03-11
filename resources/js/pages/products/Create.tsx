@@ -119,16 +119,11 @@ export default function Create() {
                             >
                                 <ArchiveRestore size={12} /> {t('prod.stockQuantity')}
                             </Label>
-                            <Input
+                            <NumberStepper
                                 id="stock_qty"
-                                type="number"
-                                min="0"
                                 value={data.stock_qty}
-                                onChange={(e) =>
-                                    setData('stock_qty', parseInt(e.target.value) || 0)
-                                }
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                required
+                                onChange={v => setData('stock_qty', v)}
+                                min={0}
                             />
                             {errors.stock_qty && (
                                 <p className="text-xs text-red-500 font-medium">{errors.stock_qty}</p>
@@ -142,16 +137,11 @@ export default function Create() {
                             >
                                 <AlertTriangle size={12} /> {t('prod.lowStockAlert')}
                             </Label>
-                            <Input
+                            <NumberStepper
                                 id="low_stock_threshold"
-                                type="number"
-                                min="0"
                                 value={data.low_stock_threshold}
-                                onChange={(e) =>
-                                    setData('low_stock_threshold', parseInt(e.target.value) || 0)
-                                }
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                required
+                                onChange={v => setData('low_stock_threshold', v)}
+                                min={0}
                             />
                             <p className="text-[11px] text-slate-400">
                                 {t('prod.lowStockHint')}
