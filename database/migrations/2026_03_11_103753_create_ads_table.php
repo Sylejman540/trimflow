@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('ads', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->string('headline');
+            $table->string('sub')->nullable();
+            $table->string('emoji')->default('💈');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

@@ -21,6 +21,7 @@ use App\Http\Controllers\AppointmentProductController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AdController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\ManyChatWebhookController;
@@ -70,6 +71,10 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings/company', [SettingsController::class, 'updateCompany'])->name('settings.company');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
+        Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
+        Route::patch('/ads/{ad}', [AdController::class, 'update'])->name('ads.update');
+        Route::delete('/ads/{ad}', [AdController::class, 'destroy'])->name('ads.destroy');
     });
 });
 
