@@ -105,11 +105,10 @@ export default function Schedule({ barber }: { barber: Barber }) {
         >
             <Head title={`Schedule — ${barber.user?.name}`} />
 
-            {/* Added Wrapper to Center */}
-            <div className="flex flex-col items-center w-full py-10">
-                <div className="w-full max-w-2xl space-y-6">
+            <div className="flex flex-col items-center w-full py-4 lg:py-10">
+                <div className="w-full max-w-2xl space-y-4 lg:space-y-6">
                     <Card className="border-slate-200 shadow-none">
-                        <CardHeader className="pb-4">
+                        <CardHeader className="pb-3 px-4 lg:px-6">
                             <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-slate-400" />
                                 <CardTitle className="text-base">Weekly Working Hours</CardTitle>
@@ -118,41 +117,49 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                 Toggle days on/off and set start &amp; end times. Appointments can only be booked during active hours.
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-1">
+                        <CardContent className="space-y-1 px-3 lg:px-6">
                             {DAYS.map(({ key, label }) => {
                                 const day = hours[key];
                                 return (
                                     <div
                                         key={key}
                                         className={cn(
-                                            'flex items-center gap-4 px-4 py-3 rounded-lg transition-colors',
+                                            'rounded-lg transition-colors',
                                             day.enabled ? 'bg-slate-50' : 'opacity-50',
                                         )}
                                     >
-                                        <button
-                                            type="button"
-                                            onClick={() => toggle(key)}
-                                            className={cn(
-                                                'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
-                                                day.enabled ? 'bg-slate-900' : 'bg-slate-200',
-                                            )}
-                                        >
-                                            <span
+                                        {/* Toggle row */}
+                                        <div className="flex items-center gap-3 px-3 py-2.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => toggle(key)}
                                                 className={cn(
-                                                    'inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform',
-                                                    day.enabled ? 'translate-x-4' : 'translate-x-1',
+                                                    'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
+                                                    day.enabled ? 'bg-slate-900' : 'bg-slate-200',
                                                 )}
-                                            />
-                                        </button>
+                                            >
+                                                <span
+                                                    className={cn(
+                                                        'inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform',
+                                                        day.enabled ? 'translate-x-4' : 'translate-x-1',
+                                                    )}
+                                                />
+                                            </button>
+                                            <span className="flex-1 text-sm font-medium text-slate-900">{label}</span>
+                                            {!day.enabled && (
+                                                <span className="text-xs text-slate-400 italic">Day off</span>
+                                            )}
+                                        </div>
 
-                                        <span className="w-24 text-sm font-medium text-slate-900">{label}</span>
-
-                                        {day.enabled ? (
-                                            <div className="flex items-center gap-2 flex-1">
+                                        {/* Time selects — shown below on mobile, inline on sm+ */}
+                                        {day.enabled && (
+                                            <div className="flex flex-wrap items-center gap-2 px-3 pb-3 sm:pb-2.5 sm:flex-nowrap">
+                                                {/* Spacer to align with toggle+label above on sm+ */}
+                                                <div className="hidden sm:block w-[72px] shrink-0" />
                                                 <select
                                                     value={day.start}
                                                     onChange={e => setTime(key, 'start', e.target.value)}
-                                                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
+                                                    className="h-8 flex-1 min-w-[90px] rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
                                                 >
                                                     {TIME_OPTIONS.map(t => (
                                                         <option key={t} value={t}>{t}</option>
@@ -162,7 +169,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                 <select
                                                     value={day.end}
                                                     onChange={e => setTime(key, 'end', e.target.value)}
-                                                    className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
+                                                    className="h-8 flex-1 min-w-[90px] rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
                                                 >
                                                     {TIME_OPTIONS.filter(t => t > day.start).map(t => (
                                                         <option key={t} value={t}>{t}</option>
@@ -172,14 +179,12 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                     <button
                                                         type="button"
                                                         onClick={applyToWeekdays}
-                                                        className="ml-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors"
+                                                        className="text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors whitespace-nowrap"
                                                     >
                                                         Apply to Mon–Fri
                                                     </button>
                                                 )}
                                             </div>
-                                        ) : (
-                                            <span className="text-xs text-slate-400 italic">Day off</span>
                                         )}
                                     </div>
                                 );
@@ -187,11 +192,11 @@ export default function Schedule({ barber }: { barber: Barber }) {
                         </CardContent>
                     </Card>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end px-1">
                         <Button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="bg-slate-900 text-white hover:bg-slate-800 h-9 px-6 rounded-lg text-xs font-bold shadow-none"
+                            className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 h-10 px-6 rounded-lg text-xs font-bold shadow-none"
                         >
                             Save Schedule
                         </Button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barber;
 use App\Models\Company;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -53,6 +54,23 @@ class RegisteredUserController extends Controller
         ]);
 
         $user->assignRole('shop-admin');
+        $user->assignRole('barber');
+
+        Barber::create([
+            'company_id'    => $company->id,
+            'user_id'       => $user->id,
+            'specialty'     => '',
+            'is_active'     => true,
+            'working_hours' => [
+                'monday'    => ['enabled' => true,  'start' => '09:00', 'end' => '17:00'],
+                'tuesday'   => ['enabled' => true,  'start' => '09:00', 'end' => '17:00'],
+                'wednesday' => ['enabled' => true,  'start' => '09:00', 'end' => '17:00'],
+                'thursday'  => ['enabled' => true,  'start' => '09:00', 'end' => '17:00'],
+                'friday'    => ['enabled' => true,  'start' => '09:00', 'end' => '17:00'],
+                'saturday'  => ['enabled' => false, 'start' => '09:00', 'end' => '17:00'],
+                'sunday'    => ['enabled' => false, 'start' => '09:00', 'end' => '17:00'],
+            ],
+        ]);
 
         event(new Registered($user));
 

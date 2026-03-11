@@ -12,7 +12,10 @@ import {
     Users,
     Copy,
     Check,
+    Store,
+    User,
 } from 'lucide-react';
+
 import AppLayout from '@/layouts/AppLayout';
 import {
     Card,
@@ -195,16 +198,29 @@ function SetupChecklist({ setup }: { setup: Setup }) {
 interface LowStockProduct { id: number; name: string; stock_qty: number; low_stock_threshold: number; }
 
 export default function Dashboard({
-    is_barber, stats, today_schedule, upcoming_appointments, low_stock_products = [], setup,
+    is_barber, is_owner_barber = false,
+    stats, today_schedule, upcoming_appointments,
+    my_stats, my_today_schedule, my_upcoming,
+    low_stock_products = [], setup,
 }: {
-    is_barber: boolean; stats: Stats;
+    is_barber: boolean;
+    is_owner_barber?: boolean;
+    stats: Stats;
     today_schedule: Appointment[];
     upcoming_appointments: Appointment[];
+    my_stats?: Stats | null;
+    my_today_schedule?: Appointment[] | null;
+    my_upcoming?: Appointment[] | null;
     low_stock_products?: LowStockProduct[];
     setup?: Setup | null;
 }) {
     const { t } = useTranslation();
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
+    const [viewMine, setViewMine] = useState(false);
+
+    const activeStats        = (is_owner_barber && viewMine && my_stats)          ? my_stats          : stats;
+    const activeSchedule     = (is_owner_barber && viewMine && my_today_schedule) ? my_today_schedule : today_schedule;
+    const activeUpcoming     = (is_owner_barber && viewMine && my_upcoming)       ? my_upcoming       : upcoming_appointments;
 
     return (
         <AppLayout title={t('dashboard')}>
@@ -235,6 +251,34 @@ export default function Dashboard({
                     <SetupChecklist setup={setup} />
                 )}
 
+                {/* Owner-barber view toggle */}
+                {is_owner_barber && (
+                    <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg w-fit">
+                        <button
+                            onClick={() => setViewMine(false)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                                !viewMine
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            <Store className="h-3.5 w-3.5" />
+                            {t('dash.shopView')}
+                        </button>
+                        <button
+                            onClick={() => setViewMine(true)}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                                viewMine
+                                    ? 'bg-white text-slate-900 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            <User className="h-3.5 w-3.5" />
+                            {t('dash.mySchedule')}
+                        </button>
+                    </div>
+                )}
+
                 {/* KPI Cards */}
                 <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:grid-cols-3">
                     <Card className="border-slate-200 shadow-none">
@@ -244,7 +288,7 @@ export default function Dashboard({
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('dash.todayAppointments')}</p>
-                                <p className="text-2xl font-bold">{stats.today_appointments}</p>
+                                <p className="text-2xl font-bold">{activeStats.today_appointments}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -256,7 +300,7 @@ export default function Dashboard({
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('dash.pendingConfirmation')}</p>
-                                <p className="text-2xl font-bold">{stats.today_pending}</p>
+                                <p className="text-2xl font-bold">{activeStats.today_pending}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -268,7 +312,7 @@ export default function Dashboard({
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('dash.revenueToday')}</p>
-                                <p className="text-2xl font-bold">{formatCents(stats.today_revenue)}</p>
+                                <p className="text-2xl font-bold">{formatCents(activeStats.today_revenue)}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -282,7 +326,7 @@ export default function Dashboard({
                                 <div>
                                     <CardTitle className="text-base">{t('dash.todaySchedule')}</CardTitle>
                                     <CardDescription>
-                                        {today_schedule.length} {today_schedule.length !== 1 ? t('dash.appointmentsPlural') : t('dash.appointments')}
+                                        {activeSchedule.length} {activeSchedule.length !== 1 ? t('dash.appointmentsPlural') : t('dash.appointments')}
                                     </CardDescription>
                                 </div>
                                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -290,7 +334,7 @@ export default function Dashboard({
                         </CardHeader>
                         <CardContent className="pt-0 px-2 lg:px-4">
                             <div className="max-h-72 overflow-y-auto space-y-0.5">
-                                {today_schedule.length > 0 ? today_schedule.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
+                                {activeSchedule.length > 0 ? activeSchedule.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
                                     <p className="py-8 text-center text-sm text-muted-foreground">{t('dash.noToday')}</p>
                                 )}
                             </div>
@@ -311,7 +355,7 @@ export default function Dashboard({
                         </CardHeader>
                         <CardContent className="pt-0 px-2 lg:px-4">
                             <div className="max-h-72 overflow-y-auto space-y-0.5">
-                                {upcoming_appointments.length > 0 ? upcoming_appointments.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
+                                {activeUpcoming.length > 0 ? activeUpcoming.map(a => <ScheduleRow key={a.id} appointment={a} />) : (
                                     <p className="py-8 text-center text-sm text-muted-foreground">{t('dash.noUpcoming')}</p>
                                 )}
                             </div>

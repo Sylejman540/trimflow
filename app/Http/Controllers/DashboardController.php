@@ -55,6 +55,38 @@ class DashboardController extends Controller
             ->each(fn (Appointment $a) => $a->resolveStatus())
             ->map(fn (Appointment $a) => $this->mapAppointment($a));
 
+        // Owner-barber personal data (their own appointments only)
+        $myStats = null;
+        $myTodaySchedule = null;
+        $myUpcoming = null;
+        if ($isOwnerBarber) {
+            $myBarberId = $user->barber->id;
+            $myQuery = fn () => Appointment::query()->where('barber_id', $myBarberId);
+            $myStats = [
+                'today_appointments' => $myQuery()->whereDate('starts_at', $today)->whereNotIn('status', ['cancelled'])->count(),
+                'today_pending'      => $myQuery()->whereDate('starts_at', $today)->where('status', 'pending')->count(),
+                'today_revenue'      => (int) $myQuery()->whereDate('starts_at', $today)->where('status', 'completed')->sum('price'),
+                'completion_rate'    => 0,
+            ];
+            $myTodaySchedule = $myQuery()
+                ->with(['barber.user', 'customer', 'service'])
+                ->whereDate('starts_at', $today)
+                ->whereNotIn('status', ['cancelled'])
+                ->orderBy('starts_at')
+                ->get()
+                ->each(fn (Appointment $a) => $a->resolveStatus())
+                ->map(fn (Appointment $a) => $this->mapAppointment($a));
+            $myUpcoming = $myQuery()
+                ->with(['barber.user', 'customer', 'service'])
+                ->where('ends_at', '>=', now())
+                ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
+                ->orderBy('starts_at')
+                ->limit(8)
+                ->get()
+                ->each(fn (Appointment $a) => $a->resolveStatus())
+                ->map(fn (Appointment $a) => $this->mapAppointment($a));
+        }
+
         // Low-stock products alert (admin only, not plain barbers)
         $lowStockProducts = ($isBarber && !$isOwnerBarber) ? [] : Product::where('is_active', true)
             ->whereColumn('stock_qty', '<=', 'low_stock_threshold')
@@ -66,7 +98,7 @@ class DashboardController extends Controller
         $setup = null;
         if (!$isBarber || $isOwnerBarber) {
             $company = $user->company;
-            $hasBarbers  = Barber::where('company_id', $company->id)->where('is_active', true)->exists();
+            $hasBarbers  = Barber::where('company_id', $company->id)->where('is_active', true)->where('user_id', '!=', $user->id)->exists();
             $hasServices = Service::where('company_id', $company->id)->where('is_active', true)->exists();
             $hasInfo     = !empty($company->phone) || !empty($company->address);
             $setup = [
@@ -80,6 +112,10 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'is_barber'          => $isBarber && !$isOwnerBarber,
+            'is_owner_barber'    => $isOwnerBarber,
+            'my_stats'           => $myStats,
+            'my_today_schedule'  => $myTodaySchedule,
+            'my_upcoming'        => $myUpcoming,
             'low_stock_products' => $lowStockProducts,
             'setup'              => $setup,
             'stats'              => $stats,

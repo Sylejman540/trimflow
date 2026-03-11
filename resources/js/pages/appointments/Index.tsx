@@ -625,7 +625,10 @@ export default function Index({
                 {/* Mobile card list */}
                 <div className="sm:hidden space-y-2">
                     {filtered.length === 0 && (
-                        <p className="text-sm text-slate-400 text-center py-8">{t('appt.noAppointments')}</p>
+                        <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
+                            <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                            <p className="text-xs text-slate-400 max-w-xs">{t('appt.noAppointmentsHint')}</p>
+                        </div>
                     )}
                     {filtered.map(appt => (
                         <div key={appt.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
@@ -685,11 +688,18 @@ export default function Index({
 
                 {/* Desktop table */}
                 <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
-                    <DataTable
-                        columns={columns}
-                        data={filtered}
-                        showSearch={false}
-                    />
+                    {filtered.length === 0 ? (
+                        <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
+                            <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                            <p className="text-xs text-slate-400 max-w-sm">{t('appt.noAppointmentsHint')}</p>
+                        </div>
+                    ) : (
+                        <DataTable
+                            columns={columns}
+                            data={filtered}
+                            showSearch={false}
+                        />
+                    )}
                 </div>
             </div>
 
