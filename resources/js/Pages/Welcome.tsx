@@ -454,7 +454,7 @@ const ShopStories = () => (
 // ─── Get Freshio Free ─────────────────────────────────────────────────────────
 
 const GetFree = () => (
-    <section className="py-28 bg-white" id="clients">
+    <section className="py-28 bg-black" id="clients">
         <div className="max-w-7xl mx-auto px-6">
             <div className="bg-blue-600 rounded-3xl px-8 py-16 md:px-16 flex flex-col md:flex-row items-center gap-12 overflow-hidden relative">
                 {/* Background pattern */}
