@@ -1,4 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+// Load Bebas Neue from Google Fonts
+if (typeof document !== 'undefined') {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap';
+    document.head.appendChild(link);
+}
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
     ArrowRight, Menu, X, Star, Check, ChevronRight, Scissors,
@@ -40,7 +47,7 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 function Logo() {
     return (
         <div className="flex items-center gap-2.5">
-            <span className="text-2xl font-black tracking-tight text-white bg-blue-600 px-3 py-1 rounded-xl">
+            <span className="text-2xl font-black tracking-tight text-white">
                 Freshio
             </span>
         </div>
@@ -61,7 +68,7 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Logo />
 
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
+                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white">
                         {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
                             <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-white transition-colors">{l}</a>
                         ))}
@@ -116,7 +123,8 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-3xl mt-16"
+                className="text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[1.05] mb-6 max-w-3xl mt-16"
+                style={{ fontFamily: "'Bebas Neue', sans-serif" }}
             >
                 The easiest way to manage{' '}
                 barber appointments
@@ -138,9 +146,8 @@ const Hero = () => (
                 className="mb-24"
             >
                 <a href="/register"
-                    className="group inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 text-sm">
-                    Get Started Today
-                    <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                    className="text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white px-12 py-2 rounded-full transition-all">
+                    Get Started
                 </a>
             </motion.div>
 
