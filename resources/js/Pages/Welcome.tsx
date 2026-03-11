@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
-    ArrowRight, Menu, X, Check, Star, Scissors,
-    Calendar, Users, Bell, BarChart3, ChevronRight,
-    Instagram, Twitter, Youtube, Shield, Zap, Clock,
+    ArrowRight, Menu, X, Star, Check, ChevronRight, Scissors,
+    Calendar, Users, Bell, BarChart3,
 } from 'lucide-react';
 
 interface Props {
@@ -41,7 +40,7 @@ function FadeIn({ children, delay = 0, className = '' }: { children: React.React
 function Logo() {
     return (
         <div className="flex items-center gap-2.5">
-            <span className="text-base font-black tracking-tight text-white">
+            <span className="text-2xl font-black tracking-tight text-white">
                 Freshio
             </span>
         </div>
@@ -110,37 +109,24 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
 
 const Hero = () => (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-black pt-16 overflow-hidden">
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:64px_64px] opacity-40" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full flex flex-col items-center text-center">
-            {/* Badge */}
-            <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest mb-8"
-            >
-                <Zap className="h-3 w-3" />
-                Now with AI booking assistant
-            </motion.div>
-
             {/* Headline */}
             <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-5xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-4xl"
+                className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.05] mb-6 max-w-3xl mt-16"
             >
                 The easiest way to manage{' '}
-                <span className="text-blue-600">barber appointments</span>
+                barber appointments
             </motion.h1>
 
             <motion.p
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.25 }}
-                className="text-lg text-zinc-400 max-w-xl mb-10 leading-relaxed"
+                className="text-base text-zinc-400 max-w-lg mb-10 leading-relaxed"
             >
                 Let clients book in seconds, reduce no-shows, and grow your barbershop — all from one simple dashboard.
             </motion.p>
@@ -149,79 +135,99 @@ const Hero = () => (
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.35 }}
-                className="flex flex-col sm:flex-row gap-3 mb-20"
+                className="mb-24"
             >
                 <a href="/register"
-                    className="group flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 hover:-translate-y-0.5 text-sm">
+                    className="group inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-4 rounded-xl transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 text-sm">
                     Get Started Today
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
-                <a href="#features"
-                    className="flex items-center justify-center gap-2 text-zinc-300 border border-zinc-700 hover:border-zinc-500 bg-zinc-900 hover:bg-zinc-800 px-8 py-4 rounded-xl transition-all font-medium text-sm">
-                    See how it works
-                </a>
             </motion.div>
 
-            {/* Hero image showcase */}
+            {/* Hero phone showcase */}
             <motion.div
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.9, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="relative bg-zinc-700 rounded-3xl w-full max-w-5xl mx-auto"
-                style={{ paddingTop: '80px', paddingBottom: '0', minHeight: '400px' }}
+                transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                className="relative w-full flex items-end justify-center gap-6 pb-0"
+                style={{ minHeight: '520px' }}
             >
-                {/* Left phone */}
-                <div className="absolute -top-16 left-[8%] w-[140px] z-20">
-                    <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
-                        <div className="bg-zinc-800 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
-                            <div className="bg-blue-600 px-3 py-4">
-                                <div className="text-white text-[9px] font-bold">Freshio</div>
-                                <div className="text-white/70 text-[7px] mt-0.5">My appointments</div>
-                            </div>
-                            <div className="p-2 space-y-1.5">
-                                {['10:00 AM — Haircut', '2:00 PM — Beard trim', '4:30 PM — Fade'].map((t, i) => (
-                                    <div key={i} className="bg-zinc-900 rounded-lg p-2 shadow-sm">
-                                        <div className="text-[7px] font-semibold text-zinc-200">{t}</div>
-                                        <div className="text-[6px] text-zinc-500 mt-0.5">Confirmed ✓</div>
-                                    </div>
-                                ))}
-                            </div>
+                {/* Left phone 1 — taller, slightly back */}
+                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '0px' }}>
+                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
+                        <div className="rounded-[32px] overflow-hidden" style={{ height: '420px' }}>
+                            <img
+                                src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&q=80"
+                                alt="Barber at work"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* Center main image */}
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[52%] z-10">
-                    <img
-                        src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80"
-                        alt="Barber at work"
-                        className="w-full rounded-2xl shadow-2xl object-cover"
-                        style={{ height: '360px' }}
-                    />
-                </div>
-
-                {/* Right phone */}
-                <div className="absolute -top-16 right-[8%] w-[140px] z-20">
-                    <div className="bg-slate-900 rounded-[28px] p-2 shadow-2xl">
-                        <div className="bg-zinc-800 rounded-[20px] overflow-hidden" style={{ height: '260px' }}>
-                            <div className="bg-slate-800 px-3 py-4">
-                                <div className="text-white text-[9px] font-bold">Book Now</div>
-                                <div className="text-white/70 text-[7px] mt-0.5">Choose a barber</div>
-                            </div>
-                            <div className="p-2 space-y-1.5">
-                                {['Marcus J. ⭐ 4.9', 'David K. ⭐ 4.8', 'Arben G. ⭐ 5.0'].map((b, i) => (
-                                    <div key={i} className="bg-zinc-900 rounded-lg p-2 flex items-center gap-1.5 shadow-sm">
-                                        <div className="w-5 h-5 rounded-full bg-blue-100 shrink-0" />
-                                        <div className="text-[7px] font-semibold text-zinc-200">{b}</div>
-                                    </div>
-                                ))}
-                            </div>
+                {/* Left phone 2 — slightly shorter */}
+                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '40px' }}>
+                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
+                        <div className="rounded-[32px] overflow-hidden" style={{ height: '380px' }}>
+                            <img
+                                src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&q=80"
+                                alt="Barbershop"
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* Spacer so container has height */}
-                <div style={{ height: '280px' }} />
+                {/* Center phone — biggest, video */}
+                <div className="relative z-20 shrink-0" style={{ width: '260px', marginBottom: '0px' }}>
+                    <div className="bg-slate-400 rounded-[48px] p-3 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+                        {/* Notch */}
+                        <div className="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-5 bg-slate-400 rounded-full z-30" />
+                        <div className="rounded-[38px] overflow-hidden" style={{ height: '520px' }}>
+                            <video
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover"
+                            >
+                                <source src="/videos/app-demo.mp4" type="video/mp4" />
+                                {/* Fallback */}
+                                <img
+                                    src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&q=80"
+                                    alt="App demo"
+                                    className="w-full h-full object-cover"
+                                />
+                            </video>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right phone — mirror of left 2 */}
+                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '40px' }}>
+                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
+                        <div className="rounded-[32px] overflow-hidden" style={{ height: '380px' }}>
+                            <img
+                                src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&q=80"
+                                alt="Haircut"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right phone — mirror of left 1 */}
+                <div className="relative z-10 shrink-0" style={{ width: '200px', marginBottom: '0px' }}>
+                    <div className="bg-slate-400 rounded-[40px] p-2.5 shadow-2xl">
+                        <div className="rounded-[32px] overflow-hidden" style={{ height: '420px' }}>
+                            <img
+                                src="https://images.unsplash.com/photo-1596728325488-58c87691e9af?w=400&q=80"
+                                alt="Barber shop"
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
+                    </div>
+                </div>
             </motion.div>
         </div>
     </section>
@@ -615,18 +621,15 @@ const Footer = () => (
             <div className="grid grid-cols-2 md:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
                 <div className="col-span-2">
                     <div className="flex items-center gap-2.5 mb-4">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shrink-0">
-                            <Scissors className="h-4 w-4" />
-                        </div>
-                        <span className="text-base font-bold text-white">Fresh<span className="text-blue-400">io</span></span>
+                        <span className="text-base font-black text-white">Freshio</span>
                     </div>
                     <p className="text-sm leading-relaxed max-w-xs">
                         The modern appointment platform built for barbershops. Simple, fast, and reliable.
                     </p>
                     <div className="flex gap-3 mt-5">
-                        {[Instagram, Twitter, Youtube].map((Icon, i) => (
-                            <a key={i} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors">
-                                <Icon className="h-4 w-4" />
+                        {['IG', 'X', 'YT'].map((label) => (
+                            <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold text-slate-400 hover:text-white">
+                                {label}
                             </a>
                         ))}
                     </div>
@@ -666,7 +669,7 @@ const Footer = () => (
 
 export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
     return (
-        <div className="min-h-screen font-sans antialiased">
+        <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />
             <Hero />
             <Marquee ads={ads} />
