@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Service } from '@/types';
 import { Scissors, Clock, DollarSign, AlignLeft, Info, Tag } from 'lucide-react';
+import { NumberStepper } from '@/components/ui/number-stepper';
 
 const SERVICE_COLORS = [
     { key: 'slate',  hex: '#64748b', label: 'Slate'  },
@@ -118,14 +119,12 @@ export default function Edit({ service }: { service: Service }) {
                             <Label htmlFor="duration" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <Clock size={12} />{' '}{t('svc.durationMin')}
                             </Label>
-                            <Input
+                            <NumberStepper
                                 id="duration"
-                                type="number"
-                                min={1}
                                 value={data.duration}
-                                onChange={(e) => setData('duration', parseInt(e.target.value) || 0)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                required
+                                onChange={v => setData('duration', v)}
+                                min={1}
+                                step={5}
                             />
                             {errors.duration && <p className="text-xs text-red-500 font-medium">{errors.duration}</p>}
                         </div>
@@ -133,15 +132,13 @@ export default function Edit({ service }: { service: Service }) {
                             <Label htmlFor="price" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <DollarSign size={12} />{' '}{t('svc.priceDollar')}
                             </Label>
-                            <Input
+                            <NumberStepper
                                 id="price"
-                                type="number"
-                                step="0.01"
                                 value={data.price}
-                                onChange={(e) => setData('price', parseFloat(e.target.value) || 0)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
-                                placeholder="0.00"
-                                required
+                                onChange={v => setData('price', v)}
+                                min={0}
+                                step={0.5}
+                                decimal
                             />
                             {errors.price && <p className="text-xs text-red-500 font-medium">{errors.price}</p>}
                         </div>
