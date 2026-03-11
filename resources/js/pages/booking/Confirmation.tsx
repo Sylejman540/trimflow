@@ -210,7 +210,7 @@ export default function Confirmation({
                             href={route('portal.show', company.slug)}
                             className={cn(buttonVariants({ variant: 'outline' }), 'h-10 rounded-xl font-semibold shadow-none border-slate-200')}
                         >
-                            View My Appointments
+                            {t('booking.viewMyAppts')}
                         </Link>
                     </div>
                     <PoweredBy />
