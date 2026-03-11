@@ -47,7 +47,7 @@ class BarberTimeOffController extends Controller
             ->where('company_id', Auth::user()->company_id)
             ->firstOrFail();
 
-        BarberTimeOff::create($validated);
+        BarberTimeOff::create(array_merge($validated, ['company_id' => $barber->company_id]));
 
         return back()->with('success', 'Time off added.');
     }

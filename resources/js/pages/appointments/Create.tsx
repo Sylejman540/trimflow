@@ -26,8 +26,21 @@ export default function Create({
 }) {
     const { auth } = usePage<PageProps>().props;
     const isBarber = auth.roles.includes('barber') && !auth.roles.includes('shop-admin');
-    const companySlug = (auth as any).company?.slug as string;
-    const { t } = useTranslation();
+    const companySlug = auth.company?.slug ?? '';
+    const { t, i18n } = useTranslation();
+
+    function formatDateWithDay(dateStr: string) {
+        if (!dateStr) return '';
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+        const localeMap: Record<string, string> = {
+            sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
+            el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
+            es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
+        };
+        const locale = localeMap[i18n.language] ?? i18n.language;
+        return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
@@ -248,6 +261,9 @@ export default function Create({
                             className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg w-full sm:w-56"
                             disabled={!canShowSlots}
                         />
+                        {selectedDate && canShowSlots && (
+                            <p className="text-xs text-slate-500 font-medium -mt-1">{formatDateWithDay(selectedDate)}</p>
+                        )}
 
                         {!canShowSlots && (
                             <p className="text-xs text-slate-400">{t('appt.selectBarberAndServiceFirst')}</p>

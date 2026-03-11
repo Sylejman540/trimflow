@@ -51,12 +51,19 @@ function todayStr() {
     return `${yyyy}-${mm}-${dd}`;
 }
 
-function formatDateWithDay(dateStr: string) {
+function formatDateWithDay(dateStr: string, lang: string) {
     if (!dateStr) return '';
     // Parse as local date to avoid timezone shift
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
-    return date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    // Map i18next language codes to BCP 47 locale tags
+    const localeMap: Record<string, string> = {
+        sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
+        el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
+        es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
+    };
+    const locale = localeMap[lang] ?? lang;
+    return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 export default function Show({ company, barbers: initialBarbers, services, turnstile_site_key }: {
@@ -65,7 +72,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     services: Service[];
     turnstile_site_key?: string;
 }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     // Steps: 0=Service, 1=Barber, 2=DateTime, 3=Info
     const STEPS = [
@@ -479,7 +486,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                 />
                                 {selectedDate && (
-                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate)}</p>
+                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, i18n.language)}</p>
                                 )}
                             </div>
 
@@ -558,7 +565,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     {selectedBarber?.specialty && <span className="text-white/40"> · {selectedBarber.specialty}</span>}
                                 </p>
                                 <p className="text-xs text-slate-300 flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" /> {formatDateWithDay(selectedDate)} · {selectedTime}
+                                    <Calendar className="h-3 w-3" /> {formatDateWithDay(selectedDate, i18n.language)} · {selectedTime}
                                 </p>
                             </div>
                         </div>
