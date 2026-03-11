@@ -521,28 +521,27 @@ const BrowserFrame = ({ src, url, alt }: { src: string; url: string; alt: string
     </div>
 );
 
+
 const MidCTA = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
 
-    // freshio slides in at 0–0.3, reports slides in at 0.5–0.8
-    const freshioX = useTransform(scrollYProgress, [0, 0.3], [120, 0]);
-    const freshioOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-    const reportsX = useTransform(scrollYProgress, [0.5, 0.8], [-120, 0]);
-    const reportsOpacity = useTransform(scrollYProgress, [0.5, 0.8], [0, 1]);
-    const ctaOpacity = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
-    const ctaY = useTransform(scrollYProgress, [0, 0.1], [30, 0]);
+    // Each image appears at a different vertical position and scroll range
+    const img1Opacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
+    const img1Y = useTransform(scrollYProgress, [0.05, 0.2], [80, 0]);
+
+    const img2Opacity = useTransform(scrollYProgress, [0.35, 0.5], [0, 1]);
+    const img2Y = useTransform(scrollYProgress, [0.35, 0.5], [80, 0]);
+
+    const img3Opacity = useTransform(scrollYProgress, [0.65, 0.8], [0, 1]);
+    const img3Y = useTransform(scrollYProgress, [0.65, 0.8], [80, 0]);
 
     return (
-        <section ref={containerRef} className="bg-black" style={{ height: '300vh' }}>
-            {/* Sticky viewport */}
-            <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
+        <section ref={containerRef} className="bg-black" style={{ height: '500vh' }}>
+            <div className="sticky top-0 h-screen overflow-hidden">
 
-                {/* Center CTA */}
-                <motion.div
-                    style={{ opacity: ctaOpacity, y: ctaY, zIndex: 10, position: 'relative' }}
-                    className="flex flex-col items-center text-center px-6"
-                >
+                {/* Fixed center CTA — always visible */}
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-center px-6 z-20">
                     <h2
                         className="text-[72px] md:text-[100px] leading-none text-white mb-8"
                         style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em' }}
@@ -555,37 +554,51 @@ const MidCTA = () => {
                     >
                         Start for free
                     </a>
+                </div>
+
+                {/* Image 1 — phone, right side, top area */}
+                <motion.div
+                    className="hidden md:block absolute z-10"
+                    style={{ opacity: img1Opacity, y: img1Y, right: '4%', top: '60px', width: '220px' }}
+                >
+                    <div className="rounded-[32px] bg-zinc-900 p-2.5 shadow-[0_30px_60px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+                        <div className="flex justify-center mb-1">
+                            <div className="w-12 h-1 rounded-full bg-zinc-700" />
+                        </div>
+                        <div className="rounded-[24px] overflow-hidden">
+                            <img src="/dashboard.png" alt="Dashboard" className="w-full h-auto" />
+                        </div>
+                        <div className="flex justify-center mt-1.5">
+                            <div className="w-14 h-0.5 rounded-full bg-zinc-600" />
+                        </div>
+                    </div>
                 </motion.div>
 
-                {/* Right — freshio.png, scroll in at 0–30% */}
+                {/* Image 2 — browser, left side, 280px down */}
                 <motion.div
-                    className="hidden md:flex items-center absolute"
-                    style={{ opacity: freshioOpacity, x: freshioX, right: '-60px', top: 0, bottom: 0, width: '480px', zIndex: 1 }}
+                    className="hidden md:block absolute z-10"
+                    style={{ opacity: img2Opacity, y: img2Y, left: '-60px', top: '280px', width: '500px' }}
                 >
-                    <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
-                        <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Freshio Dashboard" />
-                    </motion.div>
+                    <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Schedule" />
                 </motion.div>
 
-                {/* Left — reports.png, scroll in at 50–80% */}
+                {/* Image 3 — browser, right side, 560px down */}
                 <motion.div
-                    className="hidden md:flex items-center absolute"
-                    style={{ opacity: reportsOpacity, x: reportsX, left: '-60px', top: 0, bottom: 0, width: '480px', zIndex: 1 }}
+                    className="hidden md:block absolute z-10"
+                    style={{ opacity: img3Opacity, y: img3Y, right: '-40px', top: '560px', width: '460px' }}
                 >
-                    <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }} className="w-full">
-                        <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
-                    </motion.div>
+                    <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
                 </motion.div>
 
             </div>
 
             {/* Mobile: stacked */}
-            <div className="md:hidden px-6 py-20 space-y-6">
-                <div className="flex flex-col items-center text-center mb-10">
-                    <h2 className="text-[72px] leading-none text-white mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Get Freshio</h2>
+            <div className="md:hidden px-6 py-16 space-y-6">
+                <div className="flex flex-col items-center text-center mb-8">
+                    <h2 className="text-[64px] leading-none text-white mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Get Freshio</h2>
                     <a href="/register" className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-full shadow-lg transition-all text-base">Start for free</a>
                 </div>
-                <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Freshio Dashboard" />
+                <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Schedule" />
                 <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
             </div>
         </section>
