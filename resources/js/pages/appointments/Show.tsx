@@ -220,15 +220,42 @@ export default function Show({
                         <CardHeader className="px-4 lg:px-6 pb-0 pt-4">
                             <CardTitle className="text-base">{t('show.serviceDetails')}</CardTitle>
                         </CardHeader>
-                        <CardContent className="px-4 lg:px-6 divide-y divide-slate-100">
-                            <InfoRow label={t('appt.service')} value={appointment.service?.name ?? '-'} />
-                            <InfoRow label={t('category')} value={appointment.service?.category ?? '-'} />
-                            <InfoRow label={t('duration')} value={appointment.service ? `${appointment.service.duration} ${t('show.min')}` : '-'} />
-                            <InfoRow label={t('price')} value={appointment.service ? formatCents(appointment.service.price) : '-'} />
-                            {appointment.service?.description && (
-                                <div className="py-2.5">
-                                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('description')}</p>
-                                    <p className="text-sm text-slate-700">{appointment.service.description}</p>
+                        <CardContent className="px-4 lg:px-6 space-y-0 divide-y divide-slate-100">
+                            {/* Multi-service: show all pivot services if present, else fall back to primary */}
+                            {(appointment as any).services?.length > 0
+                                ? (appointment as any).services.map((s: any, i: number) => (
+                                    <div key={s.id} className="py-3 flex items-center justify-between gap-4">
+                                        <div>
+                                            <p className="text-sm font-medium text-slate-900">{s.name}</p>
+                                            {s.category && <p className="text-xs text-slate-400">{s.category}</p>}
+                                            {s.description && <p className="text-xs text-slate-500 mt-0.5">{s.description}</p>}
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <p className="text-sm font-semibold text-slate-900">{formatCents(s.pivot?.price ?? s.price)}</p>
+                                            <p className="text-xs text-slate-400">{s.pivot?.duration ?? s.duration} {t('show.min')}</p>
+                                        </div>
+                                    </div>
+                                ))
+                                : (
+                                    <>
+                                        <InfoRow label={t('appt.service')} value={appointment.service?.name ?? '-'} />
+                                        <InfoRow label={t('category')} value={appointment.service?.category ?? '-'} />
+                                        <InfoRow label={t('duration')} value={appointment.service ? `${appointment.service.duration} ${t('show.min')}` : '-'} />
+                                        <InfoRow label={t('price')} value={appointment.service ? formatCents(appointment.service.price) : '-'} />
+                                        {appointment.service?.description && (
+                                            <div className="py-2.5">
+                                                <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">{t('description')}</p>
+                                                <p className="text-sm text-slate-700">{appointment.service.description}</p>
+                                            </div>
+                                        )}
+                                    </>
+                                )
+                            }
+                            {/* Total row when multiple services */}
+                            {(appointment as any).services?.length > 1 && (
+                                <div className="pt-2 flex justify-between text-sm font-bold text-slate-900 border-t border-slate-200">
+                                    <span>Total</span>
+                                    <span>{formatCents(appointment.price)}</span>
                                 </div>
                             )}
                         </CardContent>

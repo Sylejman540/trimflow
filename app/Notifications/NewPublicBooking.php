@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewPublicBooking extends Notification
@@ -14,7 +15,13 @@ class NewPublicBooking extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if (! empty($notifiable->email)) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     public function toDatabase(object $notifiable): array
@@ -29,5 +36,35 @@ class NewPublicBooking extends Notification
             'status'         => 'confirmed',
             'icon'           => 'calendar',
         ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $appt     = $this->appointment;
+        $customer = $appt->customer?->name ?? 'A customer';
+        $phone    = $appt->customer?->phone ?? null;
+        $service  = $appt->service?->name  ?? 'appointment';
+
+        // If multiple services are loaded on the appointment, join names
+        $serviceLabel = ($appt->relationLoaded('services') && $appt->services->count() > 1)
+            ? $appt->services->pluck('name')->join(', ')
+            : $service;
+
+        $time   = $appt->starts_at->format('l, F j \a\t g:i A');
+        $barber = $appt->barber?->user?->name ?? 'your barber';
+
+        $mail = (new MailMessage)
+            ->subject("New Booking: {$customer} — {$serviceLabel}")
+            ->greeting('New appointment booked!')
+            ->line("**Customer:** {$customer}" . ($phone ? " · {$phone}" : ''))
+            ->line("**Service:** {$serviceLabel}")
+            ->line("**Barber:** {$barber}")
+            ->line("**When:** {$time}");
+
+        if ($appt->notes) {
+            $mail->line("**Notes:** {$appt->notes}");
+        }
+
+        return $mail->salutation('— TrimFlow');
     }
 }

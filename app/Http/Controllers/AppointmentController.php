@@ -164,6 +164,7 @@ class AppointmentController extends Controller
             'barber.user',
             'customer',
             'service',
+            'services',
             'payment',
             'review.customer',
             'barberNotes',

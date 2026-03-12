@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class AppointmentStatusChanged extends Notification
@@ -17,7 +18,13 @@ class AppointmentStatusChanged extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['database'];
+        $channels = ['database'];
+
+        if (! empty($notifiable->email)) {
+            $channels[] = 'mail';
+        }
+
+        return $channels;
     }
 
     public function toDatabase(object $notifiable): array
@@ -38,5 +45,25 @@ class AppointmentStatusChanged extends Notification
                 default       => 'calendar',
             },
         ];
+    }
+
+    public function toMail(object $notifiable): MailMessage
+    {
+        $appt     = $this->appointment;
+        $customer = $appt->customer?->name ?? 'A customer';
+        $service  = $appt->service?->name  ?? 'appointment';
+        $barber   = $appt->barber?->user?->name ?? 'your barber';
+        $status   = ucfirst(str_replace('_', ' ', $appt->status));
+        $time     = $appt->starts_at->format('l, F j \a\t g:i A');
+
+        return (new MailMessage)
+            ->subject("Appointment {$status}: {$customer} — {$service}")
+            ->greeting("Hi {$notifiable->name},")
+            ->line("An appointment status has changed to **{$status}**.")
+            ->line("**Customer:** {$customer}")
+            ->line("**Service:** {$service}")
+            ->line("**Barber:** {$barber}")
+            ->line("**When:** {$time}")
+            ->salutation('— TrimFlow');
     }
 }

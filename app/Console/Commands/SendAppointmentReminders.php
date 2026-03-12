@@ -43,13 +43,20 @@ class SendAppointmentReminders extends Command
             }
 
             try {
-                $customer->notify(new AppointmentReminder($appointment));
+                // Notify customer (database + email if they have one)
+                $customer->notify(new AppointmentReminder($appointment, 'customer'));
+
+                // Notify barber via their User account
+                $barberUser = $appointment->barber?->user;
+                if ($barberUser) {
+                    $barberUser->notify(new AppointmentReminder($appointment, 'barber'));
+                }
 
                 // Mark as sent so we don't double-send
                 $appointment->updateQuietly(['reminder_sent_at' => now()]);
 
                 $sent++;
-                $this->line("  ✓ Reminder sent to {$customer->name} ({$customer->phone})");
+                $this->line("  ✓ Reminder sent for appointment #{$appointment->id} ({$customer->name})");
             } catch (\Throwable $e) {
                 Log::error('Failed to send appointment reminder', [
                     'appointment_id' => $appointment->id,

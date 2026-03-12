@@ -12,7 +12,14 @@ class AppointmentReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public readonly Appointment $appointment) {}
+    /**
+     * @param Appointment $appointment
+     * @param string $recipientType  'customer' or 'barber'
+     */
+    public function __construct(
+        public readonly Appointment $appointment,
+        public readonly string $recipientType = 'customer',
+    ) {}
 
     public function via(object $notifiable): array
     {
@@ -31,6 +38,15 @@ class AppointmentReminder extends Notification implements ShouldQueue
         $service = $appt->service?->name ?? 'appointment';
         $time    = $appt->starts_at->format('g:i A');
 
+        if ($this->recipientType === 'barber') {
+            $customer = $appt->customer?->name ?? 'a customer';
+            return [
+                'appointment_id' => $appt->id,
+                'message'        => "Reminder: {$customer}'s {$service} in 1 hour at {$time}.",
+                'icon'           => 'clock',
+            ];
+        }
+
         return [
             'appointment_id' => $appt->id,
             'message'        => "Reminder: {$service} in 1 hour at {$time}.",
@@ -41,18 +57,38 @@ class AppointmentReminder extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $appt    = $this->appointment;
-        $barber  = $appt->barber?->user?->name ?? 'your barber';
-        $service = $appt->service?->name ?? 'your appointment';
-        $time    = $appt->starts_at->format('l, F j \a\t g:i A');
+        $service = $appt->service?->name ?? 'appointment';
+
+        // If multiple services are loaded, join names
+        $serviceLabel = ($appt->relationLoaded('services') && $appt->services->count() > 1)
+            ? $appt->services->pluck('name')->join(', ')
+            : $service;
+
+        $time = $appt->starts_at->format('l, F j \a\t g:i A');
+
+        if ($this->recipientType === 'barber') {
+            $customer = $appt->customer?->name ?? 'a customer';
+            $phone    = $appt->customer?->phone ?? null;
+
+            return (new MailMessage)
+                ->subject("Reminder: {$customer} — {$serviceLabel} in 1 hour")
+                ->greeting("Hi {$notifiable->name},")
+                ->line('You have an upcoming appointment in about 1 hour.')
+                ->line("**Customer:** {$customer}" . ($phone ? " · {$phone}" : ''))
+                ->line("**Service:** {$serviceLabel}")
+                ->line("**When:** {$time}")
+                ->salutation('— TrimFlow');
+        }
+
+        $barber = $appt->barber?->user?->name ?? 'your barber';
 
         return (new MailMessage)
-            ->subject("Reminder: {$service} in 1 hour")
+            ->subject("Reminder: {$serviceLabel} in 1 hour")
             ->greeting("Hi {$notifiable->name},")
             ->line('Your appointment is coming up in about 1 hour.')
-            ->line("**Service:** {$service}")
+            ->line("**Service:** {$serviceLabel}")
             ->line("**Barber:** {$barber}")
             ->line("**When:** {$time}")
-            ->action('View Appointment', url('/appointments/' . $appt->id))
-            ->salutation('See you soon!');
+            ->salutation('See you soon! — TrimFlow');
     }
 }
