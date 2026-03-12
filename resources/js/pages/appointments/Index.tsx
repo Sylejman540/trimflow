@@ -426,7 +426,7 @@ export default function Index({
                 const timePart = formatTime(iso);
                 return (
                     <div className="whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                        <span className="inline-flex items-center gap-1.5 bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                             {timePart}
                         </span>
                         <p className="text-xs text-slate-400 mt-0.5">{datePart}</p>
@@ -498,7 +498,7 @@ export default function Index({
                         {appt.status === 'pending' && (
                             <button
                                 onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50")}
+                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50")}
                                 title={t('apptIndex.confirmApptTooltip')}
                             >
                                 <CheckCircle2 className="h-4 w-4" />
@@ -602,7 +602,7 @@ export default function Index({
                         <button
                             onClick={() => bulkAction('confirm')}
                             disabled={bulkProcessing}
-                            className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                         >
                             <CheckCircle2 className="h-3.5 w-3.5" /> {t('apptIndex.confirmAll')}
                         </button>
@@ -650,7 +650,7 @@ export default function Index({
                             </div>
                             <div className="flex items-center justify-between text-xs text-slate-500">
                                 <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center bg-emerald-500 text-white text-xs font-bold px-2 py-0.5 rounded-md">
+                                    <span className="inline-flex items-center bg-blue-600 text-white text-xs font-bold px-2 py-0.5 rounded-md">
                                         {formatTime(appt.starts_at)}
                                     </span>
                                     <span className="text-slate-400">
@@ -663,7 +663,7 @@ export default function Index({
                                 {appt.status === 'pending' && (
                                     <button
                                         onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg"
+                                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-lg"
                                     >
                                         <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                                     </button>

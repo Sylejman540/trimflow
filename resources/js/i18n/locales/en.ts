@@ -605,7 +605,7 @@ export default {
         byService: 'By Service',
         completionRate: '% completion rate',
         tipsLabel: '+{tips} tips',
-        apptsLabel: '{count} appts',
+        apptsLabel: 'appts',
         noData: 'No data for this period.',
         periods: {
             today: 'Today',

@@ -587,7 +587,7 @@ export default {
         byService: 'Sipas Shërbimit',
         completionRate: '% shkallë përfundimi',
         tipsLabel: '+{tips} bakshishe',
-        apptsLabel: '{count} termina',
+        apptsLabel: 'termina',
         noData: 'Nuk ka të dhëna për këtë periudhë.',
         periods: {
             today: 'Sot',
