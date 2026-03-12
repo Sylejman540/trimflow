@@ -43,7 +43,7 @@ class AppointmentController extends Controller
             ->get()
             ->each(fn (Appointment $a) => $a->resolveStatus());
 
-        $query = Appointment::with(['barber.user', 'customer', 'service'])
+        $query = Appointment::with(['barber.user', 'customer', 'service', 'services'])
             ->whereNotIn('status', ['completed', 'cancelled', 'no_show'])
             ->where('ends_at', '>=', Carbon::now())
             ->where('starts_at', '<=', Carbon::now()->addDays(90)) // cap at 90 days ahead
@@ -141,7 +141,7 @@ class AppointmentController extends Controller
 
         // Generate recurring children
         if (($validated['recurrence_rule'] ?? 'none') !== 'none') {
-            $appointment->load(['customer', 'service']);
+            $appointment->load(['customer', 'service', 'services']);
             RecurrenceService::generateChildren($appointment);
         }
 

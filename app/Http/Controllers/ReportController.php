@@ -21,8 +21,11 @@ class ReportController extends Controller
 
         [$start, $end] = $this->periodRange($period);
 
+        $companyId = Auth::user()->company_id;
+
         // Revenue by day
         $revenueByDay = Appointment::where('status', 'completed')
+            ->where('company_id', $companyId)
             ->whereBetween('starts_at', [$start, $end])
             ->select(DB::raw('DATE(starts_at) as date'), DB::raw('SUM(price) as revenue'), DB::raw('COUNT(*) as count'))
             ->groupBy('date')
@@ -38,6 +41,7 @@ class ReportController extends Controller
         $revenueByBarber = DB::table('appointments')
             ->join('barbers', 'appointments.barber_id', '=', 'barbers.id')
             ->join('users', 'barbers.user_id', '=', 'users.id')
+            ->where('appointments.company_id', $companyId)
             ->where('appointments.status', 'completed')
             ->whereBetween('appointments.starts_at', [$start, $end])
             ->select(
@@ -58,6 +62,7 @@ class ReportController extends Controller
         // Revenue by service
         $revenueByService = DB::table('appointments')
             ->join('services', 'appointments.service_id', '=', 'services.id')
+            ->where('appointments.company_id', $companyId)
             ->where('appointments.status', 'completed')
             ->whereBetween('appointments.starts_at', [$start, $end])
             ->select(
@@ -75,7 +80,8 @@ class ReportController extends Controller
             ]);
 
         // Summary totals
-        $totals = Appointment::whereBetween('starts_at', [$start, $end])
+        $totals = Appointment::where('company_id', $companyId)
+            ->whereBetween('starts_at', [$start, $end])
             ->select(
                 DB::raw('SUM(CASE WHEN status="completed" THEN price ELSE 0 END) as revenue'),
                 DB::raw('COUNT(*) as total'),

@@ -37,7 +37,7 @@ class RecurrenceService
 
             if ($conflict) continue;
 
-            Appointment::create([
+            $child = Appointment::create([
                 'company_id'           => $parent->company_id,
                 'barber_id'            => $parent->barber_id,
                 'customer_id'          => $parent->customer_id,
@@ -50,6 +50,14 @@ class RecurrenceService
                 'recurrence_rule'      => $parent->recurrence_rule,
                 'recurrence_parent_id' => $parent->id,
             ]);
+
+            // Copy services pivot from parent
+            $pivotData = $parent->services->mapWithKeys(fn ($s) => [
+                $s->id => ['price' => $s->pivot->price, 'duration' => $s->pivot->duration],
+            ])->all();
+            if ($pivotData) {
+                $child->services()->attach($pivotData);
+            }
         }
     }
 

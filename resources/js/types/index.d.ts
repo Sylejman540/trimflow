@@ -69,6 +69,7 @@ export interface Service {
     duration: number;
     price: number;
     category: string | null;
+    color: string | null;
     is_active: boolean;
     created_at: string;
     updated_at: string;
@@ -103,6 +104,7 @@ export interface Appointment {
     barber?: Barber;
     customer?: Customer;
     service?: Service;
+    services?: (Service & { pivot: { price: number; duration: number } })[];
     payment?: Payment;
     review?: Review;
     barber_notes?: BarberNote[];

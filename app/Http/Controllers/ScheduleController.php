@@ -54,7 +54,8 @@ class ScheduleController extends Controller
             ]);
 
         // Compute earliest start / latest end across all active barbers' schedules
-        $allBarbers = Barber::where('is_active', true)->get(['working_hours']);
+        $companyId = $user->company_id;
+        $allBarbers = Barber::where('company_id', $companyId)->where('is_active', true)->get(['working_hours']);
         $hourStart = 8;
         $hourEnd   = 20;
 
@@ -78,7 +79,7 @@ class ScheduleController extends Controller
             'date'            => $date,
             'start'           => $start->toDateString(),
             'end'             => $end->toDateString(),
-            'barbers'         => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(['id'])->map(fn ($b) => ['id' => $b->id, 'name' => $b->user?->name]),
+            'barbers'         => $isBarber ? [] : Barber::with('user')->where('company_id', $companyId)->where('is_active', true)->get(['id'])->map(fn ($b) => ['id' => $b->id, 'name' => $b->user?->name]),
             'is_barber'       => $isBarber,
             'is_owner_barber' => $isOwnerBarber,
             'filter_mine'     => $filterMine,
