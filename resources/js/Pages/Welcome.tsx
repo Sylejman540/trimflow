@@ -503,107 +503,6 @@ const ShopStories = () => (
     </section>
 );
 
-// ─── Mid CTA ──────────────────────────────────────────────────────────────────
-
-const BrowserFrame = ({ src, url, alt }: { src: string; url: string; alt: string }) => (
-    <div className="rounded-2xl bg-zinc-900 shadow-[0_40px_80px_rgba(0,0,0,0.7)] ring-1 ring-white/10 overflow-hidden">
-        <div className="flex items-center gap-2 px-4 py-3 bg-white border-b border-zinc-200">
-            <div className="flex gap-1.5">
-                <div className="h-3 w-3 rounded-full bg-red-500/70" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
-                <div className="h-3 w-3 rounded-full bg-green-500/70" />
-            </div>
-            <div className="flex-1 bg-zinc-100 rounded-md h-5 mx-3 flex items-center px-3">
-                <span className="text-[9px] text-zinc-500">{url}</span>
-            </div>
-        </div>
-        <img src={src} alt={alt} className="w-full h-auto" />
-    </div>
-);
-
-
-const MidCTA = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
-
-    // Each image appears at a different vertical position and scroll range
-    const img1Opacity = useTransform(scrollYProgress, [0.05, 0.2], [0, 1]);
-    const img1Y = useTransform(scrollYProgress, [0.05, 0.2], [80, 0]);
-
-    const img2Opacity = useTransform(scrollYProgress, [0.35, 0.5], [0, 1]);
-    const img2Y = useTransform(scrollYProgress, [0.35, 0.5], [80, 0]);
-
-    const img3Opacity = useTransform(scrollYProgress, [0.65, 0.8], [0, 1]);
-    const img3Y = useTransform(scrollYProgress, [0.65, 0.8], [80, 0]);
-
-    return (
-        <section ref={containerRef} className="bg-black" style={{ height: '500vh' }}>
-            <div className="sticky top-0 h-screen overflow-hidden">
-
-                {/* Fixed center CTA — always visible */}
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-center px-6 z-20">
-                    <h2
-                        className="text-[72px] md:text-[100px] leading-none text-white mb-8"
-                        style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.02em' }}
-                    >
-                        Get Freshio
-                    </h2>
-                    <a
-                        href="/register"
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-full shadow-lg transition-all text-base"
-                    >
-                        Start for free
-                    </a>
-                </div>
-
-                {/* Image 1 — phone, right side, top area */}
-                <motion.div
-                    className="hidden md:block absolute z-10"
-                    style={{ opacity: img1Opacity, y: img1Y, right: '4%', top: '60px', width: '220px' }}
-                >
-                    <div className="rounded-[32px] bg-zinc-900 p-2.5 shadow-[0_30px_60px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
-                        <div className="flex justify-center mb-1">
-                            <div className="w-12 h-1 rounded-full bg-zinc-700" />
-                        </div>
-                        <div className="rounded-[24px] overflow-hidden">
-                            <img src="/dashboard.png" alt="Dashboard" className="w-full h-auto" />
-                        </div>
-                        <div className="flex justify-center mt-1.5">
-                            <div className="w-14 h-0.5 rounded-full bg-zinc-600" />
-                        </div>
-                    </div>
-                </motion.div>
-
-                {/* Image 2 — browser, left side, 280px down */}
-                <motion.div
-                    className="hidden md:block absolute z-10"
-                    style={{ opacity: img2Opacity, y: img2Y, left: '-60px', top: '280px', width: '500px' }}
-                >
-                    <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Schedule" />
-                </motion.div>
-
-                {/* Image 3 — browser, right side, 560px down */}
-                <motion.div
-                    className="hidden md:block absolute z-10"
-                    style={{ opacity: img3Opacity, y: img3Y, right: '-40px', top: '560px', width: '460px' }}
-                >
-                    <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
-                </motion.div>
-
-            </div>
-
-            {/* Mobile: stacked */}
-            <div className="md:hidden px-6 py-16 space-y-6">
-                <div className="flex flex-col items-center text-center mb-8">
-                    <h2 className="text-[64px] leading-none text-white mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>Get Freshio</h2>
-                    <a href="/register" className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-8 py-4 rounded-full shadow-lg transition-all text-base">Start for free</a>
-                </div>
-                <BrowserFrame src="/freshio.png" url="app.freshio.com/schedule" alt="Schedule" />
-                <BrowserFrame src="/reports.png" url="app.freshio.com/reports" alt="Reports" />
-            </div>
-        </section>
-    );
-};
 
 // ─── Get Freshio Free ─────────────────────────────────────────────────────────
 
@@ -666,117 +565,20 @@ const GetFree = () => (
     </section>
 );
 
-// ─── Scroll Feature Demo ──────────────────────────────────────────────────────
-
-const ScrollDemo = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start start', 'end end'] });
-    const screen = useTransform(scrollYProgress, [0, 0.5, 1], [0, 0, 1]);
-    const [showSecond, setShowSecond] = useState(false);
-    useEffect(() => screen.on('change', v => setShowSecond(v > 0.5)), [screen]);
-
-    return (
-        <section ref={containerRef} className="relative bg-slate-950" style={{ height: '200vh' }} id="how-it-works">
-            <div className="sticky top-0 h-screen flex overflow-hidden">
-                {/* Left sticky title */}
-                <div className="w-1/3 flex flex-col justify-center px-12 shrink-0">
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4">How it works</p>
-                    <div className="flex items-center gap-3 mb-6">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white shrink-0">
-                            <Scissors className="h-4 w-4" />
-                        </div>
-                        <span className="text-2xl font-black text-white">Fresh<span className="text-blue-400">io</span></span>
-                    </div>
-                    <h2 className="text-3xl font-black text-white leading-tight mb-6">
-                        {showSecond ? 'Manage every appointment' : 'Your shop, fully online'}
-                    </h2>
-                    <p className="text-slate-400 text-sm leading-relaxed mb-8">
-                        {showSecond
-                            ? 'View, confirm, and manage every booking from a clean dashboard. Get notified instantly.'
-                            : 'Share your booking link and clients book themselves. Zero back-and-forth.'}
-                    </p>
-                    <div className="flex flex-col gap-3">
-                        {[
-                            { label: 'Booking page', active: !showSecond },
-                            { label: 'Dashboard', active: showSecond },
-                        ].map(({ label, active }) => (
-                            <div key={label} className={`flex items-center gap-3 p-3 rounded-xl transition-all ${active ? 'bg-blue-600/20 border border-blue-500/30' : 'border border-transparent'}`}>
-                                <div className={`h-2 w-2 rounded-full ${active ? 'bg-blue-400' : 'bg-slate-700'}`} />
-                                <span className={`text-sm font-medium ${active ? 'text-white' : 'text-slate-500'}`}>{label}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Right: screenshots */}
-                <div className="flex-1 flex items-center justify-center px-8 relative">
-                    <AnimatePresence mode="wait">
-                        {!showSecond ? (
-                            <motion.div key="screen1"
-                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5 }}
-                                className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl"
-                            >
-                                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-                                    <div className="h-3 w-3 rounded-full bg-red-500/70" />
-                                    <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
-                                    <div className="h-3 w-3 rounded-full bg-green-500/70" />
-                                    <div className="flex-1 bg-slate-800 rounded-md h-5 mx-4 flex items-center px-3">
-                                        <span className="text-[9px] text-slate-500">freshio.app/book/marcus-barbershop</span>
-                                    </div>
-                                </div>
-                                <img
-                                    src="https://images.unsplash.com/photo-1560066984-138daaa0ad8a?w=900&q=80"
-                                    alt="Booking interface"
-                                    className="w-full object-cover"
-                                    style={{ height: '420px' }}
-                                />
-                            </motion.div>
-                        ) : (
-                            <motion.div key="screen2"
-                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.5 }}
-                                className="w-full max-w-2xl bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl"
-                            >
-                                <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-                                    <div className="h-3 w-3 rounded-full bg-red-500/70" />
-                                    <div className="h-3 w-3 rounded-full bg-yellow-500/70" />
-                                    <div className="h-3 w-3 rounded-full bg-green-500/70" />
-                                    <div className="flex-1 bg-slate-800 rounded-md h-5 mx-4 flex items-center px-3">
-                                        <span className="text-[9px] text-slate-500">app.freshio.com/dashboard</span>
-                                    </div>
-                                </div>
-                                <img
-                                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&q=80"
-                                    alt="Dashboard"
-                                    className="w-full object-cover"
-                                    style={{ height: '420px' }}
-                                />
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </div>
-        </section>
-    );
-};
-
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 const Footer = () => (
-    <footer className="bg-slate-950 text-slate-400 pt-16 pb-8">
+    <footer className="bg-black border-t border-zinc-900 text-zinc-500 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-10 pb-12 border-b border-slate-800">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-10 pb-12 border-b border-zinc-900">
                 <div className="col-span-2">
-                    <div className="flex items-center gap-2.5 mb-4">
-                        <span className="text-base font-black text-white">Freshio</span>
-                    </div>
+                    <span className="text-base font-black text-white mb-4 block">Freshio</span>
                     <p className="text-sm leading-relaxed max-w-xs">
                         The modern appointment platform built for barbershops. Simple, fast, and reliable.
                     </p>
                     <div className="flex gap-3 mt-5">
                         {['IG', 'X', 'YT'].map((label) => (
-                            <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold text-slate-400 hover:text-white">
+                            <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
                                 {label}
                             </a>
                         ))}
@@ -801,12 +603,12 @@ const Footer = () => (
                 ))}
             </div>
 
-            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
                 <p>© 2026 Freshio. All rights reserved.</p>
                 <div className="flex gap-6">
-                    <a href="#" className="hover:text-slate-400 transition-colors">Privacy</a>
-                    <a href="#" className="hover:text-slate-400 transition-colors">Terms</a>
-                    <a href="#" className="hover:text-slate-400 transition-colors">Cookies</a>
+                    <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
+                    <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>
+                    <a href="#" className="hover:text-zinc-400 transition-colors">Cookies</a>
                 </div>
             </div>
         </div>
@@ -824,7 +626,6 @@ export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
             <LockInLoyalty />
             <BarbersClients />
             <ShopStories />
-            <MidCTA />
             <GetFree />
             <ScrollDemo />
             <Footer />
