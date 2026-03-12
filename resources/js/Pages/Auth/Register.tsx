@@ -8,7 +8,7 @@ import { ArrowRight, ShieldCheck, Eye, EyeOff, Star } from 'lucide-react';
 function FreshioLogo({ dark = false }: { dark?: boolean }) {
     return (
         <a href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm shrink-0">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                     <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
                     <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
