@@ -8,14 +8,14 @@ import { ArrowRight, ShieldCheck, Eye, EyeOff, Lock, Star } from 'lucide-react';
 function FreshioLogo({ dark = false }: { dark?: boolean }) {
     return (
         <a href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-sm shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm shrink-0">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                     <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
                     <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
                 </svg>
             </div>
             <span className={`text-xl font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
-                Fresh<span className="text-emerald-500">io</span>
+                Fresh<span className="text-blue-500">io</span>
             </span>
         </a>
     );
@@ -43,7 +43,7 @@ export default function ResetPassword({ token, email }: { token: string; email: 
             <Head title={t('auth.resetTitle')} />
 
             {/* LEFT: Brand panel */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-slate-900">
+            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-black">
 
                 <div className="relative z-10">
                     <FreshioLogo />
@@ -52,7 +52,7 @@ export default function ResetPassword({ token, email }: { token: string; email: 
                 <div className="relative z-10">
                     <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
                         {t('auth.welcomeBack')} <br />
-                        <span className="text-emerald-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
+                        <span className="text-blue-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
                     </h1>
                     <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
                         {t('auth.welcomeBackSub')}
@@ -60,15 +60,15 @@ export default function ResetPassword({ token, email }: { token: string; email: 
 
                     <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
                         <div className="flex gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-emerald-400" />)}
+                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-blue-400" />)}
                         </div>
                         <p className="text-white text-xs font-medium italic">"{t('auth.testimonialLogin')}"</p>
-                        <span className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
+                        <span className="text-blue-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
                     </div>
                 </div>
 
                 <div className="relative z-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                     <span>{t('auth.secureLogin')}</span>
                 </div>
             </div>
@@ -108,7 +108,7 @@ export default function ResetPassword({ token, email }: { token: string; email: 
                                 <Input
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all pr-10 text-sm"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all pr-10 text-sm"
                                     onChange={(e) => setData('password', e.target.value)}
                                     required
                                     autoComplete="new-password"
@@ -129,7 +129,7 @@ export default function ResetPassword({ token, email }: { token: string; email: 
                             <Input
                                 type="password"
                                 value={data.password_confirmation}
-                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all text-sm"
+                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all text-sm"
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 required
                                 autoComplete="new-password"

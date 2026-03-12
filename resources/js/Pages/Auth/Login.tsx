@@ -15,7 +15,7 @@ function FreshioLogo({ dark = false }: { dark?: boolean }) {
                 </svg>
             </div>
             <span className={`text-xl font-bold tracking-tight ${dark ? 'text-slate-900' : 'text-white'}`}>
-                Fresh<span className="text-emerald-500">io</span>
+                Fresh<span className="text-blue-500">io</span>
             </span>
         </a>
     );
@@ -47,7 +47,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
             <Head title={t('auth.signInTitle')} />
 
             {/* LEFT: Brand panel */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-slate-900">
+            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-black">
 
                 <div className="relative z-10">
                     <FreshioLogo />
@@ -56,7 +56,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                 <div className="relative z-10">
                     <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
                         {t('auth.welcomeBack')} <br />
-                        <span className="text-emerald-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
+                        <span className="text-blue-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
                     </h1>
                     <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
                         {t('auth.welcomeBackSub')}
@@ -64,15 +64,15 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
                     <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
                         <div className="flex gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-emerald-400" />)}
+                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-blue-400" />)}
                         </div>
                         <p className="text-white text-xs font-medium italic">"{t('auth.testimonialLogin')}"</p>
-                        <span className="text-emerald-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
+                        <span className="text-blue-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
                     </div>
                 </div>
 
                 <div className="relative z-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
                     <span>{t('auth.secureLogin')}</span>
                 </div>
             </div>
@@ -91,7 +91,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                     </div>
 
                     {status && (
-                        <div className="mb-6 text-sm text-emerald-700 bg-emerald-50 p-4 border border-emerald-200 rounded-lg">
+                        <div className="mb-6 text-sm text-blue-700 bg-blue-50 p-4 border border-blue-200 rounded-lg">
                             {status}
                         </div>
                     )}
@@ -110,7 +110,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <Input
                                 type="email"
                                 value={data.email}
-                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all placeholder:text-slate-300 text-sm"
+                                className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all placeholder:text-slate-300 text-sm"
                                 placeholder="you@example.com"
                                 onChange={(e) => setData('email', e.target.value)}
                                 required
@@ -133,7 +133,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                                 <Input
                                     type={showPassword ? 'text' : 'password'}
                                     value={data.password}
-                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-slate-900 transition-all pr-10 text-sm"
+                                    className="h-11 rounded-none border-0 border-b border-slate-200 bg-transparent px-0 focus-visible:ring-0 focus-visible:border-blue-600 transition-all pr-10 text-sm"
                                     onChange={(e) => setData('password', e.target.value)}
                                     required
                                 />
@@ -165,7 +165,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="group relative flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-[11px] font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 active:scale-[0.98] disabled:opacity-50"
+                                className="group relative flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-[11px] font-bold uppercase tracking-widest text-white transition-all shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] disabled:opacity-50"
                             >
                                 {processing ? t('auth.signingIn') : t('auth.signInButton')}
                                 {!processing && <ArrowRight className="absolute right-5 h-4 w-4 transition-transform group-hover:translate-x-1" />}
