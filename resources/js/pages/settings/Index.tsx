@@ -1,13 +1,13 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Building2, Bot, Copy, Check } from 'lucide-react';
+import { Building2, Bot, Copy, Check, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
+import { useState } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useState } from 'react';
 
 interface Company {
     id: number;
@@ -41,6 +41,7 @@ export default function Index({
     const { t } = useTranslation();
     const [copiedWebhook, setCopiedWebhook] = useState(false);
     const [copiedVerify, setCopiedVerify] = useState(false);
+    const [showGuide, setShowGuide] = useState(!has_meta_token || !has_openai_key);
 
     function copyText(text: string, setCopied: (v: boolean) => void) {
         navigator.clipboard?.writeText(text).catch(() => {});
@@ -73,12 +74,46 @@ export default function Index({
         patch(route('settings.company'), { preserveScroll: true });
     }
 
+    const setupSteps: { title: string; desc: string; link?: string; linkLabel?: string }[] = [
+        {
+            title: t('settingsPage.agentStep1Title'),
+            desc:  t('settingsPage.agentStep1Desc'),
+            link: 'https://developers.facebook.com',
+            linkLabel: 'developers.facebook.com',
+        },
+        {
+            title: t('settingsPage.agentStep2Title'),
+            desc:  t('settingsPage.agentStep2Desc'),
+        },
+        {
+            title: t('settingsPage.agentStep3Title'),
+            desc:  t('settingsPage.agentStep3Desc'),
+        },
+        {
+            title: t('settingsPage.agentStep4Title'),
+            desc:  t('settingsPage.agentStep4Desc'),
+            link: 'https://platform.openai.com/api-keys',
+            linkLabel: 'platform.openai.com',
+        },
+        {
+            title: t('settingsPage.agentStep5Title'),
+            desc:  t('settingsPage.agentStep5Desc'),
+            link: 'https://business.facebook.com',
+            linkLabel: 'business.facebook.com',
+        },
+        {
+            title: t('settingsPage.agentStep6Title'),
+            desc:  t('settingsPage.agentStep6Desc'),
+        },
+    ];
+
     return (
         <AppLayout title={t('settingsPage.title')}>
             <Head title={t('settingsPage.title')} />
 
             <div className="max-w-2xl mx-auto space-y-6">
 
+                {/* Shop Info */}
                 <Card className="border-slate-200 shadow-none">
                     <CardHeader className="px-4 lg:px-6 pt-4 pb-2">
                         <div className="flex items-center gap-2">
@@ -197,14 +232,58 @@ export default function Index({
                     </CardHeader>
                     <CardContent className="px-4 lg:px-6 pb-5 space-y-4">
 
-                        {/* Webhook info */}
+                        {/* Step-by-step setup guide */}
+                        <div className="border border-amber-200 bg-amber-50 rounded-xl overflow-hidden">
+                            <button
+                                type="button"
+                                onClick={() => setShowGuide(v => !v)}
+                                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-amber-100/60 transition-colors"
+                            >
+                                <span className="text-sm font-semibold text-amber-900">
+                                    {t('settingsPage.agentSetupTitle')}
+                                </span>
+                                {showGuide
+                                    ? <ChevronUp className="h-4 w-4 text-amber-600 shrink-0" />
+                                    : <ChevronDown className="h-4 w-4 text-amber-600 shrink-0" />
+                                }
+                            </button>
+
+                            {showGuide && (
+                                <div className="px-4 pb-4 space-y-4 border-t border-amber-200 pt-3">
+                                    {setupSteps.map((step, i) => (
+                                        <div key={i} className="flex gap-3">
+                                            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-400 text-white text-xs font-bold mt-0.5">
+                                                {i + 1}
+                                            </div>
+                                            <div className="space-y-0.5">
+                                                <p className="text-xs font-semibold text-amber-900">{step.title}</p>
+                                                <p className="text-xs text-amber-800/80 leading-relaxed">{step.desc}</p>
+                                                {step.link && (
+                                                    <a
+                                                        href={step.link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-xs text-amber-700 underline underline-offset-2 hover:text-amber-900 mt-0.5"
+                                                    >
+                                                        {step.linkLabel}
+                                                        <ExternalLink className="h-3 w-3" />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Webhook values to copy into Meta */}
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 text-xs">
                             <p className="font-semibold text-slate-700">{t('settingsPage.agentWebhookInfo')}</p>
                             <div className="space-y-1">
                                 <p className="text-slate-500">{t('settingsPage.agentWebhookUrl')}</p>
                                 <div className="flex items-center gap-2 bg-white border border-slate-200 rounded px-2 py-1.5">
                                     <code className="flex-1 text-slate-700 truncate text-[11px]">{webhook_url}</code>
-                                    <button onClick={() => copyText(webhook_url, setCopiedWebhook)} className="shrink-0 text-slate-400 hover:text-slate-700">
+                                    <button type="button" onClick={() => copyText(webhook_url, setCopiedWebhook)} className="shrink-0 text-slate-400 hover:text-slate-700">
                                         {copiedWebhook ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                                     </button>
                                 </div>
@@ -213,13 +292,14 @@ export default function Index({
                                 <p className="text-slate-500">{t('settingsPage.agentVerifyToken')}</p>
                                 <div className="flex items-center gap-2 bg-white border border-slate-200 rounded px-2 py-1.5">
                                     <code className="flex-1 text-slate-700 truncate text-[11px]">{verify_token}</code>
-                                    <button onClick={() => copyText(verify_token, setCopiedVerify)} className="shrink-0 text-slate-400 hover:text-slate-700">
+                                    <button type="button" onClick={() => copyText(verify_token, setCopiedVerify)} className="shrink-0 text-slate-400 hover:text-slate-700">
                                         {copiedVerify ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                                     </button>
                                 </div>
                             </div>
                         </div>
 
+                        {/* Fields */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div className="space-y-1.5">
                                 <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -236,7 +316,10 @@ export default function Index({
 
                             <div className="space-y-1.5">
                                 <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                    {t('settingsPage.agentMetaToken')} {has_meta_token && <span className="text-emerald-500 normal-case font-normal ml-1">✓ {t('settingsPage.agentSaved')}</span>}
+                                    {t('settingsPage.agentMetaToken')}
+                                    {has_meta_token && (
+                                        <span className="text-emerald-500 normal-case font-normal ml-1">✓ {t('settingsPage.agentSaved')}</span>
+                                    )}
                                 </Label>
                                 <Input
                                     type="password"
@@ -249,7 +332,10 @@ export default function Index({
 
                             <div className="sm:col-span-2 space-y-1.5">
                                 <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                                    {t('settingsPage.agentOpenAiKey')} {has_openai_key && <span className="text-emerald-500 normal-case font-normal ml-1">✓ {t('settingsPage.agentSaved')}</span>}
+                                    {t('settingsPage.agentOpenAiKey')}
+                                    {has_openai_key && (
+                                        <span className="text-emerald-500 normal-case font-normal ml-1">✓ {t('settingsPage.agentSaved')}</span>
+                                    )}
                                 </Label>
                                 <Input
                                     type="password"
