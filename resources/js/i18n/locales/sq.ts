@@ -344,7 +344,7 @@ export default {
         cancelAppt: 'Anulo takimin',
         cancelledTitle: 'Takimi u anulua',
         cancelledDesc: 'Takimi juaj u anulua. Shpresojmë t\'ju shohim herën tjetër.',
-        bookAnother: 'Rezervo një takim tjetër',
+        bookAnother: 'Rezervo një termin të ri',
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
         viewMyAppts: 'Shiko terminet e mia',

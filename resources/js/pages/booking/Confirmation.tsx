@@ -6,11 +6,12 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
+
 function PoweredBy() {
     return (
-        <div className="pt-2 text-center">
+        <div className="pt-1 text-center">
             <a href="https://freshio.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-emerald-500">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-blue-500">
                     <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
                     <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.5"/>
                 </svg>
@@ -99,23 +100,29 @@ export default function Confirmation({
                         <LanguageSwitcher compact />
                     </div>
                 </div>
-                <div className="flex-1 flex items-center justify-center px-4 py-16">
+                <div className="flex-1 flex items-center justify-center px-4 py-8">
                     <div className="max-w-sm w-full text-center space-y-6">
+
+                        {/* Cancelled icon */}
                         <div className="flex justify-center">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 border border-slate-200">
-                                <X className="h-10 w-10 text-slate-500" />
+                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-50 border border-red-100">
+                                <X className="h-10 w-10 text-red-400" />
                             </div>
                         </div>
+
                         <div className="space-y-2">
                             <h2 className="text-2xl font-semibold text-slate-900">{t('booking.cancelledTitle')}</h2>
                             <p className="text-sm text-slate-500">{t('booking.cancelledDesc')}</p>
                         </div>
+
+                        {/* Rebook CTA */}
                         <Link
                             href={route('booking.show', company.slug)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-11 rounded-xl font-semibold shadow-none w-full')}
                         >
                             <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
                         </Link>
+
                         <PoweredBy />
                     </div>
                 </div>
