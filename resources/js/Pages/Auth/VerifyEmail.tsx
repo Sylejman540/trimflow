@@ -1,7 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight, ShieldCheck, Mail, LogOut, Star } from 'lucide-react';
+import { ArrowRight, Mail, LogOut } from 'lucide-react';
 
 function FreshioLogo({ dark = false }: { dark?: boolean }) {
     return (
@@ -31,48 +31,14 @@ export default function VerifyEmail({ status }: { status?: string }) {
     const verificationSent = status === 'verification-link-sent';
 
     return (
-        <div className="flex min-h-screen w-full bg-white font-sans">
+        <div className="min-h-screen w-full bg-white font-sans flex flex-col items-center justify-center px-6 py-12">
             <Head title={t('auth.verifyTitle')} />
 
-            {/* LEFT: Brand panel */}
-            <div className="relative hidden w-1/2 lg:flex flex-col justify-between p-12 xl:p-20 overflow-hidden bg-black">
-
-                <div className="relative z-10">
-                    <FreshioLogo />
-                </div>
-
-                <div className="relative z-10">
-                    <h1 className="text-6xl xl:text-7xl font-bold tracking-tighter text-white leading-[0.95] mb-8">
-                        {t('auth.welcomeBack')} <br />
-                        <span className="text-blue-400 italic font-light">{t('auth.welcomeBackAccent')}</span>
-                    </h1>
-                    <p className="text-lg text-slate-300 max-w-sm font-medium leading-relaxed">
-                        {t('auth.welcomeBackSub')}
-                    </p>
-
-                    <div className="mt-12 bg-white/5 border border-white/10 p-6 rounded-2xl backdrop-blur-sm max-w-xs">
-                        <div className="flex gap-1 mb-3">
-                            {[...Array(5)].map((_, i) => <Star key={i} size={10} className="fill-amber-400 text-blue-400" />)}
-                        </div>
-                        <p className="text-white text-xs font-medium italic">"{t('auth.testimonialLogin')}"</p>
-                        <span className="text-blue-400 text-[9px] font-bold uppercase tracking-widest mt-3 block">{t('auth.shopOwner')}</span>
-                    </div>
-                </div>
-
-                <div className="relative z-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">
-                    <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-                    <span>{t('auth.secureLogin')}</span>
-                </div>
+            <div className="w-full max-w-[440px] flex justify-center mb-10">
+                <FreshioLogo dark />
             </div>
 
-            {/* RIGHT: Form */}
-            <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 sm:px-12 md:px-20 py-12 bg-white">
-
-                <div className="w-full max-w-[440px] flex justify-center mb-12 lg:hidden">
-                    <FreshioLogo dark />
-                </div>
-
-                <div className="w-full max-w-[440px]">
+            <div className="w-full max-w-[440px]">
                     <div className="mb-10">
                         <div className="w-12 h-12 bg-slate-100 text-slate-600 rounded-xl flex items-center justify-center mb-6">
                             <Mail size={20} />
@@ -113,7 +79,6 @@ export default function VerifyEmail({ status }: { status?: string }) {
                         </div>
                     </form>
                 </div>
-            </div>
         </div>
     );
 }

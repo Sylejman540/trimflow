@@ -42,6 +42,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/company', function () {
+    return Inertia::render('Company');
+})->name('company.page');
+
 Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 

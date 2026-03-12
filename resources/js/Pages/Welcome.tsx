@@ -7,7 +7,7 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(link);
 }
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, Menu, X, Star } from 'lucide-react';
+import { ArrowRight, Menu, X, Star, Calendar, Users, BarChart3, Bell, Scissors, CreditCard, Shield, TrendingUp, Zap, ChevronDown } from 'lucide-react';
 
 interface Props {
     canLogin: boolean;
@@ -79,41 +79,141 @@ function Logo() {
     );
 }
 
+// ─── Mega Menu Data ────────────────────────────────────────────────────────────
+
+const megaMenuColumns = [
+    {
+        heading: 'For Clients',
+        items: [
+            { icon: Calendar, label: 'Easy Booking', desc: 'Book a barber in under 30 seconds' },
+            { icon: Bell, label: 'Smart Reminders', desc: 'Never miss an appointment again' },
+            { icon: Star, label: 'Reviews & Ratings', desc: 'Find the best barber near you' },
+            { icon: Users, label: 'Loyalty Rewards', desc: 'Earn points with every visit' },
+        ],
+    },
+    {
+        heading: 'For Barbers',
+        items: [
+            { icon: Scissors, label: 'Schedule Manager', desc: 'Control your calendar, block time off' },
+            { icon: BarChart3, label: 'Earnings Dashboard', desc: 'Track revenue and top services' },
+            { icon: CreditCard, label: 'Instant Payouts', desc: 'Get paid fast, no delays' },
+            { icon: Shield, label: 'No-show Protection', desc: 'Deposits and auto-cancellation' },
+        ],
+    },
+    {
+        heading: 'For Barbershops',
+        items: [
+            { icon: Users, label: 'Team Management', desc: 'Manage multiple barbers in one place' },
+            { icon: TrendingUp, label: 'Shop Analytics', desc: 'Revenue, retention, and growth metrics' },
+            { icon: Zap, label: 'Automated Marketing', desc: 'Re-engage clients on autopilot' },
+            { icon: Zap, label: 'Custom Booking Page', desc: 'Your shop, your brand' },
+        ],
+    },
+];
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boolean }) => {
     const [open, setOpen] = useState(false);
+    const [megaOpen, setMegaOpen] = useState(false);
+    const [mobileFeatures, setMobileFeatures] = useState(false);
     const scrolled = useScrolled();
+    const megaRef = useRef<HTMLDivElement>(null);
+    const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const handleFeaturesEnter = () => {
+        if (leaveTimer.current) clearTimeout(leaveTimer.current);
+        setMegaOpen(true);
+    };
+    const handleFeaturesLeave = () => {
+        leaveTimer.current = setTimeout(() => setMegaOpen(false), 120);
+    };
 
     return (
         <>
             <nav className={`fixed top-0 inset-x-0 z-[100] transition-all duration-300 ${
-                scrolled ? 'bg-black/95 backdrop-blur-xl' : 'bg-transparent'
+                scrolled ? 'bg-black/95 backdrop-blur-xl shadow-lg shadow-black/30' : 'bg-transparent'
             }`}>
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Logo />
 
-                    {/* Desktop links */}
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white">
-                        {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
-                            <a key={l} href={`#${l.toLowerCase()}`} className="hover:text-zinc-300 transition-colors">{l}</a>
-                        ))}
+                    {/* Desktop center links */}
+                    <div className="hidden md:flex items-center gap-1 text-sm font-medium text-white">
+                        <a href="#how-it-works" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">How it works</a>
+
+                        {/* Features with mega menu */}
+                        <div
+                            className="relative"
+                            onMouseEnter={handleFeaturesEnter}
+                            onMouseLeave={handleFeaturesLeave}
+                            ref={megaRef}
+                        >
+                            <button className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${megaOpen ? 'bg-white/10 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-white'}`}>
+                                Features
+                                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${megaOpen ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* Mega dropdown */}
+                            {megaOpen && (
+                                <div
+                                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[780px] bg-white rounded-2xl shadow-2xl border border-zinc-100 overflow-hidden"
+                                    onMouseEnter={handleFeaturesEnter}
+                                    onMouseLeave={handleFeaturesLeave}
+                                >
+                                    <div className="grid grid-cols-3 divide-x divide-zinc-100">
+                                        {megaMenuColumns.map((col) => (
+                                            <div key={col.heading} className="p-6">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">{col.heading}</p>
+                                                <ul className="space-y-1">
+                                                    {col.items.map(({ icon: Icon, label, desc }) => (
+                                                        <li key={label}>
+                                                            <a href="#features" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-zinc-50 transition-colors group">
+                                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors mt-0.5">
+                                                                    <Icon className="h-4 w-4" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-sm font-semibold text-zinc-900 leading-tight">{label}</p>
+                                                                    <p className="text-xs text-zinc-500 mt-0.5 leading-snug">{desc}</p>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {/* Promo strip */}
+                                    <div className="bg-zinc-950 px-6 py-4 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-white text-sm font-semibold">Start free — no credit card needed</p>
+                                            <p className="text-zinc-400 text-xs mt-0.5">Join barbershops already using Freshio to grow</p>
+                                        </div>
+                                        <a href="/register" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors shrink-0">
+                                            Get started free <ArrowRight className="h-3.5 w-3.5" />
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <a href="#pricing" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Pricing</a>
+                        <a href="/company" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Company</a>
+                        <a href="#support" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Support</a>
                     </div>
 
                     {/* Desktop auth */}
-                    <div className="hidden md:flex items-center gap-3">
+                    <div className="hidden md:flex items-center gap-2">
                         {canLogin && (
-                            <a href="/login" className="text-sm font-medium text-white hover:text-zinc-300 transition-colors px-4 py-2">Login</a>
+                            <a href="/login" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors px-4 py-2">Login</a>
                         )}
                         {canRegister && (
-                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all">Get Started</a>
+                            <a href="/register" className="text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl transition-all">Book Appointment</a>
                         )}
                     </div>
 
-                    {/* Mobile: Login + Sign Up + hamburger */}
+                    {/* Mobile controls */}
                     <div className="flex md:hidden items-center gap-3">
-                        {canLogin && <a href="/login" className="text-sm font-medium text-white border border-zinc-600 px-4 py-1.5 rounded-full hover:border-zinc-400 transition-all">Login</a>}
-                        {canRegister && <a href="/register" className="text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full transition-all">Sign Up</a>}
+                        {canLogin && <a href="/login" className="text-sm font-medium text-white border border-zinc-700 px-4 py-1.5 rounded-full hover:border-zinc-400 transition-all">Login</a>}
                         <button className="p-1 text-white" onClick={() => setOpen(v => !v)}>
                             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </button>
@@ -121,28 +221,57 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                 </div>
             </nav>
 
-            {/* Mobile dropdown */}
+            {/* Mobile fullscreen menu */}
             {open && (
-                <div className="fixed inset-0 z-[99] bg-black flex flex-col" style={{ paddingTop: '64px' }}>
-                    <div className="flex flex-col px-6 pt-8 gap-1 flex-1">
-                        {['Features', 'Barbers', 'Clients', 'Stories'].map(l => (
-                            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
-                                className="text-2xl font-light text-white hover:text-zinc-400 py-3 border-b border-zinc-900 tracking-wide">
+                <div className="fixed inset-0 z-[99] bg-black flex flex-col overflow-y-auto" style={{ paddingTop: '64px' }}>
+                    <div className="flex flex-col px-6 pt-6 gap-0 flex-1">
+                        <a href="#how-it-works" onClick={() => setOpen(false)}
+                            className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
+                            How it works
+                        </a>
+
+                        {/* Features accordion */}
+                        <button
+                            onClick={() => setMobileFeatures(v => !v)}
+                            className="flex items-center justify-between text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide w-full text-left"
+                        >
+                            Features
+                            <ChevronDown className={`h-4 w-4 transition-transform ${mobileFeatures ? 'rotate-180' : ''}`} />
+                        </button>
+                        {mobileFeatures && (
+                            <div className="bg-zinc-950 rounded-xl mb-1 overflow-hidden">
+                                {megaMenuColumns.map((col) => (
+                                    <div key={col.heading} className="px-4 py-3">
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-2">{col.heading}</p>
+                                        {col.items.map(({ icon: Icon, label }) => (
+                                            <a key={label} href="#features" onClick={() => setOpen(false)}
+                                                className="flex items-center gap-2.5 py-2 text-sm text-zinc-300 hover:text-white transition-colors">
+                                                <Icon className="h-3.5 w-3.5 text-blue-500 shrink-0" />
+                                                {label}
+                                            </a>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {['Pricing', 'Company', 'Support'].map((l) => (
+                            <a key={l} href={l === 'Company' ? '/company' : `#${l.toLowerCase()}`} onClick={() => setOpen(false)}
+                                className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
                                 {l}
                             </a>
                         ))}
                     </div>
 
-                    <div className="px-6 pb-10 space-y-3">
-                        <p className="text-xs text-zinc-600 uppercase tracking-widest mb-4">Get started today</p>
+                    <div className="px-6 pb-10 pt-6 space-y-3">
                         {canLogin && (
                             <a href="/login" className="block text-center py-3 border border-zinc-700 rounded-full text-sm font-medium text-white hover:border-zinc-500 transition-all">
                                 Login
                             </a>
                         )}
                         {canRegister && (
-                            <a href="/register" className="block text-center py-3 bg-blue-600 hover:bg-blue-700 rounded-full text-sm font-semibold text-white transition-all">
-                                Create Account
+                            <a href="/register" className="block text-center py-3 bg-blue-600 hover:bg-blue-500 rounded-full text-sm font-semibold text-white transition-all">
+                                Book Appointment
                             </a>
                         )}
                     </div>
