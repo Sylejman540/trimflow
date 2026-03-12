@@ -12,6 +12,8 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
 
+        $user->unreadNotifications->markAsRead();
+
         $notifications = $user->notifications()
             ->latest()
             ->limit(50)
@@ -25,7 +27,7 @@ class NotificationController extends Controller
 
         return Inertia::render('notifications/Index', [
             'notifications' => $notifications,
-            'unread_count'  => $user->unreadNotifications()->count(),
+            'unread_count'  => 0,
         ]);
     }
 

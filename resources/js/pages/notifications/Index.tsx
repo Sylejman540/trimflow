@@ -2,7 +2,6 @@ import { Head, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface NotificationItem {
@@ -37,30 +36,12 @@ export default function Index({
 }) {
     const { t } = useTranslation();
 
-    function markAll() {
-        router.post(route('notifications.read'), {}, { preserveScroll: true });
-    }
-
     function markOne(id: string) {
         router.post(route('notifications.read'), { id }, { preserveScroll: true });
     }
 
     return (
-        <AppLayout
-            title={t('notif.title')}
-            actions={
-                unread_count > 0 ? (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 text-[11px] font-bold text-slate-500 hover:text-slate-900"
-                        onClick={markAll}
-                    >
-                        {t('notif.markAllRead')}
-                    </Button>
-                ) : undefined
-            }
-        >
+        <AppLayout title={t('notif.title')}>
             <Head title={t('notif.title')} />
 
             <div className="w-full">
