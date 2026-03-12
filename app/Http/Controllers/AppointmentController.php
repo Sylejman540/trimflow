@@ -92,7 +92,9 @@ class AppointmentController extends Controller
             'barber_id'       => $isBarber ? 'nullable' : 'required|exists:barbers,id',
             'customer_name'   => 'required|string|max:255',
             'customer_phone'  => 'nullable|string|max:50',
-            'service_id'      => 'required|exists:services,id',
+            'customer_email'  => 'nullable|email|max:255',
+            'service_ids'     => 'required|array|min:1',
+            'service_ids.*'   => 'integer|exists:services,id',
             'starts_at'       => 'required|date',
             'notes'           => 'nullable|string|max:1000',
             'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
@@ -101,26 +103,41 @@ class AppointmentController extends Controller
         $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
         $phone = $validated['customer_phone'] ?? null;
 
-        $customer = $this->resolveCustomer($validated['customer_name'], $phone, $user->company_id);
+        $customer = $this->resolveCustomer(
+            $validated['customer_name'],
+            $phone,
+            $user->company_id,
+            $validated['customer_email'] ?? null,
+        );
 
-        $service = Service::findOrFail($validated['service_id']);
+        $services = Service::whereIn('id', $validated['service_ids'])->get();
+        $totalDuration = (int) $services->sum('duration');
+        $totalPrice    = (int) $services->sum('price');
+        $primaryService = $services->first();
+
         $startsAt = Carbon::parse($validated['starts_at']);
 
         $this->validateBarberAvailability($barberId, $startsAt);
-        $endsAt = $startsAt->copy()->addMinutes($service->duration);
+        $endsAt = $startsAt->copy()->addMinutes($totalDuration);
         $this->validateNoConflict($barberId, $startsAt, $endsAt);
 
         $appointment = Appointment::create([
             'barber_id'       => $barberId,
             'customer_id'     => $customer->id,
-            'service_id'      => $validated['service_id'],
+            'service_id'      => $primaryService->id,
             'starts_at'       => $startsAt,
             'ends_at'         => $endsAt,
-            'price'           => $service->price,
+            'price'           => $totalPrice,
             'status'          => 'confirmed',
             'notes'           => $validated['notes'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? 'none',
         ]);
+
+        // Attach all selected services to the pivot table
+        $pivotData = $services->mapWithKeys(fn($s) => [
+            $s->id => ['price' => $s->price, 'duration' => $s->duration]
+        ])->all();
+        $appointment->services()->attach($pivotData);
 
         // Generate recurring children
         if (($validated['recurrence_rule'] ?? 'none') !== 'none') {
@@ -169,7 +186,7 @@ class AppointmentController extends Controller
     {
         $this->authorize('update', $appointment);
 
-        $appointment->load(['barber.user', 'customer', 'service']);
+        $appointment->load(['barber.user', 'customer', 'service', 'services']);
 
         $user = Auth::user();
         $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
@@ -193,7 +210,9 @@ class AppointmentController extends Controller
             'barber_id'       => $isBarber ? 'nullable' : 'required|exists:barbers,id',
             'customer_name'   => 'required|string|max:255',
             'customer_phone'  => 'nullable|string|max:50',
-            'service_id'      => 'required|exists:services,id',
+            'customer_email'  => 'nullable|email|max:255',
+            'service_ids'     => 'required|array|min:1',
+            'service_ids.*'   => 'integer|exists:services,id',
             'starts_at'       => 'required|date',
             'status'          => 'required|in:confirmed,in_progress,completed,cancelled,no_show',
             'notes'           => 'nullable|string|max:1000',
@@ -205,13 +224,22 @@ class AppointmentController extends Controller
         $phone = $validated['customer_phone'] ?? null;
         $barberId = $isBarber ? $appointment->barber_id : $validated['barber_id'];
 
-        $customer = $this->resolveCustomer($validated['customer_name'], $phone, $user->company_id);
+        $customer = $this->resolveCustomer(
+            $validated['customer_name'],
+            $phone,
+            $user->company_id,
+            $validated['customer_email'] ?? null,
+        );
 
-        $service = Service::findOrFail($validated['service_id']);
+        $services = Service::whereIn('id', $validated['service_ids'])->get();
+        $totalDuration = (int) $services->sum('duration');
+        $totalPrice    = (int) $services->sum('price');
+        $primaryService = $services->first();
+
         $startsAt = Carbon::parse($validated['starts_at']);
 
         $this->validateBarberAvailability($barberId, $startsAt);
-        $endsAt = $startsAt->copy()->addMinutes($service->duration);
+        $endsAt = $startsAt->copy()->addMinutes($totalDuration);
         $this->validateNoConflict($barberId, $startsAt, $endsAt, $appointment->id);
 
         $previousStatus = $appointment->status;
@@ -219,19 +247,25 @@ class AppointmentController extends Controller
         $appointment->update([
             'barber_id'       => $barberId,
             'customer_id'     => $customer->id,
-            'service_id'      => $validated['service_id'],
+            'service_id'      => $primaryService->id,
             'starts_at'       => $startsAt,
             'ends_at'         => $endsAt,
-            'price'           => $service->price,
+            'price'           => $totalPrice,
             'tip_amount'      => (int) round(($validated['tip_amount'] ?? 0) * 100),
             'status'          => $validated['status'],
             'notes'           => $validated['notes'] ?? null,
             'recurrence_rule' => $validated['recurrence_rule'] ?? $appointment->recurrence_rule,
         ]);
 
+        // Sync services pivot
+        $pivotData = $services->mapWithKeys(fn($s) => [
+            $s->id => ['price' => $s->price, 'duration' => $s->duration]
+        ])->all();
+        $appointment->services()->sync($pivotData);
+
         // Award loyalty points when first marked completed (1 point per $1 of service price)
         if ($previousStatus !== 'completed' && $validated['status'] === 'completed') {
-            $points = max(1, (int) round($service->price / 100));
+            $points = max(1, (int) round($totalPrice / 100));
             $customer->increment('loyalty_points', $points);
             $customer->update(['last_visit_at' => $startsAt]);
         }
@@ -279,18 +313,19 @@ class AppointmentController extends Controller
                 ->where('starts_at', '>=', $appointment->starts_at)
                 ->where('id', '!=', $appointment->id)
                 ->get()
-                ->each(function (Appointment $sibling) use ($validated, $barberId, $customer, $service, $delta) {
+                ->each(function (Appointment $sibling) use ($validated, $barberId, $customer, $primaryService, $totalDuration, $totalPrice, $pivotData, $delta) {
                     $siblingStart = $sibling->starts_at->copy()->addMinutes($delta);
                     // Use direct update to avoid firing observers/events per row
                     $sibling->updateQuietly([
                         'barber_id'   => $barberId,
                         'customer_id' => $customer->id,
-                        'service_id'  => $validated['service_id'],
+                        'service_id'  => $primaryService->id,
                         'starts_at'   => $siblingStart,
-                        'ends_at'     => $siblingStart->copy()->addMinutes($service->duration),
-                        'price'       => $service->price,
+                        'ends_at'     => $siblingStart->copy()->addMinutes($totalDuration),
+                        'price'       => $totalPrice,
                         'notes'       => $validated['notes'] ?? null,
                     ]);
+                    $sibling->services()->sync($pivotData);
                 });
         }
 
@@ -358,22 +393,27 @@ class AppointmentController extends Controller
         }
     }
 
-    private function resolveCustomer(string $name, ?string $phone, int $companyId): Customer
+    private function resolveCustomer(string $name, ?string $phone, int $companyId, ?string $email = null): Customer
     {
         if ($phone) {
             $customer = Customer::firstOrCreate(
                 ['phone' => $phone, 'company_id' => $companyId],
                 ['name' => $name],
             );
-            if ($customer->name !== $name) {
-                $customer->update(['name' => $name]);
-            }
+            $updates = [];
+            if ($customer->name !== $name) $updates['name'] = $name;
+            if ($email && $customer->email !== $email) $updates['email'] = $email;
+            if ($updates) $customer->update($updates);
             return $customer;
         }
 
-        return Customer::firstOrCreate(
+        $customer = Customer::firstOrCreate(
             ['name' => $name, 'company_id' => $companyId],
         );
+        if ($email && $customer->email !== $email) {
+            $customer->update(['email' => $email]);
+        }
+        return $customer;
     }
 
     private function validateNoConflict(?int $barberId, Carbon $startsAt, Carbon $endsAt, ?int $excludeId = null): void

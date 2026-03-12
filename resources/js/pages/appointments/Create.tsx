@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2 } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, CheckCircle2, Mail } from 'lucide-react';
 
 export default function Create({
     barbers,
@@ -46,7 +46,8 @@ export default function Create({
         barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
         customer_name: '',
         customer_phone: '',
-        service_id: '',
+        customer_email: '',
+        service_ids: [] as string[],
         starts_at: '',
         notes: '',
         recurrence_rule: 'none',
@@ -66,7 +67,20 @@ export default function Create({
         [services, categoryFilter],
     );
 
-    const selectedService = services.find(s => s.id === Number(data.service_id));
+    const selectedServices = services.filter(s => data.service_ids.includes(String(s.id)));
+    const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
+    const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
+
+    function toggleService(s: Service) {
+        const id = String(s.id);
+        setData('service_ids', data.service_ids.includes(id)
+            ? data.service_ids.filter(x => x !== id)
+            : [...data.service_ids, id]
+        );
+        // Reset slot when services change
+        setSelectedSlot('');
+        setData('starts_at', '');
+    }
 
     // --- Slot picker state ---
     const [selectedDate, setSelectedDate] = useState('');
@@ -74,16 +88,16 @@ export default function Create({
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState('');
 
-    // Today's date as min for date input
     const todayStr = useMemo(() => {
         const d = new Date();
         const pad = (n: number) => String(n).padStart(2, '0');
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     }, []);
 
-    // Fetch available slots whenever barber + service + date are all set
+    const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
+
     useEffect(() => {
-        if (!data.barber_id || !data.service_id || !selectedDate || !companySlug) {
+        if (!data.barber_id || data.service_ids.length === 0 || !selectedDate || !companySlug) {
             setSlots(null);
             setSelectedSlot('');
             setData('starts_at', '');
@@ -95,24 +109,18 @@ export default function Create({
         setSelectedSlot('');
         setData('starts_at', '');
 
-        const params = new URLSearchParams({
-            barber_id: data.barber_id,
-            date: selectedDate,
-        });
-        params.append('service_ids[]', data.service_id);
+        const params = new URLSearchParams({ barber_id: data.barber_id, date: selectedDate });
+        data.service_ids.forEach(id => params.append('service_ids[]', id));
 
         fetch(route('booking.slots', companySlug) + '?' + params.toString())
             .then(r => r.json())
-            .then((json: { slots: string[] }) => {
-                setSlots(json.slots ?? []);
-            })
+            .then((json: { slots: string[] }) => setSlots(json.slots ?? []))
             .catch(() => setSlots([]))
             .finally(() => setSlotsLoading(false));
-    }, [data.barber_id, data.service_id, selectedDate]);
+    }, [data.barber_id, data.service_ids.join(','), selectedDate]);
 
     function pickSlot(slot: string) {
         setSelectedSlot(slot);
-        // Combine date + slot into datetime-local format for the form
         setData('starts_at', `${selectedDate}T${slot}`);
     }
 
@@ -120,8 +128,6 @@ export default function Create({
         e.preventDefault();
         post(route('appointments.store'));
     }
-
-    const canShowSlots = !!(data.barber_id && data.service_id);
 
     return (
         <AppLayout title={t('appt.new')}>
@@ -160,8 +166,8 @@ export default function Create({
                         </div>
                     )}
 
-                    {/* Customer Info Grid */}
-                    <div className="grid gap-6 sm:grid-cols-2">
+                    {/* Customer Info */}
+                    <div className="grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="customer_name" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <User size={12} />{' '}{t('appt.customerName')}
@@ -189,23 +195,36 @@ export default function Create({
                             />
                             {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
                         </div>
+                        <div className="space-y-2 sm:col-span-2">
+                            <Label htmlFor="customer_email" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                <Mail size={12} /> Email (for reminders)
+                            </Label>
+                            <Input
+                                id="customer_email"
+                                type="email"
+                                value={data.customer_email}
+                                onChange={(e) => setData('customer_email', e.target.value)}
+                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                placeholder="customer@email.com"
+                            />
+                            {errors.customer_email && <p className="text-xs text-red-500 font-medium">{errors.customer_email}</p>}
+                        </div>
                     </div>
 
-                    {/* Service Selection */}
+                    {/* Service Selection — multi-select */}
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                             <Scissors size={12} />{' '}{t('appt.serviceType')}
+                            <span className="ml-auto text-[10px] font-normal normal-case tracking-normal text-slate-400">Select one or more</span>
                         </Label>
+
                         {categories.length > 2 && (
                             <div className="flex items-center gap-2 flex-wrap">
                                 {categories.map(cat => (
                                     <button
                                         key={cat}
                                         type="button"
-                                        onClick={() => {
-                                            setCategoryFilter(cat);
-                                            setData('service_id', '');
-                                        }}
+                                        onClick={() => setCategoryFilter(cat)}
                                         className={cn(
                                             'inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors border',
                                             categoryFilter === cat
@@ -219,32 +238,51 @@ export default function Create({
                                 ))}
                             </div>
                         )}
-                        <Select
-                            value={data.service_id}
-                            onValueChange={(v) => setData('service_id', v ?? '')}
-                        >
-                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder={t('appt.selectService')} />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl min-w-[260px]">
-                                {filteredServices.map((s) => (
-                                    <SelectItem key={s.id} value={String(s.id)} className="text-sm">
-                                        {s.name} — {formatCents(s.price)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {selectedService && (
-                            <div className="flex items-center gap-2 px-1 mt-1">
-                                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-5 py-0.5 rounded-full border border-blue-100 uppercase tracking-tight">
-                                    {formatDuration(selectedService.duration)}
+
+                        <div className="space-y-1.5 rounded-xl border border-slate-200 overflow-hidden">
+                            {filteredServices.map((s) => {
+                                const isSelected = data.service_ids.includes(String(s.id));
+                                return (
+                                    <button
+                                        key={s.id}
+                                        type="button"
+                                        onClick={() => toggleService(s)}
+                                        className={cn(
+                                            'w-full flex items-center justify-between px-4 py-3 text-left transition-colors border-b border-slate-100 last:border-0',
+                                            isSelected ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-50',
+                                        )}
+                                    >
+                                        <div>
+                                            <p className={cn('text-sm font-medium', isSelected ? 'text-white' : 'text-slate-900')}>{s.name}</p>
+                                            <p className={cn('text-xs mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
+                                                {formatDuration(s.duration)} · {formatCents(s.price)}
+                                            </p>
+                                        </div>
+                                        <div className={cn(
+                                            'flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 transition-colors',
+                                            isSelected ? 'bg-white border-white' : 'border-slate-300',
+                                        )}>
+                                            {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-slate-900" />}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {selectedServices.length > 0 && (
+                            <div className="flex items-center gap-3 px-1">
+                                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-0.5 rounded-full border border-blue-100 uppercase tracking-tight">
+                                    {formatDuration(totalDuration)} total
                                 </span>
                                 <span className="text-[11px] font-bold text-slate-500">
-                                    {t('appt.estimatedPrice')} {formatCents(selectedService.price)}
+                                    {t('appt.estimatedPrice')} {formatCents(totalPrice)}
+                                </span>
+                                <span className="text-[11px] text-slate-400">
+                                    {selectedServices.length} service{selectedServices.length !== 1 ? 's' : ''}
                                 </span>
                             </div>
                         )}
-                        {errors.service_id && <p className="text-xs text-red-500 font-medium">{errors.service_id}</p>}
+                        {errors.service_ids && <p className="text-xs text-red-500 font-medium">{errors.service_ids}</p>}
                     </div>
 
                     {/* Date + Slot Picker */}
@@ -266,7 +304,7 @@ export default function Create({
                         )}
 
                         {!canShowSlots && (
-                            <p className="text-xs text-slate-400">{t('appt.selectBarberAndServiceFirst')}</p>
+                            <p className="text-xs text-slate-400">Select a barber and at least one service first</p>
                         )}
 
                         {canShowSlots && selectedDate && (
@@ -349,7 +387,7 @@ export default function Create({
                     <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
                         <Button
                             type="submit"
-                            disabled={processing || !data.starts_at}
+                            disabled={processing || !data.starts_at || data.service_ids.length === 0}
                             className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
                             {t('appt.bookAppointment')}
