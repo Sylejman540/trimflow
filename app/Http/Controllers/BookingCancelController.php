@@ -31,8 +31,11 @@ class BookingCancelController extends Controller
         // Notify shop admin and barber of public cancellation
         $appointment->load(['customer', 'service', 'barber.user']);
 
+        $barberUserId = $appointment->barber?->user?->id;
+
         User::where('company_id', $appointment->company_id)
             ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
+            ->when($barberUserId, fn($q) => $q->where('id', '!=', $barberUserId))
             ->each(fn(User $u) => $u->notify(new AppointmentStatusChanged($appointment, $previousStatus)));
 
         if ($appointment->barber?->user) {

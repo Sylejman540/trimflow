@@ -281,8 +281,10 @@ class BookingController extends Controller
         if ($barber->user) {
             $barber->user->notify(new NewPublicBooking($appointment));
         }
+        $barberUserId = $barber->user?->id;
         User::where('company_id', $company->id)
             ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
+            ->when($barberUserId, fn($q) => $q->where('id', '!=', $barberUserId))
             ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
 
         // ── 17. Commit rate limits + update fingerprint ────────────────────────

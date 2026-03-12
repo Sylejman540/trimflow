@@ -140,7 +140,7 @@ export default function Confirmation({
                 </div>
             </div>
 
-            <div className="flex-1 flex items-center justify-center px-4 py-16">
+            <div className="flex-1 flex items-center justify-center px-4 py-8">
                 <div className="max-w-sm w-full text-center space-y-6">
                     <div className="flex justify-center">
                         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 border border-emerald-100">
