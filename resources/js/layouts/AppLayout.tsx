@@ -213,6 +213,18 @@ export default function AppLayout({
     const [copied, setCopied] = useState(false);
     const [signOutOpen, setSignOutOpen] = useState(false);
 
+    useEffect(() => {
+        const companyId = auth.company?.id;
+        if (!companyId || !window.Echo) return;
+
+        const channel = window.Echo.channel(`company.${companyId}.appointments`);
+        channel.listen('.AppointmentChanged', () => {
+            router.reload({ only: ['appointments', 'stats', 'upcoming', 'recent'] });
+        });
+
+        return () => { window.Echo.leave(`company.${companyId}.appointments`); };
+    }, [auth.company?.id]);
+
     function copyBookingLink() {
         const url = `${window.location.origin}/book/${auth.company?.slug}`;
         const done = () => {

@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo, useEffect, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -584,7 +584,6 @@ export default function Index({
     services: Service[];
 }) {
     const { t } = useTranslation();
-    const { auth } = usePage<PageProps>().props;
     const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('appt_view') as ViewMode) ?? 'list');
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('appt_status') ?? filters?.status ?? 'all');
@@ -593,29 +592,6 @@ export default function Index({
 
     // Keep local list in sync when Inertia re-renders the page
     useEffect(() => { setAppointments(initialAppointments); }, [initialAppointments]);
-
-    // Real-time: listen for appointment changes via Reverb
-    useEffect(() => {
-        const companyId = auth.company?.id;
-        if (!companyId || !window.Echo) return;
-
-        const channel = window.Echo.channel(`company.${companyId}.appointments`);
-        channel.listen('.AppointmentChanged', (data: Appointment) => {
-            setAppointments(prev => {
-                const exists = prev.find(a => a.id === data.id);
-                // Remove if now completed/cancelled/no_show (they're not shown in the list)
-                if (['completed', 'cancelled', 'no_show'].includes(data.status)) {
-                    return prev.filter(a => a.id !== data.id);
-                }
-                if (exists) {
-                    return prev.map(a => a.id === data.id ? { ...a, ...data } : a);
-                }
-                return [data, ...prev];
-            });
-        });
-
-        return () => { window.Echo.leave(`company.${companyId}.appointments`); };
-    }, [auth.company?.id]);
 
     function changeView(v: ViewMode) { localStorage.setItem('appt_view', v); setView(v); }
     function changeStatus(v: string) { localStorage.setItem('appt_status', v); setStatusFilter(v); }
