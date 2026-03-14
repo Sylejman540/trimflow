@@ -2,7 +2,11 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Plus, Trash2, Search, CheckCircle2, RefreshCw, User, Scissors, Calendar, Phone } from 'lucide-react';
+import {
+    Edit, Eye, Plus, Trash2, Search, CheckCircle2, RefreshCw,
+    User, Scissors, Calendar, Phone, List, LayoutGrid, Kanban,
+    ChevronLeft, ChevronRight, Clock, MoreHorizontal,
+} from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -10,41 +14,24 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+    Dialog, DialogContent, DialogDescription, DialogFooter,
+    DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { formatCents, formatDateTime, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/types';
 
+type ViewMode = 'list' | 'calendar' | 'kanban';
+
 const allStatuses: AppointmentStatus[] = [
-    'pending',
-    'confirmed',
-    'in_progress',
-    'cancelled',
-    'no_show',
+    'pending', 'confirmed', 'in_progress', 'cancelled', 'no_show',
 ];
 
-/**
- * Helper to capitalize the first letter of each word and remove underscores
- */
-function capitalizeWords(str: string) {
-    return str
-        .replace(/_/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-}
+const STATUS_COLS: AppointmentStatus[] = [
+    'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show',
+];
 
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
@@ -58,6 +45,17 @@ function statusVariant(status: AppointmentStatus) {
     return map[status];
 }
 
+function statusDot(status: AppointmentStatus) {
+    const map: Record<AppointmentStatus, string> = {
+        pending:     'bg-orange-400',
+        confirmed:   'bg-emerald-400',
+        in_progress: 'bg-amber-400',
+        completed:   'bg-green-400',
+        cancelled:   'bg-red-400',
+        no_show:     'bg-slate-400',
+    };
+    return map[status];
+}
 
 function parseShopDate(dateStr: string): Date {
     return new Date(dateStr.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
@@ -80,24 +78,22 @@ function isTomorrow(dateStr: string) {
         && d.getDate() === tomorrow.getDate();
 }
 
-
 function toLocalDatetimeValue(d: Date) {
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function QuickBookModal({
-    open,
-    onClose,
-    barbers,
-    services,
-    isBarber,
-}: {
-    open: boolean;
-    onClose: () => void;
-    barbers: Barber[];
-    services: Service[];
-    isBarber: boolean;
+function isSameDay(a: Date, b: Date) {
+    return a.getFullYear() === b.getFullYear()
+        && a.getMonth() === b.getMonth()
+        && a.getDate() === b.getDate();
+}
+
+// ─── Quick Book Modal ──────────────────────────────────────────────────────────
+
+function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
+    open: boolean; onClose: () => void;
+    barbers: Barber[]; services: Service[]; isBarber: boolean;
 }) {
     const { t } = useTranslation();
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -117,7 +113,6 @@ function QuickBookModal({
 
     const timePresets = useMemo(() => {
         const now = new Date();
-        // round up to next 15-min slot
         const mins = now.getMinutes();
         const rounded = Math.ceil((mins + 1) / 15) * 15;
         const base = new Date(now);
@@ -133,9 +128,7 @@ function QuickBookModal({
 
     function submit(e: FormEvent) {
         e.preventDefault();
-        post(route('appointments.store'), {
-            onSuccess: () => { reset(); onClose(); },
-        });
+        post(route('appointments.store'), { onSuccess: () => { reset(); onClose(); } });
     }
 
     return (
@@ -153,7 +146,7 @@ function QuickBookModal({
                                 <User size={10} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 rounded-lg">
                                     <SelectValue placeholder={t('appt.selectBarber')} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -165,90 +158,62 @@ function QuickBookModal({
                             {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
                         </div>
                     )}
-
                     <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                                 <User size={10} /> {t('appt.customerName')}
                             </Label>
-                            <Input
-                                value={data.customer_name}
-                                onChange={e => setData('customer_name', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder={t('apptIndex.namePlaceholder')}
-                                autoFocus
-                                required
-                            />
+                            <Input value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 rounded-lg"
+                                placeholder={t('apptIndex.namePlaceholder')} autoFocus required />
                             {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                                 <Phone size={10} /> {t('phone')}
                             </Label>
-                            <Input
-                                value={data.customer_phone}
-                                onChange={e => setData('customer_phone', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                placeholder={t('apptIndex.phonePlaceholder')}
-                                inputMode="tel"
-                            />
+                            <Input value={data.customer_phone} onChange={e => setData('customer_phone', e.target.value)}
+                                className="h-10 bg-slate-50 border-slate-200 rounded-lg"
+                                placeholder={t('apptIndex.phonePlaceholder')} inputMode="tel" />
                         </div>
                     </div>
-
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                             <Scissors size={10} /> {t('appt.service')}
                         </Label>
                         <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 rounded-lg">
                                 <SelectValue placeholder={t('appt.selectService')} />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                 {services.map(s => (
-                                    <SelectItem key={s.id} value={String(s.id)}>
-                                        {s.name} — {formatCents(s.price)}
-                                    </SelectItem>
+                                    <SelectItem key={s.id} value={String(s.id)}>{s.name} — {formatCents(s.price)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        {selectedService && (
-                            <p className="text-xs text-slate-400">{selectedService.duration} min · {formatCents(selectedService.price)}</p>
-                        )}
+                        {selectedService && <p className="text-xs text-slate-400">{selectedService.duration} min · {formatCents(selectedService.price)}</p>}
                         {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
                     </div>
-
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                             <Calendar size={10} /> {t('appt.dateTime')}
                         </Label>
-                        {/* Quick presets */}
                         <div className="flex gap-1.5 flex-wrap">
                             {timePresets.map(p => (
-                                <button
-                                    key={p.label}
-                                    type="button"
+                                <button key={p.label} type="button"
                                     onClick={() => setData('starts_at', toLocalDatetimeValue(p.date))}
-                                    className={cn(
-                                        'px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors',
+                                    className={cn('px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors',
                                         data.starts_at === toLocalDatetimeValue(p.date)
                                             ? 'bg-slate-900 text-white border-slate-900'
                                             : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
-                                    )}
-                                >
-                                    {p.label}
-                                </button>
+                                    )}>{p.label}</button>
                             ))}
                         </div>
-                        <Input
-                            type="datetime-local"
-                            value={data.starts_at}
+                        <Input type="datetime-local" value={data.starts_at}
                             onChange={e => setData('starts_at', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                            required
-                        />
+                            className="h-10 bg-slate-50 border-slate-200 rounded-lg" required />
                         {errors.starts_at && <p className="text-xs text-red-500">{errors.starts_at}</p>}
                     </div>
-
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">{t('cancel')}</Button>
                         <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
@@ -261,14 +226,10 @@ function QuickBookModal({
     );
 }
 
-function DeleteModal({
-    appointment,
-    open,
-    onOpenChange,
-}: {
-    appointment: Appointment;
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
+// ─── Delete Modal ──────────────────────────────────────────────────────────────
+
+function DeleteModal({ appointment, open, onOpenChange }: {
+    appointment: Appointment; open: boolean; onOpenChange: (open: boolean) => void;
 }) {
     const { t } = useTranslation();
     const [processing, setProcessing] = useState(false);
@@ -288,31 +249,19 @@ function DeleteModal({
             <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
                 <DialogHeader>
                     <DialogTitle>{t('appt.deleteAppt')}</DialogTitle>
-                    <DialogDescription>
-                        {t('appt.deleteConfirm')}
-                    </DialogDescription>
+                    <DialogDescription>{t('appt.deleteConfirm')}</DialogDescription>
                 </DialogHeader>
                 <DialogFooter className={isRecurring ? 'flex-col gap-2 sm:flex-col' : ''}>
                     {isRecurring ? (
                         <>
-                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none w-full">
-                                {t('appt.deleteThisOnly')}
-                            </Button>
-                            <Button variant="destructive" onClick={() => handleDelete('future')} disabled={processing} className="shadow-none w-full opacity-80">
-                                {t('appt.deleteThisFuture')}
-                            </Button>
-                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none w-full">
-                                {t('cancel')}
-                            </Button>
+                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none w-full">{t('appt.deleteThisOnly')}</Button>
+                            <Button variant="destructive" onClick={() => handleDelete('future')} disabled={processing} className="shadow-none w-full opacity-80">{t('appt.deleteThisFuture')}</Button>
+                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none w-full">{t('cancel')}</Button>
                         </>
                     ) : (
                         <>
-                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">
-                                {t('cancel')}
-                            </Button>
-                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none">
-                                {t('delete')}
-                            </Button>
+                            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">{t('cancel')}</Button>
+                            <Button variant="destructive" onClick={() => handleDelete('this')} disabled={processing} className="shadow-none">{t('delete')}</Button>
                         </>
                     )}
                 </DialogFooter>
@@ -320,6 +269,300 @@ function DeleteModal({
         </Dialog>
     );
 }
+
+// ─── Appointment Card (shared) ────────────────────────────────────────────────
+
+function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
+    appt: Appointment; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
+}) {
+    const { t } = useTranslation();
+    return (
+        <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2 hover:border-slate-300 transition-colors">
+            <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 truncate">
+                        {appt.service?.name ?? '-'}
+                        {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
+                    </p>
+                </div>
+                <Badge className={cn('text-[10px] font-bold shrink-0 rounded-md px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
+                    {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
+                </Badge>
+            </div>
+            <div className="flex items-center justify-between text-xs text-slate-500">
+                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-md">
+                    <Clock className="h-3 w-3" />{formatTime(appt.starts_at)}
+                </span>
+                <span className="font-semibold text-slate-900">{formatCents(appt.price)}</span>
+            </div>
+            <div className="flex items-center gap-1.5 pt-1 border-t border-slate-100">
+                {appt.status === 'pending' && (
+                    <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                        className="flex-1 flex items-center justify-center gap-1 h-7 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg hover:bg-emerald-100 transition-colors">
+                        <CheckCircle2 className="h-3 w-3" /> {t('confirm')}
+                    </button>
+                )}
+                <Link href={route('appointments.show', appt.id)}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-7 text-[11px] font-bold border-slate-200 shadow-none gap-1')}>
+                    <Eye className="h-3 w-3" /> {t('appt.view')}
+                </Link>
+                {appt.status !== 'in_progress' && (
+                    <Link href={route('appointments.edit', appt.id)}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-7 text-[11px] font-bold border-slate-200 shadow-none gap-1')}>
+                        <Edit className="h-3 w-3" /> {t('edit')}
+                    </Link>
+                )}
+                {appt.status !== 'in_progress' && appt.can_delete && (
+                    <button onClick={() => onDelete(appt)}
+                        className="h-7 w-7 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors">
+                        <Trash2 className="h-3 w-3" />
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ─── List View ────────────────────────────────────────────────────────────────
+
+function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, selectedIds, toggleSelect, toggleSelectAll, bulkProcessing, bulkAction, setSelectedIds }: {
+    filtered: Appointment[]; columns: ColumnDef<Appointment>[];
+    isBarber: boolean; isOwnerBarber: boolean;
+    onDelete: (a: Appointment) => void;
+    selectedIds: Set<number>; toggleSelect: (id: number) => void;
+    toggleSelectAll: () => void; bulkProcessing: boolean;
+    bulkAction: (action: 'confirm' | 'cancel') => void;
+    setSelectedIds: (s: Set<number>) => void;
+}) {
+    const { t } = useTranslation();
+    return (
+        <div className="space-y-3">
+            {selectedIds.size > 0 && (
+                <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
+                    <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
+                    <button onClick={() => bulkAction('confirm')} disabled={bulkProcessing}
+                        className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('apptIndex.confirmAll')}
+                    </button>
+                    <button onClick={() => bulkAction('cancel')} disabled={bulkProcessing}
+                        className="flex items-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
+                        <Trash2 className="h-3.5 w-3.5" /> {t('apptIndex.cancelAll')}
+                    </button>
+                    <button onClick={() => setSelectedIds(new Set())} className="text-xs text-white/60 hover:text-white transition-colors">
+                        {t('apptIndex.clear')}
+                    </button>
+                </div>
+            )}
+
+            {/* Mobile cards */}
+            <div className="sm:hidden space-y-2">
+                {filtered.length === 0 ? (
+                    <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
+                        <Calendar className="h-8 w-8 text-slate-200" />
+                        <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                        <p className="text-xs text-slate-400">{t('appt.noAppointmentsHint')}</p>
+                    </div>
+                ) : filtered.map(appt => (
+                    <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />
+                ))}
+            </div>
+
+            {/* Desktop table */}
+            <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+                {filtered.length === 0 ? (
+                    <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
+                        <Calendar className="h-10 w-10 text-slate-200" />
+                        <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                        <p className="text-xs text-slate-400 max-w-sm">{t('appt.noAppointmentsHint')}</p>
+                    </div>
+                ) : (
+                    <DataTable columns={columns} data={filtered} showSearch={false} />
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ─── Calendar View ────────────────────────────────────────────────────────────
+
+function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
+    filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
+}) {
+    const { t } = useTranslation();
+    const [calMode, setCalMode] = useState<'day' | 'week'>('week');
+    const [anchor, setAnchor] = useState(() => {
+        const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+    });
+
+    // Week days starting from anchor's Monday
+    const weekDays = useMemo(() => {
+        const days: Date[] = [];
+        const start = new Date(anchor);
+        const dow = start.getDay(); // 0=Sun
+        const diff = dow === 0 ? -6 : 1 - dow; // go to Monday
+        start.setDate(start.getDate() + diff);
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(start);
+            d.setDate(start.getDate() + i);
+            days.push(d);
+        }
+        return days;
+    }, [anchor]);
+
+    const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 7am–8pm
+
+    const displayDays = calMode === 'day' ? [anchor] : weekDays;
+
+    function prev() {
+        const d = new Date(anchor);
+        d.setDate(d.getDate() - (calMode === 'day' ? 1 : 7));
+        setAnchor(d);
+    }
+    function next() {
+        const d = new Date(anchor);
+        d.setDate(d.getDate() + (calMode === 'day' ? 1 : 7));
+        setAnchor(d);
+    }
+    function goToday() {
+        const d = new Date(); d.setHours(0, 0, 0, 0); setAnchor(d);
+    }
+
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    function apptsForDayHour(day: Date, hour: number) {
+        return filtered.filter(a => {
+            const d = parseShopDate(a.starts_at);
+            return isSameDay(d, day) && d.getHours() === hour;
+        });
+    }
+
+    const headerLabel = calMode === 'day'
+        ? anchor.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+        : `${weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+    return (
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+            {/* Calendar toolbar */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                <div className="flex items-center gap-2">
+                    <button onClick={prev} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-500 transition-colors">
+                        <ChevronLeft className="h-4 w-4" />
+                    </button>
+                    <button onClick={next} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-500 transition-colors">
+                        <ChevronRight className="h-4 w-4" />
+                    </button>
+                    <button onClick={goToday} className="h-8 px-3 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
+                        Today
+                    </button>
+                    <span className="text-sm font-semibold text-slate-900 ml-1">{headerLabel}</span>
+                </div>
+                <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
+                    {(['day', 'week'] as const).map(m => (
+                        <button key={m} onClick={() => setCalMode(m)}
+                            className={cn('px-3 h-8 text-xs font-semibold capitalize transition-colors',
+                                calMode === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'
+                            )}>{m}</button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Grid */}
+            <div className="overflow-auto max-h-[600px]">
+                <div className="min-w-[500px]" style={{ display: 'grid', gridTemplateColumns: `48px repeat(${displayDays.length}, 1fr)` }}>
+                    {/* Header row */}
+                    <div className="border-b border-slate-100 bg-slate-50" />
+                    {displayDays.map(day => {
+                        const isCurrentDay = isSameDay(day, today);
+                        return (
+                            <div key={day.toISOString()} className={cn('border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center', isCurrentDay && 'bg-blue-50')}>
+                                <p className={cn('text-[10px] font-bold uppercase tracking-wider', isCurrentDay ? 'text-blue-600' : 'text-slate-400')}>
+                                    {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                                </p>
+                                <p className={cn('text-base font-black mt-0.5', isCurrentDay ? 'text-blue-600' : 'text-slate-900')}>
+                                    {day.getDate()}
+                                </p>
+                            </div>
+                        );
+                    })}
+
+                    {/* Hour rows */}
+                    {hours.map(hour => (
+                        <>
+                            <div key={`h-${hour}`} className="border-b border-slate-100 px-1 py-1 text-right">
+                                <span className="text-[10px] text-slate-400 font-medium">
+                                    {hour === 12 ? '12pm' : hour < 12 ? `${hour}am` : `${hour - 12}pm`}
+                                </span>
+                            </div>
+                            {displayDays.map(day => {
+                                const appts = apptsForDayHour(day, hour);
+                                const isCurrentDay = isSameDay(day, today);
+                                return (
+                                    <div key={`${day.toISOString()}-${hour}`}
+                                        className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-blue-50/30')}>
+                                        {appts.map(appt => (
+                                            <Link key={appt.id} href={route('appointments.show', appt.id)}
+                                                className={cn('flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border',
+                                                    statusVariant(appt.status))}>
+                                                <span className="truncate">{appt.customer?.name ?? '-'}</span>
+                                                <span className="font-normal opacity-80 truncate">{formatTime(appt.starts_at)} · {appt.service?.name ?? '-'}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                );
+                            })}
+                        </>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Kanban View ──────────────────────────────────────────────────────────────
+
+function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
+    filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
+}) {
+    const { t } = useTranslation();
+
+    const statusLabel: Record<AppointmentStatus, string> = {
+        pending:     t('appt.pending'),
+        confirmed:   t('appt.confirmed'),
+        in_progress: t('appt.inProgress'),
+        completed:   t('appt.completed'),
+        cancelled:   t('appt.cancelled'),
+        no_show:     t('appt.noShow'),
+    };
+
+    return (
+        <div className="flex gap-3 overflow-x-auto pb-2">
+            {STATUS_COLS.map(status => {
+                const col = filtered.filter(a => a.status === status);
+                return (
+                    <div key={status} className="flex-shrink-0 w-64">
+                        <div className="flex items-center gap-2 mb-2 px-1">
+                            <span className={cn('h-2 w-2 rounded-full shrink-0', statusDot(status))} />
+                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">{statusLabel[status]}</span>
+                            <span className="ml-auto text-xs font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">{col.length}</span>
+                        </div>
+                        <div className="space-y-2 min-h-[80px]">
+                            {col.length === 0 ? (
+                                <div className="border-2 border-dashed border-slate-100 rounded-xl h-16 flex items-center justify-center">
+                                    <span className="text-xs text-slate-300">Empty</span>
+                                </div>
+                            ) : col.map(appt => (
+                                <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function Index({
     appointments,
@@ -341,8 +584,9 @@ export default function Index({
     services: Service[];
 }) {
     const { t } = useTranslation();
+    const [view, setView] = useState<ViewMode>('list');
     const [statusFilter, setStatusFilter] = useState(filters?.status ?? 'all');
-    const [dateFilter, setDateFilter] = useState(filters?.date ?? 'all');
+    const [dateFilter, setDateFilter] = useState(filters?.date ?? 'today');
     const [globalSearch, setGlobalSearch] = useState(filters?.search ?? '');
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
     const [quickBookOpen, setQuickBookOpen] = useState(false);
@@ -374,24 +618,19 @@ export default function Index({
     }
 
     function toggleMine() {
-        // default = all (no param), mine = pass mine=1
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
     }
 
-    const filtered = appointments.filter((a) => {
+    const filtered = appointments.filter(a => {
         const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
         const matchesDate =
             dateFilter === 'all' ||
             (dateFilter === 'today' && isToday(a.starts_at)) ||
             (dateFilter === 'tomorrow' && isTomorrow(a.starts_at));
-        
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [
-            a.customer?.name,
-            a.barber?.user?.name,
-            a.service?.name,
-        ].some((val) => val?.toLowerCase().includes(search));
-
+            a.customer?.name, a.barber?.user?.name, a.service?.name,
+        ].some(val => val?.toLowerCase().includes(search));
         return matchesStatus && matchesDate && matchesSearch;
     });
 
@@ -399,20 +638,15 @@ export default function Index({
         {
             id: 'select',
             header: () => (
-                <input
-                    type="checkbox"
+                <input type="checkbox"
                     checked={filtered.length > 0 && selectedIds.size === filtered.length}
                     onChange={toggleSelectAll}
-                    className="rounded border-slate-300 h-4 w-4 accent-slate-900"
-                />
+                    className="rounded border-slate-300 h-4 w-4 accent-slate-900" />
             ),
             cell: ({ row }) => (
-                <input
-                    type="checkbox"
-                    checked={selectedIds.has(row.original.id)}
+                <input type="checkbox" checked={selectedIds.has(row.original.id)}
                     onChange={() => toggleSelect(row.original.id)}
-                    className="rounded border-slate-300 h-4 w-4 accent-slate-900"
-                />
+                    className="rounded border-slate-300 h-4 w-4 accent-slate-900" />
             ),
         },
         {
@@ -420,15 +654,11 @@ export default function Index({
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('appt.startsAt').toUpperCase()}</span>,
             cell: ({ row }) => {
                 const iso = row.original.starts_at;
-                const d = new Date(iso.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
-                const datePart = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const timePart = formatTime(iso);
+                const d = parseShopDate(iso);
                 return (
                     <div className="whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-md">
-                            {timePart}
-                        </span>
-                        <p className="text-xs text-slate-400 mt-0.5">{datePart}</p>
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-md">{formatTime(iso)}</span>
+                        <p className="text-xs text-slate-400 mt-0.5">{d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                     </div>
                 );
             },
@@ -455,14 +685,13 @@ export default function Index({
         },
         {
             id: 'recurrence',
-            header: () => <span></span>,
+            header: () => <span />,
             cell: ({ row }) => {
                 const rule = row.original.recurrence_rule;
                 if (!rule || rule === 'none') return null;
                 return (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-md">
-                        <RefreshCw className="h-2.5 w-2.5" />
-                        {rule}
+                        <RefreshCw className="h-2.5 w-2.5" />{rule}
                     </span>
                 );
             },
@@ -471,18 +700,11 @@ export default function Index({
             accessorKey: 'status',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => {
-                const statusKeyMap: Record<AppointmentStatus, string> = {
-                    pending:     'appt.pending',
-                    confirmed:   'appt.confirmed',
-                    in_progress: 'appt.inProgress',
-                    completed:   'appt.completed',
-                    cancelled:   'appt.cancelled',
-                    no_show:     'appt.noShow',
-                };
-                const key = statusKeyMap[row.original.status];
+                const s = row.original.status;
+                const label = t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`);
                 return (
-                    <Badge className={cn("text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border", statusVariant(row.original.status))}>
-                        {key ? t(key) : capitalizeWords(row.original.status)}
+                    <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', statusVariant(s))}>
+                        {label}
                     </Badge>
                 );
             },
@@ -495,19 +717,17 @@ export default function Index({
                 return (
                     <div className="flex items-center justify-end gap-1">
                         {appt.status === 'pending' && (
-                            <button
-                                onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50")}
-                                title={t('apptIndex.confirmApptTooltip')}
-                            >
+                            <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50')}
+                                title={t('apptIndex.confirmApptTooltip')}>
                                 <CheckCircle2 className="h-4 w-4" />
                             </button>
                         )}
-                        <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
+                        <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100')}>
                             <Eye className="h-4 w-4" />
                         </Link>
                         {appt.status !== 'in_progress' && (
-                            <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), "h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100")}>
+                            <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100')}>
                                 <Edit className="h-4 w-4" />
                             </Link>
                         )}
@@ -522,28 +742,30 @@ export default function Index({
         },
     ];
 
+    const viewButtons: { mode: ViewMode; icon: React.ElementType; label: string }[] = [
+        { mode: 'list',     icon: List,       label: 'List' },
+        { mode: 'calendar', icon: Calendar,   label: 'Calendar' },
+        { mode: 'kanban',   icon: LayoutGrid, label: 'Kanban' },
+    ];
+
     return (
         <AppLayout
             title={t('appt.title')}
             actions={
                 <div className="flex items-center gap-1.5">
                     {is_owner_barber && (
-                        <button
-                            onClick={toggleMine}
-                            className={cn(
-                                buttonVariants({ variant: 'outline' }),
+                        <button onClick={toggleMine}
+                            className={cn(buttonVariants({ variant: 'outline' }),
                                 'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
-                                filter_mine
-                                    ? 'bg-slate-900 text-white border-slate-900'
-                                    : 'border-slate-200 text-slate-600',
-                            )}
-                        >
+                                filter_mine ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-600'
+                            )}>
                             <span className="hidden sm:inline">{filter_mine ? t('appt.allAppointments') : t('appt.myAppointments')}</span>
-                            <span className="sm:hidden">{filter_mine ? t('all') : t('appt.mine') }</span>
+                            <span className="sm:hidden">{filter_mine ? t('all') : t('appt.mine')}</span>
                         </button>
                     )}
-{can_create && (
-                        <Link href={route('appointments.create')} className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
+                    {can_create && (
+                        <Link href={route('appointments.create')}
+                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
                             <Plus className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t('appt.new')}</span>
                         </Link>
@@ -554,21 +776,34 @@ export default function Index({
             <Head title={t('appt.title')} />
 
             <div className="space-y-4">
+                {/* Toolbar: search + filters + view toggle */}
                 <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                            type="text"
-                            value={globalSearch}
-                            placeholder={t('search')}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
-                            onChange={(e) => setGlobalSearch(e.target.value)}
-                        />
+                    <div className="flex gap-2">
+                        {/* Search */}
+                        <div className="relative flex-1">
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                            <input type="text" value={globalSearch}
+                                placeholder={t('search')}
+                                className="w-full pl-8 pr-3 py-1.5 bg-slate-50/50 border border-slate-100 rounded-lg text-xs focus:bg-white transition-all placeholder:text-slate-400 outline-none"
+                                onChange={e => setGlobalSearch(e.target.value)} />
+                        </div>
+                        {/* View toggle */}
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
+                            {viewButtons.map(({ mode, icon: Icon, label }) => (
+                                <button key={mode} onClick={() => setView(mode)}
+                                    title={label}
+                                    className={cn('h-10 px-2.5 flex items-center justify-center transition-colors',
+                                        view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                                    )}>
+                                    <Icon className="h-4 w-4" />
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap">
                         <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-10 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>
                                     {dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}
                                 </SelectValue>
@@ -581,132 +816,55 @@ export default function Index({
                         </Select>
 
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-10 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
+                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>
+                                    {statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}
+                                </SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 <SelectItem value="all">{t('all')}</SelectItem>
-                                {allStatuses.map((s) => (
-                                    <SelectItem key={s} value={s}>{t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}</SelectItem>
+                                {allStatuses.map(s => (
+                                    <SelectItem key={s} value={s}>
+                                        {t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}
+                                    </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
 
-                {/* Bulk action bar */}
-                {selectedIds.size > 0 && (
-                    <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
-                        <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
-                        <button
-                            onClick={() => bulkAction('confirm')}
-                            disabled={bulkProcessing}
-                            className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                        >
-                            <CheckCircle2 className="h-3.5 w-3.5" /> {t('apptIndex.confirmAll')}
-                        </button>
-                        <button
-                            onClick={() => bulkAction('cancel')}
-                            disabled={bulkProcessing}
-                            className="flex items-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                        >
-                            <Trash2 className="h-3.5 w-3.5" /> {t('apptIndex.cancelAll')}
-                        </button>
-                        <button
-                            onClick={() => setSelectedIds(new Set())}
-                            className="text-xs text-white/60 hover:text-white transition-colors"
-                        >
-                            {t('apptIndex.clear')}
-                        </button>
-                    </div>
+                {/* View content */}
+                {view === 'list' && (
+                    <ListView
+                        filtered={filtered} columns={columns}
+                        isBarber={is_barber} isOwnerBarber={is_owner_barber}
+                        onDelete={setDeletingAppt}
+                        selectedIds={selectedIds} toggleSelect={toggleSelect}
+                        toggleSelectAll={toggleSelectAll} bulkProcessing={bulkProcessing}
+                        bulkAction={bulkAction} setSelectedIds={setSelectedIds}
+                    />
                 )}
-
-                {/* Mobile card list */}
-                <div className="sm:hidden space-y-2">
-                    {filtered.length === 0 && (
-                        <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
-                            <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
-                            <p className="text-xs text-slate-400 max-w-xs">{t('appt.noAppointmentsHint')}</p>
-                        </div>
-                    )}
-                    {filtered.map(appt => (
-                        <div key={appt.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0">
-                                    <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
-                                    <p className="text-xs text-slate-400 mt-0.5">{appt.service?.name ?? '-'}{(!is_barber || is_owner_barber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}</p>
-                                </div>
-                                <div className="flex items-center gap-1 shrink-0">
-                                    {appt.recurrence_rule && appt.recurrence_rule !== 'none' && (
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-100 px-1.5 py-0.5 rounded-md">
-                                            <RefreshCw className="h-2.5 w-2.5" />{appt.recurrence_rule}
-                                        </span>
-                                    )}
-                                    <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
-                                        {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
-                                    </Badge>
-                                </div>
-                            </div>
-                            <div className="flex items-center justify-between text-xs text-slate-500">
-                                <div className="flex items-center gap-2">
-                                    <span className="inline-flex items-center bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-md">
-                                        {formatTime(appt.starts_at)}
-                                    </span>
-                                    <span className="text-slate-400">
-                                        {parseShopDate(appt.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                                    </span>
-                                </div>
-                                <span className="font-semibold text-slate-900">{formatCents(appt.price)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-                                {appt.status === 'pending' && (
-                                    <button
-                                        onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg"
-                                    >
-                                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
-                                    </button>
-                                )}
-                                <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
-                                    <Eye className="h-3.5 w-3.5 mr-1" /> {t('appt.view')}
-                                </Link>
-                                {appt.status !== 'in_progress' && (
-                                    <Link href={route('appointments.edit', appt.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none')}>
-                                        <Edit className="h-3.5 w-3.5 mr-1" /> {t('edit')}
-                                    </Link>
-                                )}
-                                {appt.status !== 'in_progress' && appt.can_delete && (
-                                    <button onClick={() => setDeletingAppt(appt)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Desktop table */}
-                <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
-                    {filtered.length === 0 ? (
-                        <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
-                            <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
-                            <p className="text-xs text-slate-400 max-w-sm">{t('appt.noAppointmentsHint')}</p>
-                        </div>
-                    ) : (
-                        <DataTable
-                            columns={columns}
-                            data={filtered}
-                            showSearch={false}
-                        />
-                    )}
-                </div>
+                {view === 'calendar' && (
+                    <CalendarView
+                        filtered={filtered}
+                        isBarber={is_barber} isOwnerBarber={is_owner_barber}
+                        onDelete={setDeletingAppt}
+                    />
+                )}
+                {view === 'kanban' && (
+                    <KanbanView
+                        filtered={filtered}
+                        isBarber={is_barber} isOwnerBarber={is_owner_barber}
+                        onDelete={setDeletingAppt}
+                    />
+                )}
             </div>
 
             {deletingAppt && (
                 <DeleteModal
                     appointment={deletingAppt}
                     open={!!deletingAppt}
-                    onOpenChange={(open) => !open && setDeletingAppt(null)}
+                    onOpenChange={open => !open && setDeletingAppt(null)}
                 />
             )}
 
