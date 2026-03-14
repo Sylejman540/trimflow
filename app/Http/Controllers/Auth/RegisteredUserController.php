@@ -43,6 +43,7 @@ class RegisteredUserController extends Controller
         $company = Company::create([
             'name'      => $request->shop_name,
             'slug'      => $slug,
+            'email'     => $request->email,
             'is_active' => true,
         ]);
 
