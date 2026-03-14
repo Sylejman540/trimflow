@@ -580,8 +580,43 @@ const Footer = () => {
         <footer id="support" className="bg-black border-t border-zinc-900 text-zinc-500 pt-14 pb-8">
             <div className="max-w-7xl mx-auto px-6">
 
+                {/* Top: brand + columns */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 pb-12 border-b border-zinc-900">
+                    {/* Brand */}
+                    <div className="col-span-2">
+                        <span className="text-base font-black text-white mb-3 block">Freshio</span>
+                        <p className="text-sm leading-relaxed max-w-xs mb-5">
+                            The modern appointment platform built for barbershops. Simple, fast, and reliable.
+                        </p>
+                        <div className="flex gap-3">
+                            {['IG', 'X', 'YT'].map((label) => (
+                                <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
+                                    {label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {[
+                        { title: 'Product', links: [{ label: 'How it works', href: '#how-it-works' }, { label: 'Stories', href: '#stories' }, { label: 'Get started', href: '/register' }] },
+                        { title: 'Company', links: [{ label: 'About', href: '#' }, { label: 'Blog', href: '#' }, { label: 'Careers', href: '#' }] },
+                        { title: 'Legal', links: [{ label: 'Privacy', href: '#' }, { label: 'Terms', href: '#' }, { label: 'Cookies', href: '#' }] },
+                    ].map(col => (
+                        <div key={col.title}>
+                            <p className="text-white font-semibold text-sm mb-4">{col.title}</p>
+                            <ul className="space-y-2.5">
+                                {col.links.map(link => (
+                                    <li key={link.label}>
+                                        <a href={link.href} className="text-sm hover:text-white transition-colors">{link.label}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+
                 {/* Support section */}
-                <div className="mb-12 pb-12 border-b border-zinc-900">
+                <div className="py-12 border-b border-zinc-900">
                     <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">Support</p>
                     <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Need help?</h3>
                     <p className="text-sm text-zinc-400 mb-6 max-w-sm">Drop your email and we'll get back to you as soon as possible.</p>
@@ -607,13 +642,9 @@ const Footer = () => {
                     )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
+                <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
                     <p>© 2026 Freshio. All rights reserved.</p>
-                    <div className="flex gap-6">
-                        <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
-                        <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>
-                        <a href="#" className="hover:text-zinc-400 transition-colors">Cookies</a>
-                    </div>
+                    <p className="text-zinc-800">Built for barbers, by barbers.</p>
                 </div>
             </div>
         </footer>
