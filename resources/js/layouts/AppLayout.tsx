@@ -155,7 +155,6 @@ interface NavItem {
 const navConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',        icon: LayoutDashboard, active: 'dashboard',          labelKey: 'nav.dashboard' },
     { href: '/appointments',     icon: CalendarDays,    active: 'appointments.*',     labelKey: 'nav.appointments' },
-    { href: '/schedule',         icon: LayoutGrid,      active: 'schedule.*',         labelKey: 'nav.schedule' },
 
     { href: '/services',         icon: Scissors,        active: 'services.*',         labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
     { href: '/products',         icon: Package,         active: 'products.*',         labelKey: 'nav.products',  roles: ['shop-admin', 'platform-admin'] },
@@ -168,7 +167,6 @@ const navConfig: Omit<NavItem, 'label'>[] = [
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
     { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
-    { href: '/schedule',     icon: LayoutGrid,      active: 'schedule.*',     labelKey: 'nav.schedule' },
     { href: '/profile',      icon: User,            active: 'profile.*',      labelKey: 'profileLabel' },
 ] as any[];
 
