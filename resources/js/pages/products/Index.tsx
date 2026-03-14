@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Plus, Trash2, Search, Package, AlertTriangle } from 'lucide-react';
+import { Edit, Plus, Trash2, Search, Package, AlertTriangle, LayoutList, LayoutGrid } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -14,6 +14,8 @@ import {
     Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
 import { formatCents, cn } from '@/lib/utils';
+
+type ViewMode = 'list' | 'grid';
 
 interface Product {
     id: number; name: string; category?: string;
@@ -37,9 +39,7 @@ function DeleteModal({ product, open, onOpenChange }: {
             <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
                 <DialogHeader>
                     <DialogTitle>{t('delete')} {t('prod.title')}</DialogTitle>
-                    <DialogDescription>
-                        {t('prod.deleteConfirm')}
-                    </DialogDescription>
+                    <DialogDescription>{t('prod.deleteConfirm')}</DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)} className="border-slate-200 shadow-none">{t('cancel')}</Button>
@@ -55,6 +55,12 @@ export default function Index({ products }: { products: Product[] }) {
     const [statusFilter, setStatusFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+    const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('products_view') as ViewMode) ?? 'list');
+
+    function changeView(v: ViewMode) {
+        localStorage.setItem('products_view', v);
+        setView(v);
+    }
 
     const filtered = products.filter((p) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.is_active : !p.is_active);
@@ -144,7 +150,7 @@ export default function Index({ products }: { products: Product[] }) {
             <Head title={t('prod.title')} />
 
             <div className="space-y-2">
-                {/* Search & Filter */}
+                {/* Toolbar */}
                 <div className="flex items-center gap-2">
                     <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -162,58 +168,121 @@ export default function Index({ products }: { products: Product[] }) {
                             <SelectItem value="inactive">{t('inactive')}</SelectItem>
                         </SelectContent>
                     </Select>
+                    {/* View toggle */}
+                    <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                        <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
+                            <LayoutList className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => changeView('grid')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
+                            <LayoutGrid className="h-3.5 w-3.5" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Mobile cards */}
-                <div className="sm:hidden space-y-2">
-                    {filtered.length === 0 && (
-                        <p className="text-sm text-slate-400 text-center py-10">{t('prod.noProducts')}</p>
-                    )}
-                    {filtered.map(product => {
-                        const isLow = product.stock_qty <= product.low_stock_threshold;
-                        return (
-                            <div key={product.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100">
-                                        <Package className="h-5 w-5 text-slate-400" />
+                {/* Grid View */}
+                {view === 'grid' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                        {filtered.length === 0 && (
+                            <p className="col-span-full text-sm text-slate-400 text-center py-10">{t('prod.noProducts')}</p>
+                        )}
+                        {filtered.map(product => {
+                            const isLow = product.stock_qty <= product.low_stock_threshold;
+                            return (
+                                <div key={product.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                                                <Package className="h-4 w-4 text-slate-400" />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-semibold text-slate-900 text-sm truncate">{product.name}</p>
+                                                <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || t('prod.uncategorized')}</p>
+                                            </div>
+                                        </div>
+                                        <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
+                                            product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                                            {product.is_active ? t('active') : t('inactive')}
+                                        </Badge>
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="font-semibold text-slate-900 text-sm truncate">{product.name}</p>
-                                        <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || t('prod.uncategorized')}</p>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="font-semibold text-slate-900">{formatCents(product.price)}</span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-slate-500 text-xs">{t('prod.stock')}: {product.stock_qty}</span>
+                                            {isLow && (
+                                                <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-1.5 py-0.5">
+                                                    <AlertTriangle className="h-3 w-3" /> {t('prod.lowStock')}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                    <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
-                                        product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
-                                        {product.is_active ? t('active') : t('inactive')}
-                                    </Badge>
-                                </div>
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="font-semibold text-slate-900">{formatCents(product.price)}</span>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-slate-500">{t('prod.stock')}: {product.stock_qty}</span>
-                                        {isLow && (
-                                            <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-1.5 py-0.5">
-                                                <AlertTriangle className="h-3 w-3" /> {t('prod.lowStock')}
-                                            </span>
-                                        )}
+                                    <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                        <Link href={route('products.edit', product.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-8 text-xs font-bold border-slate-200 shadow-none gap-1')}>
+                                            <Edit className="h-3 w-3" /> {t('edit')}
+                                        </Link>
+                                        <button onClick={() => setDeletingProduct(product)} className="h-8 w-8 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-                                    <Link href={route('products.edit', product.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
-                                        <Edit className="h-3.5 w-3.5" /> {t('edit')}
-                                    </Link>
-                                    <button onClick={() => setDeletingProduct(product)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+                )}
 
-                {/* Desktop table */}
-                <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
-                    <DataTable columns={columns} data={filtered} showSearch={false} />
-                </div>
+                {/* List View */}
+                {view === 'list' && (
+                    <>
+                        {/* Mobile cards */}
+                        <div className="sm:hidden space-y-2">
+                            {filtered.length === 0 && (
+                                <p className="text-sm text-slate-400 text-center py-10">{t('prod.noProducts')}</p>
+                            )}
+                            {filtered.map(product => {
+                                const isLow = product.stock_qty <= product.low_stock_threshold;
+                                return (
+                                    <div key={product.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                                                <Package className="h-5 w-5 text-slate-400" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-semibold text-slate-900 text-sm truncate">{product.name}</p>
+                                                <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || t('prod.uncategorized')}</p>
+                                            </div>
+                                            <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
+                                                product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                                                {product.is_active ? t('active') : t('inactive')}
+                                            </Badge>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="font-semibold text-slate-900">{formatCents(product.price)}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-slate-500">{t('prod.stock')}: {product.stock_qty}</span>
+                                                {isLow && (
+                                                    <span className="flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-1.5 py-0.5">
+                                                        <AlertTriangle className="h-3 w-3" /> {t('prod.lowStock')}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                            <Link href={route('products.edit', product.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
+                                                <Edit className="h-3.5 w-3.5" /> {t('edit')}
+                                            </Link>
+                                            <button onClick={() => setDeletingProduct(product)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
+                                                <Trash2 className="h-3.5 w-3.5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {/* Desktop table */}
+                        <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+                            <DataTable columns={columns} data={filtered} showSearch={false} />
+                        </div>
+                    </>
+                )}
             </div>
 
             {deletingProduct && (

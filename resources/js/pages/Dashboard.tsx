@@ -46,9 +46,9 @@ interface Setup {
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-500/15 text-orange-700',
-        confirmed:   'bg-green-500/15 text-green-700',
+        confirmed:   'bg-amber-500/15 text-amber-700',
         in_progress: 'bg-amber-500/15 text-amber-700',
-        completed:   'bg-emerald-500/15 text-emerald-700',
+        completed:   'bg-amber-500/15 text-amber-700',
         cancelled:   'bg-red-500/15 text-red-700',
         no_show:     'bg-gray-500/15 text-gray-700',
     };
@@ -155,7 +155,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
                 {steps.map((step, i) => (
                     <div key={i} className="flex items-start gap-3">
                         <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                            step.done ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 bg-white'
+                            step.done ? 'border-amber-500 bg-amber-500' : 'border-slate-300 bg-white'
                         }`}>
                             {step.done && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                         </div>
