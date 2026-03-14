@@ -587,7 +587,7 @@ export default function Index({
     const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('appt_view') as ViewMode) ?? 'list');
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('appt_status') ?? filters?.status ?? 'all');
-    const [dateFilter, setDateFilter] = useState(() => localStorage.getItem('appt_date') ?? filters?.date ?? 'today');
+    const [dateFilter, setDateFilter] = useState('today');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('appt_search') ?? filters?.search ?? '');
 
     // Keep local list in sync when Inertia re-renders the page
@@ -595,7 +595,7 @@ export default function Index({
 
     function changeView(v: ViewMode) { localStorage.setItem('appt_view', v); setView(v); }
     function changeStatus(v: string) { localStorage.setItem('appt_status', v); setStatusFilter(v); }
-    function changeDateFilter(v: string) { localStorage.setItem('appt_date', v); setDateFilter(v); }
+    function changeDateFilter(v: string) { setDateFilter(v); }
     function changeSearch(v: string) { localStorage.setItem('appt_search', v); setGlobalSearch(v); }
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
     const [quickBookOpen, setQuickBookOpen] = useState(false);
