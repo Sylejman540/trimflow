@@ -9,7 +9,8 @@
       "Bash(php -l app/Http/Controllers/ServiceController.php)",
       "Bash(php -l app/Http/Controllers/BarberController.php)",
       "Bash(php artisan tinker --execute=\"echo App\\\\Models\\\\Appointment::select\\(''id'',''starts_at'',''status''\\)->orderBy\\(''starts_at'',''desc''\\)->limit\\(5\\)->get\\(\\)->toJson\\(JSON_PRETTY_PRINT\\);\")",
-      "Bash(php artisan tinker --execute=\":*)"
+      "Bash(php artisan tinker --execute=\":*)",
+      "Bash(php artisan:*)"
     ]
   }
 }
