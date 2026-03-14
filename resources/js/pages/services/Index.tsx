@@ -142,9 +142,9 @@ export default function Index({ services }: { services: Service[] }) {
                 {/* Search & Filter */}
                 <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50/50 border border-slate-100 rounded-lg text-sm focus:bg-white transition-all placeholder:text-slate-400 outline-none"
+                            className="w-full pl-8 pr-3 py-1.5 bg-slate-50/50 border border-slate-100 rounded-lg text-xs focus:bg-white transition-all placeholder:text-slate-400 outline-none"
                             onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
                     <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
