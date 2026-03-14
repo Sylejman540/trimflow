@@ -153,7 +153,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         >
             <Head title={t('barber.title')} />
 
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {/* Search & Filter */}
                 <div className="flex items-center gap-2">
                     <div className="relative flex-1">

@@ -138,7 +138,7 @@ export default function Index({ services }: { services: Service[] }) {
         >
             <Head title={t('svc.title')} />
 
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {/* Search & Filter */}
                 <div className="flex items-center gap-2">
                     <div className="relative flex-1">

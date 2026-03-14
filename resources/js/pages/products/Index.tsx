@@ -143,7 +143,7 @@ export default function Index({ products }: { products: Product[] }) {
         >
             <Head title={t('prod.title')} />
 
-            <div className="space-y-4">
+            <div className="space-y-2">
                 {/* Search & Filter */}
                 <div className="flex items-center gap-2">
                     <div className="relative flex-1">
