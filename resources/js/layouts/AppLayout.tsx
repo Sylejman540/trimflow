@@ -31,7 +31,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle,
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from '@/components/ui/dialog';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -151,17 +151,43 @@ interface NavItem {
     roles?: string[];
 }
 
-const navConfig: Omit<NavItem, 'label'>[] = [
-    { href: '/dashboard',        icon: LayoutDashboard, active: 'dashboard',          labelKey: 'nav.dashboard' },
-    { href: '/appointments',     icon: CalendarDays,    active: 'appointments.*',     labelKey: 'nav.appointments' },
+interface NavGroup {
+    groupKey: string;
+    items: {
+        href: string;
+        icon: React.ElementType;
+        active: string;
+        labelKey: string;
+        descKey: string;
+        roles?: string[];
+    }[];
+}
 
-    { href: '/services',         icon: Scissors,        active: 'services.*',         labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
-    { href: '/products',         icon: Package,         active: 'products.*',         labelKey: 'nav.products',  roles: ['shop-admin', 'platform-admin'] },
-    { href: '/barbers',          icon: Briefcase,       active: 'barbers.*',          labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
-    { href: '/barbers/time-off', icon: PalmtreeIcon,    active: 'barbers.time-off.*', labelKey: 'timeoff.title', roles: ['platform-admin', 'shop-admin'] },
-    { href: '/reports',          icon: BarChart2,       active: 'reports.*',          labelKey: 'nav.reports',   roles: ['platform-admin', 'shop-admin'] },
-    { href: '/settings',         icon: Settings,        active: 'settings.*',         labelKey: 'nav.settings',  roles: ['platform-admin', 'shop-admin'] },
-] as any[];
+const navGroups: NavGroup[] = [
+    {
+        groupKey: 'nav.groupMain',
+        items: [
+            { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard',    descKey: 'nav.dashboardDesc' },
+            { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments', descKey: 'nav.appointmentsDesc' },
+        ],
+    },
+    {
+        groupKey: 'nav.groupManage',
+        items: [
+            { href: '/barbers',          icon: Briefcase,   active: 'barbers.*',          labelKey: 'nav.barbers',   descKey: 'nav.barbersDesc',   roles: ['platform-admin', 'shop-admin'] },
+            { href: '/barbers/time-off', icon: PalmtreeIcon, active: 'barbers.time-off.*', labelKey: 'timeoff.title', descKey: 'nav.timeoffDesc',   roles: ['platform-admin', 'shop-admin'] },
+            { href: '/services',         icon: Scissors,    active: 'services.*',         labelKey: 'nav.services',  descKey: 'nav.servicesDesc',  roles: ['platform-admin', 'shop-admin'] },
+            { href: '/products',         icon: Package,     active: 'products.*',         labelKey: 'nav.products',  descKey: 'nav.productsDesc',  roles: ['shop-admin', 'platform-admin'] },
+        ],
+    },
+    {
+        groupKey: 'nav.groupInsights',
+        items: [
+            { href: '/reports',  icon: BarChart2, active: 'reports.*',  labelKey: 'nav.reports',  descKey: 'nav.reportsDesc',  roles: ['platform-admin', 'shop-admin'] },
+            { href: '/settings', icon: Settings,  active: 'settings.*', labelKey: 'nav.settings', descKey: 'nav.settingsDesc', roles: ['platform-admin', 'shop-admin'] },
+        ],
+    },
+];
 
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
@@ -177,8 +203,10 @@ export default function AppLayout({
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const navScrollRef = useRef<HTMLDivElement>(null);
     const [walkinOpen, setWalkinOpen] = useState(false);
     const [copied, setCopied] = useState(false);
+    const [signOutOpen, setSignOutOpen] = useState(false);
 
     function copyBookingLink() {
         const url = `${window.location.origin}/book/${auth.company?.slug}`;
@@ -229,58 +257,73 @@ export default function AppLayout({
         setSidebarOpen(false);
     }, [route().current()]);
 
+    // Restore sidebar scroll position on mount
+    useEffect(() => {
+        const saved = sessionStorage.getItem('sidebar_scroll');
+        if (saved && navScrollRef.current) {
+            navScrollRef.current.scrollTop = parseInt(saved, 10);
+        }
+        return () => {
+            if (navScrollRef.current) {
+                sessionStorage.setItem('sidebar_scroll', String(navScrollRef.current.scrollTop));
+            }
+        };
+    }, []);
+
     useEffect(() => {
         if (flash?.success) toast.success(flash.success);
         if (flash?.error) toast.error(flash.error);
     }, [flash]);
 
-    const visibleNavItems = navConfig
-        .filter((item: any) => !item.roles || item.roles.some((r: string) => auth.roles.includes(r)))
-        .map((item: any) => ({ ...item, label: t(item.labelKey) }));
+    const visibleNavGroups = navGroups.map(group => ({
+        ...group,
+        items: group.items
+            .filter(item => !item.roles || item.roles.some(r => auth.roles.includes(r)))
+            .map(item => ({ ...item, label: t(item.labelKey), desc: t(item.descKey) })),
+    })).filter(group => group.items.length > 0);
 
     const visibleMobileNav = mobileNavConfig
         .filter((item: any) => !item.roles || item.roles.some((r: string) => auth.roles.includes(r)))
         .map((item: any) => ({ ...item, label: t(item.labelKey) }));
 
     const SidebarLink = ({
-        href,
-        icon: Icon,
-        label,
-        active = false,
-        onClick,
-        variant = 'default'
+        href, icon: Icon, label, desc, active = false, onClick, variant = 'default',
     }: {
-        href?: string,
-        icon: any,
-        label: string,
-        active?: boolean,
-        onClick?: () => void,
-        variant?: 'default' | 'danger'
+        href?: string; icon: any; label: string; desc?: string;
+        active?: boolean; onClick?: () => void; variant?: 'default' | 'danger';
     }) => {
         const className = cn(
-            'group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 w-full',
+            'group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 w-full',
             active
                 ? 'bg-slate-100 text-slate-900'
                 : variant === 'danger'
                     ? 'text-slate-500 hover:bg-red-50 hover:text-red-600'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
-            isCollapsed && "justify-center px-0"
+            isCollapsed && 'justify-center px-0'
         );
 
         const content = (
             <>
-                <Icon className={cn(
-                    'h-4 w-4 shrink-0 transition-colors',
-                    active ? 'text-slate-900' : 'text-slate-400 group-hover:text-inherit'
-                )} />
-                {!isCollapsed && <span>{label}</span>}
+                {variant === 'danger' ? (
+                    <Icon className="h-4 w-4 shrink-0" />
+                ) : (
+                    <div className={cn(
+                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
+                        active ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-700'
+                    )}>
+                        <Icon className="h-4 w-4" />
+                    </div>
+                )}
+                {!isCollapsed && (
+                    <div className="flex-1 min-w-0">
+                        <p className={cn('text-sm font-semibold leading-tight', active ? 'text-slate-900' : 'text-slate-700')}>{label}</p>
+                        {desc && <p className="text-[11px] text-slate-400 leading-tight mt-0.5 truncate">{desc}</p>}
+                    </div>
+                )}
             </>
         );
 
-        if (onClick) {
-            return <button onClick={onClick} className={className}>{content}</button>;
-        }
-
+        if (onClick) return <button onClick={onClick} className={className}>{content}</button>;
         return <Link href={href || '#'} className={className}>{content}</Link>;
     };
 
@@ -321,19 +364,24 @@ export default function AppLayout({
                 </div>
 
                 {/* Workspace Nav */}
-                <div className="flex-1 px-4 py-6 overflow-y-auto space-y-8">
-                    <div className="space-y-1">
-                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('nav.workspace')}</h3>}
-                        {visibleNavItems.map((item) => (
-                            <SidebarLink
-                                key={item.href}
-                                href={item.href}
-                                icon={item.icon}
-                                label={item.label}
-                                active={route().current(item.active)}
-                            />
-                        ))}
-                    </div>
+                <div ref={navScrollRef} className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+                    {visibleNavGroups.map(group => (
+                        <div key={group.groupKey} className="space-y-0.5">
+                            {!isCollapsed && (
+                                <p className="px-3 mb-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">{t(group.groupKey)}</p>
+                            )}
+                            {group.items.map(item => (
+                                <SidebarLink
+                                    key={item.href}
+                                    href={item.href}
+                                    icon={item.icon}
+                                    label={item.label}
+                                    desc={item.desc}
+                                    active={route().current(item.active)}
+                                />
+                            ))}
+                        </div>
+                    ))}
                 </div>
 
                 {/* Account Section */}
@@ -349,11 +397,7 @@ export default function AppLayout({
                         />
 
                         <SidebarLink
-                            onClick={() => {
-                                i18n.changeLanguage('en');
-                                localStorage.setItem('freshio_lang', 'en');
-                                router.post(route('logout'));
-                            }}
+                            onClick={() => setSignOutOpen(true)}
                             icon={LogOut}
                             label={t('nav.signOut')}
                             variant="danger"
@@ -515,6 +559,34 @@ export default function AppLayout({
                     walkin={walkin}
                 />
             )}
+
+            {/* Sign out confirm dialog */}
+            <Dialog open={signOutOpen} onOpenChange={setSignOutOpen}>
+                <DialogContent className="sm:max-w-sm border-slate-200 shadow-none">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <LogOut className="h-4 w-4 text-red-500" /> {t('nav.signOut')}
+                        </DialogTitle>
+                        <DialogDescription>{t('nav.signOutConfirm')}</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setSignOutOpen(false)} className="border-slate-200 shadow-none">
+                            {t('cancel')}
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            className="shadow-none"
+                            onClick={() => {
+                                i18n.changeLanguage('en');
+                                localStorage.setItem('freshio_lang', 'en');
+                                router.post(route('logout'));
+                            }}
+                        >
+                            {t('nav.signOut')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Toaster position="bottom-right" richColors closeButton />
         </div>
