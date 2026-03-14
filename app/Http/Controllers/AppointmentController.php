@@ -7,6 +7,7 @@ use App\Models\Barber;
 use App\Models\Customer;
 use App\Models\Service;
 use App\Models\BarberTimeOff;
+use App\Events\AppointmentChanged;
 use App\Models\WaitlistEntry;
 use App\Notifications\AppointmentStatusChanged;
 use App\Notifications\NewInternalAppointment;
@@ -152,6 +153,8 @@ class AppointmentController extends Controller
             $appointment->load(['customer', 'service']);
             $owner->notify(new NewInternalAppointment($appointment));
         }
+
+        broadcast(new AppointmentChanged($appointment))->toOthers();
 
         return redirect()->route('appointments.index')->with('success', 'Appointment created.');
     }
@@ -330,6 +333,8 @@ class AppointmentController extends Controller
                 });
         }
 
+        broadcast(new AppointmentChanged($appointment->fresh(['barber.user', 'customer', 'service', 'services'])))->toOthers();
+
         return redirect()->route('appointments.index')->with('success', 'Appointment updated.');
     }
 
@@ -500,6 +505,8 @@ class AppointmentController extends Controller
         if ($barberUserId && $barberUserId !== $user->id && $barberUserId !== $owner?->id) {
             $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
         }
+
+        broadcast(new AppointmentChanged($appointment))->toOthers();
 
         return back()->with('success', 'Appointment confirmed.');
     }

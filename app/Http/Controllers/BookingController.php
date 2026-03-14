@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AppointmentChanged;
 use App\Models\Appointment;
 use App\Models\Barber;
 use App\Models\Company;
@@ -280,7 +281,10 @@ class BookingController extends Controller
         }
         $appointment->load(['barber.user', 'customer', 'service']);
 
-        // ── 16. Notify barber + admins ─────────────────────────────────────────
+        // ── 16. Broadcast real-time update ────────────────────────────────────
+        broadcast(new AppointmentChanged($appointment));
+
+        // ── 17. Notify barber + admins ─────────────────────────────────────────
         if ($barber->user) {
             $barber->user->notify(new NewPublicBooking($appointment));
         }
