@@ -48,15 +48,14 @@ function DeleteBarberModal({ barber, open, onOpenChange }: {
 
 export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber[]; off_today_ids?: number[] }) {
     const { t } = useTranslation();
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [globalSearch, setGlobalSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('barbers_status') ?? 'all');
+    const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('barbers_search') ?? '');
     const [deletingBarber, setDeletingBarber] = useState<Barber | null>(null);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('barbers_view') as ViewMode) ?? 'list');
 
-    function changeView(v: ViewMode) {
-        localStorage.setItem('barbers_view', v);
-        setView(v);
-    }
+    function changeView(v: ViewMode) { localStorage.setItem('barbers_view', v); setView(v); }
+    function changeStatus(v: string) { localStorage.setItem('barbers_status', v); setStatusFilter(v); }
+    function changeSearch(v: string) { localStorage.setItem('barbers_search', v); setGlobalSearch(v); }
 
     function toggleAvailability(barberId: number) {
         router.post(route('barbers.toggle-availability', barberId), {}, { preserveScroll: true });
@@ -163,9 +162,9 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
-                            onChange={e => setGlobalSearch(e.target.value)} />
+                            onChange={e => changeSearch(e.target.value)} />
                     </div>
-                    <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
+                    <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
                         <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>{statusFilter === 'all' ? t('all') : statusFilter === 'active' ? t('active') : t('inactive')}</SelectValue>
                         </SelectTrigger>

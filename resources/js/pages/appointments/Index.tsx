@@ -584,10 +584,15 @@ export default function Index({
     services: Service[];
 }) {
     const { t } = useTranslation();
-    const [view, setView] = useState<ViewMode>('list');
-    const [statusFilter, setStatusFilter] = useState(filters?.status ?? 'all');
-    const [dateFilter, setDateFilter] = useState(filters?.date ?? 'today');
-    const [globalSearch, setGlobalSearch] = useState(filters?.search ?? '');
+    const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('appt_view') as ViewMode) ?? 'list');
+    const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('appt_status') ?? filters?.status ?? 'all');
+    const [dateFilter, setDateFilter] = useState(() => localStorage.getItem('appt_date') ?? filters?.date ?? 'today');
+    const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('appt_search') ?? filters?.search ?? '');
+
+    function changeView(v: ViewMode) { localStorage.setItem('appt_view', v); setView(v); }
+    function changeStatus(v: string) { localStorage.setItem('appt_status', v); setStatusFilter(v); }
+    function changeDateFilter(v: string) { localStorage.setItem('appt_date', v); setDateFilter(v); }
+    function changeSearch(v: string) { localStorage.setItem('appt_search', v); setGlobalSearch(v); }
     const [deletingAppt, setDeletingAppt] = useState<Appointment | null>(null);
     const [quickBookOpen, setQuickBookOpen] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -791,10 +796,10 @@ export default function Index({
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
-                            onChange={e => setGlobalSearch(e.target.value)} />
+                            onChange={e => changeSearch(e.target.value)} />
                     </div>
 
-                    <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'today')}>
+                    <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
                         <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
                         </SelectTrigger>
@@ -805,7 +810,7 @@ export default function Index({
                         </SelectContent>
                     </Select>
 
-                    <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
+                    <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
                         <SelectTrigger className="h-8 w-auto min-w-[100px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
                         </SelectTrigger>
@@ -819,7 +824,7 @@ export default function Index({
 
                     <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
                         {viewButtons.map(({ mode, icon: Icon, label }) => (
-                            <button key={mode} onClick={() => setView(mode)} title={label}
+                            <button key={mode} onClick={() => changeView(mode)} title={label}
                                 className={cn('h-8 px-2 flex items-center justify-center transition-colors',
                                     view === mode ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
                                 )}>

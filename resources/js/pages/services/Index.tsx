@@ -54,15 +54,14 @@ function DeleteModal({ service, open, onOpenChange }: {
 
 export default function Index({ services }: { services: Service[] }) {
     const { t } = useTranslation();
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [globalSearch, setGlobalSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('services_status') ?? 'all');
+    const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('services_search') ?? '');
     const [deletingService, setDeletingService] = useState<Service | null>(null);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('services_view') as ViewMode) ?? 'list');
 
-    function changeView(v: ViewMode) {
-        localStorage.setItem('services_view', v);
-        setView(v);
-    }
+    function changeView(v: ViewMode) { localStorage.setItem('services_view', v); setView(v); }
+    function changeStatus(v: string) { localStorage.setItem('services_status', v); setStatusFilter(v); }
+    function changeSearch(v: string) { localStorage.setItem('services_search', v); setGlobalSearch(v); }
 
     const filtered = services.filter((s) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? s.is_active : !s.is_active);
@@ -151,9 +150,9 @@ export default function Index({ services }: { services: Service[] }) {
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
-                            onChange={e => setGlobalSearch(e.target.value)} />
+                            onChange={e => changeSearch(e.target.value)} />
                     </div>
-                    <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
+                    <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
                         <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>{statusFilter === 'all' ? t('all') : statusFilter === 'active' ? t('active') : t('inactive')}</SelectValue>
                         </SelectTrigger>
