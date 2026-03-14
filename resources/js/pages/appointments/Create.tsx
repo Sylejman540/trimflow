@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, CheckCircle2, Mail } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, Mail } from 'lucide-react';
 
 export default function Create({
     barbers,
@@ -53,19 +53,7 @@ export default function Create({
         recurrence_rule: 'none',
     });
 
-    const categories = useMemo(() => {
-        const cats = services.map(s => s.category).filter(Boolean) as string[];
-        return ['all', ...Array.from(new Set(cats))];
-    }, [services]);
-
-    const [categoryFilter, setCategoryFilter] = useState('all');
-
-    const filteredServices = useMemo(() =>
-        categoryFilter === 'all'
-            ? services
-            : services.filter(s => s.category === categoryFilter),
-        [services, categoryFilter],
-    );
+    const filteredServices = services;
 
     const selectedServices = services.filter(s => data.service_ids.includes(String(s.id)));
     const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
@@ -218,28 +206,7 @@ export default function Create({
                             <span className="ml-auto text-[10px] font-normal normal-case tracking-normal text-slate-400">Select one or more</span>
                         </Label>
 
-                        {categories.length > 2 && (
-                            <div className="flex items-center gap-2 flex-wrap">
-                                {categories.map(cat => (
-                                    <button
-                                        key={cat}
-                                        type="button"
-                                        onClick={() => setCategoryFilter(cat)}
-                                        className={cn(
-                                            'inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors border',
-                                            categoryFilter === cat
-                                                ? 'bg-slate-900 text-white border-slate-900'
-                                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-400',
-                                        )}
-                                    >
-                                        <Tag size={9} />
-                                        {cat === 'all' ? t('all') : cat}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-
-                        <div className="space-y-1.5 rounded-xl border border-slate-200 overflow-hidden">
+                        <div className="flex flex-wrap gap-2">
                             {filteredServices.map((s) => {
                                 const isSelected = data.service_ids.includes(String(s.id));
                                 return (
@@ -248,22 +215,16 @@ export default function Create({
                                         type="button"
                                         onClick={() => toggleService(s)}
                                         className={cn(
-                                            'w-full flex items-center justify-between px-4 py-3 text-left transition-colors border-b border-slate-100 last:border-0',
-                                            isSelected ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-50',
+                                            'flex flex-col items-start px-3 py-2 rounded-xl border text-left transition-all',
+                                            isSelected
+                                                ? 'bg-slate-900 border-slate-900 text-white'
+                                                : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400',
                                         )}
                                     >
-                                        <div>
-                                            <p className={cn('text-sm font-medium', isSelected ? 'text-white' : 'text-slate-900')}>{s.name}</p>
-                                            <p className={cn('text-xs mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
-                                                {formatDuration(s.duration)} · {formatCents(s.price)}
-                                            </p>
-                                        </div>
-                                        <div className={cn(
-                                            'flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 transition-colors',
-                                            isSelected ? 'bg-white border-white' : 'border-slate-300',
-                                        )}>
-                                            {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-slate-900" />}
-                                        </div>
+                                        <span className="text-sm font-semibold leading-tight">{s.name}</span>
+                                        <span className={cn('text-xs mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
+                                            {formatDuration(s.duration)} · {formatCents(s.price)}
+                                        </span>
                                     </button>
                                 );
                             })}
