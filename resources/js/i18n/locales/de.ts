@@ -52,6 +52,8 @@ export default {
         account: 'Konto',
         myProfile: 'Mein Profil',
         signOut: 'Abmelden',
+        bookingLink: 'Buchungsseite',
+        copyBookingLink: 'Buchungslink kopieren',
     },
 
     dash: {
