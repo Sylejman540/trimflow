@@ -16,7 +16,6 @@ import {
     ChevronRight,
     Bell,
     PalmtreeIcon,
-    LayoutGrid,
     Zap,
     X,
     Package,
