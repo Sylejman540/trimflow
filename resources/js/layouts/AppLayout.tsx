@@ -202,7 +202,12 @@ export default function AppLayout({
 }: PropsWithChildren<{ title?: string; actions?: ReactNode }>) {
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
+
+    const toggleCollapsed = (val: boolean) => {
+        localStorage.setItem('sidebar_collapsed', String(val));
+        setIsCollapsed(val);
+    };
     const navScrollRef = useRef<HTMLDivElement>(null);
     const [walkinOpen, setWalkinOpen] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -423,7 +428,7 @@ export default function AppLayout({
 
                     {/* Collapse Button (desktop only) */}
                     <button
-                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        onClick={() => toggleCollapsed(!isCollapsed)}
                         className="hidden lg:flex w-full items-center justify-center py-2 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                     >
                         {isCollapsed ? <ChevronRight size={16} /> : <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest"><ChevronLeft size={14} /> {t('walkin.collapse')}</div>}
