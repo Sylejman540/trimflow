@@ -31,7 +31,8 @@
       "Bash(php artisan db:seed)",
       "Bash(php artisan tinker --execute=\":*)",
       "Bash(composer require spatie/laravel-permission)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(composer install:*)"
     ]
   }
 }
