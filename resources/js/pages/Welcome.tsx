@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, FormEvent } from 'react';
 // Load Bebas Neue from Google Fonts
 if (typeof document !== 'undefined') {
     const link = document.createElement('link');
@@ -7,7 +7,7 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(link);
 }
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, Menu, X, Star, Calendar, Users, BarChart3, Bell, Scissors, CreditCard, Shield, TrendingUp, Zap, ChevronDown } from 'lucide-react';
+import { ArrowRight, Menu, X, Star, Zap, Calendar, Users, Scissors } from 'lucide-react';
 
 interface Props {
     canLogin: boolean;
@@ -79,55 +79,17 @@ function Logo() {
     );
 }
 
-// ─── Mega Menu Data ────────────────────────────────────────────────────────────
-
-const megaMenuColumns = [
-    {
-        heading: 'For Clients',
-        items: [
-            { icon: Calendar, label: 'Easy Booking', desc: 'Book a barber in under 30 seconds' },
-            { icon: Bell, label: 'Smart Reminders', desc: 'Never miss an appointment again' },
-            { icon: Star, label: 'Reviews & Ratings', desc: 'Find the best barber near you' },
-            { icon: Users, label: 'Loyalty Rewards', desc: 'Earn points with every visit' },
-        ],
-    },
-    {
-        heading: 'For Barbers',
-        items: [
-            { icon: Scissors, label: 'Schedule Manager', desc: 'Control your calendar, block time off' },
-            { icon: BarChart3, label: 'Earnings Dashboard', desc: 'Track revenue and top services' },
-            { icon: CreditCard, label: 'Instant Payouts', desc: 'Get paid fast, no delays' },
-            { icon: Shield, label: 'No-show Protection', desc: 'Deposits and auto-cancellation' },
-        ],
-    },
-    {
-        heading: 'For Barbershops',
-        items: [
-            { icon: Users, label: 'Team Management', desc: 'Manage multiple barbers in one place' },
-            { icon: TrendingUp, label: 'Shop Analytics', desc: 'Revenue, retention, and growth metrics' },
-            { icon: Zap, label: 'Automated Marketing', desc: 'Re-engage clients on autopilot' },
-            { icon: Zap, label: 'Custom Booking Page', desc: 'Your shop, your brand' },
-        ],
-    },
-];
-
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boolean }) => {
     const [open, setOpen] = useState(false);
-    const [megaOpen, setMegaOpen] = useState(false);
-    const [mobileFeatures, setMobileFeatures] = useState(false);
     const scrolled = useScrolled();
-    const megaRef = useRef<HTMLDivElement>(null);
-    const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const handleFeaturesEnter = () => {
-        if (leaveTimer.current) clearTimeout(leaveTimer.current);
-        setMegaOpen(true);
-    };
-    const handleFeaturesLeave = () => {
-        leaveTimer.current = setTimeout(() => setMegaOpen(false), 120);
-    };
+    function scrollToSupport(e: React.MouseEvent) {
+        e.preventDefault();
+        setOpen(false);
+        document.getElementById('support')?.scrollIntoView({ behavior: 'smooth' });
+    }
 
     return (
         <>
@@ -140,65 +102,8 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                     {/* Desktop center links */}
                     <div className="hidden md:flex items-center gap-1 text-sm font-medium text-white">
                         <a href="#how-it-works" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">How it works</a>
-
-                        {/* Features with mega menu */}
-                        <div
-                            className="relative"
-                            onMouseEnter={handleFeaturesEnter}
-                            onMouseLeave={handleFeaturesLeave}
-                            ref={megaRef}
-                        >
-                            <button className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${megaOpen ? 'bg-white/10 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-white'}`}>
-                                Features
-                                <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${megaOpen ? 'rotate-180' : ''}`} />
-                            </button>
-
-                            {/* Mega dropdown */}
-                            {megaOpen && (
-                                <div
-                                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[780px] bg-white rounded-2xl shadow-2xl border border-zinc-100 overflow-hidden"
-                                    onMouseEnter={handleFeaturesEnter}
-                                    onMouseLeave={handleFeaturesLeave}
-                                >
-                                    <div className="grid grid-cols-3 divide-x divide-zinc-100">
-                                        {megaMenuColumns.map((col) => (
-                                            <div key={col.heading} className="p-6">
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4">{col.heading}</p>
-                                                <ul className="space-y-1">
-                                                    {col.items.map(({ icon: Icon, label, desc }) => (
-                                                        <li key={label}>
-                                                            <a href="#features" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-zinc-50 transition-colors group">
-                                                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 group-hover:bg-blue-100 transition-colors mt-0.5">
-                                                                    <Icon className="h-4 w-4" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-sm font-semibold text-zinc-900 leading-tight">{label}</p>
-                                                                    <p className="text-xs text-zinc-500 mt-0.5 leading-snug">{desc}</p>
-                                                                </div>
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {/* Promo strip */}
-                                    <div className="bg-zinc-950 px-6 py-4 flex items-center justify-between">
-                                        <div>
-                                            <p className="text-white text-sm font-semibold">Start free — no credit card needed</p>
-                                            <p className="text-zinc-400 text-xs mt-0.5">Join barbershops already using Freshio to grow</p>
-                                        </div>
-                                        <a href="/register" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors shrink-0">
-                                            Get started free <ArrowRight className="h-3.5 w-3.5" />
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <a href="#pricing" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Pricing</a>
-                        <a href="/company" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Company</a>
-                        <a href="#support" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Support</a>
+                        <a href="#stories" className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Stories</a>
+                        <a href="#support" onClick={scrollToSupport} className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">Support</a>
                     </div>
 
                     {/* Desktop auth */}
@@ -229,38 +134,14 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                             className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
                             How it works
                         </a>
-
-                        {/* Features accordion */}
-                        <button
-                            onClick={() => setMobileFeatures(v => !v)}
-                            className="flex items-center justify-between text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide w-full text-left"
-                        >
-                            Features
-                            <ChevronDown className={`h-4 w-4 transition-transform ${mobileFeatures ? 'rotate-180' : ''}`} />
-                        </button>
-                        {mobileFeatures && (
-                            <div className="bg-zinc-950 rounded-xl mb-1 overflow-hidden">
-                                {megaMenuColumns.map((col) => (
-                                    <div key={col.heading} className="px-4 py-3">
-                                        <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-2">{col.heading}</p>
-                                        {col.items.map(({ icon: Icon, label }) => (
-                                            <a key={label} href="#features" onClick={() => setOpen(false)}
-                                                className="flex items-center gap-2.5 py-2 text-sm text-zinc-300 hover:text-white transition-colors">
-                                                <Icon className="h-3.5 w-3.5 text-blue-500 shrink-0" />
-                                                {label}
-                                            </a>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {['Pricing', 'Company', 'Support'].map((l) => (
-                            <a key={l} href={l === 'Company' ? '/company' : `#${l.toLowerCase()}`} onClick={() => setOpen(false)}
-                                className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
-                                {l}
-                            </a>
-                        ))}
+                        <a href="#stories" onClick={() => setOpen(false)}
+                            className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
+                            Stories
+                        </a>
+                        <a href="#support" onClick={scrollToSupport}
+                            className="text-xl font-light text-white hover:text-zinc-400 py-3.5 border-b border-zinc-900 tracking-wide">
+                            Support
+                        </a>
                     </div>
 
                     <div className="px-6 pb-10 pt-6 space-y-3">
@@ -463,7 +344,7 @@ const BarbersClients = () => (
                     className="text-6xl md:text-8xl leading-none mb-10 md:mb-16"
                     style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.01em' }}
                 >
-                    <span className="text-blue-500 hover:text-white transition-colors duration-300 cursor-default">Barbers </span>
+                    <span className="text-blue-500 cursor-default">Barbers </span>
                     <span className="text-zinc-500 hover:text-white transition-colors duration-300 cursor-default">
                         Business Clients
                     </span>
@@ -684,53 +565,60 @@ const GetFree = () => (
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
-const Footer = () => (
-    <footer className="bg-black border-t border-zinc-900 text-zinc-500 pt-14 pb-8">
-        <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 pb-10 md:pb-12 border-b border-zinc-900">
-                <div className="col-span-2">
-                    <span className="text-base font-black text-white mb-4 block">Freshio</span>
-                    <p className="text-sm leading-relaxed max-w-xs">
-                        The modern appointment platform built for barbershops. Simple, fast, and reliable.
-                    </p>
-                    <div className="flex gap-3 mt-5">
-                        {['IG', 'X', 'YT'].map((label) => (
-                            <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
-                                {label}
-                            </a>
-                        ))}
-                    </div>
+const Footer = () => {
+    const [email, setEmail] = useState('');
+    const [sent, setSent] = useState(false);
+
+    function handleSupport(e: FormEvent) {
+        e.preventDefault();
+        if (!email.trim()) return;
+        setSent(true);
+        setEmail('');
+    }
+
+    return (
+        <footer id="support" className="bg-black border-t border-zinc-900 text-zinc-500 pt-14 pb-8">
+            <div className="max-w-7xl mx-auto px-6">
+
+                {/* Support section */}
+                <div className="mb-12 pb-12 border-b border-zinc-900">
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">Support</p>
+                    <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Need help?</h3>
+                    <p className="text-sm text-zinc-400 mb-6 max-w-sm">Drop your email and we'll get back to you as soon as possible.</p>
+                    {sent ? (
+                        <p className="text-sm text-emerald-400 font-medium">We got your message — we'll be in touch soon.</p>
+                    ) : (
+                        <form onSubmit={handleSupport} className="flex gap-2 max-w-md">
+                            <input
+                                type="email"
+                                required
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                                placeholder="your@email.com"
+                                className="flex-1 h-11 rounded-xl bg-zinc-900 border border-zinc-800 px-4 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
+                            />
+                            <button
+                                type="submit"
+                                className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shrink-0"
+                            >
+                                Send
+                            </button>
+                        </form>
+                    )}
                 </div>
 
-                {[
-                    { title: 'Product', links: ['Features', 'Pricing', 'Changelog', 'Roadmap'] },
-                    { title: 'Company', links: ['About', 'Blog', 'Careers', 'Press'] },
-                    { title: 'Resources', links: ['Docs', 'Help Center', 'API', 'Status'] },
-                ].map(col => (
-                    <div key={col.title}>
-                        <p className="text-white font-semibold text-sm mb-4">{col.title}</p>
-                        <ul className="space-y-2.5">
-                            {col.links.map(link => (
-                                <li key={link}>
-                                    <a href="#" className="text-sm hover:text-white transition-colors">{link}</a>
-                                </li>
-                            ))}
-                        </ul>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
+                    <p>© 2026 Freshio. All rights reserved.</p>
+                    <div className="flex gap-6">
+                        <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
+                        <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>
+                        <a href="#" className="hover:text-zinc-400 transition-colors">Cookies</a>
                     </div>
-                ))}
-            </div>
-
-            <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
-                <p>© 2026 Freshio. All rights reserved.</p>
-                <div className="flex gap-6">
-                    <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
-                    <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>
-                    <a href="#" className="hover:text-zinc-400 transition-colors">Cookies</a>
                 </div>
             </div>
-        </div>
-    </footer>
-);
+        </footer>
+    );
+};
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
