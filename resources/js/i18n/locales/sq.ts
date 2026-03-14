@@ -54,6 +54,7 @@ export default {
         account: 'Llogaria',
         myProfile: 'Profili im',
         signOut: 'Dil',
+        more: 'Më shumë',
         bookingLink: 'Faqja e rezervimit',
         copyBookingLink: 'Kopjo linkun e rezervimit',
         groupMain: 'Kryesore',

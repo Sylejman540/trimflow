@@ -289,6 +289,7 @@ export default {
         security: 'Безопасность',
         sessions: 'Сессии',
         dangerZone: 'Опасная Зона',
+        more: 'Ещё',
         bookingLink: 'Ваша Ссылка для Записи',
         bookingLinkDesc: 'Поделитесь этой ссылкой, чтобы клиенты могли записаться онлайн',
         copy: 'Копировать',

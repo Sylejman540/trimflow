@@ -289,6 +289,7 @@ export default {
         security: 'Сигурност',
         sessions: 'Сесии',
         dangerZone: 'Опасна Зона',
+        more: 'Още',
         bookingLink: 'Вашият Линк за Резервации',
         bookingLinkDesc: 'Споделете този линк, за да могат клиентите да резервират онлайн',
         copy: 'Копирай',

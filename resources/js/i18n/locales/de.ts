@@ -52,6 +52,7 @@ export default {
         account: 'Konto',
         myProfile: 'Mein Profil',
         signOut: 'Abmelden',
+        more: 'Mehr',
         bookingLink: 'Buchungsseite',
         copyBookingLink: 'Buchungslink kopieren',
         groupMain: 'Übersicht',

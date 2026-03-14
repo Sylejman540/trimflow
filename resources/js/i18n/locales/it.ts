@@ -268,6 +268,7 @@ export default {
         security: 'Sicurezza',
         sessions: 'Sessioni',
         dangerZone: 'Zona pericolosa',
+        more: 'Altro',
         bookingLink: 'Il tuo link di prenotazione',
         bookingLinkDesc: 'Condividi questo link con i tuoi clienti',
         copy: 'Copia',

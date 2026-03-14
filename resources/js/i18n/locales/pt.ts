@@ -289,6 +289,7 @@ export default {
         security: 'Segurança',
         sessions: 'Sessões',
         dangerZone: 'Zona de Perigo',
+        more: 'Mais',
         bookingLink: 'Seu Link de Agendamento',
         bookingLinkDesc: 'Compartilhe este link para que clientes possam agendar online',
         copy: 'Copiar',

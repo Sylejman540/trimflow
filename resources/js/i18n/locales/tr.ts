@@ -289,6 +289,7 @@ export default {
         security: 'Güvenlik',
         sessions: 'Oturumlar',
         dangerZone: 'Tehlikeli Bölge',
+        more: 'Daha fazla',
         bookingLink: 'Randevu Linkiniz',
         bookingLinkDesc: 'Müşterilerin çevrimiçi randevu alabilmesi için bu linki paylaşın',
         copy: 'Kopyala',

@@ -269,6 +269,7 @@ export default {
         security: 'Bezbednost',
         sessions: 'Sesije',
         dangerZone: 'Opasna zona',
+        more: 'Više',
         bookingLink: 'Vaš link za rezervacije',
         bookingLinkDesc: 'Podelite ovaj link sa klijentima',
         copy: 'Kopiraj',

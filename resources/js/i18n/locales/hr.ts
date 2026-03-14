@@ -268,6 +268,7 @@ export default {
         security: 'Sigurnost',
         sessions: 'Sesije',
         dangerZone: 'Opasna zona',
+        more: 'Više',
         bookingLink: 'Vaša veza za rezervaciju',
         bookingLinkDesc: 'Podijelite ovu vezu da klijenti mogu rezervirati online',
         copy: 'Kopiraj',

@@ -277,46 +277,46 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
 }) {
     const { t } = useTranslation();
     return (
-        <div className="bg-white border border-slate-200 rounded-xl p-3 space-y-2 hover:border-slate-300 transition-colors">
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                    <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
+                    <p className="font-bold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
                     <p className="text-xs text-slate-400 mt-0.5 truncate">
                         {appt.service?.name ?? '-'}
                         {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
                     </p>
                 </div>
-                <Badge className={cn('text-[10px] font-bold shrink-0 rounded-md px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
+                <Badge className={cn('text-[10px] font-bold shrink-0 rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
                     {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
                 </Badge>
             </div>
-            <div className="flex items-center justify-between text-xs text-slate-500">
-                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-md">
-                    <Clock className="h-3 w-3" />{formatTime(appt.starts_at)}
+            <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-lg">
+                    <Clock className="h-3.5 w-3.5" />{formatTime(appt.starts_at)}
                 </span>
-                <span className="font-semibold text-slate-900">{formatCents(appt.price)}</span>
+                <span className="font-bold text-sm text-slate-900">{formatCents(appt.price)}</span>
             </div>
-            <div className="flex items-center gap-1.5 pt-1 border-t border-slate-100">
+            <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
                 {appt.status === 'pending' && (
                     <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                        className="flex-1 flex items-center justify-center gap-1 h-7 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg hover:bg-emerald-100 transition-colors">
-                        <CheckCircle2 className="h-3 w-3" /> {t('confirm')}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                     </button>
                 )}
                 <Link href={route('appointments.show', appt.id)}
-                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-7 text-[11px] font-bold border-slate-200 shadow-none gap-1')}>
-                    <Eye className="h-3 w-3" /> {t('appt.view')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
+                    <Eye className="h-3.5 w-3.5" /> {t('appt.view')}
                 </Link>
                 {appt.status !== 'in_progress' && (
                     <Link href={route('appointments.edit', appt.id)}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-7 text-[11px] font-bold border-slate-200 shadow-none gap-1')}>
-                        <Edit className="h-3 w-3" /> {t('edit')}
+                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
+                        <Edit className="h-3.5 w-3.5" /> {t('edit')}
                     </Link>
                 )}
                 {appt.status !== 'in_progress' && appt.can_delete && (
                     <button onClick={() => onDelete(appt)}
-                        className="h-7 w-7 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors">
-                        <Trash2 className="h-3 w-3" />
+                        className="h-9 w-9 flex items-center justify-center text-slate-300 active:text-red-600 active:bg-red-50 rounded-lg border border-slate-200 transition-colors">
+                        <Trash2 className="h-3.5 w-3.5" />
                     </button>
                 )}
             </div>
@@ -783,58 +783,69 @@ export default function Index({
                     )}
                     {can_create && (
                         <Link href={route('appointments.create')}
-                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
-                            <Plus className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">{t('appt.new')}</span>
+                            className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
+                            <Plus className="h-4 w-4" />
+                            {t('appt.new')}
                         </Link>
                     )}
                 </div>
             }
+            mobileAction={can_create ? (
+                <Link href={route('appointments.create')}
+                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform">
+                    <Plus className="h-5 w-5" />
+                    {t('appt.new')}
+                </Link>
+            ) : undefined}
         >
             <Head title={t('appt.title')} />
 
             <div className="space-y-2">
                 {/* Toolbar */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    <div className="relative flex-1 min-w-[120px]">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                <div className="flex flex-col gap-2">
+                    {/* Search row */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
-                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
+                            className="w-full pl-10 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none placeholder:text-slate-400"
                             onChange={e => changeSearch(e.target.value)} />
                     </div>
 
-                    <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
-                        <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                            <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                            <SelectItem value="all">{t('all')}</SelectItem>
-                            <SelectItem value="today">{t('today')}</SelectItem>
-                            <SelectItem value="tomorrow">{t('tomorrow')}</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    {/* Filters row */}
+                    <div className="flex items-center gap-2">
+                        <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
+                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                <SelectItem value="today">{t('today')}</SelectItem>
+                                <SelectItem value="tomorrow">{t('tomorrow')}</SelectItem>
+                            </SelectContent>
+                        </Select>
 
-                    <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
-                        <SelectTrigger className="h-8 w-auto min-w-[100px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                            <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                            <SelectItem value="all">{t('all')}</SelectItem>
-                            {allStatuses.map(s => (
-                                <SelectItem key={s} value={s}>{t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}</SelectItem>
+                        <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
+                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                {allStatuses.map(s => (
+                                    <SelectItem key={s} value={s}>{t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
+                            {viewButtons.map(({ mode, icon: Icon, label }) => (
+                                <button key={mode} onClick={() => changeView(mode)} title={label}
+                                    className={cn('h-9 px-2.5 flex items-center justify-center transition-colors',
+                                        view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 active:bg-slate-50 active:text-slate-900'
+                                    )}>
+                                    <Icon className="h-4 w-4" />
+                                </button>
                             ))}
-                        </SelectContent>
-                    </Select>
-
-                    <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
-                        {viewButtons.map(({ mode, icon: Icon, label }) => (
-                            <button key={mode} onClick={() => changeView(mode)} title={label}
-                                className={cn('h-8 px-2 flex items-center justify-center transition-colors',
-                                    view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
-                                )}>
-                                <Icon className="h-3.5 w-3.5" />
-                            </button>
-                        ))}
+                        </div>
                     </div>
                 </div>
 

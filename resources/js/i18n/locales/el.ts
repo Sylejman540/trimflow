@@ -268,6 +268,7 @@ export default {
         security: 'Ασφάλεια',
         sessions: 'Συνεδρίες',
         dangerZone: 'Επικίνδυνη ζώνη',
+        more: 'Περισσότερα',
         bookingLink: 'Ο σύνδεσμος κράτησής σας',
         bookingLinkDesc: 'Μοιραστείτε αυτόν τον σύνδεσμο με τους πελάτες σας',
         copy: 'Αντιγραφή',

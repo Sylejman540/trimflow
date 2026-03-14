@@ -63,10 +63,19 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
             actions={
                 <button
                     onClick={() => setAddOpen(true)}
-                    className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm"
+                    className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm"
                 >
                     <Plus className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">{t('timeoff.add')}</span>
+                    {t('timeoff.add')}
+                </button>
+            }
+            mobileAction={
+                <button
+                    onClick={() => setAddOpen(true)}
+                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform"
+                >
+                    <Plus className="h-5 w-5" />
+                    {t('timeoff.add')}
                 </button>
             }
         >

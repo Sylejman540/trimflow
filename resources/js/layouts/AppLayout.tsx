@@ -199,9 +199,9 @@ export default function AppLayout({
     children,
     title,
     actions,
-}: PropsWithChildren<{ title?: string; actions?: ReactNode }>) {
+    mobileAction,
+}: PropsWithChildren<{ title?: string; actions?: ReactNode; mobileAction?: ReactNode }>) {
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
 
     const toggleCollapsed = (val: boolean) => {
@@ -209,6 +209,7 @@ export default function AppLayout({
         setIsCollapsed(val);
     };
     const navScrollRef = useRef<HTMLDivElement>(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [walkinOpen, setWalkinOpen] = useState(false);
     const [copied, setCopied] = useState(false);
     const [signOutOpen, setSignOutOpen] = useState(false);
@@ -270,9 +271,7 @@ export default function AppLayout({
         }
     }, [auth.user.id]);
 
-    useEffect(() => {
-        setSidebarOpen(false);
-    }, [route().current()]);
+    useEffect(() => { setSidebarOpen(false); }, [route().current()]);
 
     // Persist + restore sidebar scroll position across Inertia navigations
     useEffect(() => {
@@ -479,14 +478,14 @@ export default function AppLayout({
                             <div className="w-px h-4 bg-slate-200 mx-1 hidden xs:block" />
                         )}
 
-                        {/* Walk-in Button - Forcuam h-9 dhe font-bold */}
+                        {/* Walk-in Button — desktop only (mobile uses bottom nav) */}
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
+                                className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
                                 <Zap className="h-3.5 w-3.5 fill-current" />
-                                <span className="hidden xs:inline">{t('dash.walkin')}</span>
+                                {t('dash.walkin')}
                             </button>
                         )}
 
@@ -538,39 +537,57 @@ export default function AppLayout({
                 </header>
 
                 {/* Page Content */}
-                <main className="flex-1 overflow-y-auto p-3 lg:p-6 bg-white pb-20 lg:pb-6">
+                <main className={cn('flex-1 overflow-y-auto p-3 lg:p-6 bg-white lg:pb-6', mobileAction ? 'pb-36' : 'pb-24')}>
                     <div className="max-w-[1400px] mx-auto">{children}</div>
                 </main>
             </div>
 
+            {/* Mobile Primary Action — sits above bottom nav */}
+            {mobileAction && (
+                <div className="lg:hidden fixed bottom-16 inset-x-0 z-20 px-4 pb-2">
+                    {mobileAction}
+                </div>
+            )}
+
             {/* Mobile Bottom Nav */}
-            <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white border-t border-slate-200 flex items-stretch">
-                {visibleMobileNav.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = route().current(item.active);
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={cn(
-                                'flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors',
-                                isActive ? 'text-slate-900' : 'text-slate-400'
-                            )}
-                        >
-                            <Icon className={cn('h-5 w-5', isActive ? 'text-slate-900' : 'text-slate-400')} />
-                            {item.label}
-                        </Link>
-                    );
-                })}
-                {walkin && (
-                    <button
-                        onClick={() => setWalkinOpen(true)}
-                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-slate-900"
-                    >
-                        <Zap className="h-5 w-5" />
-                        {t('walkin.button')}
-                    </button>
-                )}
+            <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200">
+                <div className="flex items-stretch h-16">
+                    {visibleMobileNav.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = route().current(item.active);
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform',
+                                    isActive ? 'text-slate-900' : 'text-slate-400'
+                                )}
+                            >
+                                <div className={cn(
+                                    'flex items-center justify-center w-10 h-7 rounded-full transition-all',
+                                    isActive ? 'bg-slate-100' : ''
+                                )}>
+                                    <Icon className="h-5 w-5" />
+                                </div>
+                                <span className="text-[10px] font-semibold leading-none">{item.label}</span>
+                            </Link>
+                        );
+                    })}
+                    {walkin && (
+                        <div className="flex-1 flex items-center justify-center">
+                            <button
+                                onClick={() => setWalkinOpen(true)}
+                                className="flex flex-col items-center justify-center gap-1 w-full h-full active:scale-95 transition-transform"
+                            >
+                                <div className="flex items-center justify-center w-10 h-7 rounded-full bg-slate-900">
+                                    <Zap className="h-4 w-4 text-white fill-white" />
+                                </div>
+                                <span className="text-[10px] font-bold text-slate-900 leading-none">{t('walkin.button')}</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
             </nav>
 
             {walkin && (

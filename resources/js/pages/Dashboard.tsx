@@ -63,19 +63,19 @@ function ScheduleRow({ appointment }: { appointment: Appointment }) {
     return (
         <Link
             href={route('appointments.show', appointment.id)}
-            className="flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/50 active:bg-muted"
+            className="flex items-center gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-muted/50 active:bg-muted/80 min-h-[52px]"
         >
-            <div className="flex h-10 w-14 flex-col items-center justify-center rounded-md bg-muted/60 text-xs font-medium shrink-0">
+            <div className="flex h-11 w-14 flex-col items-center justify-center rounded-lg bg-slate-100 text-xs font-bold shrink-0 text-slate-700">
                 {formatTime(appointment.starts_at)}
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{appointment.customer?.name ?? t('dash.walkin')}</p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-sm font-semibold truncate">{appointment.customer?.name ?? t('dash.walkin')}</p>
+                <p className="text-xs text-muted-foreground truncate mt-0.5">
                     {appointment.service?.name}
                     {appointment.barber?.user?.name && ` · ${appointment.barber.user.name}`}
                 </p>
             </div>
-            <span className={`shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${statusColor(appointment.status)}`}>
+            <span className={`shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusColor(appointment.status)}`}>
                 {t(`appt.${statusKey}`)}
             </span>
         </Link>
@@ -281,39 +281,39 @@ export default function Dashboard({
                 )}
 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:grid-cols-3">
+                <div className="grid grid-cols-3 gap-2 lg:gap-4">
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-6 flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 shrink-0">
-                                <CalendarDays className="h-5 w-5" />
+                        <CardContent className="p-3 lg:p-6 flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
+                            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 shrink-0">
+                                <CalendarDays className="h-4 w-4 lg:h-5 lg:w-5" />
                             </div>
                             <div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('dash.todayAppointments')}</p>
-                                <p className="text-2xl font-bold">{activeStats.today_appointments}</p>
+                                <p className="text-[10px] lg:text-xs font-medium text-muted-foreground leading-tight">{t('dash.todayAppointments')}</p>
+                                <p className="text-xl lg:text-2xl font-bold">{activeStats.today_appointments}</p>
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-6 flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600 shrink-0">
-                                <Clock className="h-5 w-5" />
+                        <CardContent className="p-3 lg:p-6 flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
+                            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600 shrink-0">
+                                <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
                             </div>
                             <div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('dash.pendingConfirmation')}</p>
-                                <p className="text-2xl font-bold">{activeStats.today_pending}</p>
+                                <p className="text-[10px] lg:text-xs font-medium text-muted-foreground leading-tight">{t('dash.pendingConfirmation')}</p>
+                                <p className="text-xl lg:text-2xl font-bold">{activeStats.today_pending}</p>
                             </div>
                         </CardContent>
                     </Card>
 
-                    <Card className="border-slate-200 shadow-none col-span-2 lg:col-span-1">
-                        <CardContent className="p-4 lg:p-6 flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
-                                <CheckCircle2 className="h-5 w-5" />
+                    <Card className="border-slate-200 shadow-none">
+                        <CardContent className="p-3 lg:p-6 flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
+                            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
+                                <CheckCircle2 className="h-4 w-4 lg:h-5 lg:w-5" />
                             </div>
                             <div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('dash.revenueToday')}</p>
-                                <p className="text-2xl font-bold">{formatCents(activeStats.today_revenue)}</p>
+                                <p className="text-[10px] lg:text-xs font-medium text-muted-foreground leading-tight">{t('dash.revenueToday')}</p>
+                                <p className="text-xl lg:text-2xl font-bold">{formatCents(activeStats.today_revenue)}</p>
                             </div>
                         </CardContent>
                     </Card>

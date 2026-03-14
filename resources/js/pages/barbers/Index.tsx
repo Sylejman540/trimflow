@@ -147,9 +147,16 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         <AppLayout
             title={t('barber.title')}
             actions={
-                <Link href={route('barbers.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
-                    <Plus className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline ml-2">{t('barber.new')}</span>
+                <Link href={route('barbers.create')} className={cn(buttonVariants({ variant: 'default' }), 'hidden sm:flex bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    {t('barber.new')}
+                </Link>
+            }
+            mobileAction={
+                <Link href={route('barbers.create')}
+                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform">
+                    <Plus className="h-5 w-5" />
+                    {t('barber.new')}
                 </Link>
             }
         >

@@ -68,6 +68,7 @@ export default {
         myProfile: 'My Profile',
         signOut: 'Sign Out',
         settings: 'Settings',
+        more: 'More',
         bookingLink: 'Booking Page',
         copyBookingLink: 'Copy booking link',
         groupMain: 'Overview',
