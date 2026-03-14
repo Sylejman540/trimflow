@@ -52,15 +52,14 @@ function DeleteModal({ product, open, onOpenChange }: {
 
 export default function Index({ products }: { products: Product[] }) {
     const { t } = useTranslation();
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [globalSearch, setGlobalSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('products_status') ?? 'all');
+    const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('products_search') ?? '');
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('products_view') as ViewMode) ?? 'list');
 
-    function changeView(v: ViewMode) {
-        localStorage.setItem('products_view', v);
-        setView(v);
-    }
+    function changeView(v: ViewMode) { localStorage.setItem('products_view', v); setView(v); }
+    function changeStatus(v: string) { localStorage.setItem('products_status', v); setStatusFilter(v); }
+    function changeSearch(v: string) { localStorage.setItem('products_search', v); setGlobalSearch(v); }
 
     const filtered = products.filter((p) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.is_active : !p.is_active);
