@@ -26,7 +26,7 @@ import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/ty
 type ViewMode = 'list' | 'calendar' | 'kanban';
 
 const allStatuses: AppointmentStatus[] = [
-    'pending', 'confirmed', 'in_progress', 'cancelled', 'no_show',
+    'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show',
 ];
 
 const STATUS_COLS: AppointmentStatus[] = [
@@ -621,18 +621,27 @@ export default function Index({
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
     }
 
-    const filtered = appointments.filter(a => {
-        const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
-        const matchesDate =
-            dateFilter === 'all' ||
-            (dateFilter === 'today' && isToday(a.starts_at)) ||
-            (dateFilter === 'tomorrow' && isTomorrow(a.starts_at));
-        const search = globalSearch.toLowerCase();
-        const matchesSearch = !search || [
-            a.customer?.name, a.barber?.user?.name, a.service?.name,
-        ].some(val => val?.toLowerCase().includes(search));
-        return matchesStatus && matchesDate && matchesSearch;
-    });
+    const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
+
+    const filtered = appointments
+        .filter(a => {
+            const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
+            const matchesDate =
+                dateFilter === 'all' ||
+                (dateFilter === 'today' && isToday(a.starts_at)) ||
+                (dateFilter === 'tomorrow' && isTomorrow(a.starts_at));
+            const search = globalSearch.toLowerCase();
+            const matchesSearch = !search || [
+                a.customer?.name, a.barber?.user?.name, a.service?.name,
+            ].some(val => val?.toLowerCase().includes(search));
+            return matchesStatus && matchesDate && matchesSearch;
+        })
+        .sort((a, b) => {
+            const aDone = DONE_STATUSES.includes(a.status) ? 1 : 0;
+            const bDone = DONE_STATUSES.includes(b.status) ? 1 : 0;
+            if (aDone !== bDone) return aDone - bDone;
+            return parseShopDate(a.starts_at).getTime() - parseShopDate(b.starts_at).getTime();
+        });
 
     const columns: ColumnDef<Appointment>[] = [
         {
