@@ -130,7 +130,7 @@ function SidebarContent({
     onNavClick?: () => void;
 }) {
     const { t } = useTranslation();
-    const NAV_ITEMS = [
+    const NAV_ITEMS: { key: 'overview' | 'shops' | 'activity'; label: string; icon: typeof BarChart3 }[] = [
         { key: 'overview',  label: t('admin.overview'),  icon: BarChart3 },
         { key: 'shops',     label: t('admin.shops'),     icon: Building2 },
         { key: 'activity',  label: t('admin.activity'),  icon: Activity  },
@@ -155,7 +155,7 @@ function SidebarContent({
                 {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
                     <button
                         key={key}
-                        onClick={() => { setTab(key as typeof tab); onNavClick?.(); }}
+                        onClick={() => { setTab(key); onNavClick?.(); }}
                         className={cn(
                             'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left',
                             tab === key
@@ -361,7 +361,7 @@ export default function AdminDashboard({
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                                                 <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
                                                 <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={v => `$${(v/100).toFixed(0)}`} />
-                                                <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCents(v), t('admin.totalRevenue')]} />
+                                                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatCents(v as number), t('admin.totalRevenue')]} />
                                                 <Bar dataKey="revenue" fill="#0f172a" radius={[4,4,0,0]} />
                                             </BarChart>
                                         </ResponsiveContainer>

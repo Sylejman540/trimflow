@@ -149,7 +149,7 @@ export default function Index({
                                         axisLine={false} tickLine={false} width={48}
                                     />
                                     <Tooltip
-                                        formatter={(v: number) => [formatCents(v), t('reports.revenue')]}
+                                        formatter={(v) => [formatCents(v as number), t('reports.revenue')]}
                                         contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
                                     />
                                     <Bar dataKey="revenue" fill="#0f172a" radius={[4, 4, 0, 0]} />

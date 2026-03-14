@@ -30,7 +30,8 @@
       "Bash(php artisan make:model AiLog -m)",
       "Bash(php artisan db:seed)",
       "Bash(php artisan tinker --execute=\":*)",
-      "Bash(composer require spatie/laravel-permission)"
+      "Bash(composer require spatie/laravel-permission)",
+      "Bash(git mv:*)"
     ]
   }
 }
