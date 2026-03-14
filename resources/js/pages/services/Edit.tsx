@@ -25,24 +25,21 @@ const SERVICE_COLORS = [
 
 export default function Edit({ service }: { service: Service }) {
     const { t } = useTranslation();
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, put, transform, processing, errors } = useForm({
         name: service.name,
         category: service.category ?? '',
         color: (service as any).color ?? '',
         duration: service.duration,
-        price: service.price / 100, // Display as dollars for the input
+        price: service.price / 100,
         description: service.description ?? '',
         is_active: service.is_active,
     });
 
+    transform(d => ({ ...d, price: Math.round(Number(d.price) * 100) }));
+
     function submit(e: FormEvent) {
         e.preventDefault();
-        // Transform price back to cents for the server
-        put(route('services.update', service.id), {
-            onBefore: () => {
-                data.price = Math.round(Number(data.price) * 100);
-            }
-        });
+        put(route('services.update', service.id));
     }
 
     return (
@@ -132,13 +129,14 @@ export default function Edit({ service }: { service: Service }) {
                             <Label htmlFor="price" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                                 <DollarSign size={12} />{' '}{t('svc.priceDollar')}
                             </Label>
-                            <NumberStepper
+                            <Input
                                 id="price"
-                                value={data.price}
-                                onChange={v => setData('price', v)}
-                                min={0}
-                                step={0.5}
-                                decimal
+                                type="text"
+                                inputMode="decimal"
+                                value={data.price === 0 ? '' : String(data.price)}
+                                onChange={e => setData('price', e.target.value as any)}
+                                className="h-10 bg-slate-50 border-slate-200 focus:bg-white rounded-lg transition-all"
+                                placeholder="0.00"
                             />
                             {errors.price && <p className="text-xs text-red-500 font-medium">{errors.price}</p>}
                         </div>

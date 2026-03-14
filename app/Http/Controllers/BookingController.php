@@ -81,20 +81,16 @@ class BookingController extends Controller
         }
 
         // ── 5. Basic validation ────────────────────────────────────────────────
-        $hasCustom = $request->filled('custom_service_name');
         $validated = $request->validate([
-            'barber_id'               => 'required|exists:barbers,id',
-            'service_ids'             => $hasCustom ? 'nullable|array' : 'required|array|min:1',
-            'service_ids.*'           => 'integer|exists:services,id',
-            'custom_service_name'     => $hasCustom ? 'required|string|max:255' : 'nullable|string|max:255',
-            'custom_service_duration' => $hasCustom ? 'required|integer|min:1|max:480' : 'nullable|integer',
-            'custom_service_price'    => $hasCustom ? 'required|integer|min:0' : 'nullable|integer',
-            'starts_at'               => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
-            'customer_name'           => 'required|string|max:255',
-            'customer_phone'          => 'required|string|min:6|max:30',
-            'notes'                   => 'nullable|string|max:1000',
-            '_t'                      => 'nullable|integer',
-            'cf_turnstile_response'   => 'nullable|string',
+            'barber_id'             => 'required|exists:barbers,id',
+            'service_ids'           => 'required|array|min:1',
+            'service_ids.*'         => 'integer|exists:services,id',
+            'starts_at'             => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
+            'customer_name'         => 'required|string|max:255',
+            'customer_phone'        => 'required|string|min:6|max:30',
+            'notes'                 => 'nullable|string|max:1000',
+            '_t'                    => 'nullable|integer',
+            'cf_turnstile_response' => 'nullable|string',
         ]);
 
         // Normalize phone: keep only digits and leading +
@@ -146,19 +142,12 @@ class BookingController extends Controller
         // ── 9. Verify barber + services belong to this company ─────────────────
         $barber = Barber::where('id', $validated['barber_id'])->where('company_id', $company->id)->firstOrFail();
 
-        if ($hasCustom) {
-            // Custom service — create a temporary in-memory collection
-            $services      = collect();
-            $totalDuration = (int) $validated['custom_service_duration'];
-            $totalPrice    = (int) $validated['custom_service_price'];
-        } else {
-            $services = Service::whereIn('id', $validated['service_ids'])->where('company_id', $company->id)->get();
-            if ($services->count() !== count($validated['service_ids'])) {
-                abort(422, 'One or more services not found.');
-            }
-            $totalDuration = (int) $services->sum('duration');
-            $totalPrice    = (int) $services->sum('price');
+        $services = Service::whereIn('id', $validated['service_ids'])->where('company_id', $company->id)->get();
+        if ($services->count() !== count($validated['service_ids'])) {
+            abort(422, 'One or more services not found.');
         }
+        $totalDuration = (int) $services->sum('duration');
+        $totalPrice    = (int) $services->sum('price');
 
         $startsAt = Carbon::parse($validated['starts_at']);
         $endsAt   = $startsAt->copy()->addMinutes($totalDuration);
@@ -272,18 +261,18 @@ class BookingController extends Controller
             'company_id'              => $company->id,
             'barber_id'               => $barber->id,
             'customer_id'             => $customer->id,
-            'service_id'              => $hasCustom ? null : $services->first()->id,
+            'service_id'              => $services->first()->id,
             'starts_at'               => $startsAt,
             'ends_at'                 => $endsAt,
             'price'                   => $totalPrice,
             'status'                  => $appointmentStatus,
             'booking_source'          => 'public_booking',
-            'notes'                   => ($hasCustom ? '[Custom: ' . $validated['custom_service_name'] . '] ' : '') . ($validated['notes'] ?? ''),
+            'notes'                   => $validated['notes'] ?? '',
             'cancel_token'            => $cancelToken,
             'cancel_token_expires_at' => $cancelExpires,
         ]);
 
-        if (! $hasCustom && $services->isNotEmpty()) {
+        if ($services->isNotEmpty()) {
             $pivotData = $services->mapWithKeys(fn($s) => [
                 $s->id => ['price' => $s->price, 'duration' => $s->duration]
             ])->all();
@@ -333,7 +322,7 @@ class BookingController extends Controller
             ->with('cancel_expires_at', $cancelExpires->toIso8601String())
             ->with('appt_starts_at', $startsAt->format('Y-m-d H:i'))
             ->with('appt_barber_name', $barber->user?->name)
-            ->with('appt_services', $hasCustom ? $validated['custom_service_name'] : $services->pluck('name')->join(', '));
+            ->with('appt_services', $services->pluck('name')->join(', '));
     }
 
     public function confirmation(string $slug)

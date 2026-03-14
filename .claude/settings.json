@@ -12,7 +12,8 @@
       "Bash(php artisan tinker --execute=\":*)",
       "Bash(php artisan:*)",
       "Bash(sed -i '' -e \"s/isToday ? ''bg-slate-900 text-white''/isToday ? ''bg-blue-600 text-white''/g\" -e \"s/''bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white''/''bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white''/g\" -e \"s/''border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900''/''border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600''/g\" -e \"s/effectiveView === ''day'' ? ''bg-slate-900 text-white''/effectiveView === ''day'' ? ''bg-blue-600 text-white''/g\" -e \"s/effectiveView === ''week'' ? ''bg-slate-900 text-white''/effectiveView === ''week'' ? ''bg-blue-600 text-white''/g\" -e \"s/effectiveView === ''month'' ? ''bg-slate-900 text-white''/effectiveView === ''month'' ? ''bg-blue-600 text-white''/g\" -e \"s/d === todayStr ? ''bg-slate-900 text-white''/d === todayStr ? ''bg-blue-600 text-white''/g\" pages/schedule/Index.tsx)",
-      "Bash(__NEW_LINE_e0ace9b948d7531d__ sed:*)"
+      "Bash(__NEW_LINE_e0ace9b948d7531d__ sed:*)",
+      "Bash(grep -A5 transform.currents*= /Users/sylejman/Herd/trimflow/node_modules/@inertiajs/react/dist/index.js)"
     ]
   }
 }
