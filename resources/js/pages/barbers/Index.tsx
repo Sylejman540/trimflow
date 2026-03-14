@@ -155,15 +155,15 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
 
             <div className="space-y-4">
                 {/* Search & Filter */}
-                <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="relative">
+                <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
-                            className="w-full pl-8 pr-3 py-1.5 bg-slate-50/50 border border-slate-100 rounded-lg text-xs focus:bg-white transition-all placeholder:text-slate-400 outline-none"
+                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
                             onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
                     <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                        <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                        <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                             <SelectValue>{statusFilter === 'all' ? t('all') : statusFilter === 'active' ? t('active') : t('inactive')}</SelectValue>
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-slate-200 shadow-none">

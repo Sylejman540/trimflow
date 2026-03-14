@@ -776,60 +776,47 @@ export default function Index({
             <Head title={t('appt.title')} />
 
             <div className="space-y-4">
-                {/* Toolbar: search + filters + view toggle */}
-                <div className="flex flex-col gap-2 bg-white border border-slate-200 p-2 rounded-xl">
-                    <div className="flex gap-2">
-                        {/* Search */}
-                        <div className="relative flex-1">
-                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-                            <input type="text" value={globalSearch}
-                                placeholder={t('search')}
-                                className="w-full pl-8 pr-3 py-1.5 bg-slate-50/50 border border-slate-100 rounded-lg text-xs focus:bg-white transition-all placeholder:text-slate-400 outline-none"
-                                onChange={e => setGlobalSearch(e.target.value)} />
-                        </div>
-                        {/* View toggle */}
-                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
-                            {viewButtons.map(({ mode, icon: Icon, label }) => (
-                                <button key={mode} onClick={() => setView(mode)}
-                                    title={label}
-                                    className={cn('h-10 px-2.5 flex items-center justify-center transition-colors',
-                                        view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
-                                    )}>
-                                    <Icon className="h-4 w-4" />
-                                </button>
-                            ))}
-                        </div>
+                {/* Toolbar */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative flex-1 min-w-[120px]">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                        <input type="text" value={globalSearch} placeholder={t('search')}
+                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
+                            onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
 
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 min-w-[110px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>
-                                    {dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}
-                                </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">{t('all')}</SelectItem>
-                                <SelectItem value="today">{t('today')}</SelectItem>
-                                <SelectItem value="tomorrow">{t('tomorrow')}</SelectItem>
-                            </SelectContent>
-                        </Select>
+                    <Select value={dateFilter} onValueChange={v => setDateFilter(v ?? 'today')}>
+                        <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                            <SelectItem value="all">{t('all')}</SelectItem>
+                            <SelectItem value="today">{t('today')}</SelectItem>
+                            <SelectItem value="tomorrow">{t('tomorrow')}</SelectItem>
+                        </SelectContent>
+                    </Select>
 
-                        <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 min-w-[120px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>
-                                    {statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}
-                                </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">{t('all')}</SelectItem>
-                                {allStatuses.map(s => (
-                                    <SelectItem key={s} value={s}>
-                                        {t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                    <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
+                        <SelectTrigger className="h-8 w-auto min-w-[100px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                            <SelectItem value="all">{t('all')}</SelectItem>
+                            {allStatuses.map(s => (
+                                <SelectItem key={s} value={s}>{t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`)}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
+                        {viewButtons.map(({ mode, icon: Icon, label }) => (
+                            <button key={mode} onClick={() => setView(mode)} title={label}
+                                className={cn('h-8 px-2 flex items-center justify-center transition-colors',
+                                    view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                                )}>
+                                <Icon className="h-3.5 w-3.5" />
+                            </button>
+                        ))}
                     </div>
                 </div>
 
