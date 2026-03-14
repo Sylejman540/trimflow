@@ -30,15 +30,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    $ads = \App\Models\Ad::where('is_active', true)
-        ->with('company:id,name,slug')
-        ->latest()
-        ->get(['id', 'company_id', 'headline', 'sub', 'emoji']);
-
     return Inertia::render('Welcome', [
         'canLogin'    => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'ads'         => $ads,
     ]);
 });
 

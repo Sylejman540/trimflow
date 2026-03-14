@@ -12,7 +12,6 @@ import { ArrowRight, Menu, X, Star, Zap, Calendar, Users, Scissors } from 'lucid
 interface Props {
     canLogin: boolean;
     canRegister: boolean;
-    ads?: Array<{ id: number; headline: string; sub: string | null; emoji: string }>;
 }
 
 function useScrolled(threshold = 40) {
@@ -657,7 +656,7 @@ const Footer = () => {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function Welcome({ canLogin, canRegister, ads = [] }: Props) {
+export default function Welcome({ canLogin, canRegister }: Props) {
     return (
         <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />
