@@ -112,7 +112,7 @@ export default function Index({ products }: { products: Product[] }) {
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <Badge className={cn("text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border",
-                    row.original.is_active ? "bg-blue-50 text-blue-700 border-blue-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                    row.original.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
                     {row.original.is_active ? t('active').toUpperCase() : t('inactive').toUpperCase()}
                 </Badge>
             ),
@@ -140,7 +140,7 @@ export default function Index({ products }: { products: Product[] }) {
         <AppLayout
             title={t('prod.title')}
             actions={
-                <Link href={route('products.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-blue-600 text-white hover:bg-blue-700 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
+                <Link href={route('products.create')} className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-9 px-3 rounded-lg text-xs font-bold border-none shadow-none')}>
                     <Plus className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline ml-2">{t('prod.new')}</span>
                 </Link>
@@ -169,10 +169,10 @@ export default function Index({ products }: { products: Product[] }) {
                     </Select>
                     {/* View toggle */}
                     <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
-                        <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-blue-600')}>
+                        <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
                             <LayoutList className="h-3.5 w-3.5" />
                         </button>
-                        <button onClick={() => changeView('grid')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'grid' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-blue-600')}>
+                        <button onClick={() => changeView('grid')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
                             <LayoutGrid className="h-3.5 w-3.5" />
                         </button>
                     </div>
@@ -199,7 +199,7 @@ export default function Index({ products }: { products: Product[] }) {
                                             </div>
                                         </div>
                                         <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
-                                            product.is_active ? "bg-blue-50 text-blue-700 border-blue-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                                            product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
                                             {product.is_active ? t('active') : t('inactive')}
                                         </Badge>
                                     </div>
@@ -249,7 +249,7 @@ export default function Index({ products }: { products: Product[] }) {
                                                 <p className="text-xs text-slate-400 uppercase tracking-tight">{product.category || t('prod.uncategorized')}</p>
                                             </div>
                                             <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0",
-                                                product.is_active ? "bg-blue-50 text-blue-700 border-blue-100" : "bg-slate-50 text-red-600 border-red-100")}>
+                                                product.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
                                                 {product.is_active ? t('active') : t('inactive')}
                                             </Badge>
                                         </div>

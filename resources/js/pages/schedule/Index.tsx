@@ -288,7 +288,7 @@ function MonthView({ date, apptsByDay }: { date: string; apptsByDay: Record<stri
                         >
                             <div className={cn(
                                 'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold mb-1',
-                                isToday ? 'bg-blue-600 text-white' : isCurrentMonth ? 'text-slate-700' : 'text-slate-300',
+                                isToday ? 'bg-slate-900 text-white' : isCurrentMonth ? 'text-slate-700' : 'text-slate-300',
                             )}>
                                 {new Date(cell + 'T12:00:00').getDate()}
                             </div>
@@ -517,8 +517,8 @@ export default function Index({
                                 buttonVariants({ variant: 'outline' }),
                                 'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
                                 filter_mine
-                                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white'
-                                    : 'border-slate-200 text-slate-600 hover:bg-blue-600 hover:text-white hover:border-blue-600',
+                                    ? 'bg-slate-900 text-white border-slate-900 hover:bg-slate-800 hover:text-white'
+                                    : 'border-slate-200 text-slate-600 hover:bg-slate-900 hover:text-white hover:border-slate-900',
                             )}
                         >
                             <span className="hidden sm:inline">{filter_mine ? t('schedule.mySchedule') : t('schedule.allBarbers')}</span>
@@ -530,21 +530,21 @@ export default function Index({
                             <button
                                 onClick={() => setView('day')}
                                 title="Day view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'day' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'day' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
                                 <CalendarDays className="h-3.5 w-3.5" />
                             </button>
                             <button
                                 onClick={() => setView('week')}
                                 title="Week view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'week' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'week' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
                                 <LayoutGrid className="h-3.5 w-3.5" />
                             </button>
                             <button
                                 onClick={() => setView('month')}
                                 title="Month view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs transition-colors', effectiveView === 'month' ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-9 w-9 flex items-center justify-center text-xs transition-colors', effectiveView === 'month' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
                                 <CalendarRange className="h-3.5 w-3.5" />
                             </button>
@@ -611,7 +611,7 @@ export default function Index({
                             {days.map(d => (
                                 <div
                                     key={d}
-                                    className={cn('text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0', d === todayStr ? 'bg-blue-600 text-white' : 'text-slate-600')}
+                                    className={cn('text-center py-3 text-xs font-semibold border-r border-slate-100 last:border-r-0', d === todayStr ? 'bg-slate-900 text-white' : 'text-slate-600')}
                                     style={colStyle}
                                 >
                                     {effectiveView === 'week' ? fmtShort(d) : fmtDate(d)}

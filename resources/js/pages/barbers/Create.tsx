@@ -125,7 +125,7 @@ export default function Create() {
                         <Button 
                             type="submit" 
                             disabled={processing} 
-                            className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
                         >
                             <UserPlus className="mr-2 h-3.5 w-3.5" />
                             {t('barber.create')}

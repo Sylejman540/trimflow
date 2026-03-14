@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
@@ -40,23 +40,17 @@ interface Service {
     color?: string | null;
 }
 
-// Sentinel value for "Any Barber"
 const ANY_BARBER_ID = 0;
 
 function todayStr() {
     const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function formatDateWithDay(dateStr: string, lang: string) {
     if (!dateStr) return '';
-    // Parse as local date to avoid timezone shift
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
-    // Map i18next language codes to BCP 47 locale tags
     const localeMap: Record<string, string> = {
         sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
         el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
@@ -74,7 +68,6 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 }) {
     const { t, i18n } = useTranslation();
 
-    // Steps: 0=Service, 1=Barber, 2=DateTime, 3=Info
     const STEPS = [
         t('booking.step.service'),
         t('booking.step.barber'),
@@ -88,13 +81,11 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     const [isAnyBarber, setIsAnyBarber] = useState(false);
     const [selectedDate, setSelectedDate] = useState(todayStr());
     const [selectedTime, setSelectedTime] = useState('');
-
-
     const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
     const [availabilityLoading, setAvailabilityLoading] = useState(false);
-
     const [slots, setSlots] = useState<string[]>([]);
     const [slotsLoading, setSlotsLoading] = useState(false);
+    const [anyBarberSlotMap, setAnyBarberSlotMap] = useState<Map<string, number>>(new Map());
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
@@ -106,7 +97,17 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         _hp: '',
         _t: '',
         cf_turnstile_response: '',
+        custom_service_name: '',
+        custom_service_duration: '',
+        custom_service_price: '',
     });
+
+    // Custom service form state
+    const [showCustomForm, setShowCustomForm] = useState(false);
+    const [customName, setCustomName] = useState('');
+    const [customDuration, setCustomDuration] = useState('');
+    const [customPrice, setCustomPrice] = useState('');
+    const [customService, setCustomService] = useState<Service | null>(null);
 
     const categories = useMemo(() => {
         const cats = services.map(s => s.category).filter(Boolean) as string[];
@@ -120,13 +121,11 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         [services, categoryFilter]
     );
 
-    // Set timing token on mount
     useEffect(() => {
         setData('_t', String(Math.floor(Date.now() / 1000)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Fetch availability whenever selected services change (after step 0 → step 1 transition)
     const fetchAvailability = useCallback((serviceIds: number[]) => {
         if (serviceIds.length === 0) return;
         setAvailabilityLoading(true);
@@ -146,14 +145,12 @@ export default function Show({ company, barbers: initialBarbers, services, turns
             .finally(() => setAvailabilityLoading(false));
     }, [company.slug, initialBarbers]);
 
-    // Fetch slots for a specific barber or all barbers (any barber mode)
     const fetchSlots = useCallback(async (barberId: number | 'any', serviceIds: number[], date: string) => {
         setSlotsLoading(true);
         setSlots([]);
         setSelectedTime('');
 
         if (barberId === 'any') {
-            // Fetch slots for all active barbers and merge, tracking which barber has each slot
             const fetches = initialBarbers.map(b => {
                 const params = new URLSearchParams({ barber_id: String(b.id), date });
                 serviceIds.forEach(id => params.append('service_ids[]', String(id)));
@@ -162,18 +159,13 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                     .then((json: { slots: string[] }) => ({ barberId: b.id, slots: json.slots ?? [] }))
                     .catch(() => ({ barberId: b.id, slots: [] as string[] }));
             });
-
             try {
                 const results = await Promise.all(fetches);
-                // Build a map: time → first barber who has it
                 const slotBarberMap = new Map<string, number>();
                 results.forEach(({ barberId: bid, slots: s }) => {
-                    s.forEach(slot => {
-                        if (!slotBarberMap.has(slot)) slotBarberMap.set(slot, bid);
-                    });
+                    s.forEach(slot => { if (!slotBarberMap.has(slot)) slotBarberMap.set(slot, bid); });
                 });
-                const merged = Array.from(slotBarberMap.keys()).sort();
-                setSlots(merged);
+                setSlots(Array.from(slotBarberMap.keys()).sort());
                 setAnyBarberSlotMap(slotBarberMap);
             } finally {
                 setSlotsLoading(false);
@@ -189,32 +181,52 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         }
     }, [company.slug, initialBarbers]);
 
-    // Slot → barber mapping for "Any Barber" mode
-    const [anyBarberSlotMap, setAnyBarberSlotMap] = useState<Map<string, number>>(new Map());
-
-    // Re-fetch slots when date changes (on step 2)
     useEffect(() => {
         if (step !== 2) return;
         const serviceIds = selectedServices.map(s => s.id);
         if (serviceIds.length === 0) return;
-
-        if (isAnyBarber) {
-            fetchSlots('any', serviceIds, selectedDate);
-        } else if (selectedBarber) {
-            fetchSlots(selectedBarber.id, serviceIds, selectedDate);
-        }
+        if (isAnyBarber) fetchSlots('any', serviceIds, selectedDate);
+        else if (selectedBarber) fetchSlots(selectedBarber.id, serviceIds, selectedDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [step, selectedDate]);
 
     function toggleService(s: Service) {
         setSelectedServices(prev =>
-            prev.find(x => x.id === s.id)
-                ? prev.filter(x => x.id !== s.id)
-                : [...prev, s]
+            prev.find(x => x.id === s.id) ? prev.filter(x => x.id !== s.id) : [...prev, s]
         );
     }
 
+    function addCustomService() {
+        if (!customName || !customDuration) return;
+        const svc: Service = {
+            id: -1,
+            name: customName,
+            price: Math.round(parseFloat(customPrice || '0') * 100),
+            duration: parseInt(customDuration, 10),
+        };
+        setCustomService(svc);
+        setSelectedServices([svc]);
+        setData('custom_service_name', customName);
+        setData('custom_service_duration', customDuration);
+        setData('custom_service_price', String(Math.round(parseFloat(customPrice || '0') * 100)));
+        setShowCustomForm(false);
+    }
+
+    function removeCustomService() {
+        setCustomService(null);
+        setSelectedServices([]);
+        setData('custom_service_name', '');
+        setData('custom_service_duration', '');
+        setData('custom_service_price', '');
+    }
+
     function proceedFromServices() {
+        if (customService) {
+            // custom service path — no fetchAvailability needed, all barbers available
+            fetchAvailability([]);
+            setStep(1);
+            return;
+        }
         const ids = selectedServices.map(s => s.id);
         setData('service_ids', ids.map(String));
         fetchAvailability(ids);
@@ -225,7 +237,6 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         setSelectedBarber(b);
         setIsAnyBarber(false);
         setData('barber_id', String(b.id));
-        // Fetch slots for this barber on selected date
         fetchSlots(b.id, selectedServices.map(s => s.id), selectedDate);
         setStep(2);
     }
@@ -233,27 +244,22 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     function selectAnyBarber() {
         setSelectedBarber(null);
         setIsAnyBarber(true);
-        setData('barber_id', String(ANY_BARBER_ID)); // will be overridden at slot selection
+        setData('barber_id', String(ANY_BARBER_ID));
         fetchSlots('any', selectedServices.map(s => s.id), selectedDate);
         setStep(2);
     }
 
     function selectTime(time: string) {
         setSelectedTime(time);
-        const dt = `${selectedDate}T${time}:00`;
-        setData('starts_at', dt);
-
-        // In any-barber mode, resolve the actual barber for this slot now
+        setData('starts_at', `${selectedDate}T${time}:00`);
         if (isAnyBarber) {
             const bid = anyBarberSlotMap.get(time);
             if (bid) {
                 setData('barber_id', String(bid));
-                // Find the barber object for the summary
                 const found = initialBarbers.find(b => b.id === bid);
                 if (found) setSelectedBarber(found);
             }
         }
-
         setStep(3);
     }
 
@@ -266,72 +272,67 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-slate-50 font-sans">
             <Head title={`Book at ${company.name}`} />
 
             {/* Header */}
-            <div className="bg-slate-900 text-white">
-                <div className="max-w-2xl mx-auto px-4 pt-6 pb-0">
-                    {/* Top bar */}
-                    <div className="flex items-center justify-between gap-3 pb-6">
-                        <div className="flex items-center gap-4">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 border border-white/20 shrink-0 overflow-hidden">
-                                {company.logo
-                                    ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
-                                    : <Scissors className="h-6 w-6 text-white" />
-                                }
-                            </div>
-                            <div>
-                                <h1 className="text-lg font-bold text-white">{company.name}</h1>
-                                {company.address && <p className="text-xs text-white/60 mt-0.5">{company.address}</p>}
-                                {company.phone && <p className="text-xs text-white/60">{company.phone}</p>}
-                            </div>
+            <div className="bg-white border-b border-slate-200">
+                <div className="max-w-xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
+                            {company.logo
+                                ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                : <Scissors className="h-4 w-4 text-slate-500" />
+                            }
                         </div>
-                        <LanguageSwitcher compact />
+                        <div className="min-w-0">
+                            <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
+                            {(company.address || company.phone) && (
+                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? company.phone}</p>
+                            )}
+                        </div>
                     </div>
-
+                    <LanguageSwitcher compact />
                 </div>
             </div>
 
-            <div className="max-w-2xl mx-auto px-4 py-8">
+            <div className="max-w-xl mx-auto px-4 py-6">
                 {/* Step Indicator */}
-                <div className="flex items-center justify-center gap-2 mb-8">
+                <div className="flex items-center justify-center gap-1 mb-6">
                     {STEPS.map((label, i) => (
-                        <div key={i} className="flex items-center gap-2">
+                        <div key={i} className="flex items-center gap-1">
                             <div className={cn(
-                                'flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-colors',
+                                'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold transition-colors shrink-0',
                                 i < step ? 'bg-slate-900 text-white' :
                                 i === step ? 'bg-slate-900 text-white ring-2 ring-slate-900 ring-offset-2' :
                                 'bg-slate-100 text-slate-400'
                             )}>
-                                {i < step ? <CheckCircle2 className="h-4 w-4" /> : i + 1}
+                                {i < step ? <CheckCircle2 className="h-3.5 w-3.5" /> : i + 1}
                             </div>
-                            <span className={cn('hidden sm:block text-xs font-medium', i === step ? 'text-slate-900' : 'text-slate-400')}>
+                            <span className={cn('hidden sm:block text-[11px] font-semibold', i === step ? 'text-slate-900' : 'text-slate-400')}>
                                 {label}
                             </span>
-                            {i < STEPS.length - 1 && <ChevronRight className="h-4 w-4 text-slate-300" />}
+                            {i < STEPS.length - 1 && <ChevronRight className="h-3.5 w-3.5 text-slate-300 mx-0.5" />}
                         </div>
                     ))}
                 </div>
 
                 {/* Step 0: Service Selection */}
                 {step === 0 && (
-                    <div className="space-y-4 pb-32">
-                        <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseServices')}</h2>
+                    <div className="space-y-3 pb-32">
+                        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">{t('booking.chooseServices')}</h2>
 
                         {categories.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-1.5">
                                 <button
                                     onClick={() => setCategoryFilter('')}
-                                    className={cn('px-3 py-1 rounded-full text-xs font-medium border transition-colors',
+                                    className={cn('px-3 py-1 rounded-lg text-xs font-semibold border transition-colors',
                                         !categoryFilter ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                                     )}
                                 >{t('all')}</button>
                                 {categories.map(c => (
-                                    <button
-                                        key={c}
-                                        onClick={() => setCategoryFilter(c)}
-                                        className={cn('px-3 py-1 rounded-full text-xs font-medium border transition-colors',
+                                    <button key={c} onClick={() => setCategoryFilter(c)}
+                                        className={cn('px-3 py-1 rounded-lg text-xs font-semibold border transition-colors',
                                             categoryFilter === c ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                                         )}
                                     >{c}</button>
@@ -342,32 +343,36 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                         <div className="space-y-2">
                             {filteredServices.map(s => {
                                 const isSelected = !!selectedServices.find(x => x.id === s.id);
+                                const colorHex = s.color && COLOR_HEX[s.color] ? COLOR_HEX[s.color] : undefined;
                                 return (
                                     <button
                                         key={s.id}
                                         onClick={() => toggleService(s)}
                                         className={cn(
-                                            'relative w-full flex items-center justify-between bg-white border rounded-xl p-4 hover:shadow-sm transition-all text-left active:scale-[0.99]',
+                                            'relative w-full flex items-center justify-between bg-white border rounded-xl p-4 transition-all text-left active:scale-[0.99]',
                                             isSelected
-                                                ? 'border-slate-900 ring-1 ring-slate-900'
-                                                : 'border-slate-200 hover:border-slate-400'
+                                                ? 'border-slate-900 ring-1 ring-slate-900 shadow-sm'
+                                                : 'border-slate-200 hover:border-slate-400 hover:shadow-sm'
                                         )}
-                                        style={s.color && COLOR_HEX[s.color] ? { borderLeftColor: isSelected ? undefined : COLOR_HEX[s.color], borderLeftWidth: 3 } : undefined}
+                                        style={colorHex && !isSelected ? { borderLeftColor: colorHex, borderLeftWidth: 3 } : undefined}
                                     >
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-slate-900">{s.name}</p>
-                                            {s.description && <p className="text-xs text-slate-500 mt-0.5">{s.description}</p>}
-                                            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                                                <Clock className="h-3 w-3" /> {s.duration} {t('booking.min')}
-                                            </p>
+                                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                                            {colorHex && (
+                                                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: colorHex }} />
+                                            )}
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-semibold text-slate-900">{s.name}</p>
+                                                {s.description && <p className="text-xs text-slate-500 mt-0.5 truncate">{s.description}</p>}
+                                                <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                                                    <Clock className="h-3 w-3" /> {s.duration} {t('booking.min')}
+                                                </p>
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-3 ml-4 shrink-0">
-                                            <span className="text-sm font-semibold text-slate-900">{formatCents(s.price)}</span>
+                                            <span className="text-sm font-bold text-slate-900">{formatCents(s.price)}</span>
                                             <div className={cn(
-                                                'flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors',
-                                                isSelected
-                                                    ? 'bg-slate-900 border-slate-900'
-                                                    : 'border-slate-300 bg-white'
+                                                'flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors shrink-0',
+                                                isSelected ? 'bg-slate-900 border-slate-900' : 'border-slate-300 bg-white'
                                             )}>
                                                 {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
                                             </div>
@@ -377,19 +382,109 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                             })}
                         </div>
 
-                        {selectedServices.length > 0 && (
-                            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
-                                <div className="max-w-2xl mx-auto space-y-3">
-                                    <p className="text-xs text-slate-500 text-center">
-                                        {selectedServices.length} {selectedServices.length === 1 ? t('booking.service') : t('booking.services')} &middot;&nbsp;
-                                        {totalDuration} {t('booking.min')} total &middot;&nbsp;
-                                        {formatCents(totalPrice)} total
-                                    </p>
-                                    <Button
-                                        onClick={proceedFromServices}
-                                        className="w-full bg-slate-900 hover:bg-blue-700 text-white h-11 rounded-xl font-semibold shadow-none"
+                        {/* Custom service */}
+                        {!customService && (
+                            <div>
+                                {!showCustomForm ? (
+                                    <button
+                                        onClick={() => { setShowCustomForm(true); setSelectedServices([]); }}
+                                        className="w-full flex items-center gap-3 border border-dashed border-slate-300 rounded-xl p-4 text-slate-500 hover:border-slate-400 hover:text-slate-700 transition-colors"
                                     >
-                                        {t('booking.continue')}
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 shrink-0">
+                                            <Plus className="h-4 w-4" />
+                                        </div>
+                                        <span className="text-sm font-medium">Add a custom service</span>
+                                    </button>
+                                ) : (
+                                    <div className="bg-white border border-slate-900 ring-1 ring-slate-900 rounded-xl p-4 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-sm font-bold text-slate-900">Custom service</p>
+                                            <button onClick={() => setShowCustomForm(false)} className="text-slate-400 hover:text-slate-700">
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Service name *</label>
+                                            <input
+                                                type="text"
+                                                value={customName}
+                                                onChange={e => setCustomName(e.target.value)}
+                                                placeholder="e.g. Full beard shaping"
+                                                className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Duration (min) *</label>
+                                                <input
+                                                    type="number"
+                                                    min="5"
+                                                    max="480"
+                                                    value={customDuration}
+                                                    onChange={e => setCustomDuration(e.target.value)}
+                                                    placeholder="30"
+                                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Price (€)</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.50"
+                                                    value={customPrice}
+                                                    onChange={e => setCustomPrice(e.target.value)}
+                                                    placeholder="0.00"
+                                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
+                                                />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={addCustomService}
+                                            disabled={!customName || !customDuration}
+                                            className="w-full bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white text-sm font-semibold py-2 rounded-lg transition-colors"
+                                        >
+                                            Add custom service
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Custom service selected chip */}
+                        {customService && (
+                            <div className="flex items-center justify-between bg-white border border-slate-900 ring-1 ring-slate-900 rounded-xl p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 shrink-0">
+                                        <CheckCircle2 className="h-4 w-4 text-slate-900" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-900">{customService.name}</p>
+                                        <p className="text-xs text-slate-400 flex items-center gap-1">
+                                            <Clock className="h-3 w-3" /> {customService.duration} {t('booking.min')}
+                                            {customService.price > 0 && <> · {formatCents(customService.price)}</>}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button onClick={removeCustomService} className="text-slate-400 hover:text-red-500 transition-colors">
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </div>
+                        )}
+
+                        {(selectedServices.length > 0 || customService) && (
+                            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
+                                <div className="max-w-xl mx-auto space-y-2">
+                                    <div className="flex items-center justify-between text-xs text-slate-500">
+                                        {customService ? (
+                                            <span>{customService.name} · {customService.duration} {t('booking.min')}</span>
+                                        ) : (
+                                            <span>{selectedServices.length} {selectedServices.length === 1 ? t('booking.service') : t('booking.services')} · {totalDuration} {t('booking.min')}</span>
+                                        )}
+                                        <span className="font-bold text-slate-900">{formatCents(totalPrice)}</span>
+                                    </div>
+                                    <Button onClick={proceedFromServices} className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none">
+                                        {t('booking.continue')} <ChevronRight className="h-4 w-4 ml-1" />
                                     </Button>
                                 </div>
                             </div>
@@ -399,12 +494,12 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                 {/* Step 1: Barber Selection */}
                 {step === 1 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setStep(0)} className="text-slate-400 hover:text-slate-700">
-                                <ChevronLeft className="h-5 w-5" />
+                            <button onClick={() => setStep(0)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-400 transition-colors">
+                                <ChevronLeft className="h-4 w-4" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.chooseBarber')}</h2>
+                            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">{t('booking.chooseBarber')}</h2>
                             {availabilityLoading && (
                                 <span className="flex items-center gap-1 text-xs text-slate-400 ml-auto">
                                     <Loader2 className="h-3 w-3 animate-spin" /> {t('booking.loadingAvailability')}
@@ -413,36 +508,36 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                         </div>
 
                         <div className="space-y-2">
-                            {/* Any Barber option */}
+                            {/* Any Barber */}
                             <button
                                 onClick={selectAnyBarber}
-                                className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                                className="w-full flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
                             >
-                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 border border-amber-100 shrink-0">
-                                    <Zap className="h-5 w-5 text-emerald-500" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 border border-slate-200 shrink-0">
+                                    <Zap className="h-4 w-4 text-slate-600" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-slate-900">{t('booking.anyBarber')}</p>
-                                    <p className="text-xs text-slate-500">{t('booking.anyBarberDesc')}</p>
+                                    <p className="text-xs text-slate-400">{t('booking.anyBarberDesc')}</p>
                                 </div>
-                                <span className="text-xs text-amber-600 font-medium bg-amber-50 px-2 py-1 rounded-full shrink-0">{t('booking.anyBarberFastest')}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-100 px-2 py-1 rounded-lg shrink-0">{t('booking.anyBarberFastest')}</span>
                             </button>
 
                             {barbers.map(b => (
                                 <button
                                     key={b.id}
                                     onClick={() => selectBarber(b)}
-                                    className="w-full flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
+                                    className="w-full flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-4 hover:border-slate-400 hover:shadow-sm transition-all text-left active:scale-[0.99]"
                                 >
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 shrink-0">
-                                        <User className="h-5 w-5 text-slate-500" />
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 border border-slate-200 shrink-0">
+                                        <User className="h-4 w-4 text-slate-500" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-slate-900">{b.user.name}</p>
-                                        {b.specialty && <p className="text-xs text-slate-500 truncate">{b.specialty}</p>}
+                                        <p className="text-sm font-semibold text-slate-900">{b.user.name}</p>
+                                        {b.specialty && <p className="text-xs text-slate-400 truncate">{b.specialty}</p>}
                                     </div>
                                     {b.next_time_label && (
-                                        <span className="text-xs text-blue-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-1 rounded-lg shrink-0">
                                             {b.next_time_label}
                                         </span>
                                     )}
@@ -457,12 +552,12 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                 {/* Step 2: Date & Time */}
                 {step === 2 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setStep(1)} className="text-slate-400 hover:text-slate-700">
-                                <ChevronLeft className="h-5 w-5" />
+                            <button onClick={() => setStep(1)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-400 transition-colors">
+                                <ChevronLeft className="h-4 w-4" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.pickDateTime')}</h2>
+                            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">{t('booking.pickDateTime')}</h2>
                         </div>
 
                         {isAnyBarber && (
@@ -474,8 +569,8 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                         <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                                    <Calendar className="h-3.5 w-3.5 inline mr-1" /> {t('booking.date')}
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                                    <Calendar className="h-3 w-3 inline mr-1" />{t('booking.date')}
                                 </label>
                                 <input
                                     type="date"
@@ -491,18 +586,18 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-                                    <Clock className="h-3.5 w-3.5 inline mr-1" /> {t('booking.time')}
+                                <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                                    <Clock className="h-3 w-3 inline mr-1" />{t('booking.time')}
                                 </label>
 
                                 {slotsLoading && (
-                                    <div className="flex items-center gap-2 text-sm text-slate-400 py-4 justify-center">
+                                    <div className="flex items-center gap-2 text-sm text-slate-400 py-6 justify-center">
                                         <Loader2 className="h-4 w-4 animate-spin" /> {t('booking.loadingSlots')}
                                     </div>
                                 )}
 
                                 {!slotsLoading && slots.length === 0 && (
-                                    <p className="text-sm text-slate-500 py-4 text-center">{t('booking.noSlots')}</p>
+                                    <p className="text-sm text-slate-400 py-6 text-center">{t('booking.noSlots')}</p>
                                 )}
 
                                 {!slotsLoading && slots.length > 0 && (
@@ -512,7 +607,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                                 key={slot}
                                                 onClick={() => selectTime(slot)}
                                                 className={cn(
-                                                    'py-2 text-xs font-medium rounded-lg border transition-colors active:scale-[0.97]',
+                                                    'py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97]',
                                                     selectedTime === slot
                                                         ? 'bg-slate-900 text-white border-slate-900'
                                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
@@ -530,77 +625,67 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                 {/* Step 3: Customer Info */}
                 {step === 3 && (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setStep(2)} className="text-slate-400 hover:text-slate-700">
-                                <ChevronLeft className="h-5 w-5" />
+                            <button onClick={() => setStep(2)} className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:text-slate-900 hover:border-slate-400 transition-colors">
+                                <ChevronLeft className="h-4 w-4" />
                             </button>
-                            <h2 className="text-lg font-semibold text-slate-900">{t('booking.yourDetails')}</h2>
+                            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">{t('booking.yourDetails')}</h2>
                         </div>
 
-                        {/* Summary */}
-                        <div className="bg-slate-900 rounded-xl p-4 text-white space-y-3">
-                            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">{t('booking.bookingSummary')}</p>
+                        {/* Summary card */}
+                        <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('booking.bookingSummary')}</p>
                             <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 border border-white/20 shrink-0 overflow-hidden">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
                                     {company.logo
                                         ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
-                                        : <Scissors className="h-4 w-4 text-white" />
+                                        : <Scissors className="h-4 w-4 text-slate-500" />
                                     }
                                 </div>
-                                <div>
-                                    <p className="text-sm font-bold text-white">{company.name}</p>
-                                    {company.address && <p className="text-xs text-white/50">{company.address}</p>}
+                                <div className="min-w-0">
+                                    <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
+                                    {company.address && <p className="text-xs text-slate-400 truncate">{company.address}</p>}
                                 </div>
                             </div>
-                            <div className="border-t border-white/10 pt-3 space-y-1">
-                                <p className="text-sm font-semibold">
-                                    {selectedServices.map(s => s.name).join(' + ')} &middot; {formatCents(totalPrice)}
+                            <div className="border-t border-slate-100 pt-3 space-y-1.5">
+                                <p className="text-sm font-semibold text-slate-900">
+                                    {customService ? customService.name : selectedServices.map(s => s.name).join(' + ')}
+                                    <span className="text-slate-500 font-normal"> · {formatCents(totalPrice)}</span>
                                 </p>
-                                <p className="text-xs text-slate-300 flex items-center gap-1">
-                                    <User className="h-3 w-3" />
-                                    {isAnyBarber && !selectedBarber
-                                        ? t('booking.anyBarber')
-                                        : selectedBarber?.user.name}
-                                    {selectedBarber?.specialty && <span className="text-white/40"> · {selectedBarber.specialty}</span>}
+                                <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                                    <User className="h-3 w-3 text-slate-400" />
+                                    {isAnyBarber && !selectedBarber ? t('booking.anyBarber') : selectedBarber?.user.name}
+                                    {selectedBarber?.specialty && <span className="text-slate-300">· {selectedBarber.specialty}</span>}
                                 </p>
-                                <p className="text-xs text-slate-300 flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" /> {formatDateWithDay(selectedDate, i18n.language)} · {selectedTime}
+                                <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                                    <Calendar className="h-3 w-3 text-slate-400" />
+                                    {formatDateWithDay(selectedDate, i18n.language)} · {selectedTime}
                                 </p>
                             </div>
                         </div>
 
-                        <form onSubmit={submit} className="space-y-4">
-                            {/* Honeypot */}
-                            <input
-                                type="text"
-                                name="_hp"
-                                value={data._hp}
-                                onChange={e => setData('_hp', e.target.value)}
-                                style={{ display: 'none' }}
-                                tabIndex={-1}
-                                autoComplete="off"
-                                aria-hidden="true"
-                            />
+                        <form onSubmit={submit} className="space-y-3">
+                            <input type="text" name="_hp" value={data._hp} onChange={e => setData('_hp', e.target.value)}
+                                style={{ display: 'none' }} tabIndex={-1} autoComplete="off" aria-hidden="true" />
                             <input type="hidden" name="_t" value={data._t} />
 
                             <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('name')} *</label>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('name')} *</label>
                                     <input
                                         type="text"
                                         value={data.customer_name}
                                         onChange={e => setData('customer_name', e.target.value)}
                                         placeholder={t('booking.namePlaceholder')}
                                         autoComplete="name"
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
                                         required
                                     />
                                     {errors.customer_name && <p className="text-xs text-red-500 mt-1">{errors.customer_name}</p>}
                                 </div>
-
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('phone')} *</label>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('phone')} *</label>
                                     <input
                                         type="tel"
                                         value={data.customer_phone}
@@ -608,20 +693,19 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                         placeholder={t('booking.phonePlaceholder')}
                                         autoComplete="tel"
                                         inputMode="tel"
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
                                         required
                                     />
                                     {errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
                                 </div>
-
                                 <div>
-                                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{t('notes')}</label>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('notes')}</label>
                                     <textarea
                                         value={data.notes}
                                         onChange={e => setData('notes', e.target.value)}
                                         placeholder={t('booking.specialRequests')}
                                         rows={3}
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 resize-none"
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 resize-none placeholder:text-slate-400"
                                     />
                                 </div>
                             </div>
@@ -647,7 +731,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                             <Button
                                 type="submit"
                                 disabled={processing || !data.customer_name || !data.customer_phone || (!!turnstile_site_key && !data.cf_turnstile_response)}
-                                className="w-full bg-slate-900 hover:bg-blue-700 text-white h-11 rounded-xl font-semibold shadow-none"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (
                                     <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> {t('booking.booking')}</span>
@@ -656,16 +740,17 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                         </form>
                     </div>
                 )}
-            </div>
 
-            {/* Freshio branding */}
-            <div className="text-center py-6">
-                <a href="https://freshio.app" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5 text-emerald-500">
-                        <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
-                    </svg>
-                    Powered by <span className="font-semibold text-slate-500">Freshio</span>
-                </a>
+                {/* Powered by */}
+                <div className="text-center pt-8 pb-4">
+                    <a href="https://freshio.app" target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
+                        <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 text-slate-400">
+                            <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
+                        </svg>
+                        Powered by <span className="font-semibold text-slate-500">Freshio</span>
+                    </a>
+                </div>
             </div>
         </div>
     );

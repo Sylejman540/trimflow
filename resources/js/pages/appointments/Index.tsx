@@ -36,7 +36,7 @@ const STATUS_COLS: AppointmentStatus[] = [
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-50 text-orange-700 border-orange-100',
-        confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
+        confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
         in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
         completed:   'bg-green-50 text-green-700 border-green-100',
         cancelled:   'bg-red-50 text-red-600 border-red-100',
@@ -204,7 +204,7 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                                     onClick={() => setData('starts_at', toLocalDatetimeValue(p.date))}
                                     className={cn('px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors',
                                         data.starts_at === toLocalDatetimeValue(p.date)
-                                            ? 'bg-blue-600 text-white border-blue-600'
+                                            ? 'bg-slate-900 text-white border-slate-900'
                                             : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
                                     )}>{p.label}</button>
                             ))}
@@ -216,7 +216,7 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">{t('cancel')}</Button>
-                        <Button type="submit" disabled={processing} className="bg-blue-600 text-white hover:bg-blue-700 shadow-none">
+                        <Button type="submit" disabled={processing} className="bg-slate-900 text-white hover:bg-slate-800 shadow-none">
                             {t('appt.bookAppointment')}
                         </Button>
                     </DialogFooter>
@@ -339,7 +339,7 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
     return (
         <div className="space-y-3">
             {selectedIds.size > 0 && (
-                <div className="flex items-center gap-3 bg-blue-600 text-white rounded-xl px-4 py-3">
+                <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
                     <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
                     <button onClick={() => bulkAction('confirm')} disabled={bulkProcessing}
                         className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
@@ -461,7 +461,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                     {(['day', 'week'] as const).map(m => (
                         <button key={m} onClick={() => setCalMode(m)}
                             className={cn('px-3 h-8 text-xs font-semibold capitalize transition-colors',
-                                calMode === m ? 'bg-blue-600 text-white' : 'text-slate-500 hover:bg-slate-50'
+                                calMode === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'
                             )}>{m}</button>
                     ))}
                 </div>
@@ -475,11 +475,11 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                     {displayDays.map(day => {
                         const isCurrentDay = isSameDay(day, today);
                         return (
-                            <div key={day.toISOString()} className={cn('border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center', isCurrentDay && 'bg-blue-50')}>
-                                <p className={cn('text-[10px] font-bold uppercase tracking-wider', isCurrentDay ? 'text-blue-600' : 'text-slate-400')}>
+                            <div key={day.toISOString()} className={cn('border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center', isCurrentDay && 'bg-slate-50')}>
+                                <p className={cn('text-[10px] font-bold uppercase tracking-wider', isCurrentDay ? 'text-slate-900' : 'text-slate-400')}>
                                     {day.toLocaleDateString('en-US', { weekday: 'short' })}
                                 </p>
-                                <p className={cn('text-base font-black mt-0.5', isCurrentDay ? 'text-blue-600' : 'text-slate-900')}>
+                                <p className={cn('text-base font-black mt-0.5', isCurrentDay ? 'text-slate-900' : 'text-slate-900')}>
                                     {day.getDate()}
                                 </p>
                             </div>
@@ -499,7 +499,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                                 const isCurrentDay = isSameDay(day, today);
                                 return (
                                     <div key={`${day.toISOString()}-${hour}`}
-                                        className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-blue-50/30')}>
+                                        className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-slate-50/50')}>
                                         {appts.map(appt => (
                                             <Link key={appt.id} href={route('appointments.show', appt.id)}
                                                 className={cn('flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border',
@@ -771,7 +771,7 @@ export default function Index({
                         <button onClick={toggleMine}
                             className={cn(buttonVariants({ variant: 'outline' }),
                                 'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
-                                filter_mine ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-200 text-slate-600'
+                                filter_mine ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-600'
                             )}>
                             <span className="hidden sm:inline">{filter_mine ? t('appt.allAppointments') : t('appt.myAppointments')}</span>
                             <span className="sm:hidden">{filter_mine ? t('all') : t('appt.mine')}</span>
@@ -779,7 +779,7 @@ export default function Index({
                     )}
                     {can_create && (
                         <Link href={route('appointments.create')}
-                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm">
+                            className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
                             <Plus className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t('appt.new')}</span>
                         </Link>
@@ -826,7 +826,7 @@ export default function Index({
                         {viewButtons.map(({ mode, icon: Icon, label }) => (
                             <button key={mode} onClick={() => changeView(mode)} title={label}
                                 className={cn('h-8 px-2 flex items-center justify-center transition-colors',
-                                    view === mode ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
+                                    view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 hover:bg-slate-50 hover:text-slate-900'
                                 )}>
                                 <Icon className="h-3.5 w-3.5" />
                             </button>

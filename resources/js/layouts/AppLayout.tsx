@@ -65,7 +65,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
             <DialogContent className="sm:max-w-lg border-slate-200 shadow-sm">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-base font-bold">
-                        <Zap className="h-4 w-4 text-blue-500" /> {t('walkin.title')}
+                        <Zap className="h-4 w-4 text-slate-900" /> {t('walkin.title')}
                     </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={submit} className="space-y-5 pt-1">
@@ -128,7 +128,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                         <Button
                             type="submit"
                             disabled={processing}
-                            className="flex-1 sm:flex-none bg-blue-600 text-white hover:bg-blue-700 h-11 px-6 rounded-lg text-sm font-bold shadow-sm"
+                            className="flex-1 sm:flex-none bg-slate-900 text-white hover:bg-slate-800 h-11 px-6 rounded-lg text-sm font-bold shadow-sm"
                         >
                             <Zap className="h-3.5 w-3.5 mr-1.5 fill-current" />
                             {t('walkin.bookNow')}
@@ -306,7 +306,7 @@ export default function AppLayout({
         const className = cn(
             'group flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 w-full',
             active
-                ? 'bg-blue-50 text-blue-700'
+                ? 'bg-slate-100 text-slate-900'
                 : variant === 'danger'
                     ? 'text-slate-500 hover:bg-red-50 hover:text-red-600'
                     : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
@@ -319,13 +319,13 @@ export default function AppLayout({
                     'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
                     variant === 'danger'
                         ? 'bg-slate-100 text-slate-400 group-hover:bg-red-100 group-hover:text-red-600'
-                        : active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-700'
+                        : active ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-700'
                 )}>
                     <Icon className="h-4 w-4" />
                 </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                        <p className={cn('text-sm font-semibold leading-tight', active ? 'text-blue-700' : 'text-slate-700')}>{label}</p>
+                        <p className={cn('text-sm font-semibold leading-tight', active ? 'text-slate-900' : 'text-slate-700')}>{label}</p>
                         {desc && <p className="text-[11px] text-slate-400 leading-tight mt-0.5 truncate">{desc}</p>}
                     </div>
                 )}
@@ -355,13 +355,13 @@ export default function AppLayout({
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between px-6 shrink-0">
                     <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-sm">
                             <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                                 <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
                                 <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
                             </svg>
                         </div>
-                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-blue-500">io</span></span>}
+                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-slate-500">io</span></span>}
                     </Link>
                     {/* Close button on mobile */}
                     <button
@@ -471,7 +471,7 @@ export default function AppLayout({
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
+                                className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
                                 <Zap className="h-3.5 w-3.5 fill-current" />
                                 <span className="hidden xs:inline">{t('dash.walkin')}</span>
@@ -497,7 +497,7 @@ export default function AppLayout({
                                     title={t('nav.copyBookingLink')}
                                 >
                                     {copied
-                                        ? <Check className="h-3.5 w-3.5 text-blue-500" />
+                                        ? <Check className="h-3.5 w-3.5 text-green-500" />
                                         : <Copy className="h-3.5 w-3.5" />
                                     }
                                 </button>
@@ -542,10 +542,10 @@ export default function AppLayout({
                             href={item.href}
                             className={cn(
                                 'flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors',
-                                isActive ? 'text-blue-600' : 'text-slate-400'
+                                isActive ? 'text-slate-900' : 'text-slate-400'
                             )}
                         >
-                            <Icon className={cn('h-5 w-5', isActive ? 'text-blue-600' : 'text-slate-400')} />
+                            <Icon className={cn('h-5 w-5', isActive ? 'text-slate-900' : 'text-slate-400')} />
                             {item.label}
                         </Link>
                     );
@@ -553,7 +553,7 @@ export default function AppLayout({
                 {walkin && (
                     <button
                         onClick={() => setWalkinOpen(true)}
-                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-blue-600"
+                        className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-bold text-slate-900"
                     >
                         <Zap className="h-5 w-5" />
                         {t('walkin.button')}

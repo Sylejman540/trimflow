@@ -313,7 +313,7 @@ export default function Edit({
                         <Button
                             type="submit"
                             disabled={processing || data.service_ids.length === 0}
-                            className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
                         >
                             {t('appt.updateAppointment')}
                         </Button>

@@ -46,9 +46,9 @@ interface Setup {
 function statusColor(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-500/15 text-orange-700',
-        confirmed:   'bg-amber-500/15 text-amber-700',
+        confirmed:   'bg-green-500/15 text-green-700',
         in_progress: 'bg-amber-500/15 text-amber-700',
-        completed:   'bg-amber-500/15 text-amber-700',
+        completed:   'bg-emerald-500/15 text-emerald-700',
         cancelled:   'bg-red-500/15 text-red-700',
         no_show:     'bg-gray-500/15 text-gray-700',
     };
@@ -146,7 +146,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
                 </div>
                 <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-blue-600 rounded-full transition-all duration-500"
+                        className="h-full bg-slate-900 rounded-full transition-all duration-500"
                         style={{ width: `${(doneCount / steps.length) * 100}%` }}
                     />
                 </div>
@@ -155,7 +155,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
                 {steps.map((step, i) => (
                     <div key={i} className="flex items-start gap-3">
                         <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                            step.done ? 'border-amber-500 bg-amber-500' : 'border-slate-300 bg-white'
+                            step.done ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 bg-white'
                         }`}>
                             {step.done && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
                         </div>
@@ -175,7 +175,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
 
                 {/* Booking link row */}
                 <div className="flex items-start gap-3 pt-1 border-t border-slate-100">
-                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-blue-500 bg-blue-500">
+                    <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500">
                         <Check className="h-3 w-3 text-white" strokeWidth={3} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -186,7 +186,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
                         onClick={copyLink}
                         className="shrink-0 flex items-center gap-1 text-xs font-semibold text-slate-900 hover:underline"
                     >
-                        {copied ? <Check className="h-3.5 w-3.5 text-blue-500" /> : <Copy className="h-3.5 w-3.5" />}
+                        {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                         {copied ? t('setup.copied') : t('setup.copy')}
                     </button>
                 </div>
@@ -284,7 +284,7 @@ export default function Dashboard({
                 <div className="grid grid-cols-2 gap-3 lg:gap-4 lg:grid-cols-3">
                     <Card className="border-slate-200 shadow-none">
                         <CardContent className="p-4 lg:p-6 flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 shrink-0">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 shrink-0">
                                 <CalendarDays className="h-5 w-5" />
                             </div>
                             <div>
@@ -308,7 +308,7 @@ export default function Dashboard({
 
                     <Card className="border-slate-200 shadow-none col-span-2 lg:col-span-1">
                         <CardContent className="p-4 lg:p-6 flex items-center gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 shrink-0">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
                                 <CheckCircle2 className="h-5 w-5" />
                             </div>
                             <div>

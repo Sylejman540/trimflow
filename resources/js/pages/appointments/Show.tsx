@@ -23,7 +23,7 @@ interface ProductItem {
 function statusVariant(status: AppointmentStatus): string {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-50 text-orange-700 border-orange-100',
-        confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
+        confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
         in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
         completed:   'bg-green-50 text-green-700 border-green-100',
         cancelled:   'bg-red-50 text-red-600 border-red-100',
@@ -92,7 +92,7 @@ export default function Show({
                     {can_edit && (
                         <Link
                             href={route('appointments.edit', appointment.id)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-blue-600 text-white hover:bg-blue-700 h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
                         >
                             {t('edit')}
                         </Link>
@@ -160,7 +160,7 @@ export default function Show({
                             <InfoRow label={t('price')} value={formatCents(appointment.price)} />
                             {appointment.tip_amount > 0 && (
                                 <>
-                                    <InfoRow label={t('show.tip')} value={<span className="text-blue-600 font-semibold">+{formatCents(appointment.tip_amount)}</span>} />
+                                    <InfoRow label={t('show.tip')} value={<span className="text-emerald-600 font-semibold">+{formatCents(appointment.tip_amount)}</span>} />
                                     <InfoRow label={t('total')} value={<span className="font-bold text-slate-900">{formatCents(appointment.price + appointment.tip_amount)}</span>} />
                                 </>
                             )}
@@ -333,7 +333,7 @@ export default function Show({
                                                 className="h-11"
                                             />
                                         </div>
-                                        <Button type="submit" disabled={processing} className="flex-1 bg-blue-600 text-white hover:bg-blue-700 h-11 shadow-none">{t('show.addProduct')}</Button>
+                                        <Button type="submit" disabled={processing} className="flex-1 bg-slate-900 text-white hover:bg-slate-800 h-11 shadow-none">{t('show.addProduct')}</Button>
                                     </div>
                                 </form>
                             )}
