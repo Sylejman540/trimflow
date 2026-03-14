@@ -580,66 +580,70 @@ const Footer = () => {
         <footer id="support" className="bg-black border-t border-zinc-900 text-zinc-500 pt-14 pb-8">
             <div className="max-w-7xl mx-auto px-6">
 
-                {/* Top: brand + columns */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 pb-12 border-b border-zinc-900">
-                    {/* Brand */}
-                    <div className="col-span-2">
-                        <span className="text-base font-black text-white mb-3 block">Freshio</span>
-                        <p className="text-sm leading-relaxed max-w-xs mb-5">
-                            The modern appointment platform built for barbershops. Simple, fast, and reliable.
-                        </p>
-                        <div className="flex gap-3">
-                            {['IG', 'X', 'YT'].map((label) => (
-                                <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
-                                    {label}
-                                </a>
-                            ))}
+                {/* Main footer row: brand + columns + support */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 pb-12 border-b border-zinc-900">
+
+                    {/* Left: brand + link columns */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 order-2 md:order-1">
+                        {/* Brand */}
+                        <div className="col-span-2 sm:col-span-1">
+                            <span className="text-base font-black text-white mb-3 block">Freshio</span>
+                            <p className="text-sm leading-relaxed mb-5">
+                                The modern appointment platform built for barbershops. Simple, fast, and reliable.
+                            </p>
+                            <div className="flex gap-3">
+                                {['IG', 'X', 'YT'].map((label) => (
+                                    <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
+                                        {label}
+                                    </a>
+                                ))}
+                            </div>
                         </div>
+
+                        {[
+                            { title: 'Product', links: [{ label: 'How it works', href: '#how-it-works' }, { label: 'Stories', href: '#stories' }, { label: 'Get started', href: '/register' }] },
+                            { title: 'Company', links: [{ label: 'About', href: '#' }, { label: 'Blog', href: '#' }, { label: 'Careers', href: '#' }] },
+                            { title: 'Legal', links: [{ label: 'Privacy', href: '#' }, { label: 'Terms', href: '#' }, { label: 'Cookies', href: '#' }] },
+                        ].map(col => (
+                            <div key={col.title}>
+                                <p className="text-white font-semibold text-sm mb-4">{col.title}</p>
+                                <ul className="space-y-2.5">
+                                    {col.links.map(link => (
+                                        <li key={link.label}>
+                                            <a href={link.href} className="text-sm hover:text-white transition-colors">{link.label}</a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
                     </div>
 
-                    {[
-                        { title: 'Product', links: [{ label: 'How it works', href: '#how-it-works' }, { label: 'Stories', href: '#stories' }, { label: 'Get started', href: '/register' }] },
-                        { title: 'Company', links: [{ label: 'About', href: '#' }, { label: 'Blog', href: '#' }, { label: 'Careers', href: '#' }] },
-                        { title: 'Legal', links: [{ label: 'Privacy', href: '#' }, { label: 'Terms', href: '#' }, { label: 'Cookies', href: '#' }] },
-                    ].map(col => (
-                        <div key={col.title}>
-                            <p className="text-white font-semibold text-sm mb-4">{col.title}</p>
-                            <ul className="space-y-2.5">
-                                {col.links.map(link => (
-                                    <li key={link.label}>
-                                        <a href={link.href} className="text-sm hover:text-white transition-colors">{link.label}</a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-
-                {/* Support section */}
-                <div className="py-12 border-b border-zinc-900">
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">Support</p>
-                    <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Need help?</h3>
-                    <p className="text-sm text-zinc-400 mb-6 max-w-sm">Drop your email and we'll get back to you as soon as possible.</p>
-                    {sent ? (
-                        <p className="text-sm text-emerald-400 font-medium">We got your message — we'll be in touch soon.</p>
-                    ) : (
-                        <form onSubmit={handleSupport} className="flex gap-2 max-w-md">
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                placeholder="your@email.com"
-                                className="flex-1 h-11 rounded-xl bg-zinc-900 border border-zinc-800 px-4 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
-                            />
-                            <button
-                                type="submit"
-                                className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shrink-0"
-                            >
-                                Send
-                            </button>
-                        </form>
-                    )}
+                    {/* Right: support form */}
+                    <div className="order-1 md:order-2">
+                        <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">Support</p>
+                        <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Need help?</h3>
+                        <p className="text-sm text-zinc-400 mb-6 max-w-sm">Drop your email and we'll get back to you as soon as possible.</p>
+                        {sent ? (
+                            <p className="text-sm text-emerald-400 font-medium">We got your message — we'll be in touch soon.</p>
+                        ) : (
+                            <form onSubmit={handleSupport} className="flex gap-2">
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    placeholder="your@email.com"
+                                    className="flex-1 h-11 rounded-xl bg-zinc-900 border border-zinc-800 px-4 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-blue-500 transition-colors"
+                                />
+                                <button
+                                    type="submit"
+                                    className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition-colors shrink-0"
+                                >
+                                    Send
+                                </button>
+                            </form>
+                        )}
+                    </div>
                 </div>
 
                 <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
