@@ -257,16 +257,22 @@ export default function AppLayout({
         setSidebarOpen(false);
     }, [route().current()]);
 
-    // Restore sidebar scroll position on mount
+    // Persist + restore sidebar scroll position across Inertia navigations
     useEffect(() => {
         const saved = sessionStorage.getItem('sidebar_scroll');
         if (saved && navScrollRef.current) {
             navScrollRef.current.scrollTop = parseInt(saved, 10);
         }
-        return () => {
+        // Save before every navigation (Inertia doesn't remount layout, so cleanup won't fire)
+        const save = () => {
             if (navScrollRef.current) {
                 sessionStorage.setItem('sidebar_scroll', String(navScrollRef.current.scrollTop));
             }
+        };
+        const unsub = router.on('before', save);
+        return () => {
+            unsub();
+            save();
         };
     }, []);
 
@@ -304,16 +310,14 @@ export default function AppLayout({
 
         const content = (
             <>
-                {variant === 'danger' ? (
-                    <Icon className="h-4 w-4 shrink-0" />
-                ) : (
-                    <div className={cn(
-                        'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
-                        active ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-700'
-                    )}>
-                        <Icon className="h-4 w-4" />
-                    </div>
-                )}
+                <div className={cn(
+                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors',
+                    variant === 'danger'
+                        ? 'bg-slate-100 text-slate-400 group-hover:bg-red-100 group-hover:text-red-600'
+                        : active ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200 group-hover:text-slate-700'
+                )}>
+                    <Icon className="h-4 w-4" />
+                </div>
                 {!isCollapsed && (
                     <div className="flex-1 min-w-0">
                         <p className={cn('text-sm font-semibold leading-tight', active ? 'text-slate-900' : 'text-slate-700')}>{label}</p>
@@ -323,7 +327,7 @@ export default function AppLayout({
             </>
         );
 
-        if (onClick) return <button onClick={onClick} className={className}>{content}</button>;
+        if (onClick) return <button onClick={onClick} className={cn(className, 'text-left')}>{content}</button>;
         return <Link href={href || '#'} className={className}>{content}</Link>;
     };
 
