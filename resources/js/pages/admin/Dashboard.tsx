@@ -87,7 +87,7 @@ function KpiCard({ label, value, sub, icon, accent, trend }: {
                 <p className={cn('text-xs font-medium mt-0.5', accent ? 'text-white/70' : 'text-slate-500')}>{label}</p>
                 {sub && !trend && <p className={cn('text-[11px] mt-0.5', accent ? 'text-white/40' : 'text-slate-400')}>{sub}</p>}
                 {trend && (
-                    <div className={cn('flex items-center gap-1 text-[11px] font-semibold mt-1', trend.up ? 'text-emerald-600' : 'text-red-500')}>
+                    <div className={cn('flex items-center gap-1 text-[11px] font-semibold mt-1', trend.up ? 'text-blue-600' : 'text-red-500')}>
                         {trend.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {trend.pct}%
                     </div>

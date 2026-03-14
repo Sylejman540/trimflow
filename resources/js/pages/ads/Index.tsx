@@ -62,7 +62,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                 {/* Header */}
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                        <Megaphone className="h-5 w-5 text-emerald-600" />
+                        <Megaphone className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
                         <h1 className="text-xl font-bold text-slate-900">Marketplace Ads</h1>
@@ -88,7 +88,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                                             onClick={() => createForm.setData('emoji', e)}
                                             className={`w-9 h-9 text-lg rounded-lg border-2 transition-all ${
                                                 createForm.data.emoji === e
-                                                    ? 'border-emerald-500 bg-emerald-50'
+                                                    ? 'border-blue-500 bg-blue-50'
                                                     : 'border-slate-100 bg-white hover:border-slate-200'
                                             }`}
                                         >{e}</button>
@@ -130,7 +130,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                                     <span className="text-lg leading-none">{createForm.data.emoji}</span>
                                     <div>
                                         <p className="text-xs font-semibold text-slate-800">{createForm.data.headline}</p>
-                                        <p className="text-[10px] text-emerald-600 font-bold">{createForm.data.sub || 'Book now →'}</p>
+                                        <p className="text-[10px] text-blue-600 font-bold">{createForm.data.sub || 'Book now →'}</p>
                                     </div>
                                 </div>
                             )}
@@ -161,7 +161,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                                             {EMOJI_OPTIONS.map(e => (
                                                 <button key={e} type="button"
                                                     onClick={() => editForm.setData('emoji', e)}
-                                                    className={`w-9 h-9 text-lg rounded-lg border-2 transition-all ${editForm.data.emoji === e ? 'border-emerald-500 bg-emerald-50' : 'border-slate-100 hover:border-slate-200'}`}
+                                                    className={`w-9 h-9 text-lg rounded-lg border-2 transition-all ${editForm.data.emoji === e ? 'border-blue-500 bg-blue-50' : 'border-slate-100 hover:border-slate-200'}`}
                                                 >{e}</button>
                                             ))}
                                         </div>
@@ -179,7 +179,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                                         />
                                         <div className="flex gap-2">
                                             <Button size="sm" onClick={() => submitEdit(ad)}
-                                                className="bg-emerald-500 hover:bg-emerald-400 text-white">
+                                                className="bg-blue-600 hover:bg-blue-500 text-white">
                                                 <Check className="h-3.5 w-3.5 mr-1" /> Save
                                             </Button>
                                             <Button size="sm" variant="outline" onClick={() => setEditing(null)}>
@@ -193,7 +193,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                                         <span className="text-xl leading-none shrink-0">{ad.emoji}</span>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold text-slate-800 truncate">{ad.headline}</p>
-                                            <p className="text-[11px] text-emerald-600 font-medium">{ad.sub || 'Book now →'}</p>
+                                            <p className="text-[11px] text-blue-600 font-medium">{ad.sub || 'Book now →'}</p>
                                         </div>
                                         <div className="flex items-center gap-1 shrink-0">
                                             {/* Toggle active */}

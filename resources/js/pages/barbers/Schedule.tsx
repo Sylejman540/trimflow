@@ -135,7 +135,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                 onClick={() => toggle(key)}
                                                 className={cn(
                                                     'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
-                                                    day.enabled ? 'bg-slate-900' : 'bg-slate-200',
+                                                    day.enabled ? 'bg-blue-600' : 'bg-slate-200',
                                                 )}
                                             >
                                                 <span
@@ -196,7 +196,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                         <Button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 h-10 px-6 rounded-lg text-xs font-bold shadow-none"
+                            className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 h-10 px-6 rounded-lg text-xs font-bold shadow-none"
                         >
                             Save Schedule
                         </Button>

@@ -127,7 +127,7 @@ export default function Edit({ barber }: { barber: Barber }) {
                         <Button 
                             type="submit" 
                             disabled={processing} 
-                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
+                            className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg text-xs font-bold h-10 px-6 shadow-sm transition-all"
                         >
                             {t('barber.updateBarber')}
                         </Button>

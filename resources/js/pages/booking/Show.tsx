@@ -387,7 +387,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     </p>
                                     <Button
                                         onClick={proceedFromServices}
-                                        className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
+                                        className="w-full bg-slate-900 hover:bg-blue-700 text-white h-11 rounded-xl font-semibold shadow-none"
                                     >
                                         {t('booking.continue')}
                                     </Button>
@@ -442,7 +442,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                         {b.specialty && <p className="text-xs text-slate-500 truncate">{b.specialty}</p>}
                                     </div>
                                     {b.next_time_label && (
-                                        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
+                                        <span className="text-xs text-blue-600 font-medium bg-emerald-50 px-2 py-1 rounded-full shrink-0">
                                             {b.next_time_label}
                                         </span>
                                     )}
@@ -647,7 +647,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                             <Button
                                 type="submit"
                                 disabled={processing || !data.customer_name || !data.customer_phone || (!!turnstile_site_key && !data.cf_turnstile_response)}
-                                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
+                                className="w-full bg-slate-900 hover:bg-blue-700 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (
                                     <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> {t('booking.booking')}</span>

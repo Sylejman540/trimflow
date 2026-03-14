@@ -32,7 +32,7 @@ interface Appt {
 
 const statusStyle: Record<string, string> = {
     pending:     'bg-orange-50 text-orange-700 border-orange-100',
-    confirmed:   'bg-emerald-50 text-emerald-700 border-emerald-100',
+    confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
     in_progress: 'bg-amber-50 text-amber-700 border-amber-100',
     completed:   'bg-green-50 text-green-700 border-green-100',
     cancelled:   'bg-slate-50 text-slate-500 border-slate-100',

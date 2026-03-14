@@ -201,7 +201,7 @@ export default function Edit({
                                                 </div>
                                                 <div className="text-xs text-slate-500">
                                                     {session.ip_address} · {session.is_current
-                                                        ? <span className="text-emerald-600 font-bold">This device</span>
+                                                        ? <span className="text-blue-600 font-bold">This device</span>
                                                         : fmtLastActive(session.last_activity)
                                                     }
                                                 </div>

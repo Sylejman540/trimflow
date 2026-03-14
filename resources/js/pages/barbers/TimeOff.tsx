@@ -63,7 +63,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
             actions={
                 <button
                     onClick={() => setAddOpen(true)}
-                    className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm"
+                    className="flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-blue-700 text-white text-xs font-bold transition-colors shadow-sm"
                 >
                     <Plus className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">{t('timeoff.add')}</span>
@@ -183,7 +183,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
 
                         <DialogFooter className="gap-2 sm:gap-0 mt-2">
                             <Button type="button" variant="ghost" onClick={() => setAddOpen(false)} className="h-11 rounded-xl text-xs text-slate-500 font-bold">{t('cancel')}</Button>
-                            <Button type="submit" disabled={processing} className="h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 shadow-none text-xs font-bold">
+                            <Button type="submit" disabled={processing} className="h-11 rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-none text-xs font-bold">
                                 {t('save')}
                             </Button>
                         </DialogFooter>

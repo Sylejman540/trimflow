@@ -97,7 +97,7 @@ export default function Index({
                         value={formatCents(totals.revenue)}
                         sub={totals.tips > 0 ? `+${formatCents(totals.tips)} ${t('reports.tipsLabel')}` : undefined}
                         icon={DollarSign}
-                        color="bg-emerald-50 text-emerald-600"
+                        color="bg-emerald-50 text-blue-600"
                     />
                     <StatCard
                         label={t('reports.appointments')}
