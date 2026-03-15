@@ -19,32 +19,30 @@ class SendAppointmentReminders implements ShouldQueue
 
     public function handle(): void
     {
-        $windowStart = Carbon::now()->addMinutes(50);
-        $windowEnd   = Carbon::now()->addMinutes(70);
+        // Send reminder 15 minutes before appointment (±5 min window to avoid duplicates)
+        $windowStart = Carbon::now()->addMinutes(10);
+        $windowEnd   = Carbon::now()->addMinutes(20);
 
-        Appointment::with(['customer.user', 'barber.user', 'service', 'company'])
+        Appointment::with(['customer', 'barber.user', 'service', 'company'])
             ->whereIn('status', ['confirmed', 'pending'])
             ->whereBetween('starts_at', [$windowStart, $windowEnd])
             ->whereNull('reminder_sent_at')
             ->get()
             ->each(function (Appointment $appointment) {
-                $customer = $appointment->customer;
-                if (! $customer) {
+                $barber = $appointment->barber;
+                if (! $barber || ! $barber->user) {
                     return;
                 }
 
                 try {
-                    if ($customer->user) {
-                        $customer->user->notify(new AppointmentReminder($appointment));
-                    } elseif ($customer->email) {
-                        Notification::route('mail', [$customer->email => $customer->name])
-                            ->notify(new AppointmentReminder($appointment));
-                    }
+                    // Send reminder to the barber assigned to this appointment
+                    $barber->user->notify(new AppointmentReminder($appointment, 'barber'));
 
                     $appointment->updateQuietly(['reminder_sent_at' => now()]);
                 } catch (\Throwable $e) {
                     Log::error('Appointment reminder failed', [
                         'appointment_id' => $appointment->id,
+                        'barber_id'      => $barber->id,
                         'error'          => $e->getMessage(),
                     ]);
                 }
