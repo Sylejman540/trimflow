@@ -105,7 +105,7 @@ export default function Create({
             .then((json: { slots: string[] }) => setSlots(json.slots ?? []))
             .catch(() => setSlots([]))
             .finally(() => setSlotsLoading(false));
-    }, [data.barber_id, data.service_ids.join(','), selectedDate]);
+    }, [data.barber_id, data.service_ids.join(','), selectedDate, companySlug]);
 
     function pickSlot(slot: string) {
         setSelectedSlot(slot);

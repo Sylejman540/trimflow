@@ -254,7 +254,7 @@ export default function Show({
                             {/* Total row when multiple services */}
                             {(appointment as any).services?.length > 1 && (
                                 <div className="pt-2 flex justify-between text-sm font-bold text-slate-900 border-t border-slate-200">
-                                    <span>Total</span>
+                                    <span>{t('total')}</span>
                                     <span>{formatCents(appointment.price)}</span>
                                 </div>
                             )}

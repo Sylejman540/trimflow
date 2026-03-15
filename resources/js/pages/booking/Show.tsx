@@ -178,7 +178,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         if (isAnyBarber) fetchSlots('any', serviceIds, selectedDate);
         else if (selectedBarber) fetchSlots(selectedBarber.id, serviceIds, selectedDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [step, selectedDate]);
+    }, [step, selectedDate, selectedBarber?.id, selectedServices.map(s => s.id).join(',')]);
 
     function toggleService(s: Service) {
         setSelectedServices(prev =>
@@ -233,7 +233,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans">
-            <Head title={`Book at ${company.name}`} />
+            <Head title={`${company.name}`} />
 
             {/* Header */}
             <div className="bg-white border-b border-slate-200">

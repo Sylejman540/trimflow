@@ -41,7 +41,17 @@ export default function Index({
     }
 
     return (
-        <AppLayout title={t('notif.title')}>
+        <AppLayout
+            title={t('notif.title')}
+            actions={unread_count > 0 ? (
+                <button
+                    onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}
+                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
+                >
+                    {t('notif.markAllRead')}
+                </button>
+            ) : undefined}
+        >
             <Head title={t('notif.title')} />
 
             <div className="w-full">

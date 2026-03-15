@@ -124,7 +124,7 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
             { label: '+2h',  date: new Date(base.getTime() + 120 * 60000) },
             { label: '+3h',  date: new Date(base.getTime() + 180 * 60000) },
         ];
-    }, [open]);
+    }, []);
 
     function submit(e: FormEvent) {
         e.preventDefault();
@@ -549,7 +549,7 @@ function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                         <div className="space-y-2 min-h-[80px]">
                             {col.length === 0 ? (
                                 <div className="border-2 border-dashed border-slate-100 rounded-xl h-16 flex items-center justify-center">
-                                    <span className="text-xs text-slate-300">Empty</span>
+                                    <span className="text-xs text-slate-300">{t('noResults')}</span>
                                 </div>
                             ) : col.map(appt => (
                                 <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />
@@ -676,7 +676,7 @@ export default function Index({
                 return (
                     <div className="whitespace-nowrap">
                         <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-md">{formatTime(iso)}</span>
-                        <p className="text-xs text-slate-400 mt-0.5">{d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                     </div>
                 );
             },

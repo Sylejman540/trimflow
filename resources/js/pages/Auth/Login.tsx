@@ -26,8 +26,12 @@ export default function Login({ status, canResetPassword }: { status?: string, c
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        i18n.changeLanguage('en');
-        localStorage.setItem('freshio_lang', 'en');
+        const saved = localStorage.getItem('freshio_lang');
+        if (saved) {
+            i18n.changeLanguage(saved);
+        } else {
+            i18n.changeLanguage('en');
+        }
     }, []);
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',

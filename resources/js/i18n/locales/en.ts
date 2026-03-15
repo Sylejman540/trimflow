@@ -634,7 +634,7 @@ export default {
         byBarber: 'By Barber',
         byService: 'By Service',
         completionRate: '% completion rate',
-        tipsLabel: '+{tips} tips',
+        tipsLabel: 'tips',
         apptsLabel: 'appts',
         noData: 'No data for this period.',
         periods: {

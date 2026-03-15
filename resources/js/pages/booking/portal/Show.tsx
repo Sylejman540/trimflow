@@ -76,7 +76,7 @@ export default function PortalShow({ company }: { company: Company }) {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full bg-slate-900 hover:bg-blue-700 text-white font-semibold text-sm py-2.5 rounded-xl transition-colors disabled:opacity-50"
+                            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-2.5 rounded-xl transition-colors disabled:opacity-50"
                         >
                             {processing ? 'Looking up…' : 'View My Appointments'}
                         </button>

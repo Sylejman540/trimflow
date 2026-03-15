@@ -144,7 +144,7 @@ export default function Index({ company }: { company: Company }) {
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    className="bg-slate-900 hover:bg-blue-700 text-white h-10 px-6 shadow-none"
+                                    className="bg-slate-900 hover:bg-slate-800 text-white h-10 px-6 shadow-none"
                                 >
                                     {t('save')}
                                 </Button>

@@ -615,8 +615,7 @@ export default function AppLayout({
                             variant="destructive"
                             className="shadow-none"
                             onClick={() => {
-                                i18n.changeLanguage('en');
-                                localStorage.setItem('freshio_lang', 'en');
+                                localStorage.removeItem(`freshio_lang_${auth.user.id}`);
                                 router.post(route('logout'));
                             }}
                         >
