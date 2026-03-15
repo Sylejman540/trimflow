@@ -9,6 +9,7 @@ export default {
     back: 'Back',
     close: 'Close',
     confirm: 'Confirm',
+    viewDetails: 'View Details',
     loading: 'Loading…',
     noResults: 'No results found.',
     actions: 'Actions',

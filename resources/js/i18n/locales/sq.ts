@@ -8,6 +8,7 @@ export default {
     back: 'Kthehu',
     close: 'Mbyll',
     confirm: 'Konfirmo',
+    viewDetails: 'Shiko Detajet',
     loading: 'Po ngarkohet…',
     noResults: 'Nuk u gjet asgjë.',
     actions: 'Veprime',

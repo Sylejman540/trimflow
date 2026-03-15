@@ -7,6 +7,7 @@ export default {
     back: 'Zurück',
     close: 'Schließen',
     confirm: 'Bestätigen',
+    viewDetails: 'Details ansehen',
     loading: 'Wird geladen…',
     noResults: 'Keine Ergebnisse gefunden.',
     actions: 'Aktionen',

@@ -516,6 +516,66 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                     ))}
                 </div>
             </div>
+
+            {/* Appointment Details Modal */}
+            <Dialog open={!!selectedAppt} onOpenChange={(open) => !open && setSelectedAppt(null)}>
+                <DialogContent className="max-w-lg">
+                    {selectedAppt && (
+                        <>
+                            <DialogHeader>
+                                <DialogTitle>{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
+                                <DialogDescription>
+                                    <Badge className={cn('mt-2', statusVariant(selectedAppt.status))}>
+                                        {t(`appt.${selectedAppt.status === 'no_show' ? 'noShow' : selectedAppt.status === 'in_progress' ? 'inProgress' : selectedAppt.status}`)}
+                                    </Badge>
+                                </DialogDescription>
+                            </DialogHeader>
+
+                            <div className="space-y-4">
+                                <div className="grid gap-3 text-sm">
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">{t('appt.startsAt')}</span>
+                                        <span className="font-medium">{formatDateTime(selectedAppt.starts_at)}</span>
+                                    </div>
+                                    {selectedAppt.barber && (
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-500">{t('appt.barber')}</span>
+                                            <span className="font-medium">{selectedAppt.barber.user?.name ?? '-'}</span>
+                                        </div>
+                                    )}
+                                    {selectedAppt.service && (
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-500">{t('appt.service')}</span>
+                                            <span className="font-medium">{selectedAppt.service.name}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between">
+                                        <span className="text-slate-500">{t('price')}</span>
+                                        <span className="font-medium">{formatCents(selectedAppt.price)}</span>
+                                    </div>
+                                    {selectedAppt.customer?.phone && (
+                                        <div className="flex justify-between">
+                                            <span className="text-slate-500">{t('phone')}</span>
+                                            <span className="font-medium">{selectedAppt.customer.phone}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <DialogFooter className="flex gap-2">
+                                <Link href={route('appointments.show', selectedAppt.id)}
+                                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1')}>
+                                    {t('viewDetails')}
+                                </Link>
+                                <Link href={route('appointments.edit', selectedAppt.id)}
+                                    className={cn(buttonVariants(), 'flex-1')}>
+                                    {t('edit')}
+                                </Link>
+                            </DialogFooter>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
