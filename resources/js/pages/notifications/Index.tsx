@@ -1,6 +1,6 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight } from 'lucide-react';
+import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight, ChevronLeft } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { cn } from '@/lib/utils';
 
@@ -43,14 +43,25 @@ export default function Index({
     return (
         <AppLayout
             title={t('notif.title')}
-            actions={unread_count > 0 ? (
-                <button
-                    onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}
-                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
-                >
-                    {t('notif.markAllRead')}
-                </button>
-            ) : undefined}
+            actions={
+                <div className="flex items-center gap-2">
+                    <Link
+                        href={route('dashboard')}
+                        className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        {t('back')}
+                    </Link>
+                    {unread_count > 0 && (
+                        <button
+                            onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}
+                            className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
+                        >
+                            {t('notif.markAllRead')}
+                        </button>
+                    )}
+                </div>
+            }
         >
             <Head title={t('notif.title')} />
 
