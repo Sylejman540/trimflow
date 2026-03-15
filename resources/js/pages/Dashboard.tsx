@@ -16,6 +16,9 @@ import {
     User,
     Trophy,
     TrendingUp,
+    Settings,
+    Eye,
+    EyeOff,
 } from 'lucide-react';
 
 import AppLayout from '@/layouts/AppLayout';
@@ -26,7 +29,14 @@ import {
     CardTitle,
     CardDescription,
 } from '@/components/ui/card';
-import { useState } from 'react';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { useState, useEffect } from 'react';
 import { formatCents, formatTime } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
 
@@ -228,6 +238,28 @@ export default function Dashboard({
     const { t } = useTranslation();
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
     const [viewMine, setViewMine] = useState(is_owner_barber);
+    const [customizeOpen, setCustomizeOpen] = useState(false);
+    const [visibleCards, setVisibleCards] = useState<Set<string>>(() => {
+        if (typeof window === 'undefined') return new Set(['kpi', 'insights', 'schedule', 'upcoming']);
+        const saved = localStorage.getItem('dashboard-visible-cards');
+        return new Set(saved ? JSON.parse(saved) : ['kpi', 'insights', 'schedule', 'upcoming']);
+    });
+
+    useEffect(() => {
+        localStorage.setItem('dashboard-visible-cards', JSON.stringify(Array.from(visibleCards)));
+    }, [visibleCards]);
+
+    function toggleCard(cardId: string) {
+        setVisibleCards(prev => {
+            const next = new Set(prev);
+            if (next.has(cardId)) {
+                next.delete(cardId);
+            } else {
+                next.add(cardId);
+            }
+            return next;
+        });
+    }
 
     const activeStats        = (is_owner_barber && viewMine && my_stats)          ? my_stats          : stats;
     const activeSchedule     = (is_owner_barber && viewMine && my_today_schedule) ? my_today_schedule : today_schedule;
@@ -237,6 +269,51 @@ export default function Dashboard({
         <AppLayout title={t('dashboard')}>
             <Head title={t('dashboard')} />
             <div className="space-y-4 lg:space-y-6">
+                {/* Customize Button */}
+                <div className="flex items-center justify-end">
+                    <Button
+                        onClick={() => setCustomizeOpen(true)}
+                        className="flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold h-9 px-3"
+                    >
+                        <Settings className="h-3.5 w-3.5" />
+                        Customize
+                    </Button>
+                </div>
+
+                {/* Customize Modal */}
+                <Dialog open={customizeOpen} onOpenChange={setCustomizeOpen}>
+                    <DialogContent className="max-w-sm rounded-xl">
+                        <DialogHeader>
+                            <DialogTitle>Dashboard Customization</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                                <span className="text-sm font-medium text-slate-900">KPI Cards (Today's Stats)</span>
+                                <button onClick={() => toggleCard('kpi')} className="text-slate-400 hover:text-slate-600">
+                                    {visibleCards.has('kpi') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                                <span className="text-sm font-medium text-slate-900">Weekly Insights</span>
+                                <button onClick={() => toggleCard('insights')} className="text-slate-400 hover:text-slate-600">
+                                    {visibleCards.has('insights') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                                <span className="text-sm font-medium text-slate-900">Today's Schedule</span>
+                                <button onClick={() => toggleCard('schedule')} className="text-slate-400 hover:text-slate-600">
+                                    {visibleCards.has('schedule') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                                </button>
+                            </div>
+                            <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
+                                <span className="text-sm font-medium text-slate-900">Upcoming Appointments</span>
+                                <button onClick={() => toggleCard('upcoming')} className="text-slate-400 hover:text-slate-600">
+                                    {visibleCards.has('upcoming') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                                </button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
 
                 {/* Low-stock alert */}
                 {!is_barber && !lowStockDismissed && low_stock_products.length > 0 && (
@@ -291,6 +368,7 @@ export default function Dashboard({
                 )}
 
                 {/* KPI Cards */}
+                {visibleCards.has('kpi') && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     <Card className="border-slate-200 shadow-none">
                         <CardContent className="p-4 lg:p-5 space-y-2">
@@ -328,9 +406,10 @@ export default function Dashboard({
                         </CardContent>
                     </Card>
                 </div>
+                )}
 
                 {/* Weekly Insights */}
-                {!is_barber && insights && (
+                {visibleCards.has('insights') && !is_barber && insights && (
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
                         <Card className="border-slate-200 shadow-none">
                             <CardContent className="p-3 lg:p-5 flex items-center gap-3">
@@ -368,6 +447,7 @@ export default function Dashboard({
 
                 {/* Today's Schedule + Upcoming */}
                 <div className="grid gap-4 lg:gap-6 lg:grid-cols-2">
+                    {visibleCards.has('schedule') && (
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
@@ -388,7 +468,9 @@ export default function Dashboard({
                             </div>
                         </CardContent>
                     </Card>
+                    )}
 
+                    {visibleCards.has('upcoming') && (
                     <Card className="border-slate-200 shadow-none">
                         <CardHeader className="pb-2 px-4 lg:px-6">
                             <div className="flex items-center justify-between">
@@ -409,6 +491,7 @@ export default function Dashboard({
                             </div>
                         </CardContent>
                     </Card>
+                    )}
                 </div>
             </div>
         </AppLayout>
