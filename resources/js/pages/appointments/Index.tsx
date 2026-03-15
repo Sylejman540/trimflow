@@ -620,7 +620,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                     {selectedAppt && (
                         <>
                             <DialogHeader className="text-left">
-                                <DialogTitle className="text-lg sm:text-xl">{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
+                                <DialogTitle className="text-base sm:text-xl">{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
                                 <DialogDescription>
                                     <Badge className={cn('mt-2 text-xs sm:text-sm', statusVariant(selectedAppt.status))}>
                                         {t(`appt.${selectedAppt.status === 'no_show' ? 'noShow' : selectedAppt.status === 'in_progress' ? 'inProgress' : selectedAppt.status}`)}
@@ -629,7 +629,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                             </DialogHeader>
 
                             <div className="space-y-3 sm:space-y-4">
-                                <div className="grid gap-2 sm:gap-3 text-xs sm:text-sm">
+                                <div className="grid gap-2 sm:gap-3 text-sm sm:text-sm">
                                     <div className="flex justify-between items-start gap-2">
                                         <span className="text-slate-500 shrink-0">{t('appt.startsAt')}</span>
                                         <span className="font-medium text-right">{formatDateTime(selectedAppt.starts_at)}</span>
@@ -661,11 +661,11 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
                             <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                                 <Link href={route('appointments.show', selectedAppt.id)}
-                                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-full')}>
+                                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'flex-1')}>
                                     {t('viewDetails')}
                                 </Link>
                                 <Link href={route('appointments.edit', selectedAppt.id)}
-                                    className={cn(buttonVariants({ size: 'sm' }), 'w-full')}>
+                                    className={cn(buttonVariants({ size: 'sm' }), 'flex-1')}>
                                     {t('edit')}
                                 </Link>
                             </DialogFooter>
