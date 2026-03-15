@@ -14,6 +14,10 @@ import {
     Check,
     Store,
     User,
+    Trophy,
+    TrendingUp,
+    UserCheck,
+    UserX,
 } from 'lucide-react';
 
 import AppLayout from '@/layouts/AppLayout';
@@ -33,6 +37,13 @@ interface Stats {
     today_pending: number;
     today_revenue: number;
     completion_rate: number;
+}
+
+interface Insights {
+    top_barber:       { name: string; count: number } | null;
+    top_service:      { name: string; count: number } | null;
+    repeat_customers: number;
+    no_show_rate:     number;
 }
 
 interface Setup {
@@ -202,7 +213,7 @@ export default function Dashboard({
     is_barber, is_owner_barber = false,
     stats, today_schedule, upcoming_appointments,
     my_stats, my_today_schedule, my_upcoming,
-    low_stock_products = [], setup,
+    low_stock_products = [], setup, insights,
 }: {
     is_barber: boolean;
     is_owner_barber?: boolean;
@@ -214,6 +225,7 @@ export default function Dashboard({
     my_upcoming?: Appointment[] | null;
     low_stock_products?: LowStockProduct[];
     setup?: Setup | null;
+    insights?: Insights | null;
 }) {
     const { t } = useTranslation();
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
@@ -318,6 +330,65 @@ export default function Dashboard({
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Weekly Insights */}
+                {!is_barber && insights && (
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4">
+                        <Card className="border-slate-200 shadow-none">
+                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-500 shrink-0">
+                                    <Trophy className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.topBarber')}</p>
+                                    {insights.top_barber
+                                        ? <p className="text-sm font-bold truncate">{insights.top_barber.name} <span className="text-xs font-normal text-slate-400">({insights.top_barber.count})</span></p>
+                                        : <p className="text-sm text-slate-400">—</p>
+                                    }
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-slate-200 shadow-none">
+                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-500 shrink-0">
+                                    <TrendingUp className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.topService')}</p>
+                                    {insights.top_service
+                                        ? <p className="text-sm font-bold truncate">{insights.top_service.name} <span className="text-xs font-normal text-slate-400">({insights.top_service.count})</span></p>
+                                        : <p className="text-sm text-slate-400">—</p>
+                                    }
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-slate-200 shadow-none">
+                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-500 shrink-0">
+                                    <UserCheck className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.repeatCustomers')}</p>
+                                    <p className="text-xl font-bold">{insights.repeat_customers}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-slate-200 shadow-none">
+                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
+                                <div className={`flex h-9 w-9 items-center justify-center rounded-xl shrink-0 ${insights.no_show_rate >= 20 ? 'bg-red-50 text-red-500' : 'bg-slate-100 text-slate-500'}`}>
+                                    <UserX className="h-4 w-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.noShowRate')}</p>
+                                    <p className={`text-xl font-bold ${insights.no_show_rate >= 20 ? 'text-red-600' : ''}`}>{insights.no_show_rate}%</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+                )}
 
                 {/* Today's Schedule + Upcoming */}
                 <div className="grid gap-4 lg:gap-6 lg:grid-cols-2">

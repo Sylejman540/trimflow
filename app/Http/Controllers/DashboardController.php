@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Barber;
+use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Service;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
@@ -94,6 +96,59 @@ class DashboardController extends Controller
             ->get(['id', 'name', 'stock_qty', 'low_stock_threshold'])
             ->toArray();
 
+        // Weekly insights (admin only)
+        $insights = null;
+        if (!$isBarber || $isOwnerBarber) {
+            $weekStart = Carbon::now()->startOfWeek();
+            $weekEnd   = Carbon::now()->endOfWeek();
+
+            // Top barber this week (most completed appointments)
+            $topBarber = DB::table('appointments')
+                ->join('barbers', 'appointments.barber_id', '=', 'barbers.id')
+                ->join('users', 'barbers.user_id', '=', 'users.id')
+                ->where('appointments.company_id', $user->company_id)
+                ->where('appointments.status', 'completed')
+                ->whereBetween('appointments.starts_at', [$weekStart, $weekEnd])
+                ->select('users.name', DB::raw('COUNT(*) as count'))
+                ->groupBy('users.id', 'users.name')
+                ->orderByDesc('count')
+                ->first();
+
+            // Most booked service this week
+            $topService = DB::table('appointments')
+                ->join('services', 'appointments.service_id', '=', 'services.id')
+                ->where('appointments.company_id', $user->company_id)
+                ->whereNotIn('appointments.status', ['cancelled', 'no_show'])
+                ->whereBetween('appointments.starts_at', [$weekStart, $weekEnd])
+                ->select('services.name', DB::raw('COUNT(*) as count'))
+                ->groupBy('services.id', 'services.name')
+                ->orderByDesc('count')
+                ->first();
+
+            // Repeat customers (booked more than once, all time)
+            $repeatCustomers = Customer::where('company_id', $user->company_id)
+                ->where('booking_total', '>', 1)
+                ->count();
+
+            // No-show rate this week
+            $totalWeek  = Appointment::where('company_id', $user->company_id)
+                ->whereBetween('starts_at', [$weekStart, $weekEnd])
+                ->whereNotIn('status', ['cancelled'])
+                ->count();
+            $noShowWeek = Appointment::where('company_id', $user->company_id)
+                ->whereBetween('starts_at', [$weekStart, $weekEnd])
+                ->where('status', 'no_show')
+                ->count();
+            $noShowRate = $totalWeek > 0 ? round(($noShowWeek / $totalWeek) * 100) : 0;
+
+            $insights = [
+                'top_barber'       => $topBarber  ? ['name' => $topBarber->name,  'count' => (int) $topBarber->count]  : null,
+                'top_service'      => $topService ? ['name' => $topService->name, 'count' => (int) $topService->count] : null,
+                'repeat_customers' => $repeatCustomers,
+                'no_show_rate'     => $noShowRate,
+            ];
+        }
+
         // Getting started checklist (admin only, including owner-barbers)
         $setup = null;
         if (!$isBarber || $isOwnerBarber) {
@@ -111,6 +166,7 @@ class DashboardController extends Controller
         }
 
         return Inertia::render('Dashboard', [
+            'insights' => $insights,
             'is_barber'          => $isBarber && !$isOwnerBarber,
             'is_owner_barber'    => $isOwnerBarber,
             'my_stats'           => $myStats,

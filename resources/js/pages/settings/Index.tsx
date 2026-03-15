@@ -142,16 +142,20 @@ export default function Settings({
         router.delete(route('settings.logo.destroy'), { preserveScroll: true });
     }
 
+    const detectedTimezone = (() => {
+        try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return 'Europe/Belgrade'; }
+    })();
+
     const { data, setData, patch, processing, errors } = useForm({
-        name:    company.name    ?? '',
-        email:   company.email   ?? '',
-        phone:   company.phone   ?? '',
-        address: company.address ?? '',
-        city:    company.city    ?? '',
-        state:   company.state   ?? '',
-        zip:     company.zip     ?? '',
-        country: company.country ?? '',
-        timezone: company.timezone ?? 'Europe/Belgrade',
+        name:     company.name     ?? '',
+        email:    company.email    ?? '',
+        phone:    company.phone    ?? '',
+        address:  company.address  ?? '',
+        city:     company.city     ?? '',
+        state:    company.state    ?? '',
+        zip:      company.zip      ?? '',
+        country:  company.country  ?? '',
+        timezone: company.timezone || detectedTimezone,
     });
 
     function handleCompanySubmit(e: React.FormEvent) {
@@ -324,21 +328,6 @@ export default function Settings({
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.timezone')}</Label>
-                                    <Select value={data.timezone} onValueChange={v => setData('timezone', v ?? 'Europe/Belgrade')}>
-                                        <SelectTrigger className="h-10 border-slate-200 shadow-none text-sm">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="max-h-72">
-                                            {TIMEZONES.map(tz => (
-                                                <SelectItem key={tz.value} value={tz.value} className="text-xs">
-                                                    {tz.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="sm:col-span-2 space-y-1.5">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.streetAddress')}</Label>
                                     <Input
                                         value={data.address}
