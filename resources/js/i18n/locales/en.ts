@@ -50,6 +50,7 @@ export default {
         to: 'To',
         reason: 'Reason (optional)',
         reasonPlaceholder: 'e.g. Vacation, sick leave…',
+        manage: 'Schedule and manage time off periods.',
     },
 
     // Nav
@@ -279,6 +280,7 @@ export default {
         newDesc: 'Create a new professional profile and login credentials for a barber.',
         editDesc: 'Modify barber profile details, contact information, and status.',
         updateBarber: 'Update Barber',
+        info: 'Information',
         you: 'You',
         generalist: 'Generalist',
         offToday: 'Off Today',

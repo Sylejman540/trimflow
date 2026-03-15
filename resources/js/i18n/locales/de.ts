@@ -239,6 +239,7 @@ export default {
         newDesc: 'Erstellen Sie ein neues Berufsprofil und Anmeldedaten für einen Friseur.',
         editDesc: 'Ändern Sie Profildetails, Kontaktinformationen und Status des Friseurs.',
         updateBarber: 'Friseur aktualisieren',
+        info: 'Information',
         you: 'Sie',
         generalist: 'Allrounder',
         deleteConfirm: 'Sind Sie sicher, dass Sie diesen Friseur entfernen möchten? Dies beeinflusst seine Verfügbarkeit und zukünftigen Zeitplan.',
@@ -359,6 +360,7 @@ export default {
         to: 'Bis',
         reason: 'Grund (optional)',
         reasonPlaceholder: 'z.B. Urlaub, Krankheit…',
+        manage: 'Urlaubszeiten planen und verwalten.',
     },
 
     // Schedule

@@ -256,6 +256,7 @@ export default {
         newDesc: 'Krijo një profil të ri profesional dhe kredenciale hyrjeje për berberin.',
         editDesc: 'Modifiko detajet e profilit, informacionin e kontaktit dhe statusin.',
         updateBarber: 'Përditëso berberin',
+        info: 'Informacion',
         you: 'Ti',
         generalist: 'Gjeneralist',
         offToday: 'Lirë sot',
@@ -379,6 +380,7 @@ export default {
         to: 'Deri',
         reason: 'Arsyeja (opsionale)',
         reasonPlaceholder: 'p.sh. Pushime, sëmundje…',
+        manage: 'Planifiko dhe menaxho periudhat e pushimit.',
     },
 
     // Schedule

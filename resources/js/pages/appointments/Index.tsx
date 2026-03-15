@@ -397,7 +397,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
 }) {
     const { t } = useTranslation();
-    const [calMode, setCalMode] = useState<'day' | 'week'>('week');
+    const [calMode, setCalMode] = useState<'day' | 'week' | 'month'>('week');
     const [anchor, setAnchor] = useState(() => {
         const d = new Date(); d.setHours(0, 0, 0, 0); return d;
     });
@@ -420,16 +420,51 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
     const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 7am–8pm
 
-    const displayDays = calMode === 'day' ? [anchor] : weekDays;
+    // Month view days
+    const monthDays = useMemo(() => {
+        const days: Date[] = [];
+        const year = anchor.getFullYear();
+        const month = anchor.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+
+        // Start from Monday of the first week
+        const startDate = new Date(firstDay);
+        const dow = firstDay.getDay();
+        const diff = dow === 0 ? -6 : 1 - dow;
+        startDate.setDate(firstDay.getDate() + diff);
+
+        // End on Sunday of the last week
+        for (let i = 0; i < 42; i++) {
+            const d = new Date(startDate);
+            d.setDate(startDate.getDate() + i);
+            days.push(d);
+        }
+        return days;
+    }, [anchor]);
+
+    const displayDays = calMode === 'day' ? [anchor] : calMode === 'week' ? weekDays : monthDays;
 
     function prev() {
         const d = new Date(anchor);
-        d.setDate(d.getDate() - (calMode === 'day' ? 1 : 7));
+        if (calMode === 'day') {
+            d.setDate(d.getDate() - 1);
+        } else if (calMode === 'week') {
+            d.setDate(d.getDate() - 7);
+        } else {
+            d.setMonth(d.getMonth() - 1);
+        }
         setAnchor(d);
     }
     function next() {
         const d = new Date(anchor);
-        d.setDate(d.getDate() + (calMode === 'day' ? 1 : 7));
+        if (calMode === 'day') {
+            d.setDate(d.getDate() + 1);
+        } else if (calMode === 'week') {
+            d.setDate(d.getDate() + 7);
+        } else {
+            d.setMonth(d.getMonth() + 1);
+        }
         setAnchor(d);
     }
     function goToday() {
@@ -447,7 +482,9 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
     const headerLabel = calMode === 'day'
         ? anchor.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
-        : `${weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+        : calMode === 'week'
+        ? `${weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+        : anchor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     return (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
@@ -467,7 +504,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                 <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-slate-900">{headerLabel}</span>
                     <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden bg-white">
-                        {(['day', 'week'] as const).map(m => (
+                        {(['day', 'week', 'month'] as const).map(m => (
                             <button
                                 key={m}
                                 onClick={() => setCalMode(m)}
@@ -483,53 +520,96 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
             </div>
 
             {/* Grid */}
-            <div className="overflow-auto max-h-[600px]">
-                <div className="min-w-full sm:min-w-[500px]" style={{ display: 'grid', gridTemplateColumns: `48px repeat(${displayDays.length}, 1fr)` }}>
-                    {/* Header row */}
-                    <div className="border-b border-slate-100 bg-slate-50" />
-                    {displayDays.map(day => {
-                        const isCurrentDay = isSameDay(day, today);
-                        return (
-                            <div key={day.toISOString()} className={cn('border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center', isCurrentDay && 'bg-slate-50')}>
-                                <p className={cn('text-[10px] font-bold uppercase tracking-wider', isCurrentDay ? 'text-slate-900' : 'text-slate-400')}>
-                                    {day.toLocaleDateString('en-US', { weekday: 'short' })}
-                                </p>
-                                <p className={cn('text-base font-black mt-0.5', isCurrentDay ? 'text-slate-900' : 'text-slate-900')}>
-                                    {day.getDate()}
-                                </p>
+            {calMode === 'month' ? (
+                // Month view
+                <div className="overflow-auto max-h-[600px]">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+                        {/* Day headers */}
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
+                            <div key={day} className="border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center last:border-r border-slate-100">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{day}</p>
                             </div>
-                        );
-                    })}
-
-                    {/* Hour rows */}
-                    {hours.map(hour => (
-                        <>
-                            <div key={`h-${hour}`} className="border-b border-slate-100 px-1 py-1 text-right">
-                                <span className="text-[10px] text-slate-400 font-medium">
-                                    {hour === 12 ? '12pm' : hour < 12 ? `${hour}am` : `${hour - 12}pm`}
-                                </span>
-                            </div>
-                            {displayDays.map(day => {
-                                const appts = apptsForDayHour(day, hour);
-                                const isCurrentDay = isSameDay(day, today);
-                                return (
-                                    <div key={`${day.toISOString()}-${hour}`}
-                                        className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-slate-50/50')}>
-                                        {appts.map(appt => (
+                        ))}
+                        {/* Calendar cells */}
+                        {monthDays.map(day => {
+                            const isCurrentDay = isSameDay(day, today);
+                            const isCurrentMonth = day.getMonth() === anchor.getMonth();
+                            const dayAppts = filtered.filter(a => isSameDay(parseShopDate(a.starts_at), day));
+                            return (
+                                <div key={day.toISOString()}
+                                    className={cn('border-b border-l border-slate-100 p-2 min-h-[100px] last:border-r',
+                                        !isCurrentMonth && 'bg-slate-50',
+                                        isCurrentDay && 'bg-slate-50')}>
+                                    <p className={cn('text-sm font-bold mb-1', isCurrentDay ? 'text-slate-900' : 'text-slate-600')}>
+                                        {day.getDate()}
+                                    </p>
+                                    <div className="space-y-1">
+                                        {dayAppts.slice(0, 3).map(appt => (
                                             <button key={appt.id} onClick={() => setSelectedAppt(appt)}
-                                                className={cn('w-full flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border cursor-pointer text-left',
+                                                className={cn('block w-full text-left px-1.5 py-1 rounded text-[10px] font-semibold truncate hover:opacity-80 transition-opacity border cursor-pointer',
                                                     statusVariant(appt.status))}>
-                                                <span className="truncate">{appt.customer?.name ?? '-'}</span>
-                                                <span className="font-normal opacity-80 truncate">{formatTime(appt.starts_at)} · {appt.service?.name ?? '-'}</span>
+                                                {formatTime(appt.starts_at)} {appt.customer?.name ?? '-'}
                                             </button>
                                         ))}
+                                        {dayAppts.length > 3 && (
+                                            <p className="text-[10px] text-slate-400 px-1">+{dayAppts.length - 3}</p>
+                                        )}
                                     </div>
-                                );
-                            })}
-                        </>
-                    ))}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                // Day/Week view
+                <div className="overflow-auto max-h-[600px]">
+                    <div className="min-w-full sm:min-w-[500px]" style={{ display: 'grid', gridTemplateColumns: `48px repeat(${displayDays.length}, 1fr)` }}>
+                        {/* Header row */}
+                        <div className="border-b border-slate-100 bg-slate-50" />
+                        {displayDays.map(day => {
+                            const isCurrentDay = isSameDay(day, today);
+                            return (
+                                <div key={day.toISOString()} className={cn('border-b border-l border-slate-100 bg-slate-50 px-2 py-2 text-center', isCurrentDay && 'bg-slate-50')}>
+                                    <p className={cn('text-[10px] font-bold uppercase tracking-wider', isCurrentDay ? 'text-slate-900' : 'text-slate-400')}>
+                                        {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                                    </p>
+                                    <p className={cn('text-base font-black mt-0.5', isCurrentDay ? 'text-slate-900' : 'text-slate-900')}>
+                                        {day.getDate()}
+                                    </p>
+                                </div>
+                            );
+                        })}
+
+                        {/* Hour rows */}
+                        {hours.map(hour => (
+                            <>
+                                <div key={`h-${hour}`} className="border-b border-slate-100 px-1 py-1 text-right">
+                                    <span className="text-[10px] text-slate-400 font-medium">
+                                        {hour === 12 ? '12pm' : hour < 12 ? `${hour}am` : `${hour - 12}pm`}
+                                    </span>
+                                </div>
+                                {displayDays.map(day => {
+                                    const appts = apptsForDayHour(day, hour);
+                                    const isCurrentDay = isSameDay(day, today);
+                                    return (
+                                        <div key={`${day.toISOString()}-${hour}`}
+                                            className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-slate-50/50')}>
+                                            {appts.map(appt => (
+                                                <button key={appt.id} onClick={() => setSelectedAppt(appt)}
+                                                    className={cn('w-full flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border cursor-pointer text-left',
+                                                        statusVariant(appt.status))}>
+                                                    <span className="truncate">{appt.customer?.name ?? '-'}</span>
+                                                    <span className="font-normal opacity-80 truncate">{formatTime(appt.starts_at)} · {appt.service?.name ?? '-'}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    );
+                                })}
+                            </>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Appointment Details Modal */}
             <Dialog open={!!selectedAppt} onOpenChange={(open) => !open && setSelectedAppt(null)}>
