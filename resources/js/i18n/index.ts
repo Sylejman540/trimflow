@@ -12,7 +12,6 @@ export const LANGUAGES = [
 ] as const;
 
 i18n
-    .use(LanguageDetector)
     .use(initReactI18next)
     .init({
         resources: {
@@ -20,15 +19,20 @@ i18n
             sq: { translation: sq },
             de: { translation: de },
         },
+        lng: 'en',
         fallbackLng: 'en',
         supportedLngs: ['en', 'sq', 'de'],
         interpolation: { escapeValue: false },
         initImmediate: false,
-        detection: {
-            order: ['localStorage', 'navigator'],
-            caches: ['localStorage'],
-            lookupLocalStorage: 'freshio_lang',
-        },
     });
+
+// Initialize language preference - user-specific or guest
+export function initializeUserLanguage(userId?: number) {
+    const userLangKey = userId ? `freshio_lang_${userId}` : 'freshio_lang_guest';
+    const savedLang = localStorage.getItem(userLangKey);
+    if (savedLang && LANGUAGES.some(l => l.code === savedLang)) {
+        i18n.changeLanguage(savedLang);
+    }
+}
 
 export default i18n;

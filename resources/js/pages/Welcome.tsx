@@ -9,7 +9,7 @@ if (typeof document !== 'undefined') {
 import { motion, useInView } from 'framer-motion';
 import { ArrowRight, Menu, X, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { LANGUAGES } from '../i18n';
+import { LANGUAGES, initializeUserLanguage } from '../i18n';
 
 interface Props {
     canLogin: boolean;
@@ -121,7 +121,12 @@ function LangSwitcher() {
                     {LANGUAGES.map(({ code, label, flag }) => (
                         <button
                             key={code}
-                            onClick={() => { i18n.changeLanguage(code); setOpen(false); }}
+                            onClick={() => {
+                                i18n.changeLanguage(code);
+                                // Store with a generic key for unauthenticated users
+                                localStorage.setItem('freshio_lang_guest', code);
+                                setOpen(false);
+                            }}
                             className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors ${
                                 i18n.language === code
                                     ? 'bg-white/5 text-white font-semibold'
@@ -890,6 +895,11 @@ const Footer = () => {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Welcome({ canLogin, canRegister }: Props) {
+    // Initialize guest language preference on mount
+    useEffect(() => {
+        initializeUserLanguage();
+    }, []);
+
     return (
         <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />

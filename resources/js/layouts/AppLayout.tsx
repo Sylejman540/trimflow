@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { initializeUserLanguage } from '@/i18n';
 import {
     CalendarDays,
     LayoutDashboard,
@@ -202,6 +203,13 @@ export default function AppLayout({
 }: PropsWithChildren<{ title?: string; actions?: ReactNode; mobileAction?: ReactNode }>) {
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
+
+    // Initialize user-specific language preference
+    useEffect(() => {
+        if (auth.user?.id) {
+            initializeUserLanguage(auth.user.id);
+        }
+    }, [auth.user?.id]);
 
     const toggleCollapsed = (val: boolean) => {
         localStorage.setItem('sidebar_collapsed', String(val));
