@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Toaster } from '@/components/ui/sonner';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import GlobalSearch from '@/components/GlobalSearch';
 import { initializeUserLanguage } from '@/i18n';
 import {
     CalendarDays,
@@ -625,6 +626,7 @@ export default function AppLayout({
                 </DialogContent>
             </Dialog>
 
+            <GlobalSearch />
             <Toaster position="bottom-right" richColors closeButton />
         </div>
     );

@@ -620,7 +620,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                     {selectedAppt && (
                         <>
                             <DialogHeader className="text-left">
-                                <DialogTitle className="text-lg sm:text-xl">{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
+                                <DialogTitle className="text-base sm:text-xl">{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
                                 <DialogDescription>
                                     <Badge className={cn('mt-2 text-xs sm:text-sm', statusVariant(selectedAppt.status))}>
                                         {t(`appt.${selectedAppt.status === 'no_show' ? 'noShow' : selectedAppt.status === 'in_progress' ? 'inProgress' : selectedAppt.status}`)}
@@ -629,7 +629,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                             </DialogHeader>
 
                             <div className="space-y-3 sm:space-y-4">
-                                <div className="grid gap-2 sm:gap-3 text-xs sm:text-sm">
+                                <div className="grid gap-2 sm:gap-3 text-sm sm:text-sm">
                                     <div className="flex justify-between items-start gap-2">
                                         <span className="text-slate-500 shrink-0">{t('appt.startsAt')}</span>
                                         <span className="font-medium text-right">{formatDateTime(selectedAppt.starts_at)}</span>
@@ -661,11 +661,11 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
                             <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                                 <Link href={route('appointments.show', selectedAppt.id)}
-                                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-full')}>
+                                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'flex-1')}>
                                     {t('viewDetails')}
                                 </Link>
                                 <Link href={route('appointments.edit', selectedAppt.id)}
-                                    className={cn(buttonVariants({ size: 'sm' }), 'w-full')}>
+                                    className={cn(buttonVariants({ size: 'sm' }), 'flex-1')}>
                                     {t('edit')}
                                 </Link>
                             </DialogFooter>
@@ -744,6 +744,10 @@ export default function Index({
 
     function toggleMine() {
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
+    }
+
+    function updateAppointmentStatus(appointmentId: number, newStatus: AppointmentStatus) {
+        router.patch(route('appointments.update-status', appointmentId), { status: newStatus }, { preserveScroll: true });
     }
 
     const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
@@ -849,7 +853,11 @@ export default function Index({
                             {allStatuses.map(status => (
                                 <DropdownMenuItem
                                     key={status}
+<<<<<<< HEAD
                                     onClick={() => router.patch(route('appointments.update-status', appt.id), { status }, { preserveScroll: true })}
+=======
+                                    onClick={() => updateAppointmentStatus(appt.id, status)}
+>>>>>>> 8dabb5f230bd2f4fe287c0b9b3c9ed045ef53844
                                     className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
                                 >
                                     {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}
