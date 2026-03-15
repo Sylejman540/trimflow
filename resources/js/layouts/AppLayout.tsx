@@ -192,7 +192,6 @@ const navGroups: NavGroup[] = [
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
     { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
-    { href: '/settings',     icon: User,            active: 'settings.*',     labelKey: 'nav.settings' },
 ] as any[];
 
 export default function AppLayout({
@@ -409,15 +408,6 @@ export default function AppLayout({
                 {/* Account Section */}
                 <div className="border-t border-slate-200 p-4 space-y-4">
                     <div className="space-y-1">
-                        {!isCollapsed && <h3 className="px-3 mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('nav.account')}</h3>}
-
-                        <SidebarLink
-                            href={route('settings.index')}
-                            icon={User}
-                            label={t('nav.settings')}
-                            active={route().current('settings.index')}
-                        />
-
                         <SidebarLink
                             onClick={() => setSignOutOpen(true)}
                             icon={LogOut}
