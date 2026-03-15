@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
     Route::resource('appointments', AppointmentController::class);
     Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.update-status');
     Route::post('appointments/bulk', [AppointmentController::class, 'bulkAction'])->name('appointments.bulk');
     Route::middleware('role:shop-admin|platform-admin')->group(function () {
         Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');

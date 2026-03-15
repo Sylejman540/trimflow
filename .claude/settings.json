@@ -28,7 +28,8 @@
       "Bash(grep -E \"\\\\.tsx$\")",
       "Read(//Users/sylejman/Herd/trimflow/**)",
       "Bash(ls -la /Users/sylejman/Herd/trimflow/resources/js/pages/*/)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(grep -n \"accessorKey: ''status''\" /Users/sylejman/Herd/trimflow/resources/js/pages/appointments/Index.tsx)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
