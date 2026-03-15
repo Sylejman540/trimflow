@@ -844,20 +844,14 @@ export default function Index({
 
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))}>
-                                {label}
-                            </button>
+                        <DropdownMenuTrigger render={<button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))} />}>
+                            {label}
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-48">
                             {allStatuses.map(status => (
                                 <DropdownMenuItem
                                     key={status}
-<<<<<<< HEAD
-                                    onClick={() => router.patch(route('appointments.update-status', appt.id), { status }, { preserveScroll: true })}
-=======
                                     onClick={() => updateAppointmentStatus(appt.id, status)}
->>>>>>> 8dabb5f230bd2f4fe287c0b9b3c9ed045ef53844
                                     className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
                                 >
                                     {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}

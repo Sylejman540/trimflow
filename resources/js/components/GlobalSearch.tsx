@@ -56,13 +56,6 @@ export default function GlobalSearch() {
             href: route('barbers.index'),
         },
         {
-            id: 'nav-customers',
-            label: t('customer.title'),
-            section: 'navigation',
-            icon: Users,
-            href: route('customers.index'),
-        },
-        {
             id: 'nav-services',
             label: t('service.title'),
             section: 'navigation',
