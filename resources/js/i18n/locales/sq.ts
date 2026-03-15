@@ -680,4 +680,66 @@ export default {
         minLabel: 'min',
         nowLabel: 'Tani',
     },
+
+    // Landing page
+    land: {
+        // Navbar
+        navHowItWorks: 'Si funksionon',
+        navStories: 'Histori',
+        navSupport: 'Kontakt',
+        navLogin: 'Hyr',
+        navBook: 'Rezervo tani',
+        // Hero
+        heroHeading: 'Mënyra më e lehtë për të menaxhuar termimet e berberit',
+        heroSub: 'Lëri klientët të rezervojnë për sekonda, ul mungesat dhe zgjero berberinë tënde — gjithçka nga një panel i thjeshtë.',
+        heroBtn: 'Fillo falas',
+        // Lock in Loyalty
+        retentionLabel: 'Besnikëri',
+        loyaltyHeading: 'Fito\nbesnikërinë',
+        loyaltySub: 'Hap faqen tënde të rezervimeve që klientët ta kenë direkt në telefon dhe të rezervojnë me një klikim. Pa nevojë për App Store — hyn direkt nga ekrani kryesor.',
+        loyaltyBtn: 'Bëhu i pranishëm',
+        // Barbers & Clients
+        forLabel: 'Për',
+        barbersTitle: 'Berberët',
+        businessTitle: 'Klientët e Biznesit',
+        barbersSub: 'Merr kontrollin e orarit, klientëve, të ardhurave dhe markës tënde.',
+        findOutHow: 'Mëso më shumë',
+        // Shop Stories
+        testimonialsLabel: 'Dëshmitë',
+        shopStoriesTitle: 'Histori nga dyqanet',
+        shopStoriesSub: 'Berberë të vërtetë, rezultate reale.',
+        // Get Free
+        startTodayLabel: 'Fillo sot',
+        getFreeTitle: 'Përdor Freshio\npa pagesë',
+        getFreeSub: 'Konfiguro faqen tënde të rezervimeve në pak minuta. Nuk kërkohet kartë krediti. Fillo të pranosh tertime sot.',
+        getFreeBtn: 'Fillo tani',
+        // Footer
+        footerTagline: 'Platforma moderne e rezervimeve, e ndërtuar posaçërisht për berberi. E thjeshtë, e shpejtë dhe e besueshme.',
+        colProduct: 'Produkti',
+        colCompany: 'Kompania',
+        colLegal: 'Juridike',
+        linkHowItWorks: 'Si funksionon',
+        linkStories: 'Histori',
+        linkGetStarted: 'Fillo tani',
+        linkAbout: 'Rreth nesh',
+        linkBlog: 'Blog',
+        linkCareers: 'Punësim',
+        linkPrivacy: 'Privatësia',
+        linkTerms: 'Kushtet e Përdorimit',
+        linkCookies: 'Cookies',
+        supportLabel: 'Na kontaktoni',
+        supportTitle: 'Keni ndonjë pyetje?',
+        supportSub: 'Lëreni emailin tuaj dhe do t\'ju përgjigjemi sa më shpejt të jetë e mundur.',
+        supportPlaceholder: 'emaili@juaj.com',
+        supportBtn: 'Dërgo',
+        supportSent: 'E morëm mesazhin tuaj — do t\'ju shkruajmë së shpejti.',
+        copyright: '© 2026 Freshio. Të gjitha të drejtat e rezervuara.',
+        builtBy: 'Ndërtuar për berberë, nga berberë.',
+        madeBy: 'Krijuar nga',
+        // Cookie banner
+        cookieText: 'Ne përdorim cookies për të përmirësuar përvojën tuaj në faqe. Duke vazhduar, po pranoni përdorimin e tyre.',
+        cookieAccept: 'Prano',
+        cookieDecline: 'Refuzo',
+        cookieLearnMore: 'Mëso më shumë',
+    },
 } as const;

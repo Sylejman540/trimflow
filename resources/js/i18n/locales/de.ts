@@ -660,4 +660,66 @@ export default {
         minLabel: 'Min.',
         nowLabel: 'Jetzt',
     },
+
+    // Landing page
+    land: {
+        // Navbar
+        navHowItWorks: 'So funktioniert es',
+        navStories: 'Erfahrungen',
+        navSupport: 'Support',
+        navLogin: 'Anmelden',
+        navBook: 'Termin buchen',
+        // Hero
+        heroHeading: 'Die einfachste Methode, Friseurtermine zu verwalten',
+        heroSub: 'Lassen Sie Kunden in Sekunden buchen, reduzieren Sie No-Shows und lassen Sie Ihren Friseursalon wachsen — alles über ein einfaches Dashboard.',
+        heroBtn: 'Jetzt starten',
+        // Lock in Loyalty
+        retentionLabel: 'Kundenbindung',
+        loyaltyHeading: 'Kundentreue\nsichern',
+        loyaltySub: 'Starten Sie Ihre eigene Buchungs-App, damit Kunden sofort über ihr Telefon buchen können. Kein App-Store nötig — direkt auf dem Startbildschirm.',
+        loyaltyBtn: 'Ikone werden',
+        // Barbers & Clients
+        forLabel: 'Für',
+        barbersTitle: 'Friseure',
+        businessTitle: 'Geschäftskunden',
+        barbersSub: 'Übernehmen Sie die Kontrolle über Ihren Zeitplan, Kunden, Finanzen und Marke.',
+        findOutHow: 'Mehr erfahren',
+        // Shop Stories
+        testimonialsLabel: 'Erfahrungsberichte',
+        shopStoriesTitle: 'Shop-Geschichten',
+        shopStoriesSub: 'Echte Friseure, echte Ergebnisse.',
+        // Get Free
+        startTodayLabel: 'Heute starten',
+        getFreeTitle: 'Freshio\nkostenlos nutzen',
+        getFreeSub: 'Richten Sie Ihre Buchungsseite in unter 10 Minuten ein. Keine Kreditkarte erforderlich. Beginnen Sie noch heute, Termine anzunehmen.',
+        getFreeBtn: 'Jetzt starten',
+        // Footer
+        footerTagline: 'Die moderne Terminplattform für Friseursalons. Einfach, schnell und zuverlässig.',
+        colProduct: 'Produkt',
+        colCompany: 'Unternehmen',
+        colLegal: 'Rechtliches',
+        linkHowItWorks: 'So funktioniert es',
+        linkStories: 'Erfahrungen',
+        linkGetStarted: 'Loslegen',
+        linkAbout: 'Über uns',
+        linkBlog: 'Blog',
+        linkCareers: 'Karriere',
+        linkPrivacy: 'Datenschutz',
+        linkTerms: 'AGB',
+        linkCookies: 'Cookies',
+        supportLabel: 'Support',
+        supportTitle: 'Brauchen Sie Hilfe?',
+        supportSub: 'Hinterlassen Sie Ihre E-Mail und wir melden uns so schnell wie möglich.',
+        supportPlaceholder: 'ihre@email.de',
+        supportBtn: 'Senden',
+        supportSent: 'Wir haben Ihre Nachricht erhalten — wir melden uns bald.',
+        copyright: '© 2026 Freshio. Alle Rechte vorbehalten.',
+        builtBy: 'Gebaut für Friseure, von Friseuren.',
+        madeBy: 'Erstellt von',
+        // Cookie banner
+        cookieText: 'Wir verwenden Cookies, um Ihre Erfahrung zu verbessern und die Nutzung der Website zu analysieren. Durch die weitere Nutzung stimmen Sie unserer Cookie-Richtlinie zu.',
+        cookieAccept: 'Akzeptieren',
+        cookieDecline: 'Ablehnen',
+        cookieLearnMore: 'Mehr erfahren',
+    },
 } as const;
