@@ -11,6 +11,43 @@ import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const TIMEZONES = [
+    // ── Balkan / Kosovo ──────────────────────────────────────────────────────
+    { value: 'Europe/Belgrade',   label: '🇷🇸 Belgrade / Pristina (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Skopje',     label: '🇲🇰 Skopje (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Sarajevo',   label: '🇧🇦 Sarajevo (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Zagreb',     label: '🇭🇷 Zagreb (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Ljubljana',  label: '🇸🇮 Ljubljana (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Tirane',     label: '🇦🇱 Tirana (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Sofia',      label: '🇧🇬 Sofia (EET/EEST, UTC+2/+3)' },
+    { value: 'Europe/Athens',     label: '🇬🇷 Athens (EET/EEST, UTC+2/+3)' },
+    { value: 'Europe/Bucharest',  label: '🇷🇴 Bucharest (EET/EEST, UTC+2/+3)' },
+    // ── Western Europe ───────────────────────────────────────────────────────
+    { value: 'Europe/London',     label: '🇬🇧 London (GMT/BST, UTC+0/+1)' },
+    { value: 'Europe/Paris',      label: '🇫🇷 Paris (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Berlin',     label: '🇩🇪 Berlin (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Rome',       label: '🇮🇹 Rome (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Madrid',     label: '🇪🇸 Madrid (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Amsterdam',  label: '🇳🇱 Amsterdam (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Warsaw',     label: '🇵🇱 Warsaw (CET/CEST, UTC+1/+2)' },
+    { value: 'Europe/Istanbul',   label: '🇹🇷 Istanbul (TRT, UTC+3)' },
+    // ── Americas ─────────────────────────────────────────────────────────────
+    { value: 'America/New_York',     label: '🇺🇸 New York (ET, UTC-5/+4)' },
+    { value: 'America/Chicago',      label: '🇺🇸 Chicago (CT, UTC-6/-5)' },
+    { value: 'America/Denver',       label: '🇺🇸 Denver (MT, UTC-7/-6)' },
+    { value: 'America/Los_Angeles',  label: '🇺🇸 Los Angeles (PT, UTC-8/-7)' },
+    { value: 'America/Toronto',      label: '🇨🇦 Toronto (ET, UTC-5/-4)' },
+    { value: 'America/Sao_Paulo',    label: '🇧🇷 São Paulo (BRT, UTC-3)' },
+    // ── Middle East & Africa ─────────────────────────────────────────────────
+    { value: 'Asia/Dubai',        label: '🇦🇪 Dubai (GST, UTC+4)' },
+    { value: 'Africa/Cairo',      label: '🇪🇬 Cairo (EET, UTC+2)' },
+    // ── Asia Pacific ─────────────────────────────────────────────────────────
+    { value: 'Asia/Kolkata',      label: '🇮🇳 Mumbai/Kolkata (IST, UTC+5:30)' },
+    { value: 'Asia/Singapore',    label: '🇸🇬 Singapore (SGT, UTC+8)' },
+    { value: 'Australia/Sydney',  label: '🇦🇺 Sydney (AEST/AEDT, UTC+10/+11)' },
+];
 
 interface SessionData {
     id: string;
@@ -114,7 +151,7 @@ export default function Settings({
         state:   company.state   ?? '',
         zip:     company.zip     ?? '',
         country: company.country ?? '',
-        timezone: company.timezone ?? '',
+        timezone: company.timezone ?? 'Europe/Belgrade',
     });
 
     function handleCompanySubmit(e: React.FormEvent) {
@@ -288,12 +325,18 @@ export default function Settings({
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.timezone')}</Label>
-                                    <Input
-                                        value={data.timezone}
-                                        onChange={e => setData('timezone', e.target.value)}
-                                        placeholder={t('settingsPage.timezonePlaceholder')}
-                                        className="h-10 border-slate-200 shadow-none"
-                                    />
+                                    <Select value={data.timezone} onValueChange={v => setData('timezone', v ?? 'Europe/Belgrade')}>
+                                        <SelectTrigger className="h-10 border-slate-200 shadow-none text-sm">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="max-h-72">
+                                            {TIMEZONES.map(tz => (
+                                                <SelectItem key={tz.value} value={tz.value} className="text-xs">
+                                                    {tz.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="sm:col-span-2 space-y-1.5">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('settingsPage.streetAddress')}</Label>
