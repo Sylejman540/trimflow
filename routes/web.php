@@ -75,9 +75,12 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 
     Route::get('/search', SearchController::class)->name('search');
 
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+
     Route::middleware('role:shop-admin|platform-admin')->group(function () {
-        Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings/company', [SettingsController::class, 'updateCompany'])->name('settings.company');
+        Route::post('/settings/logo', [SettingsController::class, 'uploadLogo'])->name('settings.logo');
+        Route::delete('/settings/logo', [SettingsController::class, 'destroyLogo'])->name('settings.logo.destroy');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
         Route::post('/ads', [AdController::class, 'store'])->name('ads.store');

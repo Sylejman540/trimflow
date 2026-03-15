@@ -27,7 +27,10 @@ class BookingController extends Controller
         $services = Service::where('company_id', $company->id)->where('is_active', true)->orderBy('name')->get();
 
         return Inertia::render('booking/Show', [
-            'company'            => $company->only('id', 'name', 'slug', 'address', 'phone', 'logo'),
+            'company'            => array_merge(
+                $company->only('id', 'name', 'slug', 'address', 'phone'),
+                ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
+            ),
             'turnstile_site_key' => config('services.turnstile.site_key'),
             'barbers'            => $barbers->map(fn($b) => [
                 'id'        => $b->id,

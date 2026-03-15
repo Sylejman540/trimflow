@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-import { User, Building2, ShieldCheck, AlertTriangle, Monitor, Smartphone, Key, Link2, Copy, Check } from 'lucide-react';
+import { User, Building2, ShieldCheck, AlertTriangle, Monitor, Smartphone, Key, Link2, Copy, Check, Camera, Trash2 } from 'lucide-react';
+import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -76,13 +77,33 @@ export default function Settings({
     auth,
     mustVerifyEmail,
     status,
+    can_manage_company,
     booking_url,
     company,
     sessions = [],
-}: PageProps<{ mustVerifyEmail: boolean; status?: string; booking_url?: string | null; company: Company; sessions?: SessionData[] }>) {
+}: PageProps<{ mustVerifyEmail: boolean; status?: string; can_manage_company: boolean; booking_url?: string | null; company: Company; sessions?: SessionData[] }>) {
     const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('account');
     const [copied, setCopied] = useState(false);
+    const [logoPreview, setLogoPreview] = useState<string | null>(company.logo ?? null);
+    const [logoUploading, setLogoUploading] = useState(false);
+
+    function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setLogoPreview(URL.createObjectURL(file));
+        setLogoUploading(true);
+        router.post(route('settings.logo'), { logo: file }, {
+            forceFormData: true,
+            preserveScroll: true,
+            onFinish: () => setLogoUploading(false),
+        });
+    }
+
+    function handleLogoRemove() {
+        setLogoPreview(null);
+        router.delete(route('settings.logo.destroy'), { preserveScroll: true });
+    }
 
     const { data, setData, patch, processing, errors } = useForm({
         name:    company.name    ?? '',
@@ -133,7 +154,7 @@ export default function Settings({
             <div className="max-w-3xl mx-auto space-y-6">
                 {/* Tab Navigation */}
                 <div className="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-slate-200 -mx-4 px-4 lg:mx-0 lg:px-0">
-                    {TABS.map((tab) => {
+                    {TABS.filter(tab => tab.id !== 'shop' || can_manage_company).map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
                         return (
@@ -197,6 +218,44 @@ export default function Settings({
                             <h3 className="text-base font-bold text-slate-900">{t('settingsPage.shopInfo')}</h3>
                             <p className="text-sm text-slate-500 mt-1">{t('settingsPage.shopInfoDesc')}</p>
                         </div>
+                        {/* Logo Upload */}
+                        <div className="flex items-center gap-5 mb-6 pb-6 border-b border-slate-100">
+                            <div className="relative shrink-0">
+                                <div className="h-20 w-20 rounded-2xl border-2 border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center">
+                                    {logoPreview
+                                        ? <img src={logoPreview} alt="Logo" className="h-full w-full object-cover" />
+                                        : <Building2 className="h-8 w-8 text-slate-300" />
+                                    }
+                                </div>
+                                {logoUploading && (
+                                    <div className="absolute inset-0 rounded-2xl bg-white/70 flex items-center justify-center">
+                                        <div className="h-5 w-5 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-bold text-slate-900">{t('settingsPage.shopLogo')}</p>
+                                <p className="text-xs text-slate-400">{t('settingsPage.shopLogoDesc')}</p>
+                                <div className="flex items-center gap-2">
+                                    <label className="cursor-pointer flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors">
+                                        <Camera className="h-3.5 w-3.5" />
+                                        {logoPreview ? t('settingsPage.changeLogo') : t('settingsPage.uploadLogo')}
+                                        <input type="file" accept="image/*" className="hidden" onChange={handleLogoChange} />
+                                    </label>
+                                    {logoPreview && (
+                                        <button
+                                            type="button"
+                                            onClick={handleLogoRemove}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                            {t('remove')}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
                         <form onSubmit={handleCompanySubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1.5">

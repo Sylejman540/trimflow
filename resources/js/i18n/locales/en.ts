@@ -2,6 +2,7 @@ export default {
     // Common
     save: 'Save',
     cancel: 'Cancel',
+    remove: 'Remove',
     delete: 'Delete',
     edit: 'Edit',
     create: 'Create',
@@ -578,6 +579,10 @@ export default {
         shopInfo: 'Shop Information',
         shopInfoDesc: 'Basic details about your shop visible to customers.',
         shopName: 'Shop Name',
+        shopLogo: 'Shop Logo',
+        shopLogoDesc: 'Shown to customers on the booking page. JPG, PNG or WebP, max 2MB.',
+        uploadLogo: 'Upload Logo',
+        changeLogo: 'Change Logo',
         timezone: 'Timezone',
         timezonePlaceholder: 'e.g. Europe/London',
         streetAddress: 'Street Address',

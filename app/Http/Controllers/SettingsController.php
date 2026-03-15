@@ -5,16 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SettingsController extends Controller
 {
     public function index(Request $request)
     {
-        abort_unless($request->user()->hasRole('shop-admin'), 403);
-
-        $user    = $request->user();
-        $company = $user->company;
+        $user     = $request->user();
+        $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
+        $company  = $user->company;
 
         $currentSessionId = $request->session()->getId();
 
@@ -34,16 +34,18 @@ class SettingsController extends Controller
             })
             ->values();
 
-        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
-
         return Inertia::render('settings/Index', [
-            'mustVerifyEmail' => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
-            'status'          => session('status'),
-            'booking_url'     => (!$isBarber && $company)
+            'mustVerifyEmail'    => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
+            'status'             => session('status'),
+            'can_manage_company' => ! $isBarber,
+            'booking_url'        => (! $isBarber && $company)
                 ? url(route('booking.show', $company->slug))
                 : null,
-            'company' => $company->only('id', 'name', 'slug', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country', 'timezone'),
-            'sessions'        => $sessions,
+            'company'  => array_merge(
+                $company->only('id', 'name', 'slug', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country', 'timezone'),
+                ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
+            ),
+            'sessions' => $sessions,
         ]);
     }
 
@@ -66,5 +68,39 @@ class SettingsController extends Controller
         Auth::user()->company->update($validated);
 
         return back()->with('success', 'Settings saved.');
+    }
+
+    public function uploadLogo(Request $request)
+    {
+        abort_unless(Auth::user()->hasRole('shop-admin'), 403);
+
+        $request->validate([
+            'logo' => 'required|image|max:2048',
+        ]);
+
+        $company = Auth::user()->company;
+
+        if ($company->logo) {
+            Storage::disk('public')->delete($company->logo);
+        }
+
+        $path = $request->file('logo')->store('logos', 'public');
+        $company->update(['logo' => $path]);
+
+        return back()->with('success', 'Logo updated.');
+    }
+
+    public function destroyLogo()
+    {
+        abort_unless(Auth::user()->hasRole('shop-admin'), 403);
+
+        $company = Auth::user()->company;
+
+        if ($company->logo) {
+            Storage::disk('public')->delete($company->logo);
+            $company->update(['logo' => null]);
+        }
+
+        return back()->with('success', 'Logo removed.');
     }
 }

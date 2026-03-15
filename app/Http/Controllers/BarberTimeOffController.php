@@ -12,22 +12,30 @@ class BarberTimeOffController extends Controller
 {
     public function index()
     {
-        $this->authorize('viewAny', Barber::class);
+        $user     = Auth::user();
+        $isBarber = $user->hasRole('barber') && ! $user->hasRole('shop-admin');
 
-        $timeOffs = BarberTimeOff::with('barber.user')
-            ->orderBy('starts_on')
-            ->get()
-            ->map(fn ($t) => [
-                'id'        => $t->id,
-                'starts_on' => $t->starts_on->format('Y-m-d'),
-                'ends_on'   => $t->ends_on->format('Y-m-d'),
-                'reason'    => $t->reason,
-                'barber'    => ['id' => $t->barber->id, 'user' => ['name' => $t->barber->user->name]],
-            ]);
+        // Plain barbers can view but only their own time off
+        $query = BarberTimeOff::with('barber.user')->orderBy('starts_on');
+
+        if ($isBarber) {
+            $query->whereHas('barber', fn ($q) => $q->where('user_id', $user->id));
+        } else {
+            $this->authorize('viewAny', Barber::class);
+        }
+
+        $timeOffs = $query->get()->map(fn ($t) => [
+            'id'        => $t->id,
+            'starts_on' => $t->starts_on->format('Y-m-d'),
+            'ends_on'   => $t->ends_on->format('Y-m-d'),
+            'reason'    => $t->reason,
+            'barber'    => ['id' => $t->barber->id, 'user' => ['name' => $t->barber->user->name]],
+        ]);
 
         return Inertia::render('barbers/TimeOff', [
             'time_offs' => $timeOffs,
-            'barbers'   => Barber::with('user')->where('is_active', true)->get(),
+            'barbers'   => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
+            'can_manage' => ! $isBarber,
         ]);
     }
 

@@ -176,7 +176,7 @@ const navGroups: NavGroup[] = [
         groupKey: 'nav.groupManage',
         items: [
             { href: '/barbers',          icon: Briefcase,   active: 'barbers.*',          labelKey: 'nav.barbers',   descKey: 'nav.barbersDesc',   roles: ['platform-admin', 'shop-admin'] },
-            { href: '/barbers/time-off', icon: PalmtreeIcon, active: 'barbers.time-off.*', labelKey: 'timeoff.title', descKey: 'nav.timeoffDesc',   roles: ['platform-admin', 'shop-admin'] },
+            { href: '/barbers/time-off', icon: PalmtreeIcon, active: 'barbers.time-off.*', labelKey: 'timeoff.title', descKey: 'nav.timeoffDesc' },
             { href: '/services',         icon: Scissors,    active: 'services.*',         labelKey: 'nav.services',  descKey: 'nav.servicesDesc',  roles: ['platform-admin', 'shop-admin'] },
             { href: '/products',         icon: Package,     active: 'products.*',         labelKey: 'nav.products',  descKey: 'nav.productsDesc',  roles: ['shop-admin', 'platform-admin'] },
         ],
@@ -185,7 +185,7 @@ const navGroups: NavGroup[] = [
         groupKey: 'nav.groupInsights',
         items: [
             { href: '/reports',  icon: BarChart2, active: 'reports.*',  labelKey: 'nav.reports',  descKey: 'nav.reportsDesc',  roles: ['platform-admin', 'shop-admin'] },
-            { href: '/settings', icon: Settings,  active: 'settings.*', labelKey: 'nav.settings', descKey: 'nav.settingsDesc', roles: ['platform-admin', 'shop-admin'] },
+            { href: '/settings', icon: Settings,  active: 'settings.*', labelKey: 'nav.settings', descKey: 'nav.settingsDesc' },
         ],
     },
 ];

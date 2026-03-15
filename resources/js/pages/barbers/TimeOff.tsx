@@ -31,7 +31,7 @@ function isActive(startsOn: string, endsOn: string) {
     return startsOn <= today && endsOn >= today;
 }
 
-export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; barbers: BarberSimple[] }) {
+export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs: TimeOff[]; barbers: BarberSimple[]; can_manage: boolean }) {
     const { t } = useTranslation();
     const [addOpen, setAddOpen] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -60,7 +60,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
     return (
         <AppLayout
             title={t('timeoff.title')}
-            actions={
+            actions={can_manage ? (
                 <button
                     onClick={() => setAddOpen(true)}
                     className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm"
@@ -68,8 +68,8 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                     <Plus className="h-3.5 w-3.5" />
                     {t('timeoff.add')}
                 </button>
-            }
-            mobileAction={
+            ) : undefined}
+            mobileAction={can_manage ? (
                 <button
                     onClick={() => setAddOpen(true)}
                     className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform"
@@ -77,7 +77,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                     <Plus className="h-5 w-5" />
                     {t('timeoff.add')}
                 </button>
-            }
+            ) : undefined}
         >
             <Head title={t('timeoff.title')} />
 
@@ -100,7 +100,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                                 </h3>
                             </div>
                             {upcoming.map(t => (
-                                <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} />
+                                <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} canManage={can_manage} />
                             ))}
                         </div>
                     )}
@@ -114,7 +114,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
                             </div>
                             <div className="opacity-60">
                                 {past.map(t => (
-                                    <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} />
+                                    <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} canManage={can_manage} />
                                 ))}
                             </div>
                         </div>
@@ -203,7 +203,7 @@ export default function TimeOff({ time_offs, barbers }: { time_offs: TimeOff[]; 
     );
 }
 
-function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void }) {
+function TimeOffRow({ entry, onRemove, canManage }: { entry: TimeOff; onRemove: () => void; canManage: boolean }) {
     const { t } = useTranslation();
     const active = isActive(entry.starts_on, entry.ends_on);
     const today  = todayStr();
@@ -258,16 +258,18 @@ function TimeOffRow({ entry, onRemove }: { entry: TimeOff; onRemove: () => void 
             </div>
 
             {/* Delete */}
-            <div className="flex-none w-8 flex justify-end">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
-                    onClick={onRemove}
-                >
-                    <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-            </div>
+            {canManage && (
+                <div className="flex-none w-8 flex justify-end">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
+                        onClick={onRemove}
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
