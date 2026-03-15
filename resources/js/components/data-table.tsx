@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
                if external filters are provided.
             */}
             {(showSearch || filters) && (
-                <div className="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-2">
                     {showSearch && (
                         <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -80,7 +80,7 @@ export function DataTable<TData, TValue>({
                                 onChange={(event) =>
                                     table.setGlobalFilter(event.target.value)
                                 }
-                                className="w-full h-10 pl-10 pr-3 border border-gray-200 rounded-lg text-sm focus:border-gray-400"
+                                className="w-full h-9 pl-10 pr-3 border border-gray-200 rounded text-sm"
                             />
                         </div>
                     )}
@@ -92,13 +92,13 @@ export function DataTable<TData, TValue>({
                 </div>
             )}
 
-            <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+            <div className="overflow-x-auto">
                 <Table className="w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-b border-gray-100 bg-gray-50">
+                            <TableRow key={headerGroup.id} className="border-b border-gray-200">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-600">
+                                    <TableHead key={header.id} className="px-4 py-2 text-xs font-semibold text-gray-600">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -113,7 +113,7 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                                <TableRow key={row.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-700">
                                             {flexRender(
@@ -139,24 +139,24 @@ export function DataTable<TData, TValue>({
             </div>
 
             {table.getPageCount() > 1 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-3 border-t border-gray-100">
-                    <p className="text-xs text-gray-500 font-medium">
+                <div className="flex items-center justify-between gap-2 pt-3">
+                    <p className="text-xs text-gray-500">
                         Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </p>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
-                            className="h-10 w-10 p-0"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <Button
-                            variant="outline"
+                            variant="ghost"
                             size="sm"
-                            className="h-10 w-10 p-0"
+                            className="h-8 w-8 p-0"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
                         >
