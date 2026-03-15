@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import {
     CalendarDays,
@@ -19,6 +19,8 @@ import {
     Settings,
     Eye,
     EyeOff,
+    CheckSquare,
+    Calendar,
 } from 'lucide-react';
 
 import AppLayout from '@/layouts/AppLayout';
@@ -244,10 +246,26 @@ export default function Dashboard({
         const saved = localStorage.getItem('dashboard-visible-cards');
         return new Set(saved ? JSON.parse(saved) : ['kpi', 'insights', 'schedule', 'upcoming']);
     });
+    const [confirmingAll, setConfirmingAll] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('dashboard-visible-cards', JSON.stringify(Array.from(visibleCards)));
     }, [visibleCards]);
+
+    function confirmAllPending() {
+        if (activeStats.today_pending === 0) return;
+        setConfirmingAll(true);
+        const pendingIds = activeSchedule
+            .filter(a => a.status === 'pending')
+            .map(a => a.id);
+
+        if (pendingIds.length > 0) {
+            router.post(route('appointments.bulk'),
+                { action: 'confirm', ids: pendingIds },
+                { onFinish: () => setConfirmingAll(false) }
+            );
+        }
+    }
 
     function toggleCard(cardId: string) {
         setVisibleCards(prev => {
@@ -269,8 +287,30 @@ export default function Dashboard({
         <AppLayout title={t('dashboard')}>
             <Head title={t('dashboard')} />
             <div className="space-y-4 lg:space-y-6">
-                {/* Customize Button */}
-                <div className="flex items-center justify-end">
+                {/* Quick Actions + Customize */}
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                    {/* Quick Action Buttons */}
+                    <div className="flex items-center gap-2">
+                        {activeStats.today_pending > 0 && (
+                            <Button
+                                onClick={confirmAllPending}
+                                disabled={confirmingAll}
+                                className="flex items-center gap-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-lg text-xs font-semibold h-9 px-3 shadow-none"
+                            >
+                                <CheckSquare className="h-3.5 w-3.5" />
+                                Confirm {activeStats.today_pending} Pending
+                            </Button>
+                        )}
+                        <Link
+                            href={route('appointments.index')}
+                            className="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold h-9 px-3 shadow-none"
+                        >
+                            <Calendar className="h-3.5 w-3.5" />
+                            This Week's Schedule
+                        </Link>
+                    </div>
+
+                    {/* Customize Button */}
                     <Button
                         onClick={() => setCustomizeOpen(true)}
                         className="flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold h-9 px-3"
