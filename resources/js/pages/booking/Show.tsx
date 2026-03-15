@@ -116,6 +116,27 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // Auto-skip to barber selection if only 1 service
+    useEffect(() => {
+        if (services.length === 1 && selectedServices.length === 0) {
+            const singleService = services[0];
+            setSelectedServices([singleService]);
+            setData('service_ids', [String(singleService.id)]);
+            fetchAvailability([singleService.id]);
+            // Move to barber selection step
+            setStep(1);
+        }
+    }, [services]);
+
+    // Auto-skip barber selection if only 1 barber, and proceed to date/time
+    useEffect(() => {
+        if (step === 1 && initialBarbers.length === 1 && !selectedBarber) {
+            const singleBarber = initialBarbers[0];
+            selectBarber(singleBarber);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [step]);
+
     const fetchAvailability = useCallback((serviceIds: number[]) => {
         if (serviceIds.length === 0) return;
         setAvailabilityLoading(true);
