@@ -20,6 +20,9 @@ import {
     Dialog, DialogContent, DialogDescription, DialogFooter,
     DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { formatCents, formatDateTime, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/types';
 import { KanbanView } from './KanbanView';
@@ -743,6 +746,10 @@ export default function Index({
         router.get(route('appointments.index'), { mine: filter_mine ? undefined : '1' }, { preserveState: false });
     }
 
+    function updateAppointmentStatus(appointmentId: number, newStatus: AppointmentStatus) {
+        router.patch(route('appointments.update', appointmentId), { status: newStatus }, { preserveScroll: true });
+    }
+
     const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
 
     const filtered = appointments
@@ -831,12 +838,29 @@ export default function Index({
             accessorKey: 'status',
             header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => {
-                const s = row.original.status;
+                const appt = row.original;
+                const s = appt.status;
                 const label = t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`);
+
                 return (
-                    <Badge className={cn('text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border', statusVariant(s))}>
-                        {label}
-                    </Badge>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))}>
+                                {label}
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48">
+                            {allStatuses.map(status => (
+                                <DropdownMenuItem
+                                    key={status}
+                                    onClick={() => changeStatus(appt.id, status)}
+                                    className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
+                                >
+                                    {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 );
             },
         },
