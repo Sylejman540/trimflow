@@ -687,6 +687,68 @@ export default {
         today: 'today',
     },
 
+    // Landing page
+    land: {
+        // Navbar
+        navHowItWorks: 'How it works',
+        navStories: 'Stories',
+        navSupport: 'Support',
+        navLogin: 'Login',
+        navBook: 'Book Appointment',
+        // Hero
+        heroHeading: 'The easiest way to manage barber appointments',
+        heroSub: 'Let clients book in seconds, reduce no-shows, and grow your barbershop — all from one simple dashboard.',
+        heroBtn: 'Get Started',
+        // Lock in Loyalty
+        retentionLabel: 'Retention',
+        loyaltyHeading: 'Lock in\nloyalty',
+        loyaltySub: 'Launch your own booking app so clients can tap your icon on their phone and book instantly. No app store needed — it lives right on their home screen.',
+        loyaltyBtn: 'Be an icon',
+        // Barbers & Clients
+        forLabel: 'For',
+        barbersTitle: 'Barbers',
+        businessTitle: 'Business Clients',
+        barbersSub: 'Take control of your schedule, clients, money, and brand.',
+        findOutHow: 'Find out how',
+        // Shop Stories
+        testimonialsLabel: 'Testimonials',
+        shopStoriesTitle: 'Shop stories',
+        shopStoriesSub: 'Real barbers, real results.',
+        // Get Free
+        startTodayLabel: 'Start today',
+        getFreeTitle: 'Get Freshio\nfor free',
+        getFreeSub: 'Set up your booking page in under 10 minutes. No credit card required. Start accepting appointments today.',
+        getFreeBtn: 'Start now',
+        // Footer
+        footerTagline: 'The modern appointment platform built for barbershops. Simple, fast, and reliable.',
+        colProduct: 'Product',
+        colCompany: 'Company',
+        colLegal: 'Legal',
+        linkHowItWorks: 'How it works',
+        linkStories: 'Stories',
+        linkGetStarted: 'Get started',
+        linkAbout: 'About',
+        linkBlog: 'Blog',
+        linkCareers: 'Careers',
+        linkPrivacy: 'Privacy',
+        linkTerms: 'Terms',
+        linkCookies: 'Cookies',
+        supportLabel: 'Support',
+        supportTitle: 'Need help?',
+        supportSub: "Drop your email and we'll get back to you as soon as possible.",
+        supportPlaceholder: 'your@email.com',
+        supportBtn: 'Send',
+        supportSent: "We got your message — we'll be in touch soon.",
+        copyright: '© 2026 Freshio. All rights reserved.',
+        builtBy: 'Built for barbers, by barbers.',
+        madeBy: 'Made by',
+        // Cookie banner
+        cookieText: 'We use cookies to improve your experience and analyze site usage. By continuing, you accept our cookie policy.',
+        cookieAccept: 'Accept',
+        cookieDecline: 'Decline',
+        cookieLearnMore: 'Learn more',
+    },
+
     // Appointments Index extras
     apptIndex: {
         selected: '{{count}} selected',
