@@ -26,6 +26,7 @@ interface Company {
     name: string;
     slug: string;
     phone?: string;
+    logo?: string | null;
 }
 
 function formatApptDate(startsAt: string | null | undefined, lang: string) {
@@ -90,12 +91,15 @@ export default function Confirmation({
             <div className="min-h-screen bg-slate-50 flex flex-col">
                 <Head title={`Cancelled — ${company.name}`} />
                 <div className="bg-white border-b border-slate-200">
-                    <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                                <Scissors className="h-4 w-4 text-white" />
+                    <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
+                                {company.logo
+                                    ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                    : <Scissors className="h-4 w-4 text-slate-500" />
+                                }
                             </div>
-                            <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                            <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
                         </div>
                         <LanguageSwitcher compact />
                     </div>
@@ -136,12 +140,15 @@ export default function Confirmation({
 
             {/* Header */}
             <div className="bg-white border-b border-slate-200">
-                <div className="max-w-2xl mx-auto px-4 py-5 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900">
-                            <Scissors className="h-4 w-4 text-white" />
+                <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
+                            {company.logo
+                                ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
+                                : <Scissors className="h-4 w-4 text-slate-500" />
+                            }
                         </div>
-                        <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                        <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
                     </div>
                     <LanguageSwitcher compact />
                 </div>

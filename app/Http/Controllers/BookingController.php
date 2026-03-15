@@ -285,7 +285,7 @@ class BookingController extends Controller
         $appointment->load(['barber.user', 'customer', 'service']);
 
         // ── 16. Broadcast real-time update ────────────────────────────────────
-        broadcast(new AppointmentChanged($appointment));
+        try { broadcast(new AppointmentChanged($appointment)); } catch (\Throwable) {}
 
         // ── 17. Notify barber + admins ─────────────────────────────────────────
         if ($barber->user) {
@@ -337,7 +337,10 @@ class BookingController extends Controller
         $company = Company::where('slug', $slug)->where('is_active', true)->firstOrFail();
 
         return Inertia::render('booking/Confirmation', [
-            'company'           => $company->only('id', 'name', 'slug', 'phone'),
+            'company'           => array_merge(
+                $company->only('id', 'name', 'slug', 'phone'),
+                ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
+            ),
             'cancel_token'      => session('cancel_token'),
             'cancel_expires_at' => session('cancel_expires_at'),
             'appt_starts_at'    => session('appt_starts_at'),

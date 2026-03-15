@@ -69,6 +69,7 @@ interface Company {
     zip?: string;
     country?: string;
     timezone?: string;
+    logo?: string | null;
 }
 
 function parseUserAgent(ua: string): { browser: string; platform: string; isMobile: boolean } {

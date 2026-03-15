@@ -154,7 +154,7 @@ class AppointmentController extends Controller
             $owner->notify(new NewInternalAppointment($appointment));
         }
 
-        broadcast(new AppointmentChanged($appointment))->toOthers();
+        try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
 
         return redirect()->route('appointments.index')->with('success', 'Appointment created.');
     }
@@ -333,7 +333,7 @@ class AppointmentController extends Controller
                 });
         }
 
-        broadcast(new AppointmentChanged($appointment->fresh(['barber.user', 'customer', 'service', 'services'])))->toOthers();
+        try { broadcast(new AppointmentChanged($appointment->fresh(['barber.user', 'customer', 'service', 'services'])))->toOthers(); } catch (\Throwable) {}
 
         return redirect()->route('appointments.index')->with('success', 'Appointment updated.');
     }
@@ -506,7 +506,7 @@ class AppointmentController extends Controller
             $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
         }
 
-        broadcast(new AppointmentChanged($appointment))->toOthers();
+        try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
 
         return back()->with('success', 'Appointment confirmed.');
     }

@@ -7,8 +7,9 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(link);
 }
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, Menu, X, Star } from 'lucide-react';
+import { ArrowRight, Menu, X, Star, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { LANGUAGES, initializeUserLanguage } from '../i18n';
 
 interface Props {
     canLogin: boolean;
@@ -145,6 +146,65 @@ function CookieBanner() {
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
+// ─── Language Switcher ────────────────────────────────────────────────────────
+
+function LangSwitcher() {
+    const { i18n } = useTranslation();
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const current = LANGUAGES.find(l => l.code === i18n.language) ?? LANGUAGES[0];
+
+    useEffect(() => {
+        function handleClick(e: MouseEvent) {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+            }
+        }
+        document.addEventListener('mousedown', handleClick);
+        return () => document.removeEventListener('mousedown', handleClick);
+    }, []);
+
+    return (
+        <div ref={ref} className="relative">
+            <button
+                onClick={() => setOpen(v => !v)}
+                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            >
+                <Globe className="h-3.5 w-3.5" />
+                <span>{current.flag}</span>
+                <span>{current.code.toUpperCase()}</span>
+                <svg className={`h-3 w-3 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 12 12" fill="none">
+                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+            </button>
+
+            {open && (
+                <div className="absolute right-0 top-full mt-1.5 w-36 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl shadow-black/50 overflow-hidden z-50">
+                    {LANGUAGES.map(({ code, label, flag }) => (
+                        <button
+                            key={code}
+                            onClick={() => {
+                                i18n.changeLanguage(code);
+                                localStorage.setItem('freshio_lang_guest', code);
+                                setOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-2.5 px-3 py-2.5 text-sm transition-colors ${
+                                i18n.language === code
+                                    ? 'bg-white/5 text-white font-semibold'
+                                    : 'text-zinc-400 hover:bg-white/5 hover:text-white'
+                            }`}
+                        >
+                            <span>{flag}</span>
+                            <span>{label}</span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boolean }) => {
     const { t } = useTranslation();
     const [open, setOpen] = useState(false);
@@ -171,8 +231,9 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                         <a href="#support" onClick={scrollToSupport} className="px-4 py-2 rounded-lg hover:bg-white/5 transition-colors text-zinc-300 hover:text-white">{t('land.navSupport')}</a>
                     </div>
 
-                    {/* Desktop auth */}
+                    {/* Desktop auth + lang */}
                     <div className="hidden md:flex items-center gap-3">
+                        <LangSwitcher />
                         {canLogin && (
                             <a href="/login" className="text-sm font-medium text-zinc-300 hover:text-white transition-colors px-4 py-2">{t('land.navLogin')}</a>
                         )}
@@ -182,7 +243,8 @@ const Navbar = ({ canLogin, canRegister }: { canLogin: boolean; canRegister: boo
                     </div>
 
                     {/* Mobile controls */}
-                    <div className="flex md:hidden items-center gap-3">
+                    <div className="flex md:hidden items-center gap-2">
+                        <LangSwitcher />
                         {canLogin && <a href="/login" className="text-sm font-medium text-white border border-zinc-700 px-4 py-1.5 rounded-full hover:border-zinc-400 transition-all">{t('land.navLogin')}</a>}
                         <button className="p-1 text-white" onClick={() => setOpen(v => !v)}>
                             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -732,16 +794,9 @@ const Footer = () => {
                         {/* Brand */}
                         <div className="col-span-2 sm:col-span-1">
                             <span className="text-base font-black text-white mb-3 block">Freshio</span>
-                            <p className="text-sm leading-relaxed mb-5">
+                            <p className="text-sm leading-relaxed">
                                 {t('land.footerTagline')}
                             </p>
-                            <div className="flex gap-3">
-                                {['IG', 'X', 'YT'].map((label) => (
-                                    <a key={label} href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 hover:bg-blue-600 hover:text-white transition-colors text-xs font-bold">
-                                        {label}
-                                    </a>
-                                ))}
-                            </div>
                         </div>
 
                         {[
@@ -834,6 +889,11 @@ const Footer = () => {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function Welcome({ canLogin, canRegister }: Props) {
+    // Initialize guest language preference on mount
+    useEffect(() => {
+        initializeUserLanguage();
+    }, []);
+
     return (
         <div className="min-h-screen bg-black font-sans antialiased">
             <Navbar canLogin={canLogin} canRegister={canRegister} />
