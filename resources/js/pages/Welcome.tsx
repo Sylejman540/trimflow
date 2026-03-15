@@ -72,29 +72,12 @@ function PhoneFrame({ children, className = '', style = {} }: { children: React.
 
 function Logo() {
     return (
-        <div className="flex items-center gap-3">
-            {/* Amber diamond / geometric F mark */}
+        <div className="flex items-center gap-2.5">
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Diamond shape */}
                 <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
-                {/* Bold F cut into the diamond */}
-                <text
-                    x="18"
-                    y="24"
-                    textAnchor="middle"
-                    fontFamily="'Bebas Neue', sans-serif"
-                    fontSize="20"
-                    fontWeight="900"
-                    fill="#ffffff"
-                    letterSpacing="-0.5"
-                >
-                    F
-                </text>
+                <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
             </svg>
-            <span
-                className="text-2xl font-black tracking-tight text-white"
-                style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em', fontSize: '1.6rem' }}
-            >
+            <span className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>
                 Freshio
             </span>
         </div>

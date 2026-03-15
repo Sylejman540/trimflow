@@ -365,14 +365,16 @@ export default function AppLayout({
             )}>
                 {/* Brand */}
                 <div className="flex h-16 items-center justify-between px-6 shrink-0">
-                    <Link href="/dashboard" className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-sm">
-                            <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                                <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z" opacity="0.9"/>
-                                <path d="M12 8c-1 2.5-2 4-2 5.5a2 2 0 0 0 4 0C14 12 13 10.5 12 8z" fill="white" opacity="0.6"/>
-                            </svg>
-                        </div>
-                        {!isCollapsed && <span className="text-lg font-bold tracking-tight text-slate-900">Fresh<span className="text-slate-500">io</span></span>}
+                    <Link href="/dashboard" className="flex items-center gap-4">
+                        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#111827" />
+                            <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
+                        </svg>
+                        {!isCollapsed && (
+                            <span className="text-xl font-black tracking-tight text-slate-900" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>
+                                Freshio
+                            </span>
+                        )}
                     </Link>
                     {/* Close button on mobile */}
                     <button

@@ -25,11 +25,12 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
             {/* --- MOBILE LOGO --- */}
             <div className="absolute top-8 left-8 z-20 lg:hidden">
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-slate-950 rounded-lg flex items-center justify-center shadow-lg">
-                        <Scissors className="text-white w-4 h-4" />
-                    </div>
-                    <span className="text-sm font-black tracking-tighter text-slate-950 uppercase">Freshio</span>
+                <Link href="/" className="flex items-center gap-2.5">
+                    <svg width="28" height="28" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
+                        <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
+                    </svg>
+                    <span className="text-sm font-black tracking-tight text-slate-950" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Freshio</span>
                 </Link>
             </div>
 
@@ -45,11 +46,12 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                 </div>
 
                 <div className="relative z-10">
-                    <Link href="/" className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-xl">
-                            <Scissors className="text-slate-900 w-5 h-5" />
-                        </div>
-                        <span className="text-xl font-black tracking-tighter text-white uppercase">Freshio</span>
+                    <Link href="/" className="flex items-center gap-2.5">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
+                            <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
+                        </svg>
+                        <span className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Freshio</span>
                     </Link>
                 </div>
 

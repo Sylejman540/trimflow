@@ -16,7 +16,12 @@
       "Bash(grep -A5 transform.currents*= /Users/sylejman/Herd/trimflow/node_modules/@inertiajs/react/dist/index.js)",
       "Bash(grep -rn \"Save\\\\|save\" /Users/sylejman/Herd/trimflow/resources/js/pages/Profile/*.tsx)",
       "Bash(npx tsc:*)",
-      "Bash(ls /Users/sylejman/Herd/trimflow/public/*.png /Users/sylejman/Herd/trimflow/public/*.jpg /Users/sylejman/Herd/trimflow/public/*.jpeg /Users/sylejman/Herd/trimflow/public/*.webp)"
+      "Bash(ls /Users/sylejman/Herd/trimflow/public/*.png /Users/sylejman/Herd/trimflow/public/*.jpg /Users/sylejman/Herd/trimflow/public/*.jpeg /Users/sylejman/Herd/trimflow/public/*.webp)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
     ]
   }
 }

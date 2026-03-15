@@ -102,7 +102,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/onboarding', [OnboardingController::class, 'create'])->name('onboarding');
     Route::post('/onboarding', [OnboardingController::class, 'store'])->name('onboarding.store');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Profile routes redirect to unified settings page
+    Route::redirect('/profile', '/settings')->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
