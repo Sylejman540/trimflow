@@ -519,56 +519,56 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
             {/* Appointment Details Modal */}
             <Dialog open={!!selectedAppt} onOpenChange={(open) => !open && setSelectedAppt(null)}>
-                <DialogContent className="max-w-lg">
+                <DialogContent className="max-w-sm sm:max-w-lg w-[calc(100vw-2rem)] sm:w-full px-4 sm:px-6">
                     {selectedAppt && (
                         <>
-                            <DialogHeader>
-                                <DialogTitle>{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
+                            <DialogHeader className="text-left">
+                                <DialogTitle className="text-lg sm:text-xl">{selectedAppt.customer?.name ?? 'Appointment'}</DialogTitle>
                                 <DialogDescription>
-                                    <Badge className={cn('mt-2', statusVariant(selectedAppt.status))}>
+                                    <Badge className={cn('mt-2 text-xs sm:text-sm', statusVariant(selectedAppt.status))}>
                                         {t(`appt.${selectedAppt.status === 'no_show' ? 'noShow' : selectedAppt.status === 'in_progress' ? 'inProgress' : selectedAppt.status}`)}
                                     </Badge>
                                 </DialogDescription>
                             </DialogHeader>
 
-                            <div className="space-y-4">
-                                <div className="grid gap-3 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-500">{t('appt.startsAt')}</span>
-                                        <span className="font-medium">{formatDateTime(selectedAppt.starts_at)}</span>
+                            <div className="space-y-3 sm:space-y-4">
+                                <div className="grid gap-2 sm:gap-3 text-xs sm:text-sm">
+                                    <div className="flex justify-between items-start gap-2">
+                                        <span className="text-slate-500 shrink-0">{t('appt.startsAt')}</span>
+                                        <span className="font-medium text-right">{formatDateTime(selectedAppt.starts_at)}</span>
                                     </div>
                                     {selectedAppt.barber && (
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">{t('appt.barber')}</span>
-                                            <span className="font-medium">{selectedAppt.barber.user?.name ?? '-'}</span>
+                                        <div className="flex justify-between items-start gap-2">
+                                            <span className="text-slate-500 shrink-0">{t('appt.barber')}</span>
+                                            <span className="font-medium text-right">{selectedAppt.barber.user?.name ?? '-'}</span>
                                         </div>
                                     )}
                                     {selectedAppt.service && (
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">{t('appt.service')}</span>
-                                            <span className="font-medium">{selectedAppt.service.name}</span>
+                                        <div className="flex justify-between items-start gap-2">
+                                            <span className="text-slate-500 shrink-0">{t('appt.service')}</span>
+                                            <span className="font-medium text-right">{selectedAppt.service.name}</span>
                                         </div>
                                     )}
-                                    <div className="flex justify-between">
-                                        <span className="text-slate-500">{t('price')}</span>
-                                        <span className="font-medium">{formatCents(selectedAppt.price)}</span>
+                                    <div className="flex justify-between items-start gap-2">
+                                        <span className="text-slate-500 shrink-0">{t('price')}</span>
+                                        <span className="font-medium text-right">{formatCents(selectedAppt.price)}</span>
                                     </div>
                                     {selectedAppt.customer?.phone && (
-                                        <div className="flex justify-between">
-                                            <span className="text-slate-500">{t('phone')}</span>
-                                            <span className="font-medium">{selectedAppt.customer.phone}</span>
+                                        <div className="flex justify-between items-start gap-2">
+                                            <span className="text-slate-500 shrink-0">{t('phone')}</span>
+                                            <span className="font-medium text-right">{selectedAppt.customer.phone}</span>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <DialogFooter className="flex gap-2">
+                            <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                                 <Link href={route('appointments.show', selectedAppt.id)}
-                                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1')}>
+                                    className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'w-full')}>
                                     {t('viewDetails')}
                                 </Link>
                                 <Link href={route('appointments.edit', selectedAppt.id)}
-                                    className={cn(buttonVariants(), 'flex-1')}>
+                                    className={cn(buttonVariants({ size: 'sm' }), 'w-full')}>
                                     {t('edit')}
                                 </Link>
                             </DialogFooter>
