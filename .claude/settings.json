@@ -21,7 +21,10 @@
       "Bash(git commit:*)",
       "Bash(grep -E \"\\\\.\\(php|tsx\\)$\")",
       "Bash(find app:*)",
-      "Bash(find routes:*)"
+      "Bash(find routes:*)",
+      "Bash(curl -s http://localhost:8000/login)",
+      "Bash(/tmp/mobile_test_report.md:*)",
+      "Read(//tmp/**)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
