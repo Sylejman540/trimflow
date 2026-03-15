@@ -16,8 +16,6 @@ import {
     User,
     Trophy,
     TrendingUp,
-    UserCheck,
-    UserX,
 } from 'lucide-react';
 
 import AppLayout from '@/layouts/AppLayout';
@@ -364,29 +362,7 @@ export default function Dashboard({
                             </CardContent>
                         </Card>
 
-                        <Card className="border-slate-200 shadow-none">
-                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-500 shrink-0">
-                                    <UserCheck className="h-4 w-4" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.repeatCustomers')}</p>
-                                    <p className="text-xl font-bold">{insights.repeat_customers}</p>
-                                </div>
-                            </CardContent>
-                        </Card>
 
-                        <Card className="border-slate-200 shadow-none">
-                            <CardContent className="p-3 lg:p-5 flex items-center gap-3">
-                                <div className={`flex h-9 w-9 items-center justify-center rounded-xl shrink-0 ${insights.no_show_rate >= 20 ? 'bg-red-50 text-red-500' : 'bg-slate-100 text-slate-500'}`}>
-                                    <UserX className="h-4 w-4" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-[10px] lg:text-xs font-medium text-muted-foreground">{t('dash.noShowRate')}</p>
-                                    <p className={`text-xl font-bold ${insights.no_show_rate >= 20 ? 'text-red-600' : ''}`}>{insights.no_show_rate}%</p>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 )}
 
