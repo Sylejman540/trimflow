@@ -394,6 +394,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     const [anchor, setAnchor] = useState(() => {
         const d = new Date(); d.setHours(0, 0, 0, 0); return d;
     });
+    const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
 
     // Week days starting from anchor's Monday
     const weekDays = useMemo(() => {
@@ -501,12 +502,12 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                                     <div key={`${day.toISOString()}-${hour}`}
                                         className={cn('border-b border-l border-slate-100 p-0.5 min-h-[52px] align-top', isCurrentDay && 'bg-slate-50/50')}>
                                         {appts.map(appt => (
-                                            <Link key={appt.id} href={route('appointments.show', appt.id)}
-                                                className={cn('flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border',
+                                            <button key={appt.id} onClick={() => setSelectedAppt(appt)}
+                                                className={cn('w-full flex flex-col px-1.5 py-1 rounded-md text-[10px] font-semibold mb-0.5 leading-tight hover:opacity-80 transition-opacity border cursor-pointer text-left',
                                                     statusVariant(appt.status))}>
                                                 <span className="truncate">{appt.customer?.name ?? '-'}</span>
                                                 <span className="font-normal opacity-80 truncate">{formatTime(appt.starts_at)} · {appt.service?.name ?? '-'}</span>
-                                            </Link>
+                                            </button>
                                         ))}
                                     </div>
                                 );
