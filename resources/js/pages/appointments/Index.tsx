@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { formatCents, formatDateTime, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/types';
+import { KanbanView } from './KanbanView';
 
 type ViewMode = 'list' | 'calendar' | 'kanban';
 
@@ -593,48 +594,6 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     );
 }
 
-// ─── Kanban View ──────────────────────────────────────────────────────────────
-
-function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
-    filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
-}) {
-    const { t } = useTranslation();
-
-    const statusLabel: Record<AppointmentStatus, string> = {
-        pending:     t('appt.pending'),
-        confirmed:   t('appt.confirmed'),
-        in_progress: t('appt.inProgress'),
-        completed:   t('appt.completed'),
-        cancelled:   t('appt.cancelled'),
-        no_show:     t('appt.noShow'),
-    };
-
-    return (
-        <div className="flex gap-3 overflow-x-auto pb-2">
-            {STATUS_COLS.map(status => {
-                const col = filtered.filter(a => a.status === status);
-                return (
-                    <div key={status} className="flex-shrink-0 w-64">
-                        <div className="flex items-center gap-2 mb-2 px-1">
-                            <span className={cn('h-2 w-2 rounded-full shrink-0', statusDot(status))} />
-                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">{statusLabel[status]}</span>
-                            <span className="ml-auto text-xs font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">{col.length}</span>
-                        </div>
-                        <div className="space-y-2 min-h-[80px]">
-                            {col.length === 0 ? (
-                                <div className="border-2 border-dashed border-slate-100 rounded-xl h-16 flex items-center justify-center">
-                                    <span className="text-xs text-slate-300">{t('noResults')}</span>
-                                </div>
-                            ) : col.map(appt => (
-                                <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />
-                            ))}
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
