@@ -7,7 +7,7 @@ if (typeof document !== 'undefined') {
     document.head.appendChild(link);
 }
 import { motion, useInView } from 'framer-motion';
-import { ArrowRight, Menu, X, Star, Globe } from 'lucide-react';
+import { ArrowRight, Menu, X, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES, initializeUserLanguage } from '../i18n';
 
@@ -171,7 +171,6 @@ function LangSwitcher() {
                 onClick={() => setOpen(v => !v)}
                 className="flex items-center gap-1.5 text-xs font-semibold text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors"
             >
-                <Globe className="h-3.5 w-3.5" />
                 <span>{current.flag}</span>
                 <span>{current.code.toUpperCase()}</span>
                 <svg className={`h-3 w-3 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} viewBox="0 0 12 12" fill="none">
