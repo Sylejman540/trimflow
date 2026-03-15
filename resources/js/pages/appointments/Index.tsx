@@ -844,7 +844,7 @@ export default function Index({
 
                 return (
                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger>
                             <button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))}>
                                 {label}
                             </button>
@@ -853,7 +853,7 @@ export default function Index({
                             {allStatuses.map(status => (
                                 <DropdownMenuItem
                                     key={status}
-                                    onClick={() => changeStatus(appt.id, status)}
+                                    onClick={() => updateAppointmentStatus(appt.id, status)}
                                     className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
                                 >
                                     {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}
