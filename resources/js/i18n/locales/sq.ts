@@ -736,6 +736,12 @@ export default {
         copyright: '© 2026 Freshio. Të gjitha të drejtat e rezervuara.',
         builtBy: 'Ndërtuar për berberë, nga berberë.',
         madeBy: 'Krijuar nga',
+        // an2tech section
+        an2techLabel: 'Ekipi pas kësaj',
+        an2techHeading: 'Dëshiron një produkt si ky\npër biznesin tënd?',
+        an2techSub: 'an2tech ndërton aplikacione moderne, platforma SaaS dhe mjete dixhitale — shpejt, pastër dhe gati për prodhim.',
+        an2techBtn: 'Punojmë bashkë',
+        an2techTagline: 'Dizajn · Zhvillim · Lansim',
         // Cookie banner
         cookieText: 'Ne përdorim cookies për të përmirësuar përvojën tuaj në faqe. Duke vazhduar, po pranoni përdorimin e tyre.',
         cookieAccept: 'Prano',

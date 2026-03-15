@@ -716,6 +716,12 @@ export default {
         copyright: '© 2026 Freshio. Alle Rechte vorbehalten.',
         builtBy: 'Gebaut für Friseure, von Friseuren.',
         madeBy: 'Erstellt von',
+        // an2tech section
+        an2techLabel: 'Das Team dahinter',
+        an2techHeading: 'Möchten Sie ein solches Produkt\nfür Ihr Unternehmen?',
+        an2techSub: 'an2tech entwickelt moderne Web-Apps, SaaS-Plattformen und digitale Tools — schnell, sauber und produktionsbereit.',
+        an2techBtn: 'Zusammenarbeiten',
+        an2techTagline: 'Design · Entwicklung · Launch',
         // Cookie banner
         cookieText: 'Wir verwenden Cookies, um Ihre Erfahrung zu verbessern und die Nutzung der Website zu analysieren. Durch die weitere Nutzung stimmen Sie unserer Cookie-Richtlinie zu.',
         cookieAccept: 'Akzeptieren',

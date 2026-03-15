@@ -742,6 +742,12 @@ export default {
         copyright: '© 2026 Freshio. All rights reserved.',
         builtBy: 'Built for barbers, by barbers.',
         madeBy: 'Made by',
+        // an2tech section
+        an2techLabel: 'The team behind this',
+        an2techHeading: 'Want a product like this\nbuilt for your business?',
+        an2techSub: 'an2tech builds modern web apps, SaaS platforms, and digital tools — fast, clean, and production-ready.',
+        an2techBtn: 'Work with us',
+        an2techTagline: 'Design · Development · Launch',
         // Cookie banner
         cookieText: 'We use cookies to improve your experience and analyze site usage. By continuing, you accept our cookie policy.',
         cookieAccept: 'Accept',

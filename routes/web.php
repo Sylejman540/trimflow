@@ -26,6 +26,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CustomerPortalController;
 use App\Http\Controllers\ManyChatWebhookController;
 use App\Http\Controllers\InstagramWebhookController;
+use App\Http\Controllers\MarqueeSponsorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -35,6 +36,9 @@ Route::get('/', function () {
         'canRegister' => Route::has('register'),
     ]);
 });
+
+// Public: active marquee sponsors for landing page
+Route::get('/api/marquee-sponsors', [MarqueeSponsorController::class, 'public'])->name('marquee-sponsors.public');
 
 Route::get('/company', function () {
     return Inertia::render('Company');
@@ -86,6 +90,12 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::patch('/companies/{company}/toggle', [AdminDashboardController::class, 'toggleCompany'])->name('companies.toggle');
+
+    // Marquee sponsor management
+    Route::get('/marquee-sponsors', [MarqueeSponsorController::class, 'index'])->name('marquee-sponsors.index');
+    Route::post('/marquee-sponsors', [MarqueeSponsorController::class, 'store'])->name('marquee-sponsors.store');
+    Route::patch('/marquee-sponsors/{sponsor}', [MarqueeSponsorController::class, 'update'])->name('marquee-sponsors.update');
+    Route::delete('/marquee-sponsors/{sponsor}', [MarqueeSponsorController::class, 'destroy'])->name('marquee-sponsors.destroy');
 });
 
 Route::middleware('auth')->group(function () {

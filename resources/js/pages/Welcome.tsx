@@ -364,50 +364,93 @@ const Hero = () => {
 
 // ─── Marquee ──────────────────────────────────────────────────────────────────
 
-type MarqueeItem = { type: 'ghost' } | { type: 'cta' };
+interface Sponsor { id: number; shop_name: string; url: string | null; }
 
-const marqueeItems: MarqueeItem[] = [
-    { type: 'ghost' }, { type: 'ghost' }, { type: 'cta' },
-    { type: 'ghost' }, { type: 'ghost' }, { type: 'ghost' }, { type: 'cta' },
-    { type: 'ghost' }, { type: 'ghost' },
-];
+type MarqueeSlot =
+    | { type: 'sponsor'; sponsor: Sponsor }
+    | { type: 'ghost'; width: number }
+    | { type: 'cta' };
 
-// Each ghost slot gets a fixed blur width so the strip feels populated
 const ghostWidths = [88, 112, 96, 120, 80, 104, 92, 116, 100];
 
-const Marquee = () => (
-    <div className="mt-12 md:mt-20 py-8 md:py-10 bg-black border-y border-zinc-900 overflow-hidden">
-        <div className="flex w-max animate-[marquee_30s_linear_infinite]">
-            {[...marqueeItems, ...marqueeItems].map((item, i) => (
-                <div key={i} className="flex items-center gap-6 px-6 md:px-8">
-                    {item.type === 'cta' ? (
-                        <a
-                            href="/register"
-                            className="flex items-center gap-2 border border-dashed border-zinc-700 hover:border-blue-500 text-zinc-500 hover:text-blue-400 text-xs font-semibold whitespace-nowrap tracking-wide uppercase px-3 py-1 rounded-full transition-all duration-200 group"
-                        >
-                            <span className="h-3.5 w-3.5 rounded-full border border-dashed border-current flex items-center justify-center group-hover:border-blue-400 transition-colors">
-                                <svg viewBox="0 0 8 8" className="h-2 w-2 fill-current"><path d="M4 1v6M1 4h6"/></svg>
-                            </span>
-                            Your shop here
-                        </a>
-                    ) : (
-                        <div
-                            className="h-3 rounded-full bg-zinc-800"
-                            style={{ width: ghostWidths[i % ghostWidths.length] }}
-                        />
-                    )}
-                    <span className="h-1 w-1 rounded-full bg-zinc-800 shrink-0" />
-                </div>
-            ))}
+function buildSlots(sponsors: Sponsor[]): MarqueeSlot[] {
+    // Always keep at least 8 slots so the strip looks full.
+    // Interleave sponsors with ghosts; insert a CTA every 4 slots.
+    const slots: MarqueeSlot[] = [];
+    let sponsorIdx = 0;
+    let ghostIdx = 0;
+    const total = Math.max(8, sponsors.length * 2 + 2);
+
+    for (let i = 0; i < total; i++) {
+        if ((i + 1) % 4 === 0) {
+            slots.push({ type: 'cta' });
+        } else if (sponsorIdx < sponsors.length) {
+            slots.push({ type: 'sponsor', sponsor: sponsors[sponsorIdx++] });
+        } else {
+            slots.push({ type: 'ghost', width: ghostWidths[ghostIdx++ % ghostWidths.length] });
+        }
+    }
+    return slots;
+}
+
+const Marquee = () => {
+    const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+
+    useEffect(() => {
+        fetch('/api/marquee-sponsors')
+            .then(r => r.json())
+            .then(setSponsors)
+            .catch(() => {});
+    }, []);
+
+    const slots = buildSlots(sponsors);
+
+    return (
+        <div className="mt-12 md:mt-20 py-8 md:py-10 bg-black border-y border-zinc-900 overflow-hidden">
+            <div className="flex w-max animate-[marquee_30s_linear_infinite]">
+                {[...slots, ...slots].map((slot, i) => (
+                    <div key={i} className="flex items-center gap-6 px-6 md:px-8">
+                        {slot.type === 'sponsor' ? (
+                            slot.sponsor.url ? (
+                                <a
+                                    href={slot.sponsor.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs font-semibold text-zinc-400 hover:text-white whitespace-nowrap tracking-wide uppercase transition-colors"
+                                >
+                                    {slot.sponsor.shop_name}
+                                </a>
+                            ) : (
+                                <span className="text-xs font-semibold text-zinc-400 whitespace-nowrap tracking-wide uppercase">
+                                    {slot.sponsor.shop_name}
+                                </span>
+                            )
+                        ) : slot.type === 'cta' ? (
+                            <a
+                                href="/register"
+                                className="flex items-center gap-2 border border-dashed border-zinc-700 hover:border-blue-500 text-zinc-500 hover:text-blue-400 text-xs font-semibold whitespace-nowrap tracking-wide uppercase px-3 py-1 rounded-full transition-all duration-200 group"
+                            >
+                                <span className="h-3.5 w-3.5 rounded-full border border-dashed border-current flex items-center justify-center transition-colors">
+                                    <svg viewBox="0 0 8 8" className="h-2 w-2 fill-current"><path d="M4 1v6M1 4h6"/></svg>
+                                </span>
+                                Your shop here
+                            </a>
+                        ) : (
+                            <div className="h-3 rounded-full bg-zinc-800" style={{ width: slot.width }} />
+                        )}
+                        <span className="h-1 w-1 rounded-full bg-zinc-800 shrink-0" />
+                    </div>
+                ))}
+            </div>
+            <style>{`
+                @keyframes marquee {
+                    from { transform: translateX(0); }
+                    to { transform: translateX(-50%); }
+                }
+            `}</style>
         </div>
-        <style>{`
-            @keyframes marquee {
-                from { transform: translateX(0); }
-                to { transform: translateX(-50%); }
-            }
-        `}</style>
-    </div>
-);
+    );
+};
 
 // ─── Lock in Loyalty ──────────────────────────────────────────────────────────
 
@@ -822,17 +865,18 @@ const Footer = () => {
 
                 <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
                     <p>{t('land.copyright')}</p>
-                    <p className="text-zinc-600">
+                    <p className="text-zinc-500">
                         {t('land.madeBy')}{' '}
                         <a
                             href="https://an2tech.com"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-zinc-400 hover:text-white transition-colors font-semibold"
+                            className="text-blue-600 hover:text-blue-500 transition-colors font-bold text-sm"
                         >
-                            an2tech
+                            AN2Tech
                         </a>
                     </p>
+                    <p className="text-zinc-800">{t('land.builtBy')}</p>
                 </div>
             </div>
         </footer>
