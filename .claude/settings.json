@@ -29,7 +29,8 @@
       "Read(//Users/sylejman/Herd/trimflow/**)",
       "Bash(ls -la /Users/sylejman/Herd/trimflow/resources/js/pages/*/)",
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
-      "Bash(grep -n \"accessorKey: ''status''\" /Users/sylejman/Herd/trimflow/resources/js/pages/appointments/Index.tsx)"
+      "Bash(grep -n \"accessorKey: ''status''\" /Users/sylejman/Herd/trimflow/resources/js/pages/appointments/Index.tsx)",
+      "Bash(find /Users/sylejman/Herd/trimflow -name *feature* -o -name *todo* -o -name *roadmap*)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
