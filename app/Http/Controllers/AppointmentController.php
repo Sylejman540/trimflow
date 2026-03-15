@@ -511,6 +511,33 @@ class AppointmentController extends Controller
         return back()->with('success', 'Appointment confirmed.');
     }
 
+    public function updateStatus(Request $request, Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,confirmed,in_progress,completed,cancelled,no_show',
+        ]);
+
+        $previousStatus = $appointment->status;
+        $appointment->update(['status' => $validated['status']]);
+        $appointment->load(['customer', 'service', 'barber.user']);
+
+        $user = Auth::user();
+        $barberUserId = $appointment->barber?->user?->id;
+        $owner = \App\Models\User::where('company_id', $user->company_id)->role('shop-admin')->first();
+        if ($owner && $owner->id !== $user->id) {
+            $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
+        if ($barberUserId && $barberUserId !== $user->id && $barberUserId !== $owner?->id) {
+            $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
+
+        try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
+
+        return back()->with('success', 'Appointment status updated.');
+    }
+
     public function destroy(Request $request, Appointment $appointment)
     {
         $this->authorize('delete', $appointment);

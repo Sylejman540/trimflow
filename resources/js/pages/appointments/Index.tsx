@@ -747,7 +747,7 @@ export default function Index({
     }
 
     function updateAppointmentStatus(appointmentId: number, newStatus: AppointmentStatus) {
-        router.patch(route('appointments.update', appointmentId), { status: newStatus }, { preserveScroll: true });
+        router.patch(route('appointments.update-status', appointmentId), { status: newStatus }, { preserveScroll: true });
     }
 
     const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
