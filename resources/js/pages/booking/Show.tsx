@@ -611,8 +611,9 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                 <div className="text-center pt-8 pb-4">
                     <a href="https://freshio.app" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
-                        <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3 text-slate-400">
-                            <path d="M12 2C9.5 6 7 8.5 7 12a5 5 0 0 0 10 0c0-3.5-2.5-6-5-10z"/>
+                        <svg width="14" height="14" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
+                            <text x="18" y="24" textAnchor="middle" fontFamily="sans-serif" fontSize="20" fontWeight="900" fill="#ffffff">F</text>
                         </svg>
                         Powered by <span className="font-semibold text-slate-500">Freshio</span>
                     </a>

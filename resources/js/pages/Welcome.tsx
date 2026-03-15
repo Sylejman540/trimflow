@@ -865,9 +865,9 @@ const Footer = () => {
                     </div>
                 </div>
 
-                <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
+                <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
                     <p>{t('land.copyright')}</p>
-                    <p className="text-zinc-500">
+                    <p className="text-zinc-400">
                         {t('land.madeBy')}{' '}
                         <a
                             href="https://an2tech.com"
@@ -878,7 +878,7 @@ const Footer = () => {
                             AN2Tech
                         </a>
                     </p>
-                    <p className="text-zinc-800">{t('land.builtBy')}</p>
+                    <p className="text-zinc-400">{t('land.builtBy')}</p>
                 </div>
             </div>
         </footer>
