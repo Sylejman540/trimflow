@@ -44,18 +44,19 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete, isDragging, onDragS
             draggable
             onDragStart={(e) => onDragStart(e, appt)}
             className={cn(
-                "bg-white border border-slate-200 rounded-lg p-3.5 space-y-3 active:bg-slate-50 transition-colors hover:shadow-sm cursor-grab active:cursor-grabbing",
+                "bg-white border border-slate-200 rounded-lg p-3.5 space-y-3 transition-all hover:shadow-sm cursor-grab active:cursor-grabbing",
                 isDragging && "opacity-50"
             )}>
             <div className="flex items-start justify-between gap-2">
-                <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5" />
-            <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
-                    <p className="text-xs text-slate-500 mt-1 truncate">
-                        {appt.service?.name ?? '-'}
-                        {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
-                    </p>
+                <div className="flex items-start gap-2 flex-1 min-w-0">
+                    <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5" />
+                    <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
+                        <p className="text-xs text-slate-500 mt-1 truncate">
+                            {appt.service?.name ?? '-'}
+                            {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
+                        </p>
+                    </div>
                 </div>
                 <Badge className={cn('text-[11px] font-bold shrink-0 rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
                     {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
@@ -97,6 +98,8 @@ export function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
 }) {
     const { t } = useTranslation();
+    const [draggedAppt, setDraggedAppt] = useState<Appointment | null>(null);
+    const [draggedFromStatus, setDraggedFromStatus] = useState<AppointmentStatus | null>(null);
 
     const statusLabel: Record<AppointmentStatus, string> = {
         pending:     t('appt.pending'),
@@ -106,6 +109,47 @@ export function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
         cancelled:   t('appt.cancelled'),
         no_show:     t('appt.noShow'),
     };
+
+    function handleDragStart(e: React.DragEvent<HTMLDivElement>, appt: Appointment) {
+        setDraggedAppt(appt);
+        setDraggedFromStatus(appt.status);
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(e: React.DragEvent<HTMLDivElement>, targetStatus: AppointmentStatus) {
+        e.preventDefault();
+        if (!draggedAppt || !draggedFromStatus) return;
+
+        if (draggedAppt.status === targetStatus) {
+            setDraggedAppt(null);
+            setDraggedFromStatus(null);
+            return;
+        }
+
+        // Update appointment status via PATCH request
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+        fetch(route('appointments.update', draggedAppt.id), {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ status: targetStatus }),
+        })
+            .then(r => {
+                if (r.ok) {
+                    // Reload to reflect the change
+                    router.get(route('appointments.index'), {}, { preserveState: true });
+                }
+            })
+            .catch(err => console.error('Failed to update appointment:', err))
+            .finally(() => {
+                setDraggedAppt(null);
+                setDraggedFromStatus(null);
+            });
+    }
 
     return (
         <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -118,13 +162,27 @@ export function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                             <span className="text-xs font-bold text-slate-700 uppercase tracking-wider truncate">{statusLabel[status]}</span>
                             <span className="ml-auto text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full shrink-0">{col.length}</span>
                         </div>
-                        <div className="space-y-2.5 min-h-[100px]">
+                        <div
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, status)}
+                            className={cn(
+                                "space-y-2.5 min-h-[100px] p-2 rounded-lg transition-colors",
+                                draggedFromStatus && draggedFromStatus !== status && "bg-slate-50"
+                            )}>
                             {col.length === 0 ? (
                                 <div className="border-2 border-dashed border-slate-100 rounded-lg h-20 flex items-center justify-center">
                                     <span className="text-xs text-slate-400">{t('noResults')}</span>
                                 </div>
                             ) : col.map(appt => (
-                                <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />
+                                <ApptCard
+                                    key={appt.id}
+                                    appt={appt}
+                                    isBarber={isBarber}
+                                    isOwnerBarber={isOwnerBarber}
+                                    onDelete={onDelete}
+                                    isDragging={draggedAppt?.id === appt.id}
+                                    onDragStart={handleDragStart}
+                                />
                             ))}
                         </div>
                     </div>
