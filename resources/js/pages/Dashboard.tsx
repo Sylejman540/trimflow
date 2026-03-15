@@ -227,7 +227,7 @@ export default function Dashboard({
 }) {
     const { t } = useTranslation();
     const [lowStockDismissed, setLowStockDismissed] = useState(false);
-    const [viewMine, setViewMine] = useState(false);
+    const [viewMine, setViewMine] = useState(is_barber && !is_owner_barber);
 
     const activeStats        = (is_owner_barber && viewMine && my_stats)          ? my_stats          : stats;
     const activeSchedule     = (is_owner_barber && viewMine && my_today_schedule) ? my_today_schedule : today_schedule;

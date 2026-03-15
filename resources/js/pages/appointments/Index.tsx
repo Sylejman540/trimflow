@@ -620,7 +620,7 @@ export default function Index({
     const [appointments, setAppointments] = useState<Appointment[]>(initialAppointments);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('appt_view') as ViewMode) ?? 'list');
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('appt_status') ?? filters?.status ?? 'all');
-    const [dateFilter, setDateFilter] = useState('today');
+    const [dateFilter, setDateFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('appt_search') ?? filters?.search ?? '');
 
     // Keep local list in sync when Inertia re-renders the page

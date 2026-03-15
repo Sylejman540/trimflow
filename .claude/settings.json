@@ -24,7 +24,11 @@
       "Bash(find routes:*)",
       "Bash(curl -s http://localhost:8000/login)",
       "Bash(/tmp/mobile_test_report.md:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Read(//Users/sylejman/Herd/trimflow/**)",
+      "Bash(ls -la /Users/sylejman/Herd/trimflow/resources/js/pages/*/)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
