@@ -73,6 +73,9 @@ function PhoneFrame({ children, className = '', style = {} }: { children: React.
 function Logo() {
     return (
         <div className="flex items-center gap-2.5">
+            <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-amber-400 text-gray-900 text-lg font-black leading-none">
+                F
+            </span>
             <span className="text-2xl font-black tracking-tight text-white">
                 Freshio
             </span>
