@@ -75,14 +75,8 @@ function Logo() {
         <div className="flex items-center gap-3">
             {/* Amber diamond / geometric F mark */}
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="logoGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%" stopColor="#FCD34D" />
-                        <stop offset="100%" stopColor="#D97706" />
-                    </linearGradient>
-                </defs>
                 {/* Diamond shape */}
-                <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="url(#logoGrad)" />
+                <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
                 {/* Bold F cut into the diamond */}
                 <text
                     x="18"
@@ -91,7 +85,7 @@ function Logo() {
                     fontFamily="'Bebas Neue', sans-serif"
                     fontSize="20"
                     fontWeight="900"
-                    fill="#111827"
+                    fill="#ffffff"
                     letterSpacing="-0.5"
                 >
                     F
