@@ -39,10 +39,10 @@ class AppointmentReminder extends Notification implements ShouldQueue
         $time    = $appt->starts_at->format('g:i A');
 
         if ($this->recipientType === 'barber') {
-            $customer = $appt->customer?->name ?? 'a customer';
+            $customer = $appt->customer?->name ?? 'Unknown';
             return [
                 'appointment_id' => $appt->id,
-                'message'        => "Reminder: {$customer}'s {$service} in 1 hour at {$time}.",
+                'message'        => "Reminder: {$customer} in 15 minutes at {$time}.",
                 'icon'           => 'clock',
             ];
         }
@@ -67,17 +67,19 @@ class AppointmentReminder extends Notification implements ShouldQueue
         $time = $appt->starts_at->format('l, F j \a\t g:i A');
 
         if ($this->recipientType === 'barber') {
-            $customer = $appt->customer?->name ?? 'a customer';
-            $phone    = $appt->customer?->phone ?? null;
+            $customerName = $appt->customer?->name ?? 'Unknown';
+            $phone        = $appt->customer?->phone ?? null;
 
-            return (new MailMessage)
-                ->subject("Reminder: {$customer} — {$serviceLabel} in 1 hour")
+            $message = (new MailMessage)
+                ->subject("Appointment Reminder: {$customerName}")
                 ->greeting("Hi {$notifiable->name},")
-                ->line('You have an upcoming appointment in about 1 hour.')
-                ->line("**Customer:** {$customer}" . ($phone ? " · {$phone}" : ''))
-                ->line("**Service:** {$serviceLabel}")
-                ->line("**When:** {$time}")
-                ->salutation('— TrimFlow');
+                ->line("**Customer:** {$customerName}");
+
+            if ($phone) {
+                $message->line("**Phone:** {$phone}");
+            }
+
+            return $message->salutation('— TrimFlow');
         }
 
         $barber = $appt->barber?->user?->name ?? 'your barber';

@@ -19,7 +19,8 @@
       "Bash(ls /Users/sylejman/Herd/trimflow/public/*.png /Users/sylejman/Herd/trimflow/public/*.jpg /Users/sylejman/Herd/trimflow/public/*.jpeg /Users/sylejman/Herd/trimflow/public/*.webp)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(grep -E \"\\\\.\\(php|tsx\\)$\")"
+      "Bash(grep -E \"\\\\.\\(php|tsx\\)$\")",
+      "Bash(find app:*)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"

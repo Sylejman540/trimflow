@@ -70,31 +70,35 @@ export function DataTable<TData, TValue>({
                if external filters are provided.
             */}
             {(showSearch || filters) && (
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
                     {showSearch && (
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                        <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
+                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 pointer-events-none" />
                             <Input
                                 placeholder={searchPlaceholder}
                                 value={(table.getState().globalFilter as string) ?? ""}
                                 onChange={(event) =>
                                     table.setGlobalFilter(event.target.value)
                                 }
-                                className="h-9 w-[300px] pl-9"
+                                className="w-full h-10 pl-10 pr-3 border border-gray-200 rounded-lg text-sm focus:border-gray-400"
                             />
                         </div>
                     )}
-                    {filters}
+                    {filters && (
+                        <div className="flex flex-wrap gap-2">
+                            {filters}
+                        </div>
+                    )}
                 </div>
             )}
 
-            <div className="overflow-x-auto rounded-xl bg-white ring-1 ring-gray-200/80">
-                <Table className="min-w-[600px]">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+                <Table className="w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-gray-100 bg-gray-50/60 hover:bg-gray-50/60">
+                            <TableRow key={headerGroup.id} className="border-b border-gray-100 bg-gray-50">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                                    <TableHead key={header.id} className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-600">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -109,9 +113,9 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} className="border-gray-100">
+                                <TableRow key={row.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="text-sm text-gray-700">
+                                        <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-700">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext(),
@@ -124,9 +128,9 @@ export function DataTable<TData, TValue>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center text-sm text-gray-500"
+                                    className="px-4 py-8 text-center text-sm text-gray-400"
                                 >
-                                    No results.
+                                    No results found.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -135,16 +139,15 @@ export function DataTable<TData, TValue>({
             </div>
 
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-between px-2 py-1">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-3 border-t border-gray-100">
                     <p className="text-xs text-gray-500 font-medium">
-                        Page {table.getState().pagination.pageIndex + 1} of{' '}
-                        {table.getPageCount()}
+                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                     </p>
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-10 w-10 p-0"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
                         >
@@ -153,7 +156,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-10 w-10 p-0"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
                         >

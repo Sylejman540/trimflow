@@ -339,19 +339,25 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
     return (
         <div className="space-y-3">
             {selectedIds.size > 0 && (
-                <div className="flex items-center gap-3 bg-slate-900 text-white rounded-xl px-4 py-3">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-900 text-white rounded-lg px-4 py-3">
                     <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
-                    <button onClick={() => bulkAction('confirm')} disabled={bulkProcessing}
-                        className="flex items-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('apptIndex.confirmAll')}
-                    </button>
-                    <button onClick={() => bulkAction('cancel')} disabled={bulkProcessing}
-                        className="flex items-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
-                        <Trash2 className="h-3.5 w-3.5" /> {t('apptIndex.cancelAll')}
-                    </button>
-                    <button onClick={() => setSelectedIds(new Set())} className="text-xs text-white/60 hover:text-white transition-colors">
-                        {t('apptIndex.clear')}
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button onClick={() => bulkAction('confirm')} disabled={bulkProcessing}
+                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-9">
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">{t('apptIndex.confirmAll')}</span>
+                            <span className="sm:hidden">{t('confirm')}</span>
+                        </button>
+                        <button onClick={() => bulkAction('cancel')} disabled={bulkProcessing}
+                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-9">
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span className="hidden sm:inline">{t('apptIndex.cancelAll')}</span>
+                            <span className="sm:hidden">{t('cancel')}</span>
+                        </button>
+                        <button onClick={() => setSelectedIds(new Set())} className="text-xs text-white/60 hover:text-white transition-colors px-2">
+                            {t('apptIndex.clear')}
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -445,32 +451,39 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     return (
         <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
             {/* Calendar toolbar */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                    <button onClick={prev} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-500 transition-colors">
+            <div className="flex flex-col gap-3 px-4 py-3 border-b border-slate-100">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button onClick={prev} className="h-10 w-10 sm:h-8 sm:w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200 sm:border-0">
                         <ChevronLeft className="h-4 w-4" />
                     </button>
-                    <button onClick={next} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-50 text-slate-500 transition-colors">
+                    <button onClick={next} className="h-10 w-10 sm:h-8 sm:w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200 sm:border-0">
                         <ChevronRight className="h-4 w-4" />
                     </button>
-                    <button onClick={goToday} className="h-8 px-3 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
-                        Today
+                    <button onClick={goToday} className="h-10 px-3 sm:h-8 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
+                        {t('today')}
                     </button>
-                    <span className="text-sm font-semibold text-slate-900 ml-1">{headerLabel}</span>
                 </div>
-                <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden">
-                    {(['day', 'week'] as const).map(m => (
-                        <button key={m} onClick={() => setCalMode(m)}
-                            className={cn('px-3 h-8 text-xs font-semibold capitalize transition-colors',
-                                calMode === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'
-                            )}>{m}</button>
-                    ))}
+                <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-slate-900">{headerLabel}</span>
+                    <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden bg-white">
+                        {(['day', 'week'] as const).map(m => (
+                            <button
+                                key={m}
+                                onClick={() => setCalMode(m)}
+                                className={cn(
+                                    'px-3 h-10 sm:h-8 text-xs font-semibold capitalize transition-colors border-r border-slate-200 last:border-r-0',
+                                    calMode === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'
+                                )}>
+                                {m}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
             {/* Grid */}
             <div className="overflow-auto max-h-[600px]">
-                <div className="min-w-[500px]" style={{ display: 'grid', gridTemplateColumns: `48px repeat(${displayDays.length}, 1fr)` }}>
+                <div className="min-w-full sm:min-w-[500px]" style={{ display: 'grid', gridTemplateColumns: `48px repeat(${displayDays.length}, 1fr)` }}>
                     {/* Header row */}
                     <div className="border-b border-slate-100 bg-slate-50" />
                     {displayDays.map(day => {
@@ -897,13 +910,20 @@ export default function Index({
                             </SelectContent>
                         </Select>
 
-                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0">
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0 bg-white">
                             {viewButtons.map(({ mode, icon: Icon, label }) => (
-                                <button key={mode} onClick={() => changeView(mode)} title={label}
-                                    className={cn('h-9 px-2.5 flex items-center justify-center transition-colors',
-                                        view === mode ? 'bg-slate-900 text-white' : 'text-slate-400 active:bg-slate-50 active:text-slate-900'
+                                <button
+                                    key={mode}
+                                    onClick={() => changeView(mode)}
+                                    title={label}
+                                    className={cn(
+                                        'h-10 px-3 sm:h-9 sm:px-2.5 flex items-center justify-center gap-1.5 sm:gap-1 transition-colors border-r border-slate-200 last:border-r-0',
+                                        view === mode
+                                            ? 'bg-slate-900 text-white'
+                                            : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
                                     )}>
                                     <Icon className="h-4 w-4" />
+                                    <span className="sm:hidden text-xs font-semibold">{label}</span>
                                 </button>
                             ))}
                         </div>

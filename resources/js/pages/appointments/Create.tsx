@@ -284,14 +284,14 @@ export default function Create({
                                 )}
 
                                 {!slotsLoading && slots !== null && slots.length > 0 && (
-                                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                                         {slots.map(slot => (
                                             <button
                                                 key={slot}
                                                 type="button"
                                                 onClick={() => pickSlot(slot)}
                                                 className={cn(
-                                                    'h-9 rounded-lg text-xs font-bold border transition-all',
+                                                    'h-10 sm:h-9 rounded-lg text-xs font-bold border transition-all',
                                                     selectedSlot === slot
                                                         ? 'bg-slate-900 text-white border-slate-900'
                                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50',

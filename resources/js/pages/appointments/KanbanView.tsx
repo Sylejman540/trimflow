@@ -1,10 +1,11 @@
 import { Link, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Eye, Trash2, CheckCircle2 } from 'lucide-react';
+import { Edit, Eye, Trash2, CheckCircle2, GripVertical } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { buttonVariants } from '@/components/ui/button';
 import { formatCents, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
+import { useState } from 'react';
 
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
@@ -34,48 +35,56 @@ const STATUS_COLS: AppointmentStatus[] = [
     'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show',
 ];
 
-function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
-    appt: Appointment; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
+function ApptCard({ appt, isBarber, isOwnerBarber, onDelete, isDragging, onDragStart }: {
+    appt: Appointment; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void; isDragging: boolean; onDragStart: (e: React.DragEvent<HTMLDivElement>, appt: Appointment) => void;
 }) {
     const { t } = useTranslation();
     return (
-        <div className="bg-white border border-slate-200 rounded-lg p-3 space-y-2 active:bg-slate-50 transition-colors">
+        <div
+            draggable
+            onDragStart={(e) => onDragStart(e, appt)}
+            className={cn(
+                "bg-white border border-slate-200 rounded-lg p-3.5 space-y-3 active:bg-slate-50 transition-colors hover:shadow-sm cursor-grab active:cursor-grabbing",
+                isDragging && "opacity-50"
+            )}>
             <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
+                <GripVertical className="h-4 w-4 text-slate-300 shrink-0 mt-0.5" />
+            <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
                     <p className="font-semibold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
-                    <p className="text-xs text-slate-400 mt-1 truncate">
+                    <p className="text-xs text-slate-500 mt-1 truncate">
                         {appt.service?.name ?? '-'}
                         {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
                     </p>
                 </div>
-                <Badge className={cn('text-[10px] font-bold shrink-0 rounded-full px-2 py-0.5 shadow-none border', statusVariant(appt.status))}>
+                <Badge className={cn('text-[11px] font-bold shrink-0 rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
                     {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
                 </Badge>
             </div>
             <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-600">{formatTime(appt.starts_at)}</span>
+                <span className="font-semibold text-slate-600 bg-slate-50 px-2 py-1 rounded">{formatTime(appt.starts_at)}</span>
                 <span className="font-bold text-slate-900">{formatCents(appt.price)}</span>
             </div>
-            <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100">
+            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
                 {appt.status === 'pending' && (
                     <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                        className="h-8 px-2 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-md hover:bg-emerald-100 transition-colors flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" /> {t('confirm')}
+                        className="flex-1 min-w-[90px] h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg hover:bg-emerald-100 transition-colors flex items-center justify-center gap-1">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                     </button>
                 )}
                 <Link href={route('appointments.show', appt.id)}
-                    className={cn(buttonVariants({ variant: 'ghost' }), 'h-8 w-8 p-0 text-slate-400 hover:text-slate-900 hover:bg-slate-100')}>
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-2 text-xs font-bold border-slate-200 shadow-none flex-1 min-w-[40px]')}>
                     <Eye className="h-3.5 w-3.5" />
                 </Link>
                 {appt.status !== 'in_progress' && (
                     <Link href={route('appointments.edit', appt.id)}
-                        className={cn(buttonVariants({ variant: 'ghost' }), 'h-8 w-8 p-0 text-slate-400 hover:text-slate-900 hover:bg-slate-100')}>
+                        className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-2 text-xs font-bold border-slate-200 shadow-none flex-1 min-w-[40px]')}>
                         <Edit className="h-3.5 w-3.5" />
                     </Link>
                 )}
                 {appt.status !== 'in_progress' && appt.can_delete && (
                     <button onClick={() => onDelete(appt)}
-                        className="h-8 w-8 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-md border border-slate-200 transition-colors">
+                        className="h-9 w-9 flex items-center justify-center text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200 transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                     </button>
                 )}
@@ -99,20 +108,20 @@ export function KanbanView({ filtered, isBarber, isOwnerBarber, onDelete }: {
     };
 
     return (
-        <div className="flex gap-3 overflow-x-auto pb-4">
+        <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
             {STATUS_COLS.map(status => {
                 const col = filtered.filter(a => a.status === status);
                 return (
-                    <div key={status} className="flex-shrink-0 w-80">
-                        <div className="flex items-center gap-2 mb-3 px-1">
-                            <span className={cn('h-2 w-2 rounded-full shrink-0', statusDot(status))} />
-                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">{statusLabel[status]}</span>
-                            <span className="ml-auto text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{col.length}</span>
+                    <div key={status} className="flex-shrink-0 w-72 sm:w-80">
+                        <div className="flex items-center gap-2.5 mb-3 px-1">
+                            <span className={cn('h-2.5 w-2.5 rounded-full shrink-0', statusDot(status))} />
+                            <span className="text-xs font-bold text-slate-700 uppercase tracking-wider truncate">{statusLabel[status]}</span>
+                            <span className="ml-auto text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full shrink-0">{col.length}</span>
                         </div>
-                        <div className="space-y-2 min-h-[100px]">
+                        <div className="space-y-2.5 min-h-[100px]">
                             {col.length === 0 ? (
                                 <div className="border-2 border-dashed border-slate-100 rounded-lg h-20 flex items-center justify-center">
-                                    <span className="text-xs text-slate-300">{t('noResults')}</span>
+                                    <span className="text-xs text-slate-400">{t('noResults')}</span>
                                 </div>
                             ) : col.map(appt => (
                                 <ApptCard key={appt.id} appt={appt} isBarber={isBarber} isOwnerBarber={isOwnerBarber} onDelete={onDelete} />

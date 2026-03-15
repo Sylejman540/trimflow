@@ -42,7 +42,7 @@ const STATUS_BADGE: Record<string, string> = {
     cancelled:   'bg-red-100 text-red-600',
 };
 
-const DAY_COL_MIN_W = 120;
+const DAY_COL_MIN_W = 160; // Increased for better mobile readability
 
 function addDays(dateStr: string, n: number) {
     const d = new Date(dateStr + 'T12:00:00');
@@ -89,7 +89,7 @@ interface DragState {
 
 function TimeGutter() {
     return (
-        <div className="w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
+        <div className="w-16 sm:w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
             {Array.from({ length: TOTAL_HOURS }, (_, i) => {
                 const hour = HOUR_START + i;
                 const label = hour === 0 ? '12:00' : hour <= 12 ? `${hour}:00` : `${hour - 12}:00`;
@@ -526,41 +526,41 @@ export default function Index({
                         </button>
                     )}
                     {!isMobile && (
-                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden">
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
                             <button
                                 onClick={() => setView('day')}
                                 title="Day view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'day' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-10 px-3 sm:h-9 sm:w-9 sm:px-0 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'day' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
-                                <CalendarDays className="h-3.5 w-3.5" />
+                                <CalendarDays className="h-4 w-4" />
                             </button>
                             <button
                                 onClick={() => setView('week')}
                                 title="Week view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'week' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-10 px-3 sm:h-9 sm:w-9 sm:px-0 flex items-center justify-center text-xs border-r border-slate-200 transition-colors', effectiveView === 'week' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
-                                <LayoutGrid className="h-3.5 w-3.5" />
+                                <LayoutGrid className="h-4 w-4" />
                             </button>
                             <button
                                 onClick={() => setView('month')}
                                 title="Month view"
-                                className={cn('h-9 w-9 flex items-center justify-center text-xs transition-colors', effectiveView === 'month' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
+                                className={cn('h-10 px-3 sm:h-9 sm:w-9 sm:px-0 flex items-center justify-center text-xs transition-colors', effectiveView === 'month' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50')}
                             >
-                                <CalendarRange className="h-3.5 w-3.5" />
+                                <CalendarRange className="h-4 w-4" />
                             </button>
                         </div>
                     )}
-                    <div className="hidden sm:flex items-center gap-1">
-                        <button onClick={() => navigate(-1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
+                    <div className="flex items-center gap-1.5">
+                        <button onClick={() => navigate(-1)} className="h-10 w-10 sm:h-9 sm:w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronLeft className="h-4 w-4" />
                         </button>
                         <button
                             onClick={() => router.get(route('schedule.index'), { view: effectiveView, date: todayStr })}
-                            className="h-9 px-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+                            className="h-10 px-3 sm:h-9 sm:px-2.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
                         >
                             {t('today')}
                         </button>
-                        <button onClick={() => navigate(1)} className="h-9 w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
+                        <button onClick={() => navigate(1)} className="h-10 w-10 sm:h-9 sm:w-9 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors">
                             <ChevronRight className="h-4 w-4" />
                         </button>
                     </div>

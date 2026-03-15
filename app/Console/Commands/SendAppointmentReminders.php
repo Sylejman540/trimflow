@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Log;
 class SendAppointmentReminders extends Command
 {
     protected $signature = 'reminders:send
-                            {--window=60 : Minutes before appointment to send reminder (default: 60)}';
+                            {--window=15 : Minutes before appointment to send reminder (default: 15)}';
 
-    protected $description = 'Send SMS/email reminders to customers with upcoming appointments';
+    protected $description = 'Send email reminders to barbers with upcoming appointments (15 minutes before)';
 
     public function handle(): int
     {
@@ -36,34 +36,30 @@ class SendAppointmentReminders extends Command
         $sent = 0;
 
         foreach ($appointments as $appointment) {
-            $customer = $appointment->customer;
+            $barberUser = $appointment->barber?->user;
 
-            if (! $customer) {
+            if (! $barberUser) {
                 continue;
             }
 
             try {
-                // Notify customer (database + email if they have one)
-                $customer->notify(new AppointmentReminder($appointment, 'customer'));
-
                 // Notify barber via their User account
-                $barberUser = $appointment->barber?->user;
-                if ($barberUser) {
-                    $barberUser->notify(new AppointmentReminder($appointment, 'barber'));
-                }
+                $barberUser->notify(new AppointmentReminder($appointment, 'barber'));
 
                 // Mark as sent so we don't double-send
                 $appointment->updateQuietly(['reminder_sent_at' => now()]);
 
                 $sent++;
-                $this->line("  ✓ Reminder sent for appointment #{$appointment->id} ({$customer->name})");
+                $customerName = $appointment->customer?->name ?? 'Unknown';
+                $this->line("  ✓ Reminder sent for appointment #{$appointment->id} ({$customerName})");
             } catch (\Throwable $e) {
                 Log::error('Failed to send appointment reminder', [
                     'appointment_id' => $appointment->id,
-                    'customer_id'    => $customer->id,
+                    'barber_id'      => $appointment->barber_id,
                     'error'          => $e->getMessage(),
                 ]);
-                $this->error("  ✗ Failed for {$customer->name}: {$e->getMessage()}");
+                $barberName = $appointment->barber?->user?->name ?? 'Unknown';
+                $this->error("  ✗ Failed for {$barberName}: {$e->getMessage()}");
             }
         }
 

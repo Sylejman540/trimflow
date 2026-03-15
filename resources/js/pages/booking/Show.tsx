@@ -467,13 +467,13 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                 )}
 
                                 {!slotsLoading && slots.length > 0 && (
-                                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                                         {slots.map(slot => (
                                             <button
                                                 key={slot}
                                                 onClick={() => selectTime(slot)}
                                                 className={cn(
-                                                    'py-2 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97]',
+                                                    'py-2.5 text-xs font-semibold rounded-lg border transition-colors active:scale-[0.97]',
                                                     selectedTime === slot
                                                         ? 'bg-slate-900 text-white border-slate-900'
                                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'
