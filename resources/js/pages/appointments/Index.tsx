@@ -291,9 +291,14 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                         {(!isBarber || isOwnerBarber) && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
                     </p>
                 </div>
-                <Badge className={cn('text-[10px] font-bold shrink-0 rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
-                    {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
-                </Badge>
+                <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <Badge className={cn('text-[10px] font-bold rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
+                        {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
+                    </Badge>
+                    {appt.status === 'pending' && (
+                        <span className="text-[10px] text-orange-700 font-medium">{t('appt.pendingDesc')}</span>
+                    )}
+                </div>
             </div>
             <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-lg">
@@ -768,9 +773,18 @@ export default function Index({
             return matchesStatus && matchesDate && matchesSearch;
         })
         .sort((a, b) => {
+            // Pending appointments first
+            if (a.status === 'pending' && b.status !== 'pending') return -1;
+            if (a.status !== 'pending' && b.status === 'pending') return 1;
+            // Then active appointments (confirmed, in_progress)
+            const aActive = (a.status === 'confirmed' || a.status === 'in_progress') ? 0 : 1;
+            const bActive = (b.status === 'confirmed' || b.status === 'in_progress') ? 0 : 1;
+            if (aActive !== bActive) return aActive - bActive;
+            // Then done appointments (completed, cancelled, no_show)
             const aDone = DONE_STATUSES.includes(a.status) ? 1 : 0;
             const bDone = DONE_STATUSES.includes(b.status) ? 1 : 0;
             if (aDone !== bDone) return aDone - bDone;
+            // Finally sort by start time
             return parseShopDate(a.starts_at).getTime() - parseShopDate(b.starts_at).getTime();
         });
 
@@ -845,22 +859,27 @@ export default function Index({
                 const label = t(`appt.${s === 'no_show' ? 'noShow' : s === 'in_progress' ? 'inProgress' : s}`);
 
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger render={<button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))} />}>
-                            {label}
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-48">
-                            {allStatuses.map(status => (
-                                <DropdownMenuItem
-                                    key={status}
-                                    onClick={() => updateAppointmentStatus(appt.id, status)}
-                                    className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
-                                >
-                                    {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="flex flex-col gap-1.5">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger render={<button className={cn('cursor-pointer text-[10px] font-bold tracking-wider rounded-md px-2 py-0.5 shadow-none border transition-opacity hover:opacity-80', statusVariant(s))} />}>
+                                {label}
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-48">
+                                {allStatuses.map(status => (
+                                    <DropdownMenuItem
+                                        key={status}
+                                        onClick={() => updateAppointmentStatus(appt.id, status)}
+                                        className={cn('text-xs font-medium cursor-pointer', status === s && 'bg-slate-100 font-bold')}
+                                    >
+                                        {t(`appt.${status === 'no_show' ? 'noShow' : status === 'in_progress' ? 'inProgress' : status}`)}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        {s === 'pending' && (
+                            <span className="text-[10px] text-orange-700 font-medium">{t('appt.pendingDesc')}</span>
+                        )}
+                    </div>
                 );
             },
         },

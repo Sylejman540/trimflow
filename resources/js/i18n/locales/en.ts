@@ -229,6 +229,7 @@ export default {
         selectService: 'Select service',
         barberFreeToday: 'is free today',
         barberNotAvailableToday: 'is not available today',
+        pendingDesc: 'Awaiting confirmation',
         apptStatus: 'Appointment Status',
         deleteAppt: 'Delete Appointment',
         deleteConfirm: 'Are you sure you want to delete this appointment? This cannot be undone.',
