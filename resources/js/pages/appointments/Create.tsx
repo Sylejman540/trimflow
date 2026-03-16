@@ -491,36 +491,44 @@ export default function Create({
 
                     {/* Navigation Buttons */}
                     <div className="flex items-center gap-3 pt-6 border-t border-slate-100">
-                        {currentStepIdx > 0 && (
-                            <Button
-                                type="button"
-                                onClick={prevStep}
-                                className="bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-bold h-11 px-6 transition-all"
-                            >
-                                {t('back')}
-                            </Button>
-                        )}
                         {currentStepIdx < steps.length - 1 ? (
-                            <Button
-                                type="button"
-                                onClick={nextStep}
-                                disabled={!canProceed()}
-                                className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none flex items-center gap-2 disabled:opacity-50"
-                            >
-                                {t('next').toUpperCase()} <ChevronRight className="w-4 h-4" />
-                            </Button>
+                            <>
+                                {currentStepIdx > 0 && (
+                                    <Button
+                                        type="button"
+                                        onClick={prevStep}
+                                        variant="outline"
+                                        className="h-11 rounded-lg text-sm font-bold"
+                                    >
+                                        <ArrowLeft className="w-4 h-4 mr-2" />
+                                        {t('back')}
+                                    </Button>
+                                )}
+                                <Button
+                                    type="button"
+                                    onClick={nextStep}
+                                    disabled={!canProceed()}
+                                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {t('next')}
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
+                            </>
                         ) : (
-                            <Button
-                                type="submit"
-                                disabled={processing}
-                                className="bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none flex items-center gap-2"
-                            >
-                                <Check className="w-4 h-4" /> {t('appt.bookAppointment')}
-                            </Button>
+                            <>
+                                <Button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Check className="w-4 h-4" />
+                                    {t('appt.bookAppointment')}
+                                </Button>
+                            </>
                         )}
                         <Link
                             href={route('appointments.index')}
-                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
+                            className="text-slate-500 hover:text-slate-900 text-sm font-bold h-11 px-4 rounded-lg hover:bg-slate-50 transition-all flex items-center"
                         >
                             {t('cancel')}
                         </Link>
