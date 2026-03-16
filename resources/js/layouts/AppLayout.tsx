@@ -548,7 +548,7 @@ export default function AppLayout({
 
             {/* Mobile Primary Action — sits above bottom nav */}
             {mobileAction && (
-                <div className="lg:hidden fixed bottom-16 inset-x-0 z-20 px-4 pb-2">
+                <div className="lg:hidden fixed bottom-16 inset-x-0 z-20 px-3 pb-3">
                     {mobileAction}
                 </div>
             )}

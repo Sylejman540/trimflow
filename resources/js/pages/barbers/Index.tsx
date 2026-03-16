@@ -64,23 +64,12 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         router.post(route('barbers.toggle-availability', barberId), {}, { preserveScroll: true });
     }
 
-    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
-
-    useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth < 640);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
     const filtered = barbers.filter((b) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? b.is_active : !b.is_active);
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [b.user?.name, b.user?.email, b.specialty].some(v => v?.toLowerCase().includes(search));
         return matchesStatus && matchesSearch;
     });
-
-    // Force list view on mobile
-    const effectiveView = isMobile ? 'list' : view;
 
     const columns: ColumnDef<Barber>[] = [
         {
@@ -168,8 +157,8 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
             }
             mobileAction={
                 <Link href={route('barbers.create')}
-                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform">
-                    <Plus className="h-5 w-5" />
+                    className="flex items-center justify-center gap-2 w-full h-10 rounded-lg bg-slate-900 text-white text-sm font-bold active:scale-[0.98] transition-transform">
+                    <Plus className="h-4 w-4" />
                     {t('barber.new')}
                 </Link>
             }
@@ -178,36 +167,38 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
 
             <div className="space-y-2">
                 {/* Toolbar */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
                             onChange={e => changeSearch(e.target.value)} />
                     </div>
-                    <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
-                        <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                            <SelectValue>{statusFilter === 'all' ? t('all') : statusFilter === 'active' ? t('active') : t('inactive')}</SelectValue>
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                            <SelectItem value="all">{t('all')}</SelectItem>
-                            <SelectItem value="active">{t('active')}</SelectItem>
-                            <SelectItem value="inactive">{t('inactive')}</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    {/* View toggle - desktop only */}
-                    <div className="hidden sm:flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
-                        <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
-                            <LayoutList className="h-3.5 w-3.5" />
-                        </button>
-                        <button onClick={() => changeView('grid')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
-                            <LayoutGrid className="h-3.5 w-3.5" />
-                        </button>
+                    <div className="flex items-center gap-2">
+                        <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
+                            <SelectTrigger className="h-8 w-auto min-w-[90px] bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{statusFilter === 'all' ? t('all') : statusFilter === 'active' ? t('active') : t('inactive')}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">{t('all')}</SelectItem>
+                                <SelectItem value="active">{t('active')}</SelectItem>
+                                <SelectItem value="inactive">{t('inactive')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        {/* View toggle */}
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                            <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
+                                <LayoutList className="h-3.5 w-3.5" />
+                            </button>
+                            <button onClick={() => changeView('grid')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
+                                <LayoutGrid className="h-3.5 w-3.5" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Grid View */}
-                {effectiveView === 'grid' && (
+                {view === 'grid' && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                         {filtered.length === 0 && (
                             <div className="col-span-full flex flex-col items-center justify-center gap-3 py-12">
@@ -268,82 +259,8 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 )}
 
                 {/* List View */}
-                {effectiveView === 'list' && (
-                    <>
-                        {/* Mobile cards */}
-                        <div className="sm:hidden">
-                            {filtered.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-3 py-12">
-                                    <Inbox className="h-12 w-12 text-slate-200" />
-                                    <div className="text-center">
-                                        <p className="text-sm font-semibold text-slate-700">No results found</p>
-                                        <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="space-y-2">
-                            {filtered.map(barber => {
-                                const isOff = off_today_ids.includes(barber.id);
-                                return (
-                                    <div key={barber.id} className={cn("bg-white border rounded-xl p-4 space-y-3", isOff ? "border-amber-200 bg-amber-50/30" : "border-slate-200")}>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                                <User className="h-5 w-5" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-semibold text-slate-900 text-sm truncate">{barber.user?.name}</p>
-                                                <p className="text-xs text-slate-400 truncate">{barber.user?.email}</p>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 shrink-0">
-                                                {isOff && (
-                                                    <Badge className="text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                                                        {t('barber.offToday')}
-                                                    </Badge>
-                                                )}
-                                                <Badge className={cn("text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border",
-                                                    barber.is_active ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-slate-50 text-red-600 border-red-100")}>
-                                                    {barber.is_active ? t('active') : t('inactive')}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                        {barber.specialty && (
-                                            <p className="text-xs text-slate-500 italic">{barber.specialty}</p>
-                                        )}
-                                        <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                                            <button onClick={() => toggleAvailability(barber.id)}
-                                                className={cn("flex-1 h-9 px-3 text-xs font-bold rounded-lg border transition-colors flex items-center justify-center gap-2",
-                                                    isOff ? "text-amber-600 border-amber-200 bg-amber-50 hover:bg-amber-100" : "text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50")}>
-                                                <PowerOff className="h-3.5 w-3.5" />
-                                                {isOff ? t('barber.available') : t('barber.unavailable')}
-                                            </button>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger>
-                                                    <Button variant="outline" size="icon" className="h-9 w-9 border-slate-200">
-                                                        <MoreVertical className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-40">
-                                                    <DropdownMenuItem>
-                                                        <Link href={route('barbers.schedule', barber.id)} className="w-full">{t('barber.schedule')}</Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        <Link href={route('barbers.edit', barber.id)} className="w-full">{t('edit')}</Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem onClick={() => setDeletingBarber(barber)} className="text-red-600">{t('delete')}</DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                                </div>
-                            )}
-                        </div>
-                        {/* Desktop table */}
-                        <div className="hidden sm:block">
-                            <DataTable columns={columns} data={filtered} showSearch={false} />
-                        </div>
-                    </>
+                {view === 'list' && (
+                    <DataTable columns={columns} data={filtered} showSearch={false} />
                 )}
             </div>
 
