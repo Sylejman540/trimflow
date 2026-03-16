@@ -202,6 +202,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
         setAvailabilityLoading(true);
         const params = new URLSearchParams();
         serviceIds.forEach(id => params.append('service_ids[]', String(id)));
+        params.append('lang', i18n.language);
         fetch(route('booking.availability', company.slug) + '?' + params.toString(), {
             headers: {
                 'Accept-Language': i18n.language,
