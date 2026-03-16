@@ -81,6 +81,13 @@ export default function Create({
         setData('starts_at', '');
     }
 
+    function isValidPhone(phone: string): boolean {
+        if (!phone) return true; // Empty is valid (optional field)
+        // Accept phone numbers with at least 10 digits
+        const digitsOnly = phone.replace(/\D/g, '');
+        return digitsOnly.length >= 10;
+    }
+
     const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
 
     useEffect(() => {
@@ -129,7 +136,7 @@ export default function Create({
 
     function canProceed(): boolean {
         if (currentStep === 'barber') return !!data.barber_id;
-        if (currentStep === 'customer') return !!(data.customer_name && data.customer_phone);
+        if (currentStep === 'customer') return !!data.customer_name;
         if (currentStep === 'services') return data.service_ids.length > 0;
         if (currentStep === 'datetime') return !!data.starts_at;
         return true;
@@ -230,15 +237,16 @@ export default function Create({
 
                             <div className="space-y-3">
                                 <Label htmlFor="customer_phone" className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Phone size={16} />{t('appt.phoneNumber')}
+                                    <Phone size={16} />{t('appt.phoneNumber')} <span className="text-xs text-slate-400">(optional)</span>
                                 </Label>
                                 <Input
                                     id="customer_phone"
                                     value={data.customer_phone}
                                     onChange={(e) => setData('customer_phone', e.target.value)}
-                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                    className={cn("h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg", data.customer_phone && !isValidPhone(data.customer_phone) && "border-red-300")}
                                     placeholder="+1 (555) 000-0000"
                                 />
+                                {data.customer_phone && !isValidPhone(data.customer_phone) && <p className="text-xs text-red-500 font-medium">Phone number must have at least 10 digits</p>}
                                 {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
                             </div>
 

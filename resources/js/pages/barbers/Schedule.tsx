@@ -1,7 +1,8 @@
 import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Clock, ChevronLeft } from 'lucide-react';
+import { Clock, ArrowLeft } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import AppLayout from '@/layouts/AppLayout';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

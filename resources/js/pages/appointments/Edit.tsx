@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Appointment, Barber, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign, RefreshCw, CheckCircle2, Mail } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Info, DollarSign, RefreshCw, CheckCircle2, Mail, ArrowLeft } from 'lucide-react';
 import { NumberStepper } from '@/components/ui/number-stepper';
 
 const statuses = [
@@ -76,7 +76,18 @@ export default function Edit({
     }
 
     return (
-        <AppLayout title={t('appt.edit')}>
+        <AppLayout
+            title={t('appt.edit')}
+            actions={
+                <Link
+                    href={route('appointments.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={t('appt.edit')} />
 
             <div className="mx-auto max-w-2xl">
@@ -313,16 +324,10 @@ export default function Edit({
                         <Button
                             type="submit"
                             disabled={processing || data.service_ids.length === 0}
-                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none"
+                            className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all"
                         >
                             {t('appt.updateAppointment')}
                         </Button>
-                        <Link
-                            href={route('appointments.index')}
-                            className={cn(buttonVariants({ variant: "ghost" }), "text-slate-500 hover:bg-slate-50 hover:text-slate-900 text-sm font-bold h-11 px-4")}
-                        >
-                            {t('cancel')}
-                        </Link>
                     </div>
                 </form>
             </div>
