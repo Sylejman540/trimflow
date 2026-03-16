@@ -63,7 +63,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
     const columns: ColumnDef<TimeOff>[] = [
         {
             accessorKey: 'barber.user.name',
-            header: () => <span className="text-xs font-semibold text-slate-600">{t('barber.title')}</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('barber.title').toUpperCase()}</span>,
             cell: ({ row }) => {
                 const active = isActive(row.original.starts_on, row.original.ends_on);
                 return (
@@ -78,7 +78,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
         },
         {
             id: 'dates',
-            header: () => <span className="text-xs font-semibold text-slate-600">{t('timeoff.from')} → {t('timeoff.to')}</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('timeoff.from').toUpperCase()} → {t('timeoff.to').toUpperCase()}</span>,
             cell: ({ row }) => (
                 <div className="flex items-center gap-2 text-sm">
                     <span className="text-slate-600 font-medium">{fmtDate(row.original.starts_on)}</span>
@@ -89,12 +89,12 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
         },
         {
             accessorKey: 'reason',
-            header: () => <span className="text-xs font-semibold text-slate-600">{t('timeoff.reason')}</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('timeoff.reason').toUpperCase()}</span>,
             cell: ({ row }) => <span className="text-sm text-slate-500 italic">{row.original.reason || '—'}</span>,
         },
         {
             id: 'status',
-            header: () => <span className="text-xs font-semibold text-slate-600">{t('status')}</span>,
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
             cell: ({ row }) => {
                 const active = isActive(row.original.starts_on, row.original.ends_on);
                 const future = row.original.starts_on > todayStr();
@@ -122,7 +122,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
     if (can_manage) {
         columns.push({
             id: 'actions',
-            header: () => <div className="text-right text-xs font-semibold text-slate-600">{t('actions')}</div>,
+            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">{t('actions').toUpperCase()}</div>,
             cell: ({ row }) => (
                 <div className="flex items-center justify-end gap-1">
                     <Button
