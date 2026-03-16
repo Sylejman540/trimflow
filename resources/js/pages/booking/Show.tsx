@@ -77,6 +77,19 @@ function formatDateWithDay(dateStr: string, lang: string, i18n: any) {
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
 
+    // Check if today or tomorrow
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (date.getTime() === today.getTime()) {
+        return i18n.t('today', 'Today');
+    }
+    if (date.getTime() === tomorrow.getTime()) {
+        return i18n.t('tomorrow', 'Tomorrow');
+    }
+
     // Get day and month names from translations
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const dayName = i18n.t(`days.${dayNames[date.getDay()]}`, dayNames[date.getDay()]);
