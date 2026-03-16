@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\User;
 use App\Notifications\NewPublicBooking;
 use App\Rules\ValidPhone;
+use App\Services\LoggingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -203,6 +204,7 @@ class BookingController extends Controller
             ->where('ends_at', '>', $startsAt)
             ->exists();
         if ($conflict) {
+            LoggingService::logBookingConflict($barber->id, $startsAt->format('Y-m-d H:i'));
             return back()->withErrors(['starts_at' => trans('booking.errorSlotTaken')]);
         }
 
@@ -305,8 +307,15 @@ class BookingController extends Controller
         }
         $appointment->load(['barber.user', 'customer', 'service']);
 
+        // Log successful booking
+        LoggingService::logBookingSuccess($appointment->id, 'public_booking');
+
         // ── 16. Broadcast real-time update ────────────────────────────────────
-        try { broadcast(new AppointmentChanged($appointment)); } catch (\Throwable) {}
+        try {
+            broadcast(new AppointmentChanged($appointment));
+        } catch (\Throwable $e) {
+            LoggingService::logBroadcastError('appointment.changed', $e);
+        }
 
         // ── 17. Notify barber + admins ─────────────────────────────────────────
         if ($barber->user) {
