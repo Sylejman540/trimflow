@@ -92,12 +92,12 @@ export function DataTable<TData, TValue>({
                 </div>
             )}
 
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-none">
+            <div className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-none">
                 <div className="overflow-x-auto">
                     <Table className="w-full">
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
-                                <TableRow key={headerGroup.id} className="border-b border-slate-100">
+                                <TableRow key={headerGroup.id} className="border-b border-slate-50">
                                     {headerGroup.headers.map((header) => (
                                         <TableHead key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-600">
                                             {header.isPlaceholder
@@ -114,7 +114,7 @@ export function DataTable<TData, TValue>({
                         <TableBody>
                             {table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
-                                    <TableRow key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                    <TableRow key={row.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id} className="px-4 py-3 text-sm text-slate-700">
                                                 {flexRender(
@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
                 </div>
 
                 {table.getPageCount() > 1 && (
-                    <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-100">
+                    <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-50">
                         {table.getCanPreviousPage() && (
                             <Button
                                 size="sm"
