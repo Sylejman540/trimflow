@@ -146,6 +146,7 @@ export default {
         bookingsTarget: 'Objektivi i rezervimeve',
         saveGoals: 'Ruaj objektivat',
         lowStockAlert: 'Paralajmërim stoku të ulët',
+        appointmentSingular: 'termin',
         appointments: 'termin',
         appointmentsPlural: 'terminet',
         walkin: 'Pa rezervim',

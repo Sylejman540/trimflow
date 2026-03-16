@@ -144,6 +144,7 @@ export default {
         bookingsTarget: 'Buchungsziel',
         saveGoals: 'Ziele speichern',
         lowStockAlert: 'Niedriger Lagerbestand',
+        appointmentSingular: 'Termin',
         appointments: 'Termin',
         appointmentsPlural: 'Termine',
         walkin: 'Walk-in',
