@@ -14,7 +14,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
-import { User, Mail, Star, AlignLeft, Contact, PalmtreeIcon, Plus, Trash2, CalendarDays, ArrowRight } from 'lucide-react';
+import { User, Mail, Star, AlignLeft, Contact, PalmtreeIcon, Plus, Trash2, CalendarDays, ArrowRight, ArrowLeft } from 'lucide-react';
 
 interface TimeOff {
     id: number;
@@ -71,7 +71,18 @@ export default function Edit({ barber, time_offs = [] }: { barber: Barber; time_
     }
 
     return (
-        <AppLayout title={t('barber.edit')}>
+        <AppLayout
+            title={t('barber.edit')}
+            actions={
+                <Link
+                    href={route('barbers.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={`${t('barber.edit')} ${barber.user?.name}`} />
             
             <div className="mx-auto max-w-2xl">

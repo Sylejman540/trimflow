@@ -51,6 +51,7 @@ for (let h = 6; h <= 22; h++) {
 }
 
 export default function Schedule({ barber }: { barber: Barber }) {
+    const { t } = useTranslation();
     const [hours, setHours] = useState<WorkingHours>(() =>
         buildInitial(barber.working_hours as Record<string, unknown> | null)
     );
@@ -98,9 +99,10 @@ export default function Schedule({ barber }: { barber: Barber }) {
             actions={
                 <Link
                     href={route('barbers.index')}
-                    className={cn(buttonVariants({ variant: 'outline' }), 'h-9 px-4 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
                 >
-                    <ChevronLeft className="mr-1.5 h-3.5 w-3.5" /> Back
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
                 </Link>
             }
         >

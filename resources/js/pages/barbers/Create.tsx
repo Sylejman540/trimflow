@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { User, Mail, Lock, Star, AlignLeft, UserPlus } from 'lucide-react';
+import { User, Mail, Lock, Star, AlignLeft, UserPlus, ArrowLeft } from 'lucide-react';
 
 export default function Create() {
     const { t } = useTranslation();
@@ -25,7 +25,18 @@ export default function Create() {
     }
 
     return (
-        <AppLayout title={t('barber.create')}>
+        <AppLayout
+            title={t('barber.create')}
+            actions={
+                <Link
+                    href={route('barbers.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={t('barber.create')} />
             
             <div className="mx-auto max-w-2xl">
