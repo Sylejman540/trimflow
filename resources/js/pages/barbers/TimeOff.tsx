@@ -161,67 +161,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             ) : undefined}
         >
             <Head title={t('timeoff.title')} />
-
-            {/* Mobile cards */}
-            <div className="sm:hidden space-y-2">
-                {time_offs.length === 0 && (
-                    <p className="text-sm text-slate-400 text-center py-10">{t('timeoff.noRecords')}</p>
-                )}
-                {time_offs.map(timeOff => {
-                    const active = isActive(timeOff.starts_on, timeOff.ends_on);
-                    const future = timeOff.starts_on > todayStr();
-                    return (
-                        <div key={timeOff.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
-                                        <PalmtreeIcon className={cn("h-5 w-5", active && "text-amber-500")} />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <p className="font-semibold text-slate-900 text-sm truncate">{timeOff.barber.user.name}</p>
-                                        <p className="text-xs text-slate-400">{fmtDate(timeOff.starts_on)} → {fmtDate(timeOff.ends_on)}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            {timeOff.reason && (
-                                <p className="text-xs text-slate-500 italic">{timeOff.reason}</p>
-                            )}
-                            <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
-                                <div className="flex-1 space-y-1">
-                                    {active && (
-                                        <Badge className="text-[9px] font-bold rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                                            {t('active')}
-                                        </Badge>
-                                    )}
-                                    {future && !active && (
-                                        <Badge className="text-[9px] font-bold rounded-md px-2 py-0.5 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
-                                            {t('upcoming')}
-                                        </Badge>
-                                    )}
-                                    {!active && !future && (
-                                        <span className="text-[9px] text-slate-400 font-medium">{t('past')}</span>
-                                    )}
-                                </div>
-                                {can_manage && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-9 w-9 text-slate-300 hover:text-red-600 hover:bg-red-50"
-                                        onClick={() => remove(timeOff.id)}
-                                    >
-                                        <Trash2 className="h-3.5 w-3.5" />
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-
-            {/* Desktop table */}
-            <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
-                <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} showSearch={false} />
-            </div>
+            <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} />
 
             <Dialog open={addOpen} onOpenChange={v => !v && setAddOpen(false)}>
                 <DialogContent className="sm:max-w-md border-slate-200 shadow-2xl rounded-2xl">
