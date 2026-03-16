@@ -92,72 +92,82 @@ export function DataTable<TData, TValue>({
                 </div>
             )}
 
-            <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl">
-                <Table className="w-full">
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-b border-slate-100">
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-600">
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef.header,
-                                                  header.getContext(),
-                                              )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="px-4 py-3 text-sm text-slate-700">
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </TableCell>
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-none">
+                <div className="overflow-x-auto">
+                    <Table className="w-full">
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id} className="border-b border-slate-100">
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-600">
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                      header.column.columnDef.header,
+                                                      header.getContext(),
+                                                  )}
+                                        </TableHead>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="px-4 py-8 text-center text-sm text-slate-400"
-                                >
-                                    No results found.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-end gap-2 pt-4">
-                    <Button
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-black hover:bg-slate-900 text-white"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        size="sm"
-                        className="h-8 w-8 p-0 bg-black hover:bg-slate-900 text-white"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        <ChevronRight className="h-4 w-4" />
-                    </Button>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id} className="px-4 py-3 text-sm text-slate-700">
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={columns.length}
+                                        className="px-4 py-8 text-center text-sm text-slate-400"
+                                    >
+                                        No results found.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </div>
-            )}
+
+                {table.getPageCount() > 1 && (
+                    <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-100">
+                        <Button
+                            size="sm"
+                            className={`h-8 w-8 p-0 transition-colors ${
+                                table.getCanPreviousPage()
+                                    ? 'bg-slate-900 hover:bg-slate-800 text-white'
+                                    : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                            }`}
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            size="sm"
+                            className={`h-8 w-8 p-0 transition-colors ${
+                                table.getCanNextPage()
+                                    ? 'bg-slate-900 hover:bg-slate-800 text-white'
+                                    : 'bg-slate-100 text-slate-300 cursor-not-allowed'
+                            }`}
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
