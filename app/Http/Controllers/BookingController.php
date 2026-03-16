@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\Service;
 use App\Models\User;
 use App\Notifications\NewPublicBooking;
+use App\Rules\ValidPhone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -91,7 +92,7 @@ class BookingController extends Controller
             'service_ids.*'         => 'integer|exists:services,id',
             'starts_at'             => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
             'customer_name'         => 'required|string|max:255',
-            'customer_phone'        => 'required|string|min:6|max:30',
+            'customer_phone'        => ['required', 'string', 'max:30', new ValidPhone()],
             'notes'                 => 'nullable|string|max:1000',
             '_t'                    => 'nullable|integer',
             'cf_turnstile_response' => 'nullable|string',

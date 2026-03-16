@@ -47,6 +47,22 @@ function todayStr() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function isValidPhone(phone: string): boolean {
+    if (!phone) return false;
+    // Remove all non-digit and non-plus characters
+    const cleaned = phone.replace(/[^\d+]/g, '');
+    // Must have at least 7 digits
+    const digitsOnly = cleaned.replace(/\D/g, '');
+    if (digitsOnly.length < 7) return false;
+
+    // If starts with +, must be international format
+    if (cleaned.startsWith('+')) {
+        return /^\+\d{1,3}\d{6,14}$/.test(cleaned);
+    }
+    // Local format: 7-15 digits
+    return /^\d{7,15}$/.test(cleaned);
+}
+
 function formatDateWithDay(dateStr: string, lang: string) {
     if (!dateStr) return '';
     const [y, m, d] = dateStr.split('-').map(Number);
@@ -86,6 +102,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     const [slots, setSlots] = useState<string[]>([]);
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [anyBarberSlotMap, setAnyBarberSlotMap] = useState<Map<string, number>>(new Map());
+    const [phoneError, setPhoneError] = useState(false);
 
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
@@ -576,14 +593,18 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                     <input
                                         type="tel"
                                         value={data.customer_phone}
-                                        onChange={e => setData('customer_phone', e.target.value)}
+                                        onChange={e => {
+                                            setData('customer_phone', e.target.value);
+                                            setPhoneError(e.target.value ? !isValidPhone(e.target.value) : false);
+                                        }}
                                         placeholder={t('booking.phonePlaceholder')}
                                         autoComplete="tel"
                                         inputMode="tel"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
                                         required
                                     />
-                                    {errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
+                                    {phoneError && <p className="text-xs text-red-500 mt-1">{t('booking.errorInvalidPhone')}</p>}
+                                    {!phoneError && errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('notes')}</label>
@@ -617,7 +638,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                             <Button
                                 type="submit"
-                                disabled={processing || !data.customer_name || !data.customer_phone || (!!turnstile_site_key && !data.cf_turnstile_response)}
+                                disabled={processing || !data.customer_name || !data.customer_phone || !isValidPhone(data.customer_phone) || phoneError || (!!turnstile_site_key && !data.cf_turnstile_response)}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (

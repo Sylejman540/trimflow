@@ -107,11 +107,12 @@ class WalkinController extends Controller
             ->get();
 
         $now = Carbon::now();
+        $today = $now->format('Y-m-d');
         $appointmentEnd = $now->copy()->addMinutes($service->duration);
 
-        // Filter for available barbers (no conflicts at current time)
-        $availableBarberIds = $barbers->filter(function ($barber) use ($now, $appointmentEnd) {
-            // Check for conflicts
+        // Filter for available barbers (no conflicts and not on time off)
+        $availableBarberIds = $barbers->filter(function ($barber) use ($now, $appointmentEnd, $today) {
+            // Check for appointment conflicts
             $conflict = Appointment::where('barber_id', $barber->id)
                 ->whereNotIn('status', ['cancelled', 'no_show'])
                 ->where(fn ($q) => $q
@@ -121,7 +122,18 @@ class WalkinController extends Controller
                 )
                 ->exists();
 
-            return !$conflict;
+            if ($conflict) {
+                return false;
+            }
+
+            // Check for time off on today
+            $onTimeOff = \DB::table('barber_time_offs')
+                ->where('barber_id', $barber->id)
+                ->where('starts_on', '<=', $today)
+                ->where('ends_on', '>=', $today)
+                ->exists();
+
+            return !$onTimeOff;
         })->pluck('id')->values()->toArray();
 
         return response()->json(['barbers' => $availableBarberIds]);

@@ -9,6 +9,8 @@ export default {
     next: 'Tjetri',
     close: 'Mbyll',
     confirm: 'Konfirmo',
+    accept: 'Prano',
+    decline: 'Refuzo',
     viewDetails: 'Shiko Detajet',
     loading: 'Po ngarkohet…',
     noResults: 'Nuk u gjet asgjë.',
@@ -397,6 +399,7 @@ export default {
         errorBarberUnavailable: 'Berberi nuk është i disponueshëm në këtë kohë.',
         errorTimeOff: 'Berberi është në pushim në këtë ditë.',
         errorSlotTaken: 'Ky kohë është sapo u zë. Ju lutem zgjidhni një tjetër.',
+        errorInvalidPhone: 'Ju lutem futni një numër telefoni të vlefshëm.',
         errorBlocked: 'Ky numër telefoni ka qenë i kufizuar për rezervimet në internet. Ju lutem na telefononi.',
         errorNeedApproval: 'Llogaria juaj kërkon miratim manual për shkak të mosparaqitjeve në të kaluarën. Ju lutem na telefononi.',
         errorExistingAppt: 'Ju keni tashmë një takim të ardhshëm. Ju lutem anulojeni fillimisht ose na telefononi.',
@@ -442,6 +445,7 @@ export default {
         bookNow: 'Rezervo Tani',
         button: 'Pa rezervim',
         collapse: 'Mbyll',
+        noBarbers: 'Nuk ka berberë të disponueshëm',
     },
 
     // Appointment Show page

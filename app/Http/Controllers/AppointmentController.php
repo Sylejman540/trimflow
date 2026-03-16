@@ -76,9 +76,19 @@ class AppointmentController extends Controller
     {
         $this->authorize('create', Appointment::class);
 
+        $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+
+        $today = Carbon::today()->toDateString();
+        $offTodayIds = !$isBarber ? BarberTimeOff::where('starts_on', '<=', $today)
+            ->where('ends_on', '>=', $today)
+            ->pluck('barber_id')
+            ->toArray() : [];
+
         return Inertia::render('appointments/Create', [
             'barbers' => Barber::with('user')->where('is_active', true)->get(),
             'services' => Service::where('is_active', true)->orderBy('name')->get(),
+            'off_today_ids' => $offTodayIds,
         ]);
     }
 
@@ -509,6 +519,33 @@ class AppointmentController extends Controller
         try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
 
         return back()->with('success', 'Appointment confirmed.');
+    }
+
+    public function decline(Appointment $appointment)
+    {
+        $this->authorize('update', $appointment);
+
+        if ($appointment->status !== 'pending') {
+            return back();
+        }
+
+        $previousStatus = $appointment->status;
+        $appointment->update(['status' => 'cancelled']);
+        $appointment->load(['customer', 'service', 'barber.user']);
+
+        $user = Auth::user();
+        $barberUserId = $appointment->barber?->user?->id;
+        $owner = \App\Models\User::where('company_id', $user->company_id)->role('shop-admin')->first();
+        if ($owner && $owner->id !== $user->id) {
+            $owner->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
+        if ($barberUserId && $barberUserId !== $user->id && $barberUserId !== $owner?->id) {
+            $appointment->barber->user->notify(new AppointmentStatusChanged($appointment, $previousStatus));
+        }
+
+        try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
+
+        return back()->with('success', 'Appointment declined.');
     }
 
     public function updateStatus(Request $request, Appointment $appointment)

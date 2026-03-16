@@ -10,6 +10,8 @@ export default {
     next: 'Next',
     close: 'Close',
     confirm: 'Confirm',
+    accept: 'Accept',
+    decline: 'Decline',
     viewDetails: 'View Details',
     loading: 'Loading…',
     noResults: 'No results found.',
@@ -225,6 +227,8 @@ export default {
         thisFuture: 'This and all future',
         selectBarber: 'Select barber',
         selectService: 'Select service',
+        barberFreeToday: 'is free today',
+        barberNotAvailableToday: 'is not available today',
         apptStatus: 'Appointment Status',
         deleteAppt: 'Delete Appointment',
         deleteConfirm: 'Are you sure you want to delete this appointment? This cannot be undone.',
@@ -425,6 +429,7 @@ export default {
         errorBarberUnavailable: 'The barber is not available at that time.',
         errorTimeOff: 'The barber is on time off that day.',
         errorSlotTaken: 'That time slot has just been taken. Please choose another.',
+        errorInvalidPhone: 'Please enter a valid phone number.',
         errorBlocked: 'This phone number has been restricted from making online bookings. Please call us.',
         errorNeedApproval: 'Your account requires manual approval due to past no-shows. Please call us.',
         errorExistingAppt: 'You already have an upcoming appointment. Please cancel it first or call us.',
@@ -458,6 +463,7 @@ export default {
         bookNow: 'Book Now',
         button: 'Walk-in',
         collapse: 'Collapse',
+        noBarbers: 'No barbers available',
     },
 
     // Appointment Show page

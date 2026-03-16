@@ -8,6 +8,8 @@ export default {
     next: 'Weiter',
     close: 'Schließen',
     confirm: 'Bestätigen',
+    accept: 'Akzeptieren',
+    decline: 'Ablehnen',
     viewDetails: 'Details ansehen',
     loading: 'Wird geladen…',
     noResults: 'Keine Ergebnisse gefunden.',
@@ -358,6 +360,7 @@ export default {
         errorBarberUnavailable: 'Der Barbier ist zu dieser Zeit nicht verfügbar.',
         errorTimeOff: 'Der Barbier ist an diesem Tag frei.',
         errorSlotTaken: 'Dieser Zeitslot wurde gerade vergeben. Bitte wählen Sie einen anderen.',
+        errorInvalidPhone: 'Bitte geben Sie eine gültige Telefonnummer ein.',
         errorBlocked: 'Diese Telefonnummer wurde für Online-Buchungen gesperrt. Bitte rufen Sie uns an.',
         errorNeedApproval: 'Ihr Konto erfordert manuelle Genehmigung aufgrund von Ausfällen in der Vergangenheit. Bitte rufen Sie uns an.',
         errorExistingAppt: 'Sie haben bereits einen anstehenden Termin. Bitte stornieren Sie ihn zuerst oder rufen Sie uns an.',
@@ -423,6 +426,7 @@ export default {
         bookNow: 'Jetzt buchen',
         button: 'Walk-in',
         collapse: 'Einklappen',
+        noBarbers: 'Keine Friseure verfügbar',
     },
 
     // Appointment Show page

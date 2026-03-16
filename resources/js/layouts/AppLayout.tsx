@@ -144,20 +144,30 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                                 <Briefcase size={11} /> {t('walkin.barber')}
                             </Label>
-                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')} disabled={!data.service_id || loadingBarbers}>
-                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg disabled:opacity-50">
-                                    <SelectValue placeholder={loadingBarbers ? t('loading') : (!data.service_id ? t('walkin.selectService') : t('walkin.selectBarber'))} />
-                                </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
-                                    {availableBarbers.length > 0 ? (
-                                        availableBarbers.map(b => (
+                            {loadingBarbers ? (
+                                <div className="h-11 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center">
+                                    <p className="text-xs text-slate-400">{t('loading')}</p>
+                                </div>
+                            ) : !data.service_id ? (
+                                <div className="h-11 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-center">
+                                    <p className="text-xs text-slate-400">{t('walkin.selectService')}</p>
+                                </div>
+                            ) : availableBarbers.length === 0 ? (
+                                <div className="h-11 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center">
+                                    <p className="text-xs text-red-600 font-medium">{t('walkin.noBarbers')}</p>
+                                </div>
+                            ) : (
+                                <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
+                                    <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                        <SelectValue placeholder={t('walkin.selectBarber')} />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
+                                        {availableBarbers.map(b => (
                                             <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
-                                        ))
-                                    ) : (
-                                        <div className="px-2 py-1.5 text-xs text-slate-500">{t('walkin.selectService')}</div>
-                                    )}
-                                </SelectContent>
-                            </Select>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                             {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}
                         </div>
                     )}

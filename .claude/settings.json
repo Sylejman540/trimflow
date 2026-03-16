@@ -39,7 +39,8 @@
       "Bash(find /Users/sylejman/Herd/trimflow -name *.ts -path *locale* -o -name bg.ts -o -name de.ts)"
     ],
     "additionalDirectories": [
-      "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"
+      "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials",
+      "/tmp"
     ]
   }
 }

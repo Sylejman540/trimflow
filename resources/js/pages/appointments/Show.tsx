@@ -134,12 +134,20 @@ export default function Show({
                                 <p className="text-sm font-semibold text-orange-800">{t('show.newBookingRequest')}</p>
                                 <p className="text-xs text-orange-600 mt-0.5">{t('show.newBookingRequestSub')}</p>
                             </div>
-                            <button
-                                onClick={() => router.patch(route('appointments.confirm', appointment.id))}
-                                className="shrink-0 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 transition-colors"
-                            >
-                                {t('confirm')}
-                            </button>
+                            <div className="shrink-0 flex items-center gap-2">
+                                <button
+                                    onClick={() => router.patch(route('appointments.decline', appointment.id))}
+                                    className="rounded-lg bg-red-100 hover:bg-red-200 text-red-700 text-sm font-bold px-4 py-2 transition-colors"
+                                >
+                                    {t('decline')}
+                                </button>
+                                <button
+                                    onClick={() => router.patch(route('appointments.confirm', appointment.id))}
+                                    className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 transition-colors"
+                                >
+                                    {t('accept')}
+                                </button>
+                            </div>
                         </div>
                     )}
                     <Card className="border-slate-200 shadow-none">

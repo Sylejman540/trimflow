@@ -22,9 +22,11 @@ type WizardStep = 'barber' | 'customer' | 'services' | 'datetime' | 'review';
 export default function Create({
     barbers,
     services,
+    off_today_ids = [],
 }: {
     barbers: Barber[];
     services: Service[];
+    off_today_ids?: number[];
 }) {
     const { auth } = usePage<PageProps>().props;
     const isBarber = auth.roles.includes('barber') && !auth.roles.includes('shop-admin');
@@ -142,12 +144,10 @@ export default function Create({
 
     const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
     const selectedBarber = data.barber_id ? barbers.find(b => String(b.id) === data.barber_id) : undefined;
+    const barberOnTimeOffToday = selectedBarber ? off_today_ids.includes(selectedBarber.id) : false;
+    const barberFreeToday = selectedBarber && !barberOnTimeOffToday ? isBarberWorking(String(selectedBarber.id), todayStr) : (barberOnTimeOffToday ? false : null);
     const barberNotWorking = selectedDate && !isBarberWorking(data.barber_id, selectedDate);
     const nextWorkingDay = barberNotWorking ? getNextWorkingDay(data.barber_id, selectedDate) : null;
-
-    // Check if barber is working today
-    const isBarberWorkingToday = selectedBarber ? isBarberWorking(String(selectedBarber.id), todayStr) : true;
-    const nextBarberWorkingDay = selectedBarber && !isBarberWorkingToday ? getNextWorkingDay(String(selectedBarber.id), todayStr) : null;
 
     useEffect(() => {
         if (!data.barber_id || data.service_ids.length === 0 || !selectedDate || !companySlug) {
@@ -265,11 +265,14 @@ export default function Create({
                                     </SelectContent>
                                 </Select>
                                 {errors.barber_id && <p className="text-xs text-red-500 font-medium">{errors.barber_id}</p>}
-                                {selectedBarber && !isBarberWorkingToday && (
-                                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                                        <p className="text-sm text-amber-900">
-                                            <span className="font-semibold">{selectedBarber.user?.name}</span> doesn't work today.
-                                            {nextBarberWorkingDay && <span> Next working day: <span className="font-semibold">{nextBarberWorkingDay}</span></span>}
+                                {selectedBarber && barberFreeToday !== null && (
+                                    <div className={`p-3 rounded-lg border ${barberFreeToday ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
+                                        <p className={`text-sm ${barberFreeToday ? 'text-emerald-900' : 'text-amber-900'}`}>
+                                            {barberFreeToday ? (
+                                                <>✓ <span className="font-semibold">{selectedBarber.user?.name}</span> {t('appt.barberFreeToday')}</>
+                                            ) : (
+                                                <><span className="font-semibold">{selectedBarber.user?.name}</span> {t('appt.barberNotAvailableToday')}</>
+                                            )}
                                         </p>
                                     </div>
                                 )}
