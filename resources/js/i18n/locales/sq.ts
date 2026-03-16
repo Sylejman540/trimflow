@@ -213,6 +213,9 @@ export default {
         mine: 'Të miat',
         exportCsv: 'Eksporto CSV',
         view: 'Shiko',
+        listView: 'Lista',
+        calendarView: 'Kalendari',
+        kanbanView: 'Kanban',
     },
 
     svc: {

@@ -235,6 +235,9 @@ export default {
         mine: 'Mine',
         exportCsv: 'Export CSV',
         view: 'View',
+        listView: 'List',
+        calendarView: 'Calendar',
+        kanbanView: 'Kanban',
     },
 
     // Services

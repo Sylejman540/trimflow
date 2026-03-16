@@ -82,53 +82,72 @@ export default function Create({
     function isBarberWorking(barberId: string, dateStr: string): boolean {
         if (!barberId || !dateStr) return true;
         const barber = barbers.find(b => String(b.id) === barberId);
-        if (!barber || !barber.working_hours) return true;
+        if (!barber || !barber.working_hours || Object.keys(barber.working_hours).length === 0) return true;
 
-        const [y, m, d] = dateStr.split('-').map(Number);
-        const date = new Date(y, m - 1, d);
-        const dayKey = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-        const shortKey = dayKey.substring(0, 3);
+        try {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const dayKey = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+            const shortKey = dayKey.substring(0, 3);
 
-        const dayHours = (barber.working_hours as any)[dayKey] ?? (barber.working_hours as any)[shortKey];
-        if (!dayHours) return false;
+            const workingHours = barber.working_hours as Record<string, any>;
+            const dayHours = workingHours[dayKey] ?? workingHours[shortKey];
 
-        if (typeof dayHours === 'object' && dayHours.enabled !== undefined) {
-            return dayHours.enabled;
+            if (!dayHours) return false;
+            if (typeof dayHours === 'object' && 'enabled' in dayHours) {
+                return dayHours.enabled === true;
+            }
+            return true;
+        } catch {
+            return true;
         }
-
-        return true;
     }
 
     function getNextWorkingDay(barberId: string, startDateStr: string): string | null {
         if (!barberId) return null;
         const barber = barbers.find(b => String(b.id) === barberId);
-        if (!barber || !barber.working_hours) return null;
+        if (!barber || !barber.working_hours || Object.keys(barber.working_hours).length === 0) return null;
 
-        const [y, m, d] = startDateStr.split('-').map(Number);
-        const date = new Date(y, m - 1, d);
+        try {
+            const [y, m, d] = startDateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const workingHours = barber.working_hours as Record<string, any>;
 
-        for (let i = 0; i < 30; i++) {
-            const checkDate = new Date(date);
-            checkDate.setDate(checkDate.getDate() + i);
-            const dayKey = checkDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-            const shortKey = dayKey.substring(0, 3);
+            for (let i = 1; i <= 30; i++) {
+                const checkDate = new Date(date);
+                checkDate.setDate(checkDate.getDate() + i);
+                const dayKey = checkDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const shortKey = dayKey.substring(0, 3);
 
-            const dayHours = (barber.working_hours as any)[dayKey] ?? (barber.working_hours as any)[shortKey];
-            if (dayHours) {
-                if (typeof dayHours === 'object' && dayHours.enabled !== undefined) {
-                    if (dayHours.enabled) return formatDateWithDay(checkDate.toISOString().split('T')[0]);
-                } else {
-                    return formatDateWithDay(checkDate.toISOString().split('T')[0]);
+                const dayHours = workingHours[dayKey] ?? workingHours[shortKey];
+                if (dayHours) {
+                    if (typeof dayHours === 'object' && 'enabled' in dayHours) {
+                        if (dayHours.enabled === true) {
+                            const pad = (n: number) => String(n).padStart(2, '0');
+                            const dateStr = `${checkDate.getFullYear()}-${pad(checkDate.getMonth() + 1)}-${pad(checkDate.getDate())}`;
+                            return formatDateWithDay(dateStr);
+                        }
+                    } else {
+                        const pad = (n: number) => String(n).padStart(2, '0');
+                        const dateStr = `${checkDate.getFullYear()}-${pad(checkDate.getMonth() + 1)}-${pad(checkDate.getDate())}`;
+                        return formatDateWithDay(dateStr);
+                    }
                 }
             }
+            return null;
+        } catch {
+            return null;
         }
-        return null;
     }
 
     const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
-    const selectedBarber = barbers.find(b => String(b.id) === data.barber_id);
+    const selectedBarber = data.barber_id ? barbers.find(b => String(b.id) === data.barber_id) : undefined;
     const barberNotWorking = selectedDate && !isBarberWorking(data.barber_id, selectedDate);
     const nextWorkingDay = barberNotWorking ? getNextWorkingDay(data.barber_id, selectedDate) : null;
+
+    // Check if barber is working today
+    const isBarberWorkingToday = selectedBarber ? isBarberWorking(String(selectedBarber.id), todayStr) : true;
+    const nextBarberWorkingDay = selectedBarber && !isBarberWorkingToday ? getNextWorkingDay(String(selectedBarber.id), todayStr) : null;
 
     useEffect(() => {
         if (!data.barber_id || data.service_ids.length === 0 || !selectedDate || !companySlug) {
@@ -246,6 +265,14 @@ export default function Create({
                                     </SelectContent>
                                 </Select>
                                 {errors.barber_id && <p className="text-xs text-red-500 font-medium">{errors.barber_id}</p>}
+                                {selectedBarber && !isBarberWorkingToday && (
+                                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                        <p className="text-sm text-amber-900">
+                                            <span className="font-semibold">{selectedBarber.user?.name}</span> doesn't work today.
+                                            {nextBarberWorkingDay && <span> Next working day: <span className="font-semibold">{nextBarberWorkingDay}</span></span>}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

@@ -35,7 +35,8 @@
       "Bash(grep -n \"view === ''grid''\\\\|view === ''list''\" /Users/sylejman/Herd/trimflow/resources/js/pages/services/Index.tsx)",
       "Bash(grep -n \"view === ''grid''\\\\|view === ''list''\" /Users/sylejman/Herd/trimflow/resources/js/pages/products/Index.tsx)",
       "Bash(grep -l AppLayout resources/js/pages/appointments/*.tsx resources/js/pages/barbers/*.tsx resources/js/pages/services/*.tsx)",
-      "Bash(ls resources/js/i18n/locales/*.ts)"
+      "Bash(ls resources/js/i18n/locales/*.ts)",
+      "Bash(find /Users/sylejman/Herd/trimflow -name *.ts -path *locale* -o -name bg.ts -o -name de.ts)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"

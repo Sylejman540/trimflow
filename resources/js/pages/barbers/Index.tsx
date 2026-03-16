@@ -50,7 +50,7 @@ function DeleteBarberModal({ barber, open, onOpenChange }: {
 }
 
 export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber[]; off_today_ids?: number[] }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('barbers_status') ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('barbers_search') ?? '');
     const [deletingBarber, setDeletingBarber] = useState<Barber | null>(null);
@@ -58,6 +58,48 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
 
     function changeView(v: ViewMode) { localStorage.setItem('barbers_view', v); setView(v); }
     function changeStatus(v: string) { localStorage.setItem('barbers_status', v); setStatusFilter(v); }
+
+    function formatDateWithDay(dateStr: string) {
+        if (!dateStr) return '';
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+        const localeMap: Record<string, string> = {
+            sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
+            el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
+            es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
+        };
+        const locale = localeMap[i18n.language] ?? i18n.language;
+        return date.toLocaleDateString(locale, { weekday: 'long' });
+    }
+
+    function getNextWorkingDay(barber: Barber): string | null {
+        if (!barber.working_hours || Object.keys(barber.working_hours).length === 0) return null;
+
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const workingHours = barber.working_hours as Record<string, any>;
+
+            for (let i = 1; i <= 30; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(checkDate.getDate() + i);
+                const dayKey = checkDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                const shortKey = dayKey.substring(0, 3);
+
+                const dayHours = workingHours[dayKey] ?? workingHours[shortKey];
+                if (dayHours) {
+                    if (typeof dayHours === 'object' && 'enabled' in dayHours) {
+                        if (dayHours.enabled === true) return formatDateWithDay(dayKey);
+                    } else {
+                        return formatDateWithDay(dayKey);
+                    }
+                }
+            }
+            return null;
+        } catch {
+            return null;
+        }
+    }
     function changeSearch(v: string) { localStorage.setItem('barbers_search', v); setGlobalSearch(v); }
 
     function toggleAvailability(barberId: number) {
@@ -232,9 +274,10 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                                         <Mail className="h-3 w-3 shrink-0" /> {barber.user?.email}
                                     </p>
                                     {isOff && (
-                                        <Badge className="text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                                            {t('barber.offToday')}
-                                        </Badge>
+                                        <p className="text-xs text-amber-900">
+                                            Off today
+                                            {getNextWorkingDay(barber) && <span>. Back {getNextWorkingDay(barber)}</span>}
+                                        </p>
                                     )}
                                     <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
                                         <button onClick={() => toggleAvailability(barber.id)}

@@ -196,6 +196,9 @@ export default {
         mine: 'Meine',
         exportCsv: 'CSV exportieren',
         view: 'Anzeigen',
+        listView: 'Liste',
+        calendarView: 'Kalender',
+        kanbanView: 'Kanban',
     },
 
     svc: {
