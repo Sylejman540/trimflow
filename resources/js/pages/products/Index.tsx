@@ -174,8 +174,8 @@ export default function Index({ products }: { products: Product[] }) {
                             <SelectItem value="inactive">{t('inactive')}</SelectItem>
                         </SelectContent>
                     </Select>
-                    {/* View toggle */}
-                    <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
+                    {/* View toggle - desktop only */}
+                    <div className="hidden sm:flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white">
                         <button onClick={() => changeView('list')} className={cn('h-8 w-8 flex items-center justify-center transition-colors', view === 'list' ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-slate-700')}>
                             <LayoutList className="h-3.5 w-3.5" />
                         </button>
