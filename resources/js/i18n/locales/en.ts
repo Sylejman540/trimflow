@@ -39,6 +39,33 @@ export default {
     upcoming: 'Upcoming',
     past: 'Past',
 
+    // Days of week
+    days: {
+        monday: 'Monday',
+        tuesday: 'Tuesday',
+        wednesday: 'Wednesday',
+        thursday: 'Thursday',
+        friday: 'Friday',
+        saturday: 'Saturday',
+        sunday: 'Sunday',
+    },
+
+    // Months
+    months: {
+        january: 'January',
+        february: 'February',
+        march: 'March',
+        april: 'April',
+        may: 'May',
+        june: 'June',
+        july: 'July',
+        august: 'August',
+        september: 'September',
+        october: 'October',
+        november: 'November',
+        december: 'December',
+    },
+
     // Time Off
     timeoff: {
         title: 'Time Off',
@@ -256,6 +283,7 @@ export default {
         new: 'New Barber',
         create: 'Create Barber',
         edit: 'Edit Barber',
+        info: 'Information',
         specialty: 'Specialty',
         rating: 'Rating',
         totalReviews: 'Total Reviews',
@@ -400,6 +428,7 @@ export default {
     schedule: {
         mySchedule: 'My Schedule',
         allBarbers: 'All Barbers',
+        thisWeek: "This week's schedule",
         saving: 'Saving…',
         noAppointments: 'No appointments this {view}.',
         dragHint: 'Drag to reschedule · Click to view · Completed/cancelled cannot be moved',

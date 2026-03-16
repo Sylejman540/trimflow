@@ -38,6 +38,33 @@ export default {
     past: 'Të kaluara',
     logout: 'Dil',
 
+    // Days of week
+    days: {
+        monday: 'E hënë',
+        tuesday: 'E martë',
+        wednesday: 'E mërkurë',
+        thursday: 'E enjte',
+        friday: 'E premte',
+        saturday: 'E shtunë',
+        sunday: 'E diel',
+    },
+
+    // Months
+    months: {
+        january: 'Janar',
+        february: 'Shkurt',
+        march: 'Mars',
+        april: 'Prill',
+        may: 'Maj',
+        june: 'Qershor',
+        july: 'Korrik',
+        august: 'Gusht',
+        september: 'Shtator',
+        october: 'Tetor',
+        november: 'Nëntor',
+        december: 'Dhjetor',
+    },
+
     nav: {
         dashboard: 'Paneli',
         appointments: 'Terminet',
@@ -233,6 +260,7 @@ export default {
         new: 'Berber i ri',
         create: 'Krijo berber',
         edit: 'Ndrysho berberin',
+        info: 'Informacioni',
         specialty: 'Specialiteti',
         rating: 'Vlerësimi',
         totalReviews: 'Totali i vlerësimeve',

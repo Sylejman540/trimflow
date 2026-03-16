@@ -37,6 +37,33 @@ export default {
     past: 'Vergangen',
     logout: 'Abmelden',
 
+    // Days of week
+    days: {
+        monday: 'Montag',
+        tuesday: 'Dienstag',
+        wednesday: 'Mittwoch',
+        thursday: 'Donnerstag',
+        friday: 'Freitag',
+        saturday: 'Samstag',
+        sunday: 'Sonntag',
+    },
+
+    // Months
+    months: {
+        january: 'Januar',
+        february: 'Februar',
+        march: 'März',
+        april: 'April',
+        may: 'Mai',
+        june: 'Juni',
+        july: 'Juli',
+        august: 'August',
+        september: 'September',
+        october: 'Oktober',
+        november: 'November',
+        december: 'Dezember',
+    },
+
     nav: {
         dashboard: 'Dashboard',
         appointments: 'Termine',
@@ -216,6 +243,7 @@ export default {
         new: 'Neuer Friseur',
         create: 'Friseur erstellen',
         edit: 'Friseur bearbeiten',
+        info: 'Informationen',
         specialty: 'Spezialität',
         rating: 'Bewertung',
         totalReviews: 'Bewertungen gesamt',
@@ -364,6 +392,7 @@ export default {
     schedule: {
         mySchedule: 'Mein Zeitplan',
         allBarbers: 'Alle Friseure',
+        thisWeek: 'Diese Woche Zeitplan',
         saving: 'Speichern…',
         noAppointments: 'Keine Termine diese {view}.',
         dragHint: 'Ziehen zum Umplanen · Klicken zum Anzeigen · Abgeschlossene/stornierte können nicht verschoben werden',
