@@ -385,6 +385,25 @@ export default {
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
         viewMyAppts: 'Shiko terminet e mia',
+
+        // Booking errors
+        errorTooManyRequests: 'Shumë kërkesa. Ju lutem pritni {seconds} sekonda dhe provoni përsëri.',
+        errorSecurityCheck: 'Kontrolli i sigurisë dështoi. Ju lutem rifreskoni faqen dhe provoni përsëri.',
+        errorMaxBookingsToday: 'Sasia maksimale e rezervimeve për sot është arritur. Ju lutem na telefononi për më shumë rezervime.',
+        errorCooldown: 'Ju lutem pritni {wait} sekonda para se të bëni një rezervim tjetër.',
+        errorRestricted: 'Qasja juaj është kufizuar përkohësisht. Ju lutem na telefononi për të rezervuar.',
+        errorSuspicious: 'Veprimtari e dyshimtë e zbuluar. Ju lutem na telefononi për të rezervuar takimin tuaj.',
+        errorBarberNotWorking: 'Berberi nuk punon në këtë ditë.',
+        errorBarberUnavailable: 'Berberi nuk është i disponueshëm në këtë kohë.',
+        errorTimeOff: 'Berberi është në pushim në këtë ditë.',
+        errorSlotTaken: 'Ky kohë është sapo u zë. Ju lutem zgjidhni një tjetër.',
+        errorBlocked: 'Ky numër telefoni ka qenë i kufizuar për rezervimet në internet. Ju lutem na telefononi.',
+        errorNeedApproval: 'Llogaria juaj kërkon miratim manual për shkak të mosparaqitjeve në të kaluarën. Ju lutem na telefononi.',
+        errorExistingAppt: 'Ju keni tashmë një takim të ardhshëm. Ju lutem anulojeni fillimisht ose na telefononi.',
+        errorDuplicate: 'Ju keni tashmë një rezervim në këtë kohë të saktë me këtë berbër.',
+        errorTooManyAttemptsPortal: 'Shumë përpjekje. Provoni përsëri në {seconds} sekonda.',
+        errorPhoneNotFound: 'Nuk u gjet asnjë llogari me këtë numër telefoni.',
+        appointmentCancelled: 'Termini është anuluar.',
     },
 
     // Time Off

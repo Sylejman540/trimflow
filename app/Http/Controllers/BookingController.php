@@ -69,7 +69,7 @@ class BookingController extends Controller
         if (RateLimiter::tooManyAttempts($ipKey, 5)) {
             $seconds = RateLimiter::availableIn($ipKey);
             return back()->withErrors([
-                'customer_name' => "Too many requests. Please wait {$seconds} seconds and try again.",
+                'customer_name' => trans('booking.errorTooManyRequests', ['seconds' => $seconds]),
             ]);
         }
         RateLimiter::hit($ipKey, 60);
@@ -79,7 +79,7 @@ class BookingController extends Controller
         if ($turnstileSecret) {
             if (! $this->verifyTurnstile($request->input('cf_turnstile_response', ''), $request->ip(), $turnstileSecret)) {
                 return back()->withErrors([
-                    'customer_name' => 'Security check failed. Please refresh the page and try again.',
+                    'customer_name' => trans('booking.errorSecurityCheck'),
                 ]);
             }
         }
@@ -105,7 +105,7 @@ class BookingController extends Controller
         $phoneWindow = (int) Carbon::now()->endOfDay()->diffInSeconds(Carbon::now());
         if (RateLimiter::tooManyAttempts($phoneKey, 2)) {
             return back()->withErrors([
-                'customer_phone' => 'Maximum bookings reached for today. Please call us to book more.',
+                'customer_phone' => trans('booking.errorMaxBookingsToday'),
             ]);
         }
 
@@ -114,7 +114,7 @@ class BookingController extends Controller
         if (RateLimiter::tooManyAttempts($cooldownKey, 1)) {
             $wait = RateLimiter::availableIn($cooldownKey);
             return back()->withErrors([
-                'customer_phone' => "Please wait {$wait} seconds before making another booking.",
+                'customer_phone' => trans('booking.errorCooldown', ['wait' => $wait]),
             ]);
         }
 
@@ -129,7 +129,7 @@ class BookingController extends Controller
         if ($fingerprint) {
             if ($fingerprint->is_blocked) {
                 return back()->withErrors([
-                    'customer_name' => 'Your access has been temporarily restricted. Please call us to book.',
+                    'customer_name' => trans('booking.errorRestricted'),
                 ]);
             }
             // Auto-block after 5 bookings from same phone+IP combination
@@ -138,7 +138,7 @@ class BookingController extends Controller
                     ->where('id', $fingerprint->id)
                     ->update(['is_blocked' => true]);
                 return back()->withErrors([
-                    'customer_name' => 'Suspicious activity detected. Please call us to book your appointment.',
+                    'customer_name' => trans('booking.errorSuspicious'),
                 ]);
             }
         }
@@ -165,7 +165,7 @@ class BookingController extends Controller
         if ($dayHours) {
             if (isset($dayHours['enabled'])) {
                 if (! $dayHours['enabled']) {
-                    return back()->withErrors(['starts_at' => 'The barber does not work on that day.']);
+                    return back()->withErrors(['starts_at' => trans('booking.errorBarberNotWorking')]);
                 }
                 $windowStart = $dayHours['start'] ?? '09:00';
                 $windowEnd   = $dayHours['end']   ?? '17:00';
@@ -174,7 +174,7 @@ class BookingController extends Controller
             }
             $t = $startsAt->format('H:i');
             if ($t < $windowStart || $t >= $windowEnd) {
-                return back()->withErrors(['starts_at' => 'The barber is not available at that time.']);
+                return back()->withErrors(['starts_at' => trans('booking.errorBarberUnavailable')]);
             }
         }
 
@@ -186,7 +186,7 @@ class BookingController extends Controller
             ->where('ends_on', '>=', $dateStr)
             ->exists();
         if ($onTimeOff) {
-            return back()->withErrors(['starts_at' => 'The barber is on time off that day.']);
+            return back()->withErrors(['starts_at' => trans('booking.errorTimeOff')]);
         }
 
         // ── 12. Double-booking check ───────────────────────────────────────────
@@ -196,7 +196,7 @@ class BookingController extends Controller
             ->where('ends_at', '>', $startsAt)
             ->exists();
         if ($conflict) {
-            return back()->withErrors(['starts_at' => 'That time slot has just been taken. Please choose another.']);
+            return back()->withErrors(['starts_at' => trans('booking.errorSlotTaken')]);
         }
 
         // ── 13. Phone trust + active appointment rules ─────────────────────────
@@ -207,7 +207,7 @@ class BookingController extends Controller
         if ($existingCustomer) {
             if ($existingCustomer->booking_trust === 'blocked') {
                 return back()->withErrors([
-                    'customer_phone' => 'This phone number has been restricted from making online bookings. Please call us.',
+                    'customer_phone' => trans('booking.errorBlocked'),
                 ]);
             }
 
@@ -218,7 +218,7 @@ class BookingController extends Controller
                     ->count();
                 if ($pendingCount >= 1) {
                     return back()->withErrors([
-                        'customer_phone' => 'Your account requires manual approval due to past no-shows. Please call us.',
+                        'customer_phone' => trans('booking.errorNeedApproval'),
                     ]);
                 }
             }
@@ -230,7 +230,7 @@ class BookingController extends Controller
                 ->count();
             if ($activeCount >= 1) {
                 return back()->withErrors([
-                    'customer_phone' => 'You already have an upcoming appointment. Please cancel it first or call us.',
+                    'customer_phone' => trans('booking.errorExistingAppt'),
                 ]);
             }
 
@@ -242,7 +242,7 @@ class BookingController extends Controller
                 ->exists();
             if ($duplicate) {
                 return back()->withErrors([
-                    'starts_at' => 'You already have a booking at this exact time with this barber.',
+                    'starts_at' => trans('booking.errorDuplicate'),
                 ]);
             }
         }

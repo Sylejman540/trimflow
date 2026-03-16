@@ -28,7 +28,7 @@ class CustomerPortalController extends Controller
         $key = 'portal-lookup:' . $request->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
-            return back()->withErrors(['phone' => "Too many attempts. Try again in {$seconds} seconds."]);
+            return back()->withErrors(['phone' => trans('booking.errorTooManyAttemptsPortal', ['seconds' => $seconds])]);
         }
         RateLimiter::hit($key, 600);
 
@@ -41,7 +41,7 @@ class CustomerPortalController extends Controller
             ->first();
 
         if (!$customer) {
-            return back()->withErrors(['phone' => 'No account found with that phone number.']);
+            return back()->withErrors(['phone' => trans('booking.errorPhoneNotFound')]);
         }
 
         $upcoming = Appointment::with(['barber.user', 'service'])
@@ -91,7 +91,7 @@ class CustomerPortalController extends Controller
 
         return redirect()->route('portal.lookup', $slug)
             ->withInput(['phone' => $request->phone])
-            ->with('success', 'Appointment cancelled.');
+            ->with('success', trans('booking.appointmentCancelled'));
     }
 
     private function mapAppointment(Appointment $a): array

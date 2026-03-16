@@ -414,6 +414,25 @@ export default {
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
         viewMyAppts: 'View My Appointments',
+        // Booking errors
+        errorTooManyRequests: 'Too many requests. Please wait {seconds} seconds and try again.',
+        errorSecurityCheck: 'Security check failed. Please refresh the page and try again.',
+        errorMaxBookingsToday: 'Maximum bookings reached for today. Please call us to book more.',
+        errorCooldown: 'Please wait {wait} seconds before making another booking.',
+        errorRestricted: 'Your access has been temporarily restricted. Please call us to book.',
+        errorSuspicious: 'Suspicious activity detected. Please call us to book your appointment.',
+        errorBarberNotWorking: 'The barber does not work on that day.',
+        errorBarberUnavailable: 'The barber is not available at that time.',
+        errorTimeOff: 'The barber is on time off that day.',
+        errorSlotTaken: 'That time slot has just been taken. Please choose another.',
+        errorBlocked: 'This phone number has been restricted from making online bookings. Please call us.',
+        errorNeedApproval: 'Your account requires manual approval due to past no-shows. Please call us.',
+        errorExistingAppt: 'You already have an upcoming appointment. Please cancel it first or call us.',
+        errorDuplicate: 'You already have a booking at this exact time with this barber.',
+        // Portal errors
+        errorTooManyAttemptsPortal: 'Too many attempts. Try again in {seconds} seconds.',
+        errorPhoneNotFound: 'No account found with that phone number.',
+        appointmentCancelled: 'Appointment cancelled.',
     },
 
     // Schedule

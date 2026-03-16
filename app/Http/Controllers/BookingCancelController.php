@@ -17,7 +17,7 @@ class BookingCancelController extends Controller
 
         // Check the window hasn't expired (server-side guard)
         if (! $appointment->cancel_token_expires_at || now()->isAfter($appointment->cancel_token_expires_at)) {
-            return back()->withErrors(['token' => 'The cancellation window has expired.']);
+            return back()->withErrors(['token' => trans('booking.windowExpired')]);
         }
 
         $previousStatus = $appointment->status;
