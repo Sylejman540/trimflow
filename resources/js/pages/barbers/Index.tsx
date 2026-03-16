@@ -71,6 +71,9 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         return matchesStatus && matchesSearch;
     });
 
+    // Force list view on mobile
+    const effectiveView = typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : view;
+
     const columns: ColumnDef<Barber>[] = [
         {
             accessorKey: 'user.name',
@@ -196,7 +199,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 </div>
 
                 {/* Grid View */}
-                {view === 'grid' && (
+                {effectiveView === 'grid' && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                         {filtered.length === 0 && (
                             <p className="col-span-full text-sm text-slate-400 text-center py-10">{t('barber.noBarbers')}</p>
@@ -251,7 +254,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 )}
 
                 {/* List View */}
-                {view === 'list' && (
+                {effectiveView === 'list' && (
                     <>
                         {/* Mobile cards */}
                         <div className="sm:hidden space-y-2">

@@ -193,7 +193,10 @@ const navGroups: NavGroup[] = [
 
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
+    { href: '/barbers',      icon: User,            active: 'barbers.*',      labelKey: 'barber.title' },
     { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
+    { href: '/services',     icon: Scissors,        active: 'services.*',     labelKey: 'svc.title' },
+    { href: '/settings',     icon: Settings,        active: 'settings.*',     labelKey: 'settings' },
 ] as any[];
 
 export default function AppLayout({
@@ -552,7 +555,7 @@ export default function AppLayout({
 
             {/* Mobile Bottom Nav */}
             <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur border-t border-slate-200">
-                <div className="flex items-stretch h-16">
+                <div className="flex items-stretch h-16 overflow-x-auto">
                     {visibleMobileNav.map((item) => {
                         const Icon = item.icon;
                         const isActive = route().current(item.active);
@@ -561,7 +564,7 @@ export default function AppLayout({
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    'flex-1 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform',
+                                    'flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform min-w-[60px]',
                                     isActive ? 'text-slate-900' : 'text-slate-400'
                                 )}
                             >
@@ -571,12 +574,12 @@ export default function AppLayout({
                                 )}>
                                     <Icon className="h-5 w-5" />
                                 </div>
-                                <span className="text-[10px] font-semibold leading-none">{item.label}</span>
+                                <span className="text-[10px] font-semibold leading-none whitespace-nowrap">{item.label}</span>
                             </Link>
                         );
                     })}
                     {walkin && (
-                        <div className="flex-1 flex items-center justify-center">
+                        <div className="flex items-center justify-center min-w-[60px]">
                             <button
                                 onClick={() => setWalkinOpen(true)}
                                 className="flex flex-col items-center justify-center gap-1 w-full h-full active:scale-95 transition-transform"
@@ -584,7 +587,7 @@ export default function AppLayout({
                                 <div className="flex items-center justify-center w-10 h-7 rounded-full bg-slate-900">
                                     <Zap className="h-4 w-4 text-white fill-white" />
                                 </div>
-                                <span className="text-[10px] font-bold text-slate-900 leading-none">{t('walkin.button')}</span>
+                                <span className="text-[10px] font-bold text-slate-900 leading-none whitespace-nowrap">{t('walkin.button')}</span>
                             </button>
                         </div>
                     )}

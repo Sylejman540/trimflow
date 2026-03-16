@@ -70,6 +70,9 @@ export default function Index({ services }: { services: Service[] }) {
         return matchesStatus && matchesSearch;
     });
 
+    // Force list view on mobile
+    const effectiveView = typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : view;
+
     const columns: ColumnDef<Service>[] = [
         {
             accessorKey: 'name',
