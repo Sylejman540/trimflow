@@ -72,17 +72,19 @@ function isValidPhone(phone: string): boolean {
     return /^\d{7,15}$/.test(cleaned);
 }
 
-function formatDateWithDay(dateStr: string, lang: string) {
+function formatDateWithDay(dateStr: string, lang: string, i18n: any) {
     if (!dateStr) return '';
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
-    const localeMap: Record<string, string> = {
-        sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
-        el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
-        es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
-    };
-    const locale = localeMap[lang] ?? lang;
-    return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Get day and month names from translations
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayName = i18n.t(`days.${dayNames[date.getDay()]}`, dayNames[date.getDay()]);
+
+    const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+    const monthName = i18n.t(`months.${monthNames[date.getMonth()]}`, monthNames[date.getMonth()]);
+
+    return `${dayName}, ${monthName} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
 export default function Show({ company, barbers: initialBarbers, services, recaptcha_site_key }: {
@@ -185,7 +187,11 @@ export default function Show({ company, barbers: initialBarbers, services, recap
         setAvailabilityLoading(true);
         const params = new URLSearchParams();
         serviceIds.forEach(id => params.append('service_ids[]', String(id)));
-        fetch(route('booking.availability', company.slug) + '?' + params.toString())
+        fetch(route('booking.availability', company.slug) + '?' + params.toString(), {
+            headers: {
+                'Accept-Language': i18n.language,
+            },
+        })
             .then(r => r.json())
             .then((json: { barbers: Barber[] }) => {
                 const map = new Map(json.barbers.map(b => [b.id, b]));
@@ -197,7 +203,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
             })
             .catch(() => {})
             .finally(() => setAvailabilityLoading(false));
-    }, [company.slug, initialBarbers]);
+    }, [company.slug, initialBarbers, i18n.language]);
 
     const fetchSlots = useCallback(async (barberId: number | 'any', serviceIds: number[], date: string) => {
         setSlotsLoading(true);
@@ -523,7 +529,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                 />
                                 {selectedDate && (
-                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, i18n.language)}</p>
+                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, i18n.language, i18n)}</p>
                                 )}
                             </div>
 
@@ -602,7 +608,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                 </p>
                                 <p className="text-xs text-slate-500 flex items-center gap-1.5">
                                     <Calendar className="h-3 w-3 text-slate-400" />
-                                    {formatDateWithDay(selectedDate, i18n.language)} · {selectedTime}
+                                    {formatDateWithDay(selectedDate, i18n.language, i18n)} · {selectedTime}
                                 </p>
                             </div>
                         </div>
@@ -627,7 +633,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                     {errors.customer_name && <p className="text-xs text-red-500 mt-1">{errors.customer_name}</p>}
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('phone')} *</label>
+                                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">{t('phone')}</label>
                                     <input
                                         type="tel"
                                         value={data.customer_phone}
@@ -639,7 +645,6 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         autoComplete="tel"
                                         inputMode="tel"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
-                                        required
                                     />
                                     {phoneError && <p className="text-xs text-red-500 mt-1">{t('booking.errorInvalidPhone')}</p>}
                                     {!phoneError && errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
@@ -669,7 +674,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
 
                             <Button
                                 type="submit"
-                                disabled={processing || !data.customer_name || !data.customer_phone || !isValidPhone(data.customer_phone) || phoneError}
+                                disabled={processing || !data.customer_name || (data.customer_phone && !isValidPhone(data.customer_phone)) || phoneError}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (

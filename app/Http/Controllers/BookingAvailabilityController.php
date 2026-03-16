@@ -53,6 +53,9 @@ class BookingAvailabilityController extends Controller
         $now = Carbon::now();
         $result = [];
 
+        // Get user's preferred language from Accept-Language header or default to 'en'
+        $lang = $request->getPreferredLanguage(['en', 'de', 'sq']) ?? 'en';
+
         foreach ($barbers as $barber) {
             $nextSlot = $this->findNextSlot($barber, $totalDuration, $now);
             $result[] = [
@@ -60,7 +63,7 @@ class BookingAvailabilityController extends Controller
                 'name'           => $barber->user->name,
                 'specialty'      => $barber->specialty,
                 'next_available' => $nextSlot?->format('Y-m-d H:i'),
-                'next_time_label'=> $nextSlot ? $this->humanLabel($nextSlot, $now) : null,
+                'next_time_label'=> $nextSlot ? $this->humanLabel($nextSlot, $now, $lang) : null,
             ];
         }
 
@@ -143,14 +146,43 @@ class BookingAvailabilityController extends Controller
         return null;
     }
 
-    private function humanLabel(Carbon $slot, Carbon $now): string
+    private function humanLabel(Carbon $slot, Carbon $now, string $lang = 'en'): string
     {
+        $timeStr = $slot->format('H:i');
+
         if ($slot->isToday()) {
-            return 'Today ' . $slot->format('H:i');
+            $label = match ($lang) {
+                'de' => 'Heute',
+                'sq' => 'Sot',
+                default => 'Today',
+            };
+            return "$label $timeStr";
         }
+
         if ($slot->isTomorrow()) {
-            return 'Tomorrow ' . $slot->format('H:i');
+            $label = match ($lang) {
+                'de' => 'Morgen',
+                'sq' => 'Nesër',
+                default => 'Tomorrow',
+            };
+            return "$label $timeStr";
         }
-        return $slot->format('D, M j') . ' ' . $slot->format('H:i');
+
+        // For dates further out, format with day and month
+        $dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        $monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        if ($lang === 'de') {
+            $dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+            $monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        } elseif ($lang === 'sq') {
+            $dayNames = ['E diel', 'E hënë', 'E martë', 'E mërkurë', 'E enjte', 'E premte', 'E shtunë'];
+            $monthNames = ['Janar', 'Shkurt', 'Mars', 'Prill', 'Maj', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'];
+        }
+
+        $dayName = $dayNames[$slot->dayOfWeek];
+        $monthName = $monthNames[$slot->month - 1];
+
+        return "$dayName, $monthName " . $slot->day . ' ' . $timeStr;
     }
 }

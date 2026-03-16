@@ -306,7 +306,7 @@ export default function Dashboard({
                             className="flex items-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold h-9 px-3 shadow-none"
                         >
                             <Calendar className="h-3.5 w-3.5" />
-                            This Week's Schedule
+                            {t('schedule.thisWeek')}
                         </Link>
                     </div>
 
@@ -316,7 +316,7 @@ export default function Dashboard({
                         className="flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-semibold h-9 px-3"
                     >
                         <Settings className="h-3.5 w-3.5" />
-                        Customize
+                        {t('dash.customize')}
                     </Button>
                 </div>
 
@@ -324,29 +324,29 @@ export default function Dashboard({
                 <Dialog open={customizeOpen} onOpenChange={setCustomizeOpen}>
                     <DialogContent className="max-w-sm rounded-xl">
                         <DialogHeader>
-                            <DialogTitle>Dashboard Customization</DialogTitle>
+                            <DialogTitle>{t('dash.customize')}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
-                                <span className="text-sm font-medium text-slate-900">KPI Cards (Today's Stats)</span>
+                                <span className="text-sm font-medium text-slate-900">{t('dash.kpiCards')}</span>
                                 <button onClick={() => toggleCard('kpi')} className="text-slate-400 hover:text-slate-600">
                                     {visibleCards.has('kpi') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                                 </button>
                             </div>
                             <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
-                                <span className="text-sm font-medium text-slate-900">Weekly Insights</span>
+                                <span className="text-sm font-medium text-slate-900">{t('dash.weeklyInsights')}</span>
                                 <button onClick={() => toggleCard('insights')} className="text-slate-400 hover:text-slate-600">
                                     {visibleCards.has('insights') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                                 </button>
                             </div>
                             <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
-                                <span className="text-sm font-medium text-slate-900">Today's Schedule</span>
+                                <span className="text-sm font-medium text-slate-900">{t('dash.todaysSchedule')}</span>
                                 <button onClick={() => toggleCard('schedule')} className="text-slate-400 hover:text-slate-600">
                                     {visibleCards.has('schedule') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                                 </button>
                             </div>
                             <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50">
-                                <span className="text-sm font-medium text-slate-900">Upcoming Appointments</span>
+                                <span className="text-sm font-medium text-slate-900">{t('dash.upcomingAppointmentsList')}</span>
                                 <button onClick={() => toggleCard('upcoming')} className="text-slate-400 hover:text-slate-600">
                                     {visibleCards.has('upcoming') ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                                 </button>

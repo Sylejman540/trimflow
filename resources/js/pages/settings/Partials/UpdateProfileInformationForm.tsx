@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function UpdateProfileInformationForm({
     mustVerifyEmail,
@@ -14,6 +15,7 @@ export default function UpdateProfileInformationForm({
     status?: string;
     className?: string;
 }) {
+    const { t } = useTranslation();
     const user = usePage<PageProps>().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
@@ -29,8 +31,8 @@ export default function UpdateProfileInformationForm({
     return (
         <section>
             <header className="mb-6">
-                <h2 className="text-base font-bold text-slate-900">Profile Information</h2>
-                <p className="mt-1 text-sm text-slate-500">Update your account name and email address.</p>
+                <h2 className="text-base font-bold text-slate-900">{t('profile.profileInfo')}</h2>
+                <p className="mt-1 text-sm text-slate-500">{t('profile.profileInfoDesc')}</p>
             </header>
 
             <form onSubmit={submit} className="space-y-5">
@@ -68,13 +70,13 @@ export default function UpdateProfileInformationForm({
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                         <p className="text-sm text-amber-700">
-                            Your email is unverified.{' '}
+                            {t('profile.emailUnverified')}{' '}
                             <Link href={route('verification.send')} method="post" as="button" className="font-semibold underline hover:no-underline">
-                                Resend verification email.
+                                {t('profile.resendEmail')}
                             </Link>
                         </p>
                         {status === 'verification-link-sent' && (
-                            <p className="mt-1 text-xs text-amber-600">A new verification link has been sent.</p>
+                            <p className="mt-1 text-xs text-amber-600">{t('profile.verificationSent')}</p>
                         )}
                     </div>
                 )}
@@ -85,9 +87,9 @@ export default function UpdateProfileInformationForm({
                         disabled={processing}
                         className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-xs font-bold h-10 px-6 shadow-none"
                     >
-                        Save Changes
+                        {t('profile.saveChanges')}
                     </Button>
-                    {recentlySuccessful && <p className="text-sm text-slate-500">Saved.</p>}
+                    {recentlySuccessful && <p className="text-sm text-slate-500">{t('profile.saved')}</p>}
                 </div>
             </form>
         </section>

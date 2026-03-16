@@ -92,55 +92,58 @@ class BookingController extends Controller
             'service_ids.*'         => 'integer|exists:services,id',
             'starts_at'             => 'required|date|after:now|before:' . now()->addDays(60)->toDateTimeString(),
             'customer_name'         => 'required|string|max:255',
-            'customer_phone'        => ['required', 'string', 'max:30', new ValidPhone()],
+            'customer_phone'        => ['nullable', 'string', 'max:30', new ValidPhone()],
             'notes'                 => 'nullable|string|max:1000',
             '_t'                    => 'nullable|integer',
             'cf_turnstile_response' => 'nullable|string',
         ]);
 
         // Normalize phone: keep only digits and leading +
-        $phone = preg_replace('/[^\d+]/', '', $validated['customer_phone']);
+        $phone = $validated['customer_phone'] ? preg_replace('/[^\d+]/', '', $validated['customer_phone']) : null;
 
-        // ── 6. Max 2 bookings per phone per day ───────────────────────────────
-        $phoneKey    = 'booking-phone-day:' . md5($phone);
-        $phoneWindow = (int) Carbon::now()->endOfDay()->diffInSeconds(Carbon::now());
-        if (RateLimiter::tooManyAttempts($phoneKey, 2)) {
-            return back()->withErrors([
-                'customer_phone' => trans('booking.errorMaxBookingsToday'),
-            ]);
-        }
-
-        // ── 7. Booking cooldown: 2 minutes between bookings ───────────────────
-        $cooldownKey = 'booking-cooldown:' . md5($phone);
-        if (RateLimiter::tooManyAttempts($cooldownKey, 1)) {
-            $wait = RateLimiter::availableIn($cooldownKey);
-            return back()->withErrors([
-                'customer_phone' => trans('booking.errorCooldown', ['wait' => $wait]),
-            ]);
-        }
-
-        // ── 8. Fingerprint tracking + suspicious activity block ───────────────
-        $ip          = $request->ip();
-        $userAgent   = substr($request->userAgent() ?? '', 0, 512);
-        $fingerprint = DB::table('booking_fingerprints')
-            ->where('phone', $phone)
-            ->where('ip_address', $ip)
-            ->first();
-
-        if ($fingerprint) {
-            if ($fingerprint->is_blocked) {
+        // ── 6-8. Phone-based rate limiting & fingerprinting (only if phone provided) ─
+        if ($phone) {
+            // ── 6. Max 2 bookings per phone per day ───────────────────────────────
+            $phoneKey    = 'booking-phone-day:' . md5($phone);
+            $phoneWindow = (int) Carbon::now()->endOfDay()->diffInSeconds(Carbon::now());
+            if (RateLimiter::tooManyAttempts($phoneKey, 2)) {
                 return back()->withErrors([
-                    'customer_name' => trans('booking.errorRestricted'),
+                    'customer_phone' => trans('booking.errorMaxBookingsToday'),
                 ]);
             }
-            // Auto-block after 5 bookings from same phone+IP combination
-            if ($fingerprint->booking_count >= 5) {
-                DB::table('booking_fingerprints')
-                    ->where('id', $fingerprint->id)
-                    ->update(['is_blocked' => true]);
+
+            // ── 7. Booking cooldown: 2 minutes between bookings ───────────────────
+            $cooldownKey = 'booking-cooldown:' . md5($phone);
+            if (RateLimiter::tooManyAttempts($cooldownKey, 1)) {
+                $wait = RateLimiter::availableIn($cooldownKey);
                 return back()->withErrors([
-                    'customer_name' => trans('booking.errorSuspicious'),
+                    'customer_phone' => trans('booking.errorCooldown', ['wait' => $wait]),
                 ]);
+            }
+
+            // ── 8. Fingerprint tracking + suspicious activity block ───────────────
+            $ip          = $request->ip();
+            $userAgent   = substr($request->userAgent() ?? '', 0, 512);
+            $fingerprint = DB::table('booking_fingerprints')
+                ->where('phone', $phone)
+                ->where('ip_address', $ip)
+                ->first();
+
+            if ($fingerprint) {
+                if ($fingerprint->is_blocked) {
+                    return back()->withErrors([
+                        'customer_name' => trans('booking.errorRestricted'),
+                    ]);
+                }
+                // Auto-block after 5 bookings from same phone+IP combination
+                if ($fingerprint->booking_count >= 5) {
+                    DB::table('booking_fingerprints')
+                        ->where('id', $fingerprint->id)
+                        ->update(['is_blocked' => true]);
+                    return back()->withErrors([
+                        'customer_name' => trans('booking.errorSuspicious'),
+                    ]);
+                }
             }
         }
 
@@ -204,59 +207,73 @@ class BookingController extends Controller
         }
 
         // ── 13. Phone trust + active appointment rules ─────────────────────────
-        $existingCustomer = Customer::where('company_id', $company->id)
-            ->where('phone', $phone)
-            ->first();
+        // Only check phone-based rules if phone is provided
+        $existingCustomer = null;
+        if ($phone) {
+            $existingCustomer = Customer::where('company_id', $company->id)
+                ->where('phone', $phone)
+                ->first();
 
-        if ($existingCustomer) {
-            if ($existingCustomer->booking_trust === 'blocked') {
-                return back()->withErrors([
-                    'customer_phone' => trans('booking.errorBlocked'),
-                ]);
-            }
-
-            if ($existingCustomer->booking_trust === 'restricted') {
-                $pendingCount = Appointment::where('customer_id', $existingCustomer->id)
-                    ->whereIn('status', ['confirmed'])
-                    ->where('starts_at', '>', now())
-                    ->count();
-                if ($pendingCount >= 1) {
+            if ($existingCustomer) {
+                if ($existingCustomer->booking_trust === 'blocked') {
                     return back()->withErrors([
-                        'customer_phone' => trans('booking.errorNeedApproval'),
+                        'customer_phone' => trans('booking.errorBlocked'),
                     ]);
                 }
-            }
 
-            // One active appointment rule
-            $activeCount = Appointment::where('customer_id', $existingCustomer->id)
-                ->whereNotIn('status', ['cancelled', 'no_show', 'completed'])
-                ->where('starts_at', '>', now())
-                ->count();
-            if ($activeCount >= 1) {
-                return back()->withErrors([
-                    'customer_phone' => trans('booking.errorExistingAppt'),
-                ]);
-            }
+                if ($existingCustomer->booking_trust === 'restricted') {
+                    $pendingCount = Appointment::where('customer_id', $existingCustomer->id)
+                        ->whereIn('status', ['confirmed'])
+                        ->where('starts_at', '>', now())
+                        ->count();
+                    if ($pendingCount >= 1) {
+                        return back()->withErrors([
+                            'customer_phone' => trans('booking.errorNeedApproval'),
+                        ]);
+                    }
+                }
 
-            // Duplicate: same phone + same barber + same time
-            $duplicate = Appointment::where('customer_id', $existingCustomer->id)
-                ->where('barber_id', $barber->id)
-                ->where('starts_at', $startsAt)
-                ->whereNotIn('status', ['cancelled', 'no_show'])
-                ->exists();
-            if ($duplicate) {
-                return back()->withErrors([
-                    'starts_at' => trans('booking.errorDuplicate'),
-                ]);
+                // One active appointment rule
+                $activeCount = Appointment::where('customer_id', $existingCustomer->id)
+                    ->whereNotIn('status', ['cancelled', 'no_show', 'completed'])
+                    ->where('starts_at', '>', now())
+                    ->count();
+                if ($activeCount >= 1) {
+                    return back()->withErrors([
+                        'customer_phone' => trans('booking.errorExistingAppt'),
+                    ]);
+                }
+
+                // Duplicate: same phone + same barber + same time
+                $duplicate = Appointment::where('customer_id', $existingCustomer->id)
+                    ->where('barber_id', $barber->id)
+                    ->where('starts_at', $startsAt)
+                    ->whereNotIn('status', ['cancelled', 'no_show'])
+                    ->exists();
+                if ($duplicate) {
+                    return back()->withErrors([
+                        'starts_at' => trans('booking.errorDuplicate'),
+                    ]);
+                }
             }
         }
 
         // ── 14. Create / update customer ───────────────────────────────────────
-        $customer = Customer::firstOrCreate(
-            ['phone' => $phone, 'company_id' => $company->id],
-            ['name'  => $validated['customer_name']]
-        );
-        $customer->fill(['name' => $validated['customer_name']])->save();
+        // If phone provided, use it for lookup/creation. Otherwise, create walkin customer with name.
+        if ($phone) {
+            $customer = Customer::firstOrCreate(
+                ['phone' => $phone, 'company_id' => $company->id],
+                ['name'  => $validated['customer_name']]
+            );
+            $customer->fill(['name' => $validated['customer_name']])->save();
+        } else {
+            // Walkin customer without phone - create new for each booking
+            $customer = Customer::create([
+                'company_id' => $company->id,
+                'phone'      => null,
+                'name'       => $validated['customer_name'],
+            ]);
+        }
 
         // ── 15. Create appointment ─────────────────────────────────────────────
         $cancelToken   = Str::random(48);
@@ -301,29 +318,31 @@ class BookingController extends Controller
             ->when($barberUserId, fn($q) => $q->where('id', '!=', $barberUserId))
             ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
 
-        // ── 17. Commit rate limits + update fingerprint ────────────────────────
-        RateLimiter::hit($phoneKey, $phoneWindow);
-        RateLimiter::hit($cooldownKey, 120);
+        // ── 17. Commit rate limits + update fingerprint (only if phone provided) ───
+        if ($phone) {
+            RateLimiter::hit($phoneKey, $phoneWindow);
+            RateLimiter::hit($cooldownKey, 120);
 
-        if ($fingerprint) {
-            DB::table('booking_fingerprints')
-                ->where('id', $fingerprint->id)
-                ->update([
-                    'booking_count'   => $fingerprint->booking_count + 1,
-                    'last_booking_at' => now(),
+            if ($fingerprint) {
+                DB::table('booking_fingerprints')
+                    ->where('id', $fingerprint->id)
+                    ->update([
+                        'booking_count'   => $fingerprint->booking_count + 1,
+                        'last_booking_at' => now(),
+                        'user_agent'      => $userAgent,
+                        'updated_at'      => now(),
+                    ]);
+            } else {
+                DB::table('booking_fingerprints')->insert([
+                    'phone'           => $phone,
+                    'ip_address'      => $ip,
                     'user_agent'      => $userAgent,
+                    'booking_count'   => 1,
+                    'last_booking_at' => now(),
+                    'created_at'      => now(),
                     'updated_at'      => now(),
                 ]);
-        } else {
-            DB::table('booking_fingerprints')->insert([
-                'phone'           => $phone,
-                'ip_address'      => $ip,
-                'user_agent'      => $userAgent,
-                'booking_count'   => 1,
-                'last_booking_at' => now(),
-                'created_at'      => now(),
-                'updated_at'      => now(),
-            ]);
+            }
         }
 
         $customer->increment('booking_total');
