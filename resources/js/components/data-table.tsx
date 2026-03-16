@@ -92,13 +92,13 @@ export function DataTable<TData, TValue>({
                 </div>
             )}
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-white border border-slate-200 rounded-xl">
                 <Table className="w-full">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-b border-gray-200">
+                            <TableRow key={headerGroup.id} className="border-b border-slate-100">
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="px-4 py-2 text-xs font-semibold text-gray-600">
+                                    <TableHead key={header.id} className="px-4 py-3 text-xs font-semibold text-slate-600">
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -113,9 +113,9 @@ export function DataTable<TData, TValue>({
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <TableRow key={row.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="px-4 py-3 text-sm text-gray-700">
+                                        <TableCell key={cell.id} className="px-4 py-3 text-sm text-slate-700">
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext(),
@@ -128,7 +128,7 @@ export function DataTable<TData, TValue>({
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="px-4 py-8 text-center text-sm text-gray-400"
+                                    className="px-4 py-8 text-center text-sm text-slate-400"
                                 >
                                     No results found.
                                 </TableCell>
