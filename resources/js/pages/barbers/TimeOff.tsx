@@ -161,7 +161,9 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             ) : undefined}
         >
             <Head title={t('timeoff.title')} />
-            <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} />
+            <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+                <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} showSearch={false} />
+            </div>
 
             <Dialog open={addOpen} onOpenChange={v => !v && setAddOpen(false)}>
                 <DialogContent className="sm:max-w-md border-slate-200 shadow-2xl rounded-2xl">
