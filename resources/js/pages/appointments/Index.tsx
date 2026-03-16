@@ -281,7 +281,8 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
 }) {
     const { t } = useTranslation();
     return (
-        <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors">
+        <Link href={appt.status !== 'in_progress' ? route('appointments.edit', appt.id) : route('appointments.show', appt.id)}>
+        <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <p className="font-bold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
@@ -325,6 +326,7 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                 )}
             </div>
         </div>
+        </Link>
     );
 }
 
@@ -927,8 +929,8 @@ export default function Index({
             }
             mobileAction={can_create ? (
                 <Link href={route('appointments.create')}
-                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform">
-                    <Plus className="h-5 w-5" />
+                    className="flex items-center justify-center gap-2 w-full h-10 rounded-lg bg-slate-900 text-white text-sm font-bold active:scale-[0.98] transition-transform">
+                    <Plus className="h-4 w-4" />
                     {t('appt.new')}
                 </Link>
             ) : undefined}

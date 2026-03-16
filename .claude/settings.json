@@ -33,7 +33,8 @@
       "Bash(find /Users/sylejman/Herd/trimflow -name *feature* -o -name *todo* -o -name *roadmap*)",
       "Bash(git revert:*)",
       "Bash(grep -n \"view === ''grid''\\\\|view === ''list''\" /Users/sylejman/Herd/trimflow/resources/js/pages/services/Index.tsx)",
-      "Bash(grep -n \"view === ''grid''\\\\|view === ''list''\" /Users/sylejman/Herd/trimflow/resources/js/pages/products/Index.tsx)"
+      "Bash(grep -n \"view === ''grid''\\\\|view === ''list''\" /Users/sylejman/Herd/trimflow/resources/js/pages/products/Index.tsx)",
+      "Bash(grep -l AppLayout resources/js/pages/appointments/*.tsx resources/js/pages/barbers/*.tsx resources/js/pages/services/*.tsx)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials"

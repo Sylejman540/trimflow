@@ -25,20 +25,20 @@ function toLocalDate(dateStr: string): Date {
 export function formatDateTime(dateStr: string): string {
     return toLocalDate(dateStr).toLocaleString('en-US', {
         weekday: 'short', month: 'short', day: 'numeric',
-        year: 'numeric', hour: 'numeric', minute: '2-digit',
+        year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
     });
 }
 
 export function formatDateTimeShort(dateStr: string): string {
     return toLocalDate(dateStr).toLocaleString('en-US', {
         month: 'short', day: 'numeric',
-        hour: 'numeric', minute: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false,
     });
 }
 
 export function formatTime(dateStr: string): string {
     return toLocalDate(dateStr).toLocaleString('en-US', {
-        hour: 'numeric', minute: '2-digit',
+        hour: '2-digit', minute: '2-digit', hour12: false,
     });
 }
 

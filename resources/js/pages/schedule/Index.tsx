@@ -92,12 +92,10 @@ function TimeGutter() {
         <div className="w-16 sm:w-14 shrink-0 relative" style={{ height: TOTAL_HOURS * HOUR_HEIGHT }}>
             {Array.from({ length: TOTAL_HOURS }, (_, i) => {
                 const hour = HOUR_START + i;
-                const label = hour === 0 ? '12:00' : hour <= 12 ? `${hour}:00` : `${hour - 12}:00`;
-                const period = hour < 12 ? 'AM' : 'PM';
+                const label = String(hour).padStart(2, '0') + ':00';
                 return (
                     <div key={i} className="absolute right-2 text-right leading-none" style={{ top: i * HOUR_HEIGHT - 8 }}>
                         <span className="text-[10px] text-slate-500 font-semibold">{label}</span>
-                        <span className="block text-[8px] text-slate-300 font-medium">{period}</span>
                     </div>
                 );
             })}

@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, Mail, ChevronRight, Check, ArrowLeft } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Tag, Loader2, ChevronRight, Check, ArrowLeft } from 'lucide-react';
 
 type WizardStep = 'barber' | 'customer' | 'services' | 'datetime' | 'review';
 
@@ -81,12 +81,6 @@ export default function Create({
         setData('starts_at', '');
     }
 
-    function isValidPhone(phone: string): boolean {
-        if (!phone) return true; // Empty is valid (optional field)
-        // Accept phone numbers with at least 10 digits
-        const digitsOnly = phone.replace(/\D/g, '');
-        return digitsOnly.length >= 10;
-    }
 
     const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
 
@@ -245,70 +239,32 @@ export default function Create({
                                 />
                                 {errors.customer_name && <p className="text-xs text-red-500 font-medium">{errors.customer_name}</p>}
                             </div>
-
-                            <div className="space-y-3">
-                                <Label htmlFor="customer_phone" className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Phone size={16} />{t('appt.phoneNumber')} <span className="text-xs text-slate-400">(optional)</span>
-                                </Label>
-                                <Input
-                                    id="customer_phone"
-                                    value={data.customer_phone}
-                                    onChange={(e) => setData('customer_phone', e.target.value)}
-                                    className={cn("h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg", data.customer_phone && !isValidPhone(data.customer_phone) && "border-red-300")}
-                                    placeholder="+1 (555) 000-0000"
-                                />
-                                {data.customer_phone && !isValidPhone(data.customer_phone) && <p className="text-xs text-red-500 font-medium">Phone number must have at least 10 digits</p>}
-                                {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
-                            </div>
-
-                            <div className="space-y-3">
-                                <Label htmlFor="customer_email" className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Mail size={16} /> {t('appt.email')}
-                                </Label>
-                                <Input
-                                    id="customer_email"
-                                    type="email"
-                                    value={data.customer_email}
-                                    onChange={(e) => setData('customer_email', e.target.value)}
-                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
-                                    placeholder="customer@email.com"
-                                />
-                                {errors.customer_email && <p className="text-xs text-red-500 font-medium">{errors.customer_email}</p>}
-                            </div>
                         </div>
                     )}
 
                     {/* Step: Services */}
                     {currentStep === 'services' && (
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                            <div>
-                                <Label className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
+                            <div className="space-y-3">
+                                <Label className="text-sm font-bold text-slate-900 flex items-center gap-2">
                                     <Scissors size={16} />{t('appt.serviceType')}
                                 </Label>
-                                <div className="flex flex-wrap gap-2">
-                                    {services.map((s) => {
-                                        const isSelected = data.service_ids.includes(String(s.id));
-                                        return (
-                                            <button
-                                                key={s.id}
-                                                type="button"
-                                                onClick={() => toggleService(s)}
-                                                className={cn(
-                                                    'flex flex-col items-start px-4 py-3 rounded-xl border text-left transition-all',
-                                                    isSelected
-                                                        ? 'bg-slate-900 border-slate-900 text-white'
-                                                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400',
-                                                )}
-                                            >
-                                                <span className="font-semibold">{s.name}</span>
-                                                <span className={cn('text-xs mt-1', isSelected ? 'text-slate-300' : 'text-slate-400')}>
-                                                    {formatDuration(s.duration)} · {formatCents(s.price)}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                {errors.service_ids && <p className="text-xs text-red-500 font-medium mt-2">{errors.service_ids}</p>}
+                                <Select value={data.service_ids[0] ?? ''} onValueChange={v => setData('service_ids', v ? [v] : [])}>
+                                    <SelectTrigger className="h-12 bg-white border-slate-300 focus:bg-white rounded-lg text-base font-medium shadow-sm">
+                                        <SelectValue placeholder={t('appt.selectService')} />
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-xl border-slate-300 shadow-2xl w-[var(--radix-select-trigger-width)]">
+                                        {services.map(s => (
+                                            <SelectItem key={s.id} value={String(s.id)} className="text-base py-3">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-semibold">{s.name}</span>
+                                                    <span className="text-slate-500">— {formatDuration(s.duration)} · {formatCents(s.price)}</span>
+                                                </div>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.service_ids && <p className="text-xs text-red-500 font-medium">{errors.service_ids}</p>}
                             </div>
 
                             {selectedServices.length > 0 && (
@@ -405,16 +361,6 @@ export default function Create({
                                     <span className="text-sm font-medium text-slate-600">{t('appt.customer')}</span>
                                     <span className="text-sm font-semibold text-slate-900">{data.customer_name}</span>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm font-medium text-slate-600">{t('appt.phone')}</span>
-                                    <span className="text-sm font-semibold text-slate-900">{data.customer_phone}</span>
-                                </div>
-                                {data.customer_email && (
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm font-medium text-slate-600">{t('appt.email')}</span>
-                                        <span className="text-sm font-semibold text-slate-900">{data.customer_email}</span>
-                                    </div>
-                                )}
                                 <div className="h-px bg-slate-200 my-2" />
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm font-medium text-slate-600">{t('appt.service')}</span>

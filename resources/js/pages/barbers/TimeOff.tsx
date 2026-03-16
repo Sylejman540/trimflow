@@ -153,9 +153,9 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             mobileAction={can_manage ? (
                 <button
                     onClick={() => setAddOpen(true)}
-                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-slate-900 text-white text-sm font-bold shadow-lg active:scale-[0.98] transition-transform"
+                    className="flex items-center justify-center gap-2 w-full h-10 rounded-lg bg-slate-900 text-white text-sm font-bold active:scale-[0.98] transition-transform"
                 >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4" />
                     {t('timeoff.add')}
                 </button>
             ) : undefined}

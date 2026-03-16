@@ -196,42 +196,27 @@ export default function Edit({
                         </div>
                     </div>
 
-                    {/* Service Selection — multi-select */}
+                    {/* Service Selection */}
                     <div className="space-y-2">
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
                             <Scissors size={12} />{' '}{t('appt.serviceType')}
-                            <span className="ml-auto text-[10px] font-normal normal-case tracking-normal text-slate-400">Select one or more</span>
                         </Label>
 
-                        <div className="space-y-1.5 rounded-xl border border-slate-200 overflow-hidden">
-                            {services.map((s) => {
-                                const isSelected = data.service_ids.includes(String(s.id));
-                                return (
-                                    <button
-                                        key={s.id}
-                                        type="button"
-                                        onClick={() => toggleService(s)}
-                                        className={cn(
-                                            'w-full flex items-center justify-between px-4 py-3 text-left transition-colors border-b border-slate-100 last:border-0',
-                                            isSelected ? 'bg-slate-900 text-white' : 'bg-white hover:bg-slate-50',
-                                        )}
-                                    >
-                                        <div>
-                                            <p className={cn('text-sm font-medium', isSelected ? 'text-white' : 'text-slate-900')}>{s.name}</p>
-                                            <p className={cn('text-xs mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
-                                                {formatDuration(s.duration)} · {formatCents(s.price)}
-                                            </p>
+                        <Select value={data.service_ids[0] ?? ''} onValueChange={v => setData('service_ids', v ? [v] : [])}>
+                            <SelectTrigger className="h-11 bg-white border-slate-300 focus:bg-white rounded-lg font-medium shadow-sm">
+                                <SelectValue placeholder={t('appt.selectService')} />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-300 shadow-2xl w-[var(--radix-select-trigger-width)]">
+                                {services.map(s => (
+                                    <SelectItem key={s.id} value={String(s.id)} className="py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold">{s.name}</span>
+                                            <span className="text-slate-500 text-sm">— {formatDuration(s.duration)} · {formatCents(s.price)}</span>
                                         </div>
-                                        <div className={cn(
-                                            'flex h-5 w-5 items-center justify-center rounded-full border-2 shrink-0 transition-colors',
-                                            isSelected ? 'bg-white border-white' : 'border-slate-300',
-                                        )}>
-                                            {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-slate-900" />}
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
                         {selectedServices.length > 0 && (
                             <div className="flex items-center gap-3 px-1">

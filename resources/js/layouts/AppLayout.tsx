@@ -193,10 +193,9 @@ const navGroups: NavGroup[] = [
 
 const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard' },
-    { href: '/barbers',      icon: User,            active: 'barbers.*',      labelKey: 'barber.title' },
     { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
-    { href: '/services',     icon: Scissors,        active: 'services.*',     labelKey: 'svc.title' },
-    { href: '/settings',     icon: Settings,        active: 'settings.*',     labelKey: 'settings' },
+    { href: '/barbers',      icon: Briefcase,       active: 'barbers.*',      labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
+    { href: '/services',     icon: Scissors,        active: 'services.*',     labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
 ] as any[];
 
 export default function AppLayout({
@@ -472,7 +471,7 @@ export default function AppLayout({
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
                         {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
                         {actions && (
-                            <div className="hidden sm:flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5">
                                 {actions}
                             </div>
                         )}
@@ -508,7 +507,7 @@ export default function AppLayout({
 
                         {/* Language & Notifications */}
                         <div className="flex items-center gap-1">
-                            <div className="hidden sm:flex items-center h-9">
+                            <div className="flex items-center h-9">
                                 <LanguageSwitcher compact userId={auth.user.id} />
                             </div>
 
