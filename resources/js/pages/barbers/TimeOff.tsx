@@ -2,7 +2,7 @@ import { Head, useForm, router } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColumnDef } from '@tanstack/react-table';
-import { PalmtreeIcon, Plus, Trash2, CalendarDays, User, ArrowRight } from 'lucide-react';
+import { PalmtreeIcon, Plus, Trash2, CalendarDays, User, ArrowRight, Inbox } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
@@ -163,10 +163,17 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             <Head title={t('timeoff.title')} />
 
             {/* Mobile cards */}
-            <div className="sm:hidden space-y-2">
-                {time_offs.length === 0 && (
-                    <p className="text-sm text-slate-400 text-center py-10">{t('timeoff.noRecords')}</p>
-                )}
+            <div className="sm:hidden">
+                {time_offs.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-12">
+                        <Inbox className="h-12 w-12 text-slate-200" />
+                        <div className="text-center">
+                            <p className="text-sm font-semibold text-slate-700">No results found</p>
+                            <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-2">
                 {time_offs.map(timeOff => {
                     const active = isActive(timeOff.starts_on, timeOff.ends_on);
                     const future = timeOff.starts_on > todayStr();
@@ -216,6 +223,8 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
                         </div>
                     );
                 })}
+                    </div>
+                )}
             </div>
 
             {/* Desktop table */}
