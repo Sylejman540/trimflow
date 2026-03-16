@@ -282,7 +282,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                                     {isOff && (
                                         <p className="text-xs text-amber-900">
                                             {t('barber.offToday')}
-                                            {getNextWorkingDay(barber) && <span>. {t('common.back')} {getNextWorkingDay(barber)}</span>}
+                                            {getNextWorkingDay(barber) && <span>. {t('back')} {getNextWorkingDay(barber)}</span>}
                                         </p>
                                     )}
                                     <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
