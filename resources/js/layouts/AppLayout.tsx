@@ -521,10 +521,10 @@ export default function AppLayout({
 
                         {/* Language & Notifications */}
                         <div className="flex items-center gap-1">
-                            <div className="flex items-center h-9">
+                            <div className="hidden sm:flex items-center h-9">
                                 <LanguageSwitcher compact userId={auth.user.id} />
                             </div>
-                            
+
                             <Link
                                 href={route('notifications.index')}
                                 className="relative flex items-center justify-center w-9 h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
