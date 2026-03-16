@@ -141,30 +141,24 @@ export function DataTable<TData, TValue>({
 
                 {table.getPageCount() > 1 && (
                     <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-100">
-                        <Button
-                            size="sm"
-                            className={`h-8 w-8 p-0 transition-colors ${
-                                table.getCanPreviousPage()
-                                    ? 'bg-slate-900 hover:bg-slate-800 text-white'
-                                    : 'bg-slate-100 text-slate-300 cursor-not-allowed'
-                            }`}
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                        <Button
-                            size="sm"
-                            className={`h-8 w-8 p-0 transition-colors ${
-                                table.getCanNextPage()
-                                    ? 'bg-slate-900 hover:bg-slate-800 text-white'
-                                    : 'bg-slate-100 text-slate-300 cursor-not-allowed'
-                            }`}
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
+                        {table.getCanPreviousPage() && (
+                            <Button
+                                size="sm"
+                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                onClick={() => table.previousPage()}
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                        )}
+                        {table.getCanNextPage() && (
+                            <Button
+                                size="sm"
+                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                onClick={() => table.nextPage()}
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                        )}
                     </div>
                 )}
             </div>
