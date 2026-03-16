@@ -28,7 +28,7 @@ export default function LanguageSwitcher({ compact = false, userId }: Props) {
 
     function changeLanguage(code: string) {
         i18n.changeLanguage(code);
-        const key = userId ? `freshio_lang_${userId}` : 'freshio_lang';
+        const key = userId ? `fade_lang_${userId}` : 'fade_lang';
         localStorage.setItem(key, code);
         setOpen(false);
     }

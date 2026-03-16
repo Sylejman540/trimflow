@@ -65,6 +65,6 @@ class NewPublicBooking extends Notification
             $mail->line("**Notes:** {$appt->notes}");
         }
 
-        return $mail->salutation('— TrimFlow');
+        return $mail->salutation('— Fade');
     }
 }

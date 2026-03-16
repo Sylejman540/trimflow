@@ -39,13 +39,13 @@ return [
         'webhook_secret' => env('MANYCHAT_WEBHOOK_SECRET'),
     ],
 
-    'turnstile' => [
-        'site_key'   => env('TURNSTILE_SITE_KEY', ''),
-        'secret_key' => env('TURNSTILE_SECRET_KEY', ''),
+    'recaptcha' => [
+        'site_key'   => env('RECAPTCHA_SITE_KEY', ''),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY', ''),
     ],
 
     'meta' => [
-        'verify_token' => env('META_VERIFY_TOKEN', 'trimflow_verify'),
+        'verify_token' => env('META_VERIFY_TOKEN', 'fade_verify'),
     ],
 
 ];

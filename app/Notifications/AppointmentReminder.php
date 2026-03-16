@@ -79,7 +79,7 @@ class AppointmentReminder extends Notification implements ShouldQueue
                 $message->line("**Phone:** {$phone}");
             }
 
-            return $message->salutation('— TrimFlow');
+            return $message->salutation('— Fade');
         }
 
         $barber = $appt->barber?->user?->name ?? 'your barber';
@@ -91,6 +91,6 @@ class AppointmentReminder extends Notification implements ShouldQueue
             ->line("**Service:** {$serviceLabel}")
             ->line("**Barber:** {$barber}")
             ->line("**When:** {$time}")
-            ->salutation('See you soon! — TrimFlow');
+            ->salutation('See you soon! — Fade');
     }
 }

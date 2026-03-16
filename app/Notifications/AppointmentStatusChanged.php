@@ -64,6 +64,6 @@ class AppointmentStatusChanged extends Notification
             ->line("**Service:** {$service}")
             ->line("**Barber:** {$barber}")
             ->line("**When:** {$time}")
-            ->salutation('— TrimFlow');
+            ->salutation('— Fade');
     }
 }

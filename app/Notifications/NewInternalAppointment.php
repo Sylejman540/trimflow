@@ -61,6 +61,6 @@ class NewInternalAppointment extends Notification
             ->when($appt->notes, function ($message) use ($appt) {
                 return $message->line("**Notes:** {$appt->notes}");
             })
-            ->salutation('— TrimFlow');
+            ->salutation('— Fade');
     }
 }

@@ -32,7 +32,7 @@ class BookingController extends Controller
                 $company->only('id', 'name', 'slug', 'address', 'phone'),
                 ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
             ),
-            'turnstile_site_key' => config('services.turnstile.site_key'),
+            'recaptcha_site_key' => config('services.recaptcha.site_key'),
             'barbers'            => $barbers->map(fn($b) => [
                 'id'        => $b->id,
                 'user'      => ['name' => $b->user->name],
@@ -75,10 +75,10 @@ class BookingController extends Controller
         }
         RateLimiter::hit($ipKey, 60);
 
-        // ── 4. Cloudflare Turnstile verification ──────────────────────────────
-        $turnstileSecret = config('services.turnstile.secret_key');
-        if ($turnstileSecret) {
-            if (! $this->verifyTurnstile($request->input('cf_turnstile_response', ''), $request->ip(), $turnstileSecret)) {
+        // ── 4. Google reCAPTCHA v3 verification ──────────────────────────────────
+        $recaptchaSecret = config('services.recaptcha.secret_key');
+        if ($recaptchaSecret) {
+            if (! $this->verifyRecaptcha($request->input('recaptcha_token', ''), $recaptchaSecret)) {
                 return back()->withErrors([
                     'customer_name' => trans('booking.errorSecurityCheck'),
                 ]);
@@ -353,18 +353,19 @@ class BookingController extends Controller
         ]);
     }
 
-    private function verifyTurnstile(string $token, string $ip, string $secret): bool
+    private function verifyRecaptcha(string $token, string $secret): bool
     {
         if (empty($token)) {
             return false;
         }
         try {
-            $response = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
                 'secret'   => $secret,
                 'response' => $token,
-                'remoteip' => $ip,
             ]);
-            return (bool) ($response->json('success') ?? false);
+            $data = $response->json();
+            // reCAPTCHA v3: accept if success is true and score >= 0.5 (0.0 = bot, 1.0 = human)
+            return (bool) ($data['success'] ?? false) && ($data['score'] ?? 0) >= 0.5;
         } catch (\Throwable) {
             return false;
         }

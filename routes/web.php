@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
-use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OnboardingController;
@@ -32,6 +31,11 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
+    // Redirect authenticated users to dashboard
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+
     return Inertia::render('Welcome', [
         'canLogin'    => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -47,7 +51,6 @@ Route::get('/company', function () {
 
 Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
     Route::resource('services', ServiceController::class)->except(['show']);
     Route::resource('barbers', BarberController::class)->except(['show']);

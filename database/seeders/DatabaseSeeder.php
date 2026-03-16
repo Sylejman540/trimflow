@@ -22,9 +22,9 @@ class DatabaseSeeder extends Seeder
 
         // Create company
         $company = Company::create([
-            'name' => 'TrimFlow Demo Shop',
-            'slug' => 'trimflow-demo',
-            'email' => 'info@trimflow.test',
+            'name' => 'Fade Demo Shop',
+            'slug' => 'fade-demo',
+            'email' => 'info@fade.test',
             'phone' => '(555) 123-4567',
             'address' => '123 Main Street',
             'city' => 'New York',
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         // Platform admin (no company)
         $admin = User::factory()->create([
             'name' => 'Platform Admin',
-            'email' => 'admin@trimflow.test',
+            'email' => 'admin@fade.test',
             'company_id' => null,
         ]);
         $admin->assignRole('platform-admin');
@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
         // Shop owner (also a barber — cuts hair themselves)
         $owner = User::factory()->create([
             'name' => 'John Owner',
-            'email' => 'owner@trimflow.test',
+            'email' => 'owner@fade.test',
             'company_id' => $company->id,
         ]);
         $owner->assignRole('shop-admin');
@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             'company_id' => $company->id,
             'user_id'    => $owner->id,
             'specialty'  => 'All-around Cuts',
-            'bio'        => 'Owner and head barber at TrimFlow Demo Shop.',
+            'bio'        => 'Owner and head barber at Fade Demo Shop.',
             'working_hours' => [
                 'monday'    => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
                 'tuesday'   => ['enabled' => true,  'start' => '09:00', 'end' => '18:00'],
@@ -69,9 +69,9 @@ class DatabaseSeeder extends Seeder
 
         // Barber users + barber profiles
         $barberData = [
-            ['name' => 'Mike Styles', 'email' => 'mike@trimflow.test', 'specialty' => 'Fades & Lineups'],
-            ['name' => 'Sarah Cuts', 'email' => 'sarah@trimflow.test', 'specialty' => 'Coloring & Styling'],
-            ['name' => 'Jake Blade', 'email' => 'jake@trimflow.test', 'specialty' => 'Beard Grooming'],
+            ['name' => 'Mike Styles', 'email' => 'mike@fade.test', 'specialty' => 'Fades & Lineups'],
+            ['name' => 'Sarah Cuts', 'email' => 'sarah@fade.test', 'specialty' => 'Coloring & Styling'],
+            ['name' => 'Jake Blade', 'email' => 'jake@fade.test', 'specialty' => 'Beard Grooming'],
         ];
 
         $barbers = [$ownerBarber];

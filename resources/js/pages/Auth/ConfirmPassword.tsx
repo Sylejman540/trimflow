@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, Eye, EyeOff, Lock } from 'lucide-react';
 
-function FreshioLogo({ dark = false }: { dark?: boolean }) {
+function FadeLogo({ dark = false }: { dark?: boolean }) {
     return (
         <a href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm shrink-0">
@@ -38,7 +38,7 @@ export default function ConfirmPassword() {
             <Head title={t('auth.confirmTitle')} />
 
             <div className="w-full max-w-[380px] flex justify-center mb-10">
-                <FreshioLogo dark />
+                <FadeLogo dark />
             </div>
 
             <div className="w-full max-w-[380px]">

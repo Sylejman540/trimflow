@@ -21,7 +21,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
 
     return (
         <div className="flex h-screen w-full overflow-hidden bg-white font-sans relative">
-            <Head title="Sign In | Freshio" />
+            <Head title="Sign In | Fade" />
 
             {/* --- MOBILE LOGO --- */}
             <div className="absolute top-8 left-8 z-20 lg:hidden">
@@ -30,7 +30,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
                         <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
                     </svg>
-                    <span className="text-sm font-black tracking-tight text-slate-950" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Freshio</span>
+                    <span className="text-sm font-black tracking-tight text-slate-950" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Fade</span>
                 </Link>
             </div>
 
@@ -51,7 +51,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                             <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
                             <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
                         </svg>
-                        <span className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Freshio</span>
+                        <span className="text-2xl font-black tracking-tight text-white" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>Fade</span>
                     </Link>
                 </div>
 
@@ -165,7 +165,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
                         </button>
 
                         <p className="text-center text-sm text-slate-500 pt-4">
-                            New to Freshio?{' '}
+                            New to Fade?{' '}
                             <Link href={route('register')} className="font-bold text-slate-950 underline underline-offset-4">
                                 Create your shop
                             </Link>

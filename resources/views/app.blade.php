@@ -6,7 +6,7 @@
         <meta name="robots" content="index, follow">
         <meta name="theme-color" content="#0f172a">
 
-        <title inertia>{{ config('app.name', 'TrimFlow') }}</title>
+        <title inertia>{{ config('app.name', 'Fade') }}</title>
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=6">
         <link rel="shortcut icon" href="/favicon.svg?v=6">

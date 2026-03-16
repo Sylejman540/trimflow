@@ -28,7 +28,7 @@ i18n
 
 // Initialize language preference - user-specific or guest
 export function initializeUserLanguage(userId?: number) {
-    const userLangKey = userId ? `freshio_lang_${userId}` : 'freshio_lang_guest';
+    const userLangKey = userId ? `fade_lang_${userId}` : 'fade_lang_guest';
     const savedLang = localStorage.getItem(userLangKey);
     if (savedLang && LANGUAGES.some(l => l.code === savedLang)) {
         i18n.changeLanguage(savedLang);

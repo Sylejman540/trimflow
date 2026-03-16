@@ -46,7 +46,11 @@
       "Bash(npm ci:*)",
       "Bash(git stash:*)",
       "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/BookingController.php)",
-      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/WalkinController.php)"
+      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/WalkinController.php)",
+      "Bash(/tmp/recaptcha_setup.md:*)",
+      "Read(//private/tmp/**)",
+      "Bash(grep -rn \"Freshio\\\\|TrimFlow\\\\|trimflow\\\\|freshio\" /Users/sylejman/Herd/trimflow/resources/js/pages/booking/ --include=*.tsx)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://fade.test)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials",

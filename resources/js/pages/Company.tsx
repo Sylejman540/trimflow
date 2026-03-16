@@ -89,7 +89,7 @@ const Navbar = () => {
                 scrolled ? 'bg-black/95 backdrop-blur-xl shadow-lg shadow-black/30' : 'bg-transparent'
             }`}>
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <a href="/" className="text-2xl font-black tracking-tight text-white">Freshio</a>
+                    <a href="/" className="text-2xl font-black tracking-tight text-white">Fade</a>
 
                     {/* Desktop center links */}
                     <div className="hidden md:flex items-center gap-1 text-sm font-medium">
@@ -136,7 +136,7 @@ const Navbar = () => {
                                     <div className="bg-zinc-950 px-6 py-4 flex items-center justify-between">
                                         <div>
                                             <p className="text-white text-sm font-semibold">Start free — no credit card needed</p>
-                                            <p className="text-zinc-400 text-xs mt-0.5">Join barbershops already using Freshio to grow</p>
+                                            <p className="text-zinc-400 text-xs mt-0.5">Join barbershops already using Fade to grow</p>
                                         </div>
                                         <a href="/register" className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-colors shrink-0">
                                             Get started free <ArrowRight className="h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ const Hero = () => (
                 transition={{ duration: 0.6, delay: 0.25 }}
                 className="text-base md:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed"
             >
-                Freshio started in a barbershop chair. We watched barbers lose clients to missed DMs, double-booked slots, and no-shows. So we built the tool we wish existed.
+                Fade started in a barbershop chair. We watched barbers lose clients to missed DMs, double-booked slots, and no-shows. So we built the tool we wish existed.
             </motion.p>
         </div>
     </section>
@@ -267,7 +267,7 @@ const Mission = () => (
                         Give every barber a fair shot
                     </h2>
                     <p className="text-zinc-400 text-base leading-relaxed max-w-sm">
-                        Big salon chains have software teams. Independent barbers don't. Freshio levels the playing field with professional tools that take minutes to set up and seconds to use.
+                        Big salon chains have software teams. Independent barbers don't. Fade levels the playing field with professional tools that take minutes to set up and seconds to use.
                     </p>
                 </FadeIn>
                 <FadeIn delay={0.15}>
@@ -369,7 +369,7 @@ const Footer = () => (
         <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10 pb-10 md:pb-12 border-b border-zinc-900">
                 <div className="col-span-2">
-                    <span className="text-base font-black text-white mb-4 block">Freshio</span>
+                    <span className="text-base font-black text-white mb-4 block">Fade</span>
                     <p className="text-sm leading-relaxed max-w-xs">
                         The modern appointment platform built for barbershops. Simple, fast, and reliable.
                     </p>
@@ -399,7 +399,7 @@ const Footer = () => (
                 ))}
             </div>
             <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-700">
-                <p>© 2026 Freshio. All rights reserved.</p>
+                <p>© 2026 Fade. All rights reserved.</p>
                 <div className="flex gap-6">
                     <a href="#" className="hover:text-zinc-400 transition-colors">Privacy</a>
                     <a href="#" className="hover:text-zinc-400 transition-colors">Terms</a>

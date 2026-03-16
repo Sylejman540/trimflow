@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
 
-import FreshioLogo from '@/components/FreshioLogo';
+import FadeLogo from '@/components/FadeLogo';
 
 export default function Register() {
     const { t } = useTranslation();
@@ -31,7 +31,7 @@ export default function Register() {
             <Head title={t('auth.register')} />
 
             <div className="w-full max-w-[440px] flex justify-center mb-10">
-                <FreshioLogo theme="dark" />
+                <FadeLogo theme="dark" />
             </div>
 
             <div className="w-full max-w-[440px]">

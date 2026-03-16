@@ -5,14 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
-import FreshioLogo from '@/components/FreshioLogo';
+import FadeLogo from '@/components/FadeLogo';
 
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
     const { t, i18n } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem('freshio_lang');
+        const saved = localStorage.getItem('fade_lang');
         if (saved) {
             i18n.changeLanguage(saved);
         } else {
@@ -37,7 +37,7 @@ export default function Login({ status, canResetPassword }: { status?: string, c
             <Head title={t('auth.signInTitle')} />
 
             <div className="w-full max-w-[380px] flex justify-center mb-10">
-                <FreshioLogo theme="dark" />
+                <FadeLogo theme="dark" />
             </div>
 
             <div className="w-full max-w-[380px]">

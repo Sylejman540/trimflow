@@ -66,7 +66,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                     </div>
                     <div>
                         <h1 className="text-xl font-bold text-slate-900">Marketplace Ads</h1>
-                        <p className="text-sm text-slate-400">Your ads scroll on the Freshio landing page for all visitors to see.</p>
+                        <p className="text-sm text-slate-400">Your ads scroll on the Fade landing page for all visitors to see.</p>
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-base">Create a new ad</CardTitle>
-                        <CardDescription>Promote your shop to everyone who visits Freshio.</CardDescription>
+                        <CardDescription>Promote your shop to everyone who visits Fade.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={submitCreate} className="space-y-4">
@@ -225,7 +225,7 @@ export default function AdsIndex({ ads }: { ads: Ad[] }) {
                     <div className="text-center py-12 text-slate-400">
                         <Megaphone className="h-10 w-10 mx-auto mb-3 opacity-30" />
                         <p className="text-sm font-medium">No ads yet. Create your first one above.</p>
-                        <p className="text-xs mt-1">It will appear in the scrolling ticker on the Freshio homepage.</p>
+                        <p className="text-xs mt-1">It will appear in the scrolling ticker on the Fade homepage.</p>
                     </div>
                 )}
             </div>

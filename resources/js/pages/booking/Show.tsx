@@ -1,11 +1,20 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronRight, ChevronLeft, Scissors, User, Clock, CheckCircle2, Calendar, Loader2, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatCents } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { Turnstile } from '@marsidev/react-turnstile';
+
+// TypeScript declaration for Google reCAPTCHA
+declare global {
+    interface Window {
+        grecaptcha: {
+            ready: (callback: () => void) => void;
+            execute: (siteKey: string, options: { action: string }) => Promise<string>;
+        };
+    }
+}
 
 const COLOR_HEX: Record<string, string> = {
     slate: '#64748b', red: '#ef4444', orange: '#f97316',
@@ -76,11 +85,11 @@ function formatDateWithDay(dateStr: string, lang: string) {
     return date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 
-export default function Show({ company, barbers: initialBarbers, services, turnstile_site_key }: {
+export default function Show({ company, barbers: initialBarbers, services, recaptcha_site_key }: {
     company: Company;
     barbers: Barber[];
     services: Service[];
-    turnstile_site_key?: string;
+    recaptcha_site_key?: string;
 }) {
     const { t, i18n } = useTranslation();
 
@@ -104,6 +113,8 @@ export default function Show({ company, barbers: initialBarbers, services, turns
     const [anyBarberSlotMap, setAnyBarberSlotMap] = useState<Map<string, number>>(new Map());
     const [phoneError, setPhoneError] = useState(false);
 
+    const recaptchaRef = useRef<HTMLDivElement>(null);
+
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
         service_ids: [] as string[],
@@ -113,7 +124,7 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         notes: '',
         _hp: '',
         _t: '',
-        cf_turnstile_response: '',
+        recaptcha_token: '',
     });
 
     const categories = useMemo(() => {
@@ -132,6 +143,21 @@ export default function Show({ company, barbers: initialBarbers, services, turns
         setData('_t', String(Math.floor(Date.now() / 1000)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Load Google reCAPTCHA script
+    useEffect(() => {
+        if (!recaptcha_site_key) return;
+
+        const script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+
+        return () => {
+            document.head.removeChild(script);
+        };
+    }, [recaptcha_site_key]);
 
     // Auto-skip to barber selection if only 1 service
     useEffect(() => {
@@ -263,7 +289,19 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
     function submit(e: React.FormEvent) {
         e.preventDefault();
-        post(route('booking.store', company.slug));
+
+        // If reCAPTCHA is enabled, get the token first
+        if (recaptcha_site_key && window.grecaptcha) {
+            window.grecaptcha.ready(() => {
+                window.grecaptcha.execute(recaptcha_site_key, { action: 'submit' })
+                    .then(token => {
+                        setData('recaptcha_token', token);
+                        post(route('booking.store', company.slug));
+                    });
+            });
+        } else {
+            post(route('booking.store', company.slug));
+        }
     }
 
     const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
@@ -625,20 +663,13 @@ export default function Show({ company, barbers: initialBarbers, services, turns
                                 <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{errors.barber_id}</p>
                             )}
 
-                            {turnstile_site_key && (
-                                <div className="flex justify-center">
-                                    <Turnstile
-                                        siteKey={turnstile_site_key}
-                                        onSuccess={token => setData('cf_turnstile_response', token)}
-                                        onExpire={() => setData('cf_turnstile_response', '')}
-                                        onError={() => setData('cf_turnstile_response', '')}
-                                    />
-                                </div>
+                            {recaptcha_site_key && (
+                                <div ref={recaptchaRef} className="g-recaptcha" data-sitekey={recaptcha_site_key} style={{ display: 'flex', justifyContent: 'center' }}></div>
                             )}
 
                             <Button
                                 type="submit"
-                                disabled={processing || !data.customer_name || !data.customer_phone || !isValidPhone(data.customer_phone) || phoneError || (!!turnstile_site_key && !data.cf_turnstile_response)}
+                                disabled={processing || !data.customer_name || !data.customer_phone || !isValidPhone(data.customer_phone) || phoneError}
                                 className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
                             >
                                 {processing ? (
@@ -651,13 +682,13 @@ export default function Show({ company, barbers: initialBarbers, services, turns
 
                 {/* Powered by */}
                 <div className="text-center pt-8 pb-4">
-                    <a href="https://freshio.app" target="_blank" rel="noopener noreferrer"
+                    <a href="https://fade.app" target="_blank" rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 transition-colors">
                         <svg width="14" height="14" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#2563EB" />
                             <text x="18" y="24" textAnchor="middle" fontFamily="sans-serif" fontSize="20" fontWeight="900" fill="#ffffff">F</text>
                         </svg>
-                        Powered by <span className="font-semibold text-slate-500">Freshio</span>
+                        Powered by <span className="font-semibold text-slate-500">Fade</span>
                     </a>
                 </div>
             </div>

@@ -7,7 +7,7 @@ interface Props {
     size?: 'sm' | 'md';
 }
 
-export default function FreshioLogo({ theme = 'light', href = '/', size = 'md' }: Props) {
+export default function FadeLogo({ theme = 'light', href = '/', size = 'md' }: Props) {
     const diamondSize = size === 'sm' ? 28 : 36;
     const fontSize = size === 'sm' ? 16 : 20;
     const textClass = size === 'sm'
@@ -37,7 +37,7 @@ export default function FreshioLogo({ theme = 'light', href = '/', size = 'md' }
             className={`${textClass} ${theme === 'dark' ? 'text-slate-900' : 'text-white'}`}
             style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}
         >
-            Freshio
+            Fade
         </span>
     );
 
