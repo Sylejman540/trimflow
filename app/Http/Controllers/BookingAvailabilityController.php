@@ -53,8 +53,10 @@ class BookingAvailabilityController extends Controller
         $now = Carbon::now();
         $result = [];
 
-        // Get user's preferred language from Accept-Language header or default to 'en'
-        $lang = $request->getPreferredLanguage(['en', 'de', 'sq']) ?? 'en';
+        // Get user's preferred language from header or query parameter, default to 'en'
+        $lang = $request->header('Accept-Language') ?? $request->query('lang') ?? 'en';
+        // Normalize language (take first part if it's like 'sq-AL')
+        $lang = explode('-', $lang)[0];
 
         foreach ($barbers as $barber) {
             $nextSlot = $this->findNextSlot($barber, $totalDuration, $now);
