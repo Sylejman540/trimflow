@@ -5,6 +5,7 @@ export default {
     edit: 'Modifica',
     create: 'Crea',
     back: 'Indietro',
+    next: 'Successivo',
     close: 'Chiudi',
     confirm: 'Conferma',
     loading: 'Caricamento…',
@@ -36,6 +37,15 @@ export default {
     upcoming: 'Prossimi',
     past: 'Passati',
     logout: 'Esci',
+
+    // Days of Week
+    monday: 'Lunedì',
+    tuesday: 'Martedì',
+    wednesday: 'Mercoledì',
+    thursday: 'Giovedì',
+    friday: 'Venerdì',
+    saturday: 'Sabato',
+    sunday: 'Domenica',
 
     nav: {
         dashboard: 'Dashboard',

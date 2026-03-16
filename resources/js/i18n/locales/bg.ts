@@ -6,6 +6,7 @@ export default {
     edit: 'Редактирай',
     create: 'Създай',
     back: 'Назад',
+    next: 'Следващо',
     close: 'Затвори',
     confirm: 'Потвърди',
     loading: 'Зареждане…',
@@ -37,6 +38,15 @@ export default {
     tomorrow: 'Утре',
     upcoming: 'Предстоящи',
     past: 'Минали',
+
+    // Days of Week
+    monday: 'Понеделник',
+    tuesday: 'Вторник',
+    wednesday: 'Сряда',
+    thursday: 'Четвъртък',
+    friday: 'Петък',
+    saturday: 'Събота',
+    sunday: 'Неделя',
 
     // Time Off
     timeoff: {

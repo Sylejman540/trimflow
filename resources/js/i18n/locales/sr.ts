@@ -5,6 +5,7 @@ export default {
     edit: 'Uredi',
     create: 'Kreiraj',
     back: 'Nazad',
+    next: 'Следеће',
     close: 'Zatvori',
     confirm: 'Potvrdi',
     loading: 'Učitavanje…',
@@ -36,6 +37,15 @@ export default {
     upcoming: 'Nadolazeće',
     past: 'Prošlo',
     logout: 'Odjava',
+
+    // Days of Week
+    monday: 'Понедељак',
+    tuesday: 'Уторак',
+    wednesday: 'Среда',
+    thursday: 'Четвртак',
+    friday: 'Петак',
+    saturday: 'Суббота',
+    sunday: 'Недеља',
 
     nav: {
         dashboard: 'Kontrolna tabla',

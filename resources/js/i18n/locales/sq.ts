@@ -6,6 +6,7 @@ export default {
     edit: 'Ndrysho',
     create: 'Krijo',
     back: 'Kthehu',
+    next: 'Tjetri',
     close: 'Mbyll',
     confirm: 'Konfirmo',
     viewDetails: 'Shiko Detajet',
@@ -42,6 +43,15 @@ export default {
     upcoming: 'Të ardhshme',
     past: 'Të kaluara',
     logout: 'Dil',
+
+    // Days of Week
+    monday: 'E hënë',
+    tuesday: 'E martë',
+    wednesday: 'E mërkurë',
+    thursday: 'E enjte',
+    friday: 'E premte',
+    saturday: 'E shtunë',
+    sunday: 'E diel',
 
     nav: {
         dashboard: 'Paneli',

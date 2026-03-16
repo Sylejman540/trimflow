@@ -6,6 +6,7 @@ export default {
     edit: 'Düzenle',
     create: 'Oluştur',
     back: 'Geri',
+    next: 'İleri',
     close: 'Kapat',
     confirm: 'Onayla',
     loading: 'Yükleniyor…',
@@ -37,6 +38,15 @@ export default {
     tomorrow: 'Yarın',
     upcoming: 'Yaklaşan',
     past: 'Geçmiş',
+
+    // Days of Week
+    monday: 'Pazartesi',
+    tuesday: 'Salı',
+    wednesday: 'Çarşamba',
+    thursday: 'Perşembe',
+    friday: 'Cuma',
+    saturday: 'Cumartesi',
+    sunday: 'Pazar',
 
     // Time Off
     timeoff: {

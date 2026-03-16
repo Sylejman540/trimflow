@@ -6,6 +6,7 @@ export default {
     edit: 'Editar',
     create: 'Criar',
     back: 'Voltar',
+    next: 'Próximo',
     close: 'Fechar',
     confirm: 'Confirmar',
     loading: 'Carregando…',
@@ -37,6 +38,15 @@ export default {
     tomorrow: 'Amanhã',
     upcoming: 'Próximos',
     past: 'Passados',
+
+    // Days of Week
+    monday: 'Segunda-feira',
+    tuesday: 'Terça-feira',
+    wednesday: 'Quarta-feira',
+    thursday: 'Quinta-feira',
+    friday: 'Sexta-feira',
+    saturday: 'Sábado',
+    sunday: 'Domingo',
 
     // Time Off
     timeoff: {

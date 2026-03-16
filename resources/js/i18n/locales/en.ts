@@ -7,6 +7,7 @@ export default {
     edit: 'Edit',
     create: 'Create',
     back: 'Back',
+    next: 'Next',
     close: 'Close',
     confirm: 'Confirm',
     viewDetails: 'View Details',
@@ -43,6 +44,15 @@ export default {
     tomorrow: 'Tomorrow',
     upcoming: 'Upcoming',
     past: 'Past',
+
+    // Days of Week
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday',
 
     // Time Off
     timeoff: {

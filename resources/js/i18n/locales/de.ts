@@ -5,6 +5,7 @@ export default {
     edit: 'Bearbeiten',
     create: 'Erstellen',
     back: 'Zurück',
+    next: 'Weiter',
     close: 'Schließen',
     confirm: 'Bestätigen',
     viewDetails: 'Details ansehen',
@@ -41,6 +42,15 @@ export default {
     upcoming: 'Bevorstehend',
     past: 'Vergangen',
     logout: 'Abmelden',
+
+    // Days of Week
+    monday: 'Montag',
+    tuesday: 'Dienstag',
+    wednesday: 'Mittwoch',
+    thursday: 'Donnerstag',
+    friday: 'Freitag',
+    saturday: 'Samstag',
+    sunday: 'Sonntag',
 
     nav: {
         dashboard: 'Dashboard',

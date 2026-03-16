@@ -40,8 +40,6 @@ export default function Create({
     const { data, setData, post, processing, errors } = useForm({
         barber_id: isBarber ? String(barbers[0]?.id ?? '') : '',
         customer_name: '',
-        customer_phone: '',
-        customer_email: '',
         service_ids: [] as string[],
         starts_at: '',
         notes: '',
@@ -81,8 +79,56 @@ export default function Create({
         setData('starts_at', '');
     }
 
+    function isBarberWorking(barberId: string, dateStr: string): boolean {
+        if (!barberId || !dateStr) return true;
+        const barber = barbers.find(b => String(b.id) === barberId);
+        if (!barber || !barber.working_hours) return true;
+
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+        const dayKey = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        const shortKey = dayKey.substring(0, 3);
+
+        const dayHours = (barber.working_hours as any)[dayKey] ?? (barber.working_hours as any)[shortKey];
+        if (!dayHours) return false;
+
+        if (typeof dayHours === 'object' && dayHours.enabled !== undefined) {
+            return dayHours.enabled;
+        }
+
+        return true;
+    }
+
+    function getNextWorkingDay(barberId: string, startDateStr: string): string | null {
+        if (!barberId) return null;
+        const barber = barbers.find(b => String(b.id) === barberId);
+        if (!barber || !barber.working_hours) return null;
+
+        const [y, m, d] = startDateStr.split('-').map(Number);
+        const date = new Date(y, m - 1, d);
+
+        for (let i = 0; i < 30; i++) {
+            const checkDate = new Date(date);
+            checkDate.setDate(checkDate.getDate() + i);
+            const dayKey = checkDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+            const shortKey = dayKey.substring(0, 3);
+
+            const dayHours = (barber.working_hours as any)[dayKey] ?? (barber.working_hours as any)[shortKey];
+            if (dayHours) {
+                if (typeof dayHours === 'object' && dayHours.enabled !== undefined) {
+                    if (dayHours.enabled) return formatDateWithDay(checkDate.toISOString().split('T')[0]);
+                } else {
+                    return formatDateWithDay(checkDate.toISOString().split('T')[0]);
+                }
+            }
+        }
+        return null;
+    }
 
     const canShowSlots = !!(data.barber_id && data.service_ids.length > 0);
+    const selectedBarber = barbers.find(b => String(b.id) === data.barber_id);
+    const barberNotWorking = selectedDate && !isBarberWorking(data.barber_id, selectedDate);
+    const nextWorkingDay = barberNotWorking ? getNextWorkingDay(data.barber_id, selectedDate) : null;
 
     useEffect(() => {
         if (!data.barber_id || data.service_ids.length === 0 || !selectedDate || !companySlug) {
@@ -170,29 +216,11 @@ export default function Create({
                 {/* Header */}
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold tracking-tight text-slate-900">{t('appt.new')}</h2>
-                    <p className="text-sm text-slate-500 mt-1">Step {currentStepIdx + 1} of {steps.length}</p>
                 </div>
 
-                {/* Progress Bar */}
-                <div className="mb-8">
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                        {steps.map((step, idx) => (
-                            <div key={step} className="flex-1 flex items-center gap-2">
-                                <div className={cn(
-                                    'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all',
-                                    idx < currentStepIdx ? 'bg-emerald-500 text-white' : idx === currentStepIdx ? 'bg-slate-900 text-white' : 'bg-slate-200 text-slate-500'
-                                )}>
-                                    {idx < currentStepIdx ? <Check className="w-4 h-4" /> : idx + 1}
-                                </div>
-                                {idx < steps.length - 1 && (
-                                    <div className={cn('flex-1 h-1 rounded-full', idx < currentStepIdx ? 'bg-emerald-500' : 'bg-slate-200')} />
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="text-center">
-                        <p className="text-sm font-semibold text-slate-900">{stepLabels[currentStep]}</p>
-                    </div>
+                {/* Step Title */}
+                <div className="mb-6 text-center">
+                    <p className="text-sm font-semibold text-slate-900">{stepLabels[currentStep]}</p>
                 </div>
 
                 {/* Form */}
@@ -245,39 +273,47 @@ export default function Create({
                     {/* Step: Services */}
                     {currentStep === 'services' && (
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-200">
-                            <div className="space-y-3">
-                                <Label className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <div>
+                                <Label className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
                                     <Scissors size={16} />{t('appt.serviceType')}
                                 </Label>
-                                <Select value={data.service_ids[0] ?? ''} onValueChange={v => setData('service_ids', v ? [v] : [])}>
-                                    <SelectTrigger className="h-12 bg-white border-slate-300 focus:bg-white rounded-lg text-base font-medium shadow-sm">
-                                        <SelectValue placeholder={t('appt.selectService')} />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-slate-300 shadow-2xl w-[var(--radix-select-trigger-width)]">
-                                        {services.map(s => (
-                                            <SelectItem key={s.id} value={String(s.id)} className="text-base py-3">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-semibold">{s.name}</span>
-                                                    <span className="text-slate-500">— {formatDuration(s.duration)} · {formatCents(s.price)}</span>
-                                                </div>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {errors.service_ids && <p className="text-xs text-red-500 font-medium">{errors.service_ids}</p>}
+                                <div className="flex flex-wrap gap-2">
+                                    {services.map((s) => {
+                                        const isSelected = data.service_ids.includes(String(s.id));
+                                        return (
+                                            <button
+                                                key={s.id}
+                                                type="button"
+                                                onClick={() => toggleService(s)}
+                                                className={cn(
+                                                    'flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-all',
+                                                    isSelected
+                                                        ? 'bg-slate-900 border-slate-900 text-white'
+                                                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400',
+                                                )}
+                                            >
+                                                <span className="text-sm font-semibold">{s.name}</span>
+                                                <span className={cn('text-[11px] mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
+                                                    {formatDuration(s.duration)} · {formatCents(s.price)}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                {errors.service_ids && <p className="text-xs text-red-500 font-medium mt-2">{errors.service_ids}</p>}
                             </div>
 
                             {selectedServices.length > 0 && (
-                                <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg">
-                                    <div className="flex items-center gap-4">
+                                <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                                    <div className="flex items-center gap-3">
                                         <div>
-                                            <p className="text-xs font-bold text-blue-600 uppercase tracking-tight">Total Duration</p>
-                                            <p className="text-lg font-bold text-blue-900">{formatDuration(totalDuration)}</p>
+                                            <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tight">Duration</p>
+                                            <p className="text-sm font-bold text-blue-900">{formatDuration(totalDuration)}</p>
                                         </div>
-                                        <div className="h-8 w-px bg-blue-200" />
+                                        <div className="h-6 w-px bg-blue-200" />
                                         <div>
-                                            <p className="text-xs font-bold text-blue-600 uppercase tracking-tight">Estimated Price</p>
-                                            <p className="text-lg font-bold text-blue-900">{formatCents(totalPrice)}</p>
+                                            <p className="text-[10px] font-bold text-blue-600 uppercase tracking-tight">Price</p>
+                                            <p className="text-sm font-bold text-blue-900">{formatCents(totalPrice)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -304,7 +340,16 @@ export default function Create({
                                 )}
                             </div>
 
-                            {canShowSlots && selectedDate && (
+                            {barberNotWorking && (
+                                <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                    <p className="text-sm text-amber-900">
+                                        <span className="font-semibold">{selectedBarber?.user?.name}</span> doesn't work on {formatDateWithDay(selectedDate)}.
+                                        {nextWorkingDay && <span> Next working day: <span className="font-semibold">{nextWorkingDay}</span></span>}
+                                    </p>
+                                </div>
+                            )}
+
+                            {canShowSlots && selectedDate && !barberNotWorking && (
                                 <div className="space-y-3">
                                     <Label className="text-sm font-bold text-slate-900">Available Times</Label>
                                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -422,7 +467,7 @@ export default function Create({
                                 onClick={prevStep}
                                 className="bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-lg text-sm font-bold h-11 px-6 transition-all"
                             >
-                                Back
+                                {t('back')}
                             </Button>
                         )}
                         {currentStepIdx < steps.length - 1 ? (
@@ -432,7 +477,7 @@ export default function Create({
                                 disabled={!canProceed()}
                                 className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none flex items-center gap-2 disabled:opacity-50"
                             >
-                                Next <ChevronRight className="w-4 h-4" />
+                                {t('next')} <ChevronRight className="w-4 h-4" />
                             </Button>
                         ) : (
                             <Button

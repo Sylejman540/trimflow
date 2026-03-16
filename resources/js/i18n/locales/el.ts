@@ -5,6 +5,7 @@ export default {
     edit: 'Επεξεργασία',
     create: 'Δημιουργία',
     back: 'Πίσω',
+    next: 'Επόμενο',
     close: 'Κλείσιμο',
     confirm: 'Επιβεβαίωση',
     loading: 'Φόρτωση…',
@@ -36,6 +37,15 @@ export default {
     upcoming: 'Προσεχή',
     past: 'Παρελθόν',
     logout: 'Αποσύνδεση',
+
+    // Days of Week
+    monday: 'Δευτέρα',
+    tuesday: 'Τρίτη',
+    wednesday: 'Τετάρτη',
+    thursday: 'Πέμπτη',
+    friday: 'Παρασκευή',
+    saturday: 'Σάββατο',
+    sunday: 'Κυριακή',
 
     nav: {
         dashboard: 'Πίνακας ελέγχου',

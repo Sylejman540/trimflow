@@ -5,6 +5,7 @@ export default {
     edit: 'Edytuj',
     create: 'Utwórz',
     back: 'Wstecz',
+    next: 'Dalej',
     close: 'Zamknij',
     confirm: 'Potwierdź',
     loading: 'Ładowanie…',
@@ -36,6 +37,15 @@ export default {
     upcoming: 'Nadchodzące',
     past: 'Minione',
     logout: 'Wyloguj',
+
+    // Days of Week
+    monday: 'Poniedziałek',
+    tuesday: 'Wtorek',
+    wednesday: 'Środa',
+    thursday: 'Czwartek',
+    friday: 'Piątek',
+    saturday: 'Sobota',
+    sunday: 'Niedziela',
 
     nav: {
         dashboard: 'Panel',
