@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { Service } from '@/types';
-import { Scissors, Clock, DollarSign, AlignLeft, Info, Tag } from 'lucide-react';
+import { Scissors, Clock, DollarSign, AlignLeft, Info, Tag, ArrowLeft } from 'lucide-react';
 import { NumberStepper } from '@/components/ui/number-stepper';
 
 const SERVICE_COLORS = [
@@ -43,7 +43,18 @@ export default function Edit({ service }: { service: Service }) {
     }
 
     return (
-        <AppLayout title={t('svc.edit')}>
+        <AppLayout
+            title={t('svc.edit')}
+            actions={
+                <Link
+                    href={route('services.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={`${t('svc.edit')} ${service.name}`} />
             
             <div className="mx-auto max-w-2xl">
