@@ -222,6 +222,8 @@ export default {
         thisFuture: 'Ky dhe të gjithë të ardhshmet',
         selectBarber: 'Zgjidhni berberin',
         selectService: 'Zgjidhni shërbimin',
+        barberFreeToday: 'është i lirë sot',
+        barberNotAvailableToday: 'nuk është i disponueshëm sot',
         apptStatus: 'Statusi i terminit',
         deleteAppt: 'Fshi Terminin',
         deleteConfirm: 'Jeni të sigurt që doni të fshini këtë termin? Ky veprim nuk mund të kthehet.',

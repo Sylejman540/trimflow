@@ -507,7 +507,7 @@ export default function Create({
                                 disabled={!canProceed()}
                                 className="bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold h-11 px-6 shadow-sm transition-all flex-1 sm:flex-none flex items-center gap-2 disabled:opacity-50"
                             >
-                                {t('next')} <ChevronRight className="w-4 h-4" />
+                                {t('next').toUpperCase()} <ChevronRight className="w-4 h-4" />
                             </Button>
                         ) : (
                             <Button

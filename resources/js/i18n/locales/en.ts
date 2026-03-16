@@ -242,6 +242,8 @@ export default {
         thisFuture: 'This and all future',
         selectBarber: 'Select barber',
         selectService: 'Select service',
+        barberFreeToday: 'is free today',
+        barberNotAvailableToday: 'is not available today',
         apptStatus: 'Appointment Status',
         deleteAppt: 'Delete Appointment',
         deleteConfirm: 'Are you sure you want to delete this appointment? This cannot be undone.',

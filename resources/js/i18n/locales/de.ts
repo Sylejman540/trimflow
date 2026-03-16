@@ -203,6 +203,8 @@ export default {
         thisFuture: 'Dieser und alle zukünftigen',
         selectBarber: 'Friseur auswählen',
         selectService: 'Leistung auswählen',
+        barberFreeToday: 'ist heute frei',
+        barberNotAvailableToday: 'ist heute nicht verfügbar',
         apptStatus: 'Terminstatus',
         deleteAppt: 'Termin löschen',
         deleteConfirm: 'Sind Sie sicher, dass Sie diesen Termin löschen möchten? Dies kann nicht rückgängig gemacht werden.',
