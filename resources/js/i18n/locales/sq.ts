@@ -37,6 +37,8 @@ export default {
     upcoming: 'Të ardhshme',
     past: 'Të kaluara',
     logout: 'Dil',
+    accept: 'Pranoje',
+    decline: 'Refuzo',
 
     // Days of week
     days: {
@@ -147,6 +149,11 @@ export default {
         appointments: 'termin',
         appointmentsPlural: 'terminet',
         walkin: 'Pa rezervim',
+        customize: 'Përshtatja e panelimit',
+        kpiCards: 'Kartat KPI (Statistika të sotme)',
+        weeklyInsights: 'Përqyrjet javore',
+        todaysSchedule: 'Orari i sotëm',
+        upcomingAppointmentsList: 'Terminet e ardhshme',
     },
 
     manychat: {
@@ -347,6 +354,13 @@ export default {
         copy: 'Kopjo',
         copied: 'U kopjua!',
         deleteAccount: 'Fshi llogarinë',
+        profileInfo: 'Informacioni i profilit',
+        profileInfoDesc: 'Përditëso emrin dhe adresën e e-mailit të llogarisë tuaj.',
+        saveChanges: 'Ruaj ndryshimet',
+        saved: 'U ruajt.',
+        emailUnverified: 'E-maili juaj nuk është i verifikuar.',
+        resendEmail: 'Dërgo sërish email verifikimi.',
+        verificationSent: 'Një lidhje e re verifikimi ka qenë dërguar.',
     },
 
     booking: {
@@ -399,6 +413,7 @@ export default {
     // Time Off
     timeoff: {
         title: 'Pushimet',
+        manage: 'Administro mungesën dhe pushimin',
         add: 'Shto kohë të lirë',
         noTimeOff: 'Nuk ka kohë të lirë të planifikuar.',
         upcomingActive: 'E ardhshme & Aktive',
@@ -412,6 +427,7 @@ export default {
     schedule: {
         mySchedule: 'Orari im',
         allBarbers: 'Të gjithë berberët',
+        thisWeek: 'Orari i javës në vazhdim',
         saving: 'Po ruhet…',
         noAppointments: 'Nuk ka termina këtë {view}.',
         dragHint: 'Tërhiq për të riplanifikuar · Kliko për të parë · Të përfunduara/anuluara nuk mund të zhvendosen',

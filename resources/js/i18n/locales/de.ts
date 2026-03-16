@@ -147,6 +147,11 @@ export default {
         appointments: 'Termin',
         appointmentsPlural: 'Termine',
         walkin: 'Walk-in',
+        customize: 'Dashboard-Anpassung',
+        kpiCards: 'KPI-Karten (heutige Statistiken)',
+        weeklyInsights: 'Wöchentliche Einblicke',
+        todaysSchedule: 'Heutiger Zeitplan',
+        upcomingAppointmentsList: 'Bevorstehende Termine',
     },
 
     appt: {
@@ -327,6 +332,13 @@ export default {
         copy: 'Kopieren',
         copied: 'Kopiert!',
         deleteAccount: 'Konto löschen',
+        profileInfo: 'Profilinformationen',
+        profileInfoDesc: 'Aktualisieren Sie Ihren Kontonamen und Ihre E-Mail-Adresse.',
+        saveChanges: 'Änderungen speichern',
+        saved: 'Gespeichert.',
+        emailUnverified: 'Ihre E-Mail ist nicht bestätigt.',
+        resendEmail: 'Bestätigungsemail erneut senden.',
+        verificationSent: 'Ein neuer Bestätigungslink wurde gesendet.',
     },
 
     booking: {
@@ -379,6 +391,7 @@ export default {
     // Time Off
     timeoff: {
         title: 'Urlaub',
+        manage: 'Verwalten Sie Abwesenheiten und Urlaube',
         add: 'Urlaub hinzufügen',
         noTimeOff: 'Kein Urlaub geplant.',
         upcomingActive: 'Bevorstehend & Aktiv',

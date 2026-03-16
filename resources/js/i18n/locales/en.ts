@@ -69,6 +69,7 @@ export default {
     // Time Off
     timeoff: {
         title: 'Time Off',
+        manage: 'Manage absences and time off',
         add: 'Add Time Off',
         noTimeOff: 'No time off scheduled.',
         upcomingActive: 'Upcoming & Active',
@@ -166,6 +167,11 @@ export default {
         appointmentSingular: 'appointment',
         appointmentsPlural: 'appointments',
         walkin: 'Walk-in',
+        customize: 'Dashboard Customization',
+        kpiCards: "KPI Cards (Today's Stats)",
+        weeklyInsights: 'Weekly Insights',
+        todaysSchedule: "Today's Schedule",
+        upcomingAppointmentsList: 'Upcoming Appointments',
     },
 
     // ManyChat Instagram guide
@@ -373,6 +379,13 @@ export default {
         copy: 'Copy',
         copied: 'Copied!',
         deleteAccount: 'Delete Account',
+        profileInfo: 'Profile Information',
+        profileInfoDesc: 'Update your account name and email address.',
+        saveChanges: 'Save Changes',
+        saved: 'Saved.',
+        emailUnverified: 'Your email is unverified.',
+        resendEmail: 'Resend verification email.',
+        verificationSent: 'A new verification link has been sent.',
     },
 
     // Booking (public)
