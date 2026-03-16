@@ -519,7 +519,7 @@ export default function Create({
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2"
+                                    className="flex-1 bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2"
                                 >
                                     <Check className="w-4 h-4" />
                                     {t('appt.bookAppointment')}
