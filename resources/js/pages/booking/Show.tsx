@@ -72,7 +72,7 @@ function isValidPhone(phone: string): boolean {
     return /^\d{7,15}$/.test(cleaned);
 }
 
-function formatDateWithDay(dateStr: string, lang: string, i18n: any) {
+function formatDateWithDay(dateStr: string, t: any) {
     if (!dateStr) return '';
     const [y, m, d] = dateStr.split('-').map(Number);
     const date = new Date(y, m - 1, d);
@@ -84,18 +84,18 @@ function formatDateWithDay(dateStr: string, lang: string, i18n: any) {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     if (date.getTime() === today.getTime()) {
-        return i18n.t('today', 'Today');
+        return t('today');
     }
     if (date.getTime() === tomorrow.getTime()) {
-        return i18n.t('tomorrow', 'Tomorrow');
+        return t('tomorrow');
     }
 
     // Get day and month names from translations
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayName = i18n.t(`days.${dayNames[date.getDay()]}`, dayNames[date.getDay()]);
+    const dayName = t(`days.${dayNames[date.getDay()]}`);
 
     const monthNames = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
-    const monthName = i18n.t(`months.${monthNames[date.getMonth()]}`, monthNames[date.getMonth()]);
+    const monthName = t(`months.${monthNames[date.getMonth()]}`);
 
     return `${dayName}, ${monthName} ${date.getDate()}, ${date.getFullYear()}`;
 }
@@ -542,7 +542,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                     className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                 />
                                 {selectedDate && (
-                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, i18n.language, i18n)}</p>
+                                    <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, t)}</p>
                                 )}
                             </div>
 
@@ -621,7 +621,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                 </p>
                                 <p className="text-xs text-slate-500 flex items-center gap-1.5">
                                     <Calendar className="h-3 w-3 text-slate-400" />
-                                    {formatDateWithDay(selectedDate, i18n.language, i18n)} · {selectedTime}
+                                    {formatDateWithDay(selectedDate, t)} · {selectedTime}
                                 </p>
                             </div>
                         </div>
