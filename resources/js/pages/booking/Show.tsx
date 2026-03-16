@@ -74,21 +74,23 @@ function isValidPhone(phone: string): boolean {
 
 function formatDateWithDay(dateStr: string, t: any) {
     if (!dateStr) return '';
-    const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
 
-    // Check if today or tomorrow
+    // Check if today or tomorrow by comparing date strings
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
 
-    if (date.getTime() === today.getTime()) {
+    if (dateStr === todayStr) {
         return t('today');
     }
-    if (date.getTime() === tomorrow.getTime()) {
+    if (dateStr === tomorrowStr) {
         return t('tomorrow');
     }
+
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
 
     // Get day and month names from translations
     const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
