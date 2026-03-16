@@ -11,6 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import {
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
@@ -264,7 +267,64 @@ export default function Edit({ barber, time_offs = [] }: { barber: Barber; time_
                 </div>
 
                 {/* Time Off Dialog */}
-                {/* Will add this next */}
+                <Dialog open={addTimeOffOpen} onOpenChange={v => !v && setAddTimeOffOpen(false)}>
+                    <DialogContent className="sm:max-w-md border-slate-200 shadow-2xl rounded-2xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-sm font-bold flex items-center gap-2">
+                                <Plus className="h-4 w-4 text-slate-900" />
+                                {t('timeoff.add')}
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <form onSubmit={submitTimeOff} className="space-y-4 pt-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="starts_on" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                    <CalendarDays size={12} /> {t('timeoff.from')}
+                                </Label>
+                                <Input
+                                    id="starts_on"
+                                    type="date"
+                                    value={timeOffData.starts_on}
+                                    onChange={e => setTimeOffData('starts_on', e.target.value)}
+                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="ends_on" className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                                    <CalendarDays size={12} /> {t('timeoff.to')}
+                                </Label>
+                                <Input
+                                    id="ends_on"
+                                    type="date"
+                                    value={timeOffData.ends_on}
+                                    min={timeOffData.starts_on}
+                                    onChange={e => setTimeOffData('ends_on', e.target.value)}
+                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
+                                    required
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="reason" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{t('timeoff.reason')}</Label>
+                                <Input
+                                    id="reason"
+                                    value={timeOffData.reason}
+                                    onChange={e => setTimeOffData('reason', e.target.value)}
+                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs font-medium"
+                                    placeholder={t('timeoff.reasonPlaceholder')}
+                                />
+                            </div>
+
+                            <DialogFooter className="gap-2 sm:gap-0 mt-2">
+                                <Button type="button" variant="ghost" onClick={() => setAddTimeOffOpen(false)} className="h-11 rounded-xl text-xs text-slate-500 font-bold">{t('cancel')}</Button>
+                                <Button type="submit" disabled={timeOffProcessing} className="h-11 rounded-xl bg-slate-900 text-white hover:bg-slate-800 shadow-none text-xs font-bold">
+                                    {t('save')}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </div>
         </AppLayout>
     );
