@@ -190,7 +190,10 @@ class BookingController extends Controller
             return back()->withErrors(['starts_at' => trans('booking.errorTimeOff')]);
         }
 
-        // ── 12. Double-booking check ───────────────────────────────────────────
+        // ── 12. Double-booking check with pessimistic locking (prevent race conditions) ──
+        // Lock the barber row to prevent concurrent bookings in the same time slot
+        $barber = Barber::lockForUpdate()->find($barber->id);
+
         $conflict = Appointment::where('barber_id', $barber->id)
             ->whereNotIn('status', ['cancelled', 'no_show'])
             ->where('starts_at', '<', $endsAt)

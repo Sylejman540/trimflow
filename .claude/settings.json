@@ -38,7 +38,15 @@
       "Bash(ls resources/js/i18n/locales/*.ts)",
       "Bash(find /Users/sylejman/Herd/trimflow -name *.ts -path *locale* -o -name bg.ts -o -name de.ts)",
       "Bash(grep -n \"accessorKey: ''status''\" resources/js/pages/appointments/Index.tsx)",
-      "WebFetch(domain:trimflow.test)"
+      "WebFetch(domain:trimflow.test)",
+      "Bash(wc -l /Users/sylejman/Herd/trimflow/resources/js/i18n/locales/*.ts)",
+      "Bash(npm rebuild:*)",
+      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/AppointmentController.php)",
+      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Notifications/NewInternalAppointment.php)",
+      "Bash(npm ci:*)",
+      "Bash(git stash:*)",
+      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/BookingController.php)",
+      "Bash(php -l /Users/sylejman/Herd/trimflow/app/Http/Controllers/WalkinController.php)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials",

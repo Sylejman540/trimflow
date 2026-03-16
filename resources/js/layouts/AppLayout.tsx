@@ -23,6 +23,7 @@ import {
     Package,
     Settings,
     BarChart2,
+    BarChart3,
     Link2,
     Copy,
     Check,
@@ -231,6 +232,7 @@ const navGroups: NavGroup[] = [
     {
         groupKey: 'nav.groupInsights',
         items: [
+            { href: '/analytics', icon: BarChart3, active: 'analytics.*', labelKey: 'nav.analytics', descKey: 'nav.analyticsDesc', roles: ['platform-admin', 'shop-admin'] },
             { href: '/reports',  icon: BarChart2, active: 'reports.*',  labelKey: 'nav.reports',  descKey: 'nav.reportsDesc',  roles: ['platform-admin', 'shop-admin'] },
             { href: '/settings', icon: Settings,  active: 'settings.*', labelKey: 'nav.settings', descKey: 'nav.settingsDesc' },
         ],

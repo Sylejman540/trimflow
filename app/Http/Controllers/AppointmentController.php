@@ -156,12 +156,12 @@ class AppointmentController extends Controller
             RecurrenceService::generateChildren($appointment);
         }
 
-        // Notify shop admin
-        $owner = \App\Models\User::where('company_id', $user->company_id)
-            ->role('shop-admin')->first();
-        if ($owner && $owner->id !== $user->id) {
-            $appointment->load(['customer', 'service']);
-            $owner->notify(new NewInternalAppointment($appointment));
+        // Load relations for notifications
+        $appointment->load(['customer', 'service', 'barber.user']);
+
+        // Notify barber (only if barber is different from the creator)
+        if ($appointment->barber?->user && $appointment->barber->user->id !== $user->id) {
+            $appointment->barber->user->notify(new NewInternalAppointment($appointment));
         }
 
         try { broadcast(new AppointmentChanged($appointment))->toOthers(); } catch (\Throwable) {}
@@ -435,6 +435,10 @@ class AppointmentController extends Controller
     private function validateNoConflict(?int $barberId, Carbon $startsAt, Carbon $endsAt, ?int $excludeId = null): void
     {
         if (! $barberId) return;
+
+        // Lock the barber row to prevent race conditions during concurrent bookings
+        $barber = Barber::lockForUpdate()->find($barberId);
+        if (! $barber) return;
 
         $conflict = Appointment::where('barber_id', $barberId)
             ->whereNotIn('status', ['cancelled', 'no_show'])

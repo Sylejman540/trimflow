@@ -56,8 +56,11 @@ class WalkinController extends Controller
         $startsAt = Carbon::now();
         $endsAt   = $startsAt->copy()->addMinutes($service->duration);
 
-        // Check for conflicts
+        // Check for conflicts with pessimistic locking (prevent race conditions)
         if ($barberId) {
+            // Lock the barber row to prevent concurrent bookings in the same time slot
+            $barber = Barber::lockForUpdate()->find($barberId);
+
             $conflict = Appointment::where('barber_id', $barberId)
                 ->whereNotIn('status', ['cancelled', 'no_show'])
                 ->where(fn ($q) => $q
