@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff, LayoutList, LayoutGrid } from 'lucide-react';
+import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff, LayoutList, LayoutGrid, MoreVertical } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -13,6 +13,9 @@ import {
 import {
     Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
 
@@ -282,21 +285,29 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                                         {barber.specialty && (
                                             <p className="text-xs text-slate-500 italic">{barber.specialty}</p>
                                         )}
-                                        <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                                        <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
                                             <button onClick={() => toggleAvailability(barber.id)}
-                                                className={cn("h-9 w-9 flex items-center justify-center rounded-lg border transition-colors shrink-0",
-                                                    isOff ? "text-amber-600 border-amber-200 bg-amber-50 hover:bg-amber-100" : "text-slate-400 border-slate-200 hover:text-slate-700 hover:bg-slate-50")}>
+                                                className={cn("flex-1 h-9 px-3 text-xs font-bold rounded-lg border transition-colors flex items-center justify-center gap-2",
+                                                    isOff ? "text-amber-600 border-amber-200 bg-amber-50 hover:bg-amber-100" : "text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-50")}>
                                                 <PowerOff className="h-3.5 w-3.5" />
+                                                {isOff ? t('barber.available') : t('barber.unavailable')}
                                             </button>
-                                            <Link href={route('barbers.schedule', barber.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
-                                                <Clock className="h-3.5 w-3.5" /> {t('barber.schedule')}
-                                            </Link>
-                                            <Link href={route('barbers.edit', barber.id)} className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
-                                                <Edit className="h-3.5 w-3.5" /> {t('edit')}
-                                            </Link>
-                                            <button onClick={() => setDeletingBarber(barber)} className="h-9 w-9 flex items-center justify-center text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg border border-slate-200">
-                                                <Trash2 className="h-3.5 w-3.5" />
-                                            </button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger>
+                                                    <Button variant="outline" size="icon" className="h-9 w-9 border-slate-200">
+                                                        <MoreVertical className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-40">
+                                                    <DropdownMenuItem>
+                                                        <Link href={route('barbers.schedule', barber.id)} className="w-full">{t('barber.schedule')}</Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem>
+                                                        <Link href={route('barbers.edit', barber.id)} className="w-full">{t('edit')}</Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => setDeletingBarber(barber)} className="text-red-600">{t('delete')}</DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </div>
                                     </div>
                                 );
