@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { formatCents, formatDuration, cn } from '@/lib/utils';
 import { Barber, PageProps, Service } from '@/types';
-import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, Mail, ChevronRight, Check } from 'lucide-react';
+import { Calendar, User, Scissors, AlignLeft, Phone, Tag, Loader2, Mail, ChevronRight, Check, ArrowLeft } from 'lucide-react';
 
 type WizardStep = 'barber' | 'customer' | 'services' | 'datetime' | 'review';
 
@@ -158,7 +158,18 @@ export default function Create({
     };
 
     return (
-        <AppLayout title={t('appt.new')}>
+        <AppLayout
+            title={t('appt.new')}
+            actions={
+                <Link
+                    href={route('appointments.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={t('appt.new')} />
 
             <div className="mx-auto max-w-2xl">

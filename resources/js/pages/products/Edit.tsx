@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { Package, Tag, DollarSign, ArchiveRestore, AlertTriangle, Info } from 'lucide-react';
+import { Package, Tag, DollarSign, ArchiveRestore, AlertTriangle, Info, ArrowLeft } from 'lucide-react';
 import { NumberStepper } from '@/components/ui/number-stepper';
 
 interface Product {
@@ -41,7 +41,18 @@ export default function Edit({ product }: { product: Product }) {
     }
 
     return (
-        <AppLayout title={t('prod.edit')}>
+        <AppLayout
+            title={t('prod.edit')}
+            actions={
+                <Link
+                    href={route('products.index')}
+                    className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-3 rounded-lg text-xs font-bold border-slate-200 shadow-none gap-1.5')}
+                >
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{t('back')}</span>
+                </Link>
+            }
+        >
             <Head title={`${t('prod.edit')} ${product.name}`} />
 
             <div className="mx-auto max-w-2xl">
