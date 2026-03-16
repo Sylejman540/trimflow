@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/read', [NotificationController::class, 'markRead'])->name('notifications.read');
     Route::post('/walkin', [WalkinController::class, 'store'])->name('walkin.store');
+    Route::get('/walkin/availability', [WalkinController::class, 'availability'])->name('walkin.availability');
     Route::get('/barbers/time-off', [BarberTimeOffController::class, 'index'])->name('barbers.time-off.index');
     Route::post('/barbers/time-off', [BarberTimeOffController::class, 'store'])->name('barbers.time-off.store');
     Route::delete('/barbers/time-off/{timeOff}', [BarberTimeOffController::class, 'destroy'])->name('barbers.time-off.destroy');

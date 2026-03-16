@@ -89,9 +89,15 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 const dayHours = workingHours[dayKey] ?? workingHours[shortKey];
                 if (dayHours) {
                     if (typeof dayHours === 'object' && 'enabled' in dayHours) {
-                        if (dayHours.enabled === true) return formatDateWithDay(dayKey);
+                        if (dayHours.enabled === true) {
+                            const pad = (n: number) => String(n).padStart(2, '0');
+                            const dateStr = `${checkDate.getFullYear()}-${pad(checkDate.getMonth() + 1)}-${pad(checkDate.getDate())}`;
+                            return formatDateWithDay(dateStr);
+                        }
                     } else {
-                        return formatDateWithDay(dayKey);
+                        const pad = (n: number) => String(n).padStart(2, '0');
+                        const dateStr = `${checkDate.getFullYear()}-${pad(checkDate.getMonth() + 1)}-${pad(checkDate.getDate())}`;
+                        return formatDateWithDay(dateStr);
                     }
                 }
             }

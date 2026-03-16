@@ -49,11 +49,43 @@ interface WalkinProps {
 
 function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => void; walkin: WalkinProps }) {
     const { t } = useTranslation();
+    const [availableBarbers, setAvailableBarbers] = useState<WalkinBarber[]>([]);
+    const [loadingBarbers, setLoadingBarbers] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         customer_name: '',
         service_id: '',
         barber_id: '',
     });
+
+    // Fetch available barbers when service is selected
+    useEffect(() => {
+        if (!data.service_id) {
+            setAvailableBarbers(walkin.barbers);
+            return;
+        }
+
+        setLoadingBarbers(true);
+        const selectedService = walkin.services.find(s => String(s.id) === data.service_id);
+        if (!selectedService) {
+            setAvailableBarbers([]);
+            setLoadingBarbers(false);
+            return;
+        }
+
+        // Fetch available barbers for this service at current time
+        fetch(route('walkin.availability', { service_id: data.service_id }))
+            .then(r => r.json())
+            .then((json: { barbers: number[] }) => {
+                const available = walkin.barbers.filter(b => json.barbers.includes(b.id));
+                setAvailableBarbers(available);
+                // Reset barber selection if previously selected barber is no longer available
+                if (data.barber_id && !available.find(b => String(b.id) === data.barber_id)) {
+                    setData('barber_id', '');
+                }
+            })
+            .catch(() => setAvailableBarbers(walkin.barbers))
+            .finally(() => setLoadingBarbers(false));
+    }, [data.service_id]);
 
     function submit(e: FormEvent) {
         e.preventDefault();
@@ -112,14 +144,18 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                             <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                                 <Briefcase size={11} /> {t('walkin.barber')}
                             </Label>
-                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder={t('walkin.selectBarber')} />
+                            <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')} disabled={!data.service_id || loadingBarbers}>
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg disabled:opacity-50">
+                                    <SelectValue placeholder={loadingBarbers ? t('loading') : (!data.service_id ? t('walkin.selectService') : t('walkin.selectBarber'))} />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
-                                    {walkin.barbers.map(b => (
-                                        <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
-                                    ))}
+                                    {availableBarbers.length > 0 ? (
+                                        availableBarbers.map(b => (
+                                            <SelectItem key={b.id} value={String(b.id)}>{b.user.name}</SelectItem>
+                                        ))
+                                    ) : (
+                                        <div className="px-2 py-1.5 text-xs text-slate-500">{t('walkin.selectService')}</div>
+                                    )}
                                 </SelectContent>
                             </Select>
                             {errors.barber_id && <p className="text-xs text-red-500">{errors.barber_id}</p>}

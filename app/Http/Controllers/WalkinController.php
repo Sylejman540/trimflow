@@ -89,4 +89,41 @@ class WalkinController extends Controller
 
         return back()->with('success', 'Walk-in booked for ' . $customer->name . '.');
     }
+
+    public function availability(Request $request)
+    {
+        $user = Auth::user();
+        $serviceId = $request->query('service_id');
+
+        // Get service
+        $service = Service::where('id', $serviceId)
+            ->where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        // Get all active barbers for this company
+        $barbers = Barber::where('company_id', $user->company_id)
+            ->where('is_active', true)
+            ->get();
+
+        $now = Carbon::now();
+        $appointmentEnd = $now->copy()->addMinutes($service->duration);
+
+        // Filter for available barbers (no conflicts at current time)
+        $availableBarberIds = $barbers->filter(function ($barber) use ($now, $appointmentEnd) {
+            // Check for conflicts
+            $conflict = Appointment::where('barber_id', $barber->id)
+                ->whereNotIn('status', ['cancelled', 'no_show'])
+                ->where(fn ($q) => $q
+                    ->whereBetween('starts_at', [$now, $appointmentEnd->copy()->subSecond()])
+                    ->orWhereBetween('ends_at', [$now->copy()->addSecond(), $appointmentEnd])
+                    ->orWhere(fn ($q2) => $q2->where('starts_at', '<=', $now)->where('ends_at', '>=', $appointmentEnd))
+                )
+                ->exists();
+
+            return !$conflict;
+        })->pluck('id')->values()->toArray();
+
+        return response()->json(['barbers' => $availableBarberIds]);
+    }
 }
