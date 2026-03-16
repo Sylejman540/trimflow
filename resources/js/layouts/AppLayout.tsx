@@ -454,32 +454,32 @@ export default function AppLayout({
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
                 {/* Header */}
-                <header className="flex h-14 lg:h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4 lg:px-8">
+                <header className="flex h-14 lg:h-16 shrink-0 items-center justify-between border-b border-slate-200 px-3 sm:px-4 lg:px-8">
                     {/* Krahu i Majtë: Menu & Titulli */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors"
+                            className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors shrink-0"
                         >
                             <Menu size={20} />
                         </button>
-                        <h1 className="text-sm font-bold text-slate-900 tracking-tight leading-none">
+                        <h1 className="text-sm font-bold text-slate-900 tracking-tight leading-none truncate">
                             {title}
                         </h1>
                     </div>
 
                     {/* Krahu i Djathtë: Actions, Walk-in, Lang, Notifications */}
-                    <div className="flex items-center gap-1.5 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
                         {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
                         {actions && (
-                            <div className="flex items-center gap-1.5">
+                            <div className="hidden sm:flex items-center gap-1.5">
                                 {actions}
                             </div>
                         )}
 
                         {/* Ndarësi vizual nëse ka actions dhe walkin */}
                         {actions && walkin && (
-                            <div className="w-px h-4 bg-slate-200 mx-1 hidden xs:block" />
+                            <div className="w-px h-4 bg-slate-200 mx-1 hidden sm:block" />
                         )}
 
                         {/* Walk-in Button — desktop only (mobile uses bottom nav) */}
@@ -493,9 +493,9 @@ export default function AppLayout({
                             </button>
                         )}
 
-                        {/* Booking Link */}
+                        {/* Booking Link — desktop only */}
                         {auth.company?.slug && (
-                            <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0 h-9">
+                            <div className="hidden sm:flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0 h-9">
                                 <a
                                     href={`/book/${auth.company.slug}`}
                                     target="_blank"
