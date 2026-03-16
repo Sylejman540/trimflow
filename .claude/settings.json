@@ -52,7 +52,10 @@
       "Bash(grep -rn \"Freshio\\\\|TrimFlow\\\\|trimflow\\\\|freshio\" /Users/sylejman/Herd/trimflow/resources/js/pages/booking/ --include=*.tsx)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://fade.test)",
       "Bash(grep -n \"^\\\\s*[a-z]*: ''Mon\\\\|^\\\\s*[a-z]*: ''Jan\" /Users/sylejman/Herd/trimflow/resources/js/i18n/locales/en.ts)",
-      "Bash(grep -v \"^''''$\")"
+      "Bash(grep -v \"^''''$\")",
+      "Bash(for key:*)",
+      "Bash(echo \"=== Checking: appt.$key ===\")",
+      "Bash(grep \"appt\\\\.$key\" /Users/sylejman/Herd/trimflow/resources/js/i18n/locales/en.ts)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials",
