@@ -138,13 +138,23 @@ export function DataTable<TData, TValue>({
                 </Table>
             </div>
 
-            {table.getCanNextPage() && (
-                <div className="flex items-center justify-center pt-4">
+            {table.getPageCount() > 1 && (
+                <div className="flex items-center justify-end gap-2 pt-4">
                     <Button
-                        onClick={() => table.nextPage()}
-                        className="h-9 px-4 text-sm font-medium"
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-black hover:bg-slate-900 text-white"
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
                     >
-                        Load More
+                        <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        size="sm"
+                        className="h-8 w-8 p-0 bg-black hover:bg-slate-900 text-white"
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        <ChevronRight className="h-4 w-4" />
                     </Button>
                 </div>
             )}

@@ -1,8 +1,10 @@
 import { Head, useForm, router } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ColumnDef } from '@tanstack/react-table';
 import { PalmtreeIcon, Plus, Trash2, CalendarDays, User, ArrowRight } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
+import { DataTable } from '@/components/data-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,6 +33,10 @@ function isActive(startsOn: string, endsOn: string) {
     return startsOn <= today && endsOn >= today;
 }
 
+function fmtDate(d: string) {
+    return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs: TimeOff[]; barbers: BarberSimple[]; can_manage: boolean }) {
     const { t } = useTranslation();
     const [addOpen, setAddOpen] = useState(false);
@@ -54,8 +60,83 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
         }
     }
 
-    const upcoming = time_offs.filter(t => !isPast(t.ends_on));
-    const past     = time_offs.filter(t => isPast(t.ends_on));
+    const columns: ColumnDef<TimeOff>[] = [
+        {
+            accessorKey: 'barber.user.name',
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('barber.title').toUpperCase()}</span>,
+            cell: ({ row }) => {
+                const active = isActive(row.original.starts_on, row.original.ends_on);
+                return (
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0">
+                            <PalmtreeIcon className={cn("h-4 w-4", active && "text-amber-500")} />
+                        </div>
+                        <span className="text-sm font-medium text-slate-900">{row.original.barber.user.name}</span>
+                    </div>
+                );
+            },
+        },
+        {
+            id: 'dates',
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('timeoff.from').toUpperCase()} → {t('timeoff.to').toUpperCase()}</span>,
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2 text-sm">
+                    <span className="text-slate-600 font-medium">{fmtDate(row.original.starts_on)}</span>
+                    <ArrowRight className="h-4 w-4 text-slate-400" />
+                    <span className="text-slate-600 font-medium">{fmtDate(row.original.ends_on)}</span>
+                </div>
+            ),
+        },
+        {
+            accessorKey: 'reason',
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('timeoff.reason').toUpperCase()}</span>,
+            cell: ({ row }) => <span className="text-sm text-slate-500 italic">{row.original.reason || '—'}</span>,
+        },
+        {
+            id: 'status',
+            header: () => <span className="text-[10px] font-bold tracking-wider text-slate-400">{t('status').toUpperCase()}</span>,
+            cell: ({ row }) => {
+                const active = isActive(row.original.starts_on, row.original.ends_on);
+                const future = row.original.starts_on > todayStr();
+                return (
+                    <div className="flex items-center gap-2">
+                        {active && (
+                            <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-2 py-0.5 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
+                                {t('active')}
+                            </Badge>
+                        )}
+                        {future && !active && (
+                            <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-2 py-0.5 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
+                                {t('upcoming')}
+                            </Badge>
+                        )}
+                        {!active && !future && (
+                            <span className="text-[9px] text-slate-400 font-medium">{t('past')}</span>
+                        )}
+                    </div>
+                );
+            },
+        },
+    ];
+
+    if (can_manage) {
+        columns.push({
+            id: 'actions',
+            header: () => <div className="text-right px-2 text-[10px] font-bold tracking-wider text-slate-400">{t('actions').toUpperCase()}</div>,
+            cell: ({ row }) => (
+                <div className="flex items-center justify-end gap-1">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-slate-300 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => remove(row.original.id)}
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                </div>
+            ),
+        });
+    }
 
     return (
         <AppLayout
@@ -80,47 +161,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             ) : undefined}
         >
             <Head title={t('timeoff.title')} />
-
-            <div className="w-full">
-                <div className="flex flex-col bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    {time_offs.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-24 text-center">
-                            <div className="bg-slate-50 p-4 rounded-full mb-4">
-                                <PalmtreeIcon className="h-8 w-8 text-slate-300" />
-                            </div>
-                            <p className="text-sm font-medium text-slate-500">{t('timeoff.noTimeOff')}</p>
-                        </div>
-                    )}
-
-                    {upcoming.length > 0 && (
-                        <div className="flex flex-col">
-                            <div className="px-6 py-3 bg-slate-50/50 border-b border-slate-100">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                    {t('timeoff.upcomingActive')}
-                                </h3>
-                            </div>
-                            {upcoming.map(t => (
-                                <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} canManage={can_manage} />
-                            ))}
-                        </div>
-                    )}
-
-                    {past.length > 0 && (
-                        <div className="flex flex-col">
-                            <div className="px-6 py-3 bg-slate-50/50 border-b border-slate-100 border-t">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                                    {t('past')}
-                                </h3>
-                            </div>
-                            <div className="opacity-60">
-                                {past.map(t => (
-                                    <TimeOffRow key={t.id} entry={t} onRemove={() => remove(t.id)} canManage={can_manage} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} />
 
             <Dialog open={addOpen} onOpenChange={v => !v && setAddOpen(false)}>
                 <DialogContent className="sm:max-w-md border-slate-200 shadow-2xl rounded-2xl">
@@ -200,76 +241,5 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
                 </DialogContent>
             </Dialog>
         </AppLayout>
-    );
-}
-
-function TimeOffRow({ entry, onRemove, canManage }: { entry: TimeOff; onRemove: () => void; canManage: boolean }) {
-    const { t } = useTranslation();
-    const active = isActive(entry.starts_on, entry.ends_on);
-    const today  = todayStr();
-    const future = entry.starts_on > today;
-
-    function fmtDate(d: string) {
-        return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    return (
-        <div className={cn(
-            "group flex items-center gap-4 px-6 py-3 border-b border-slate-100 transition-colors duration-150",
-            active ? "bg-amber-50/30" : "bg-white hover:bg-slate-50"
-        )}>
-            {/* Icon */}
-            <div className="flex-none flex items-center justify-center">
-                <PalmtreeIcon className={cn("h-4 w-4 shrink-0", active ? "text-amber-500" : "text-slate-400")} />
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0 flex items-center gap-3">
-                <span className="text-[13px] font-bold text-slate-900 shrink-0">
-                    {entry.barber.user.name}
-                </span>
-
-                <div className="flex items-center gap-2 text-[13px] text-slate-500 truncate">
-                    <CalendarDays className="h-3 w-3 shrink-0" />
-                    <span>{fmtDate(entry.starts_on)}</span>
-                    <ArrowRight className="h-2.5 w-2.5 text-slate-300" />
-                    <span>{fmtDate(entry.ends_on)}</span>
-                </div>
-
-                {entry.reason && (
-                    <span className="text-[11px] italic text-slate-400 truncate max-w-[200px]">
-                        — {entry.reason}
-                    </span>
-                )}
-            </div>
-
-            {/* Badges */}
-            <div className="flex-none flex items-center gap-2">
-                {active && (
-                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-amber-50 text-amber-700 border-amber-200">
-                        {t('active')}
-                    </Badge>
-                )}
-                {future && (
-                    <Badge className="text-[9px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0 shadow-none border bg-blue-50 text-blue-700 border-blue-200">
-                        {t('upcoming')}
-                    </Badge>
-                )}
-            </div>
-
-            {/* Delete */}
-            {canManage && (
-                <div className="flex-none w-8 flex justify-end">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 transition-all"
-                        onClick={onRemove}
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                </div>
-            )}
-        </div>
     );
 }
