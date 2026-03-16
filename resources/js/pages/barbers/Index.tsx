@@ -2,7 +2,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff, LayoutList, LayoutGrid, MoreVertical } from 'lucide-react';
+import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff, LayoutList, LayoutGrid, MoreVertical, Inbox } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -202,7 +202,13 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 {effectiveView === 'grid' && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                         {filtered.length === 0 && (
-                            <p className="col-span-full text-sm text-slate-400 text-center py-10">{t('barber.noBarbers')}</p>
+                            <div className="col-span-full flex flex-col items-center justify-center gap-3 py-12">
+                                <Inbox className="h-12 w-12 text-slate-200" />
+                                <div className="text-center">
+                                    <p className="text-sm font-semibold text-slate-700">No results found</p>
+                                    <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
+                                </div>
+                            </div>
                         )}
                         {filtered.map(barber => {
                             const isOff = off_today_ids.includes(barber.id);
@@ -257,10 +263,17 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                 {effectiveView === 'list' && (
                     <>
                         {/* Mobile cards */}
-                        <div className="sm:hidden space-y-2">
-                            {filtered.length === 0 && (
-                                <p className="text-sm text-slate-400 text-center py-10">{t('barber.noBarbers')}</p>
-                            )}
+                        <div className="sm:hidden">
+                            {filtered.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center gap-3 py-12">
+                                    <Inbox className="h-12 w-12 text-slate-200" />
+                                    <div className="text-center">
+                                        <p className="text-sm font-semibold text-slate-700">No results found</p>
+                                        <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
                             {filtered.map(barber => {
                                 const isOff = off_today_ids.includes(barber.id);
                                 return (
@@ -315,6 +328,8 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                                     </div>
                                 );
                             })}
+                                </div>
+                            )}
                         </div>
                         {/* Desktop table */}
                         <div className="hidden sm:block">
