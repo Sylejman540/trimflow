@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Trash2, Search, Package, AlertTriangle, LayoutList, LayoutGrid, Inbox } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
@@ -61,6 +61,14 @@ export default function Index({ products }: { products: Product[] }) {
     function changeStatus(v: string) { localStorage.setItem('products_status', v); setStatusFilter(v); }
     function changeSearch(v: string) { localStorage.setItem('products_search', v); setGlobalSearch(v); }
 
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const filtered = products.filter((p) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.is_active : !p.is_active);
         const search = globalSearch.toLowerCase();
@@ -69,7 +77,7 @@ export default function Index({ products }: { products: Product[] }) {
     });
 
     // Force list view on mobile
-    const effectiveView = typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : view;
+    const effectiveView = isMobile ? 'list' : view;
 
     const columns: ColumnDef<Product>[] = [
         {

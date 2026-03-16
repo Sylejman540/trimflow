@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Trash2, Search, User, Clock, Mail, PowerOff, LayoutList, LayoutGrid, MoreVertical, Inbox } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
@@ -64,6 +64,14 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         router.post(route('barbers.toggle-availability', barberId), {}, { preserveScroll: true });
     }
 
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const filtered = barbers.filter((b) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? b.is_active : !b.is_active);
         const search = globalSearch.toLowerCase();
@@ -72,7 +80,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
     });
 
     // Force list view on mobile
-    const effectiveView = typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : view;
+    const effectiveView = isMobile ? 'list' : view;
 
     const columns: ColumnDef<Barber>[] = [
         {

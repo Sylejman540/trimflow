@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Plus, Trash2, Search, Clock, LayoutList, LayoutGrid, Inbox } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
@@ -63,6 +63,14 @@ export default function Index({ services }: { services: Service[] }) {
     function changeStatus(v: string) { localStorage.setItem('services_status', v); setStatusFilter(v); }
     function changeSearch(v: string) { localStorage.setItem('services_search', v); setGlobalSearch(v); }
 
+    const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 640);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const filtered = services.filter((s) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? s.is_active : !s.is_active);
         const search = globalSearch.toLowerCase();
@@ -71,7 +79,7 @@ export default function Index({ services }: { services: Service[] }) {
     });
 
     // Force list view on mobile
-    const effectiveView = typeof window !== 'undefined' && window.innerWidth < 640 ? 'list' : view;
+    const effectiveView = isMobile ? 'list' : view;
 
     const columns: ColumnDef<Service>[] = [
         {
