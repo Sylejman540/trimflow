@@ -139,11 +139,11 @@ export function DataTable<TData, TValue>({
             </div>
 
             {table.getPageCount() > 1 && (
-                <div className="flex items-center justify-between gap-2 pt-3">
+                <div className="flex items-center justify-between gap-6 pt-3">
                     <p className="text-xs text-gray-500">
                         Showing {table.getState().pagination.pageIndex * pageSize + 1}–{Math.min((table.getState().pagination.pageIndex + 1) * pageSize, data.length)} of {data.length} results
                     </p>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 ml-auto">
                         <Button
                             variant="ghost"
                             size="sm"
