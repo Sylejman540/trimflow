@@ -303,7 +303,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                             })}
                         </div>
                         {/* Desktop table */}
-                        <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="hidden sm:block">
                             <DataTable columns={columns} data={filtered} showSearch={false} />
                         </div>
                     </>

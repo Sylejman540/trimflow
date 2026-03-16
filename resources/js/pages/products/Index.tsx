@@ -284,7 +284,7 @@ export default function Index({ products }: { products: Product[] }) {
                             })}
                         </div>
                         {/* Desktop table */}
-                        <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+                        <div className="hidden sm:block">
                             <DataTable columns={columns} data={filtered} showSearch={false} />
                         </div>
                     </>

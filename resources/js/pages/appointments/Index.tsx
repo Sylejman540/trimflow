@@ -379,7 +379,7 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
             </div>
 
             {/* Desktop table */}
-            <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="hidden sm:block">
                 {filtered.length === 0 ? (
                     <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
                         <Calendar className="h-10 w-10 text-slate-200" />

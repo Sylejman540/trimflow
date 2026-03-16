@@ -161,7 +161,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
             ) : undefined}
         >
             <Head title={t('timeoff.title')} />
-            <div className="hidden sm:block bg-white border border-slate-200 rounded-xl overflow-hidden">
+            <div className="hidden sm:block">
                 <DataTable columns={columns} data={time_offs} pageSize={10} searchPlaceholder={t('search')} showSearch={false} />
             </div>
 
