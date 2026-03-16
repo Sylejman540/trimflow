@@ -5,6 +5,7 @@ import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { getDaysAndMonths } from '@/i18n/locales/utils';
 
 
 function PoweredBy() {
@@ -33,14 +34,11 @@ function formatApptDate(startsAt: string | null | undefined, lang: string) {
     if (!startsAt) return null;
     const [datePart, timePart] = startsAt.split(' ');
     const [y, m, d] = datePart.split('-').map(Number);
+    const { days, months } = getDaysAndMonths(lang);
     const date = new Date(y, m - 1, d);
-    const localeMap: Record<string, string> = {
-        sq: 'sq-AL', de: 'de-DE', fr: 'fr-FR', it: 'it-IT',
-        el: 'el-GR', hr: 'hr-HR', pl: 'pl-PL', pt: 'pt-PT',
-        es: 'es-ES', bg: 'bg-BG', tr: 'tr-TR', ru: 'ru-RU',
-    };
-    const locale = localeMap[lang] ?? lang;
-    const dayLabel = date.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const dayName = days[date.getDay()];
+    const monthName = months[date.getMonth()];
+    const dayLabel = `${dayName}, ${monthName} ${d} ${y}`;
     return { day: dayLabel, time: timePart };
 }
 
