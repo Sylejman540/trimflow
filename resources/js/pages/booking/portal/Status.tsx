@@ -1,7 +1,7 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Scissors, CalendarDays, Clock, CheckCircle2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { formatCents, formatDateTime, cn } from '@/lib/utils';
 import { getDaysAndMonths } from '@/i18n/locales/utils';
 
@@ -102,7 +102,8 @@ export default function Status({
     past?: PastAppointment[];
 }) {
     const { t, i18n } = useTranslation();
-    const { booking_lang } = usePage().props as any;
+    const { booking_lang, appointment_id } = usePage().props as any;
+    const [currentStatus, setCurrentStatus] = useState(appointment.status);
 
     // Sync language from booking session or localStorage to i18n
     useEffect(() => {
@@ -113,7 +114,26 @@ export default function Status({
         }
     }, [i18n, booking_lang]);
 
-    const statusMsg = statusMessages[appointment.status] || statusMessages.pending;
+    // Listen for appointment status changes in real-time
+    useEffect(() => {
+        if (!appointment_id || !window.Echo) return;
+
+        const channel = window.Echo.channel(`company.${company.id}`);
+
+        const listener = channel.listen('.AppointmentChanged', (data: any) => {
+            if (data.appointment?.id === appointment_id) {
+                setCurrentStatus(data.appointment.status);
+                // Reload page data after a short delay to ensure consistency
+                setTimeout(() => router.reload(), 500);
+            }
+        });
+
+        return () => {
+            window.Echo.leave(`company.${company.id}`);
+        };
+    }, [appointment_id, company.id]);
+
+    const statusMsg = statusMessages[currentStatus] || statusMessages.pending;
 
     const apptDate = useMemo(() =>
         formatApptDate(appointment.starts_at, i18n.language),
@@ -148,8 +168,8 @@ export default function Status({
                 <div className="max-w-sm w-full space-y-6">
                     {/* Status Badge */}
                     <div className="text-center">
-                        <span className={cn("inline-flex items-center text-sm font-bold tracking-wider border rounded-lg px-3 py-1.5 mb-4", statusStyle[appointment.status] ?? 'bg-slate-50 text-slate-500 border-slate-100')}>
-                            {appointment.status.replace('_', ' ').toUpperCase()}
+                        <span className={cn("inline-flex items-center text-sm font-bold tracking-wider border rounded-lg px-3 py-1.5 mb-4", statusStyle[currentStatus] ?? 'bg-slate-50 text-slate-500 border-slate-100')}>
+                            {currentStatus.replace('_', ' ').toUpperCase()}
                         </span>
                         <h2 className="text-2xl font-semibold text-slate-900">{t(statusMsg.title)}</h2>
                         <p className="text-sm text-slate-500 mt-1">{t(statusMsg.key)}</p>

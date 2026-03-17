@@ -41,12 +41,14 @@ class BookingStatusController extends Controller
                 ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
             ),
             'appointment' => [
+                'id'       => $appointment->id,
                 'status'   => $appointment->status,
                 'starts_at'=> $appointment->starts_at->toIso8601String(),
                 'barber'   => $appointment->barber?->user?->name,
                 'services' => $appointment->services->pluck('name')->join(', '),
                 'price'    => $appointment->price,
             ],
+            'appointment_id' => $appointment->id,
             'past'        => $past,
         ]);
     }
