@@ -10,13 +10,13 @@ import { cn } from '@/lib/utils';
 import { Barber } from '@/types';
 
 const DAYS = [
-    { key: 'monday',    label: 'Monday' },
-    { key: 'tuesday',   label: 'Tuesday' },
-    { key: 'wednesday', label: 'Wednesday' },
-    { key: 'thursday',  label: 'Thursday' },
-    { key: 'friday',    label: 'Friday' },
-    { key: 'saturday',  label: 'Saturday' },
-    { key: 'sunday',    label: 'Sunday' },
+    { key: 'monday',    labelKey: 'days.monday' },
+    { key: 'tuesday',   labelKey: 'days.tuesday' },
+    { key: 'wednesday', labelKey: 'days.wednesday' },
+    { key: 'thursday',  labelKey: 'days.thursday' },
+    { key: 'friday',    labelKey: 'days.friday' },
+    { key: 'saturday',  labelKey: 'days.saturday' },
+    { key: 'sunday',    labelKey: 'days.sunday' },
 ] as const;
 
 type DayKey = typeof DAYS[number]['key'];
@@ -121,7 +121,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-1 px-3 lg:px-6">
-                            {DAYS.map(({ key, label }) => {
+                            {DAYS.map(({ key, labelKey }) => {
                                 const day = hours[key];
                                 return (
                                     <div
@@ -148,7 +148,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                     )}
                                                 />
                                             </button>
-                                            <span className="flex-1 text-sm font-medium text-slate-900">{label}</span>
+                                            <span className="flex-1 text-sm font-medium text-slate-900">{t(labelKey)}</span>
                                             {!day.enabled && (
                                                 <span className="text-xs text-slate-400 italic">{t('barber.dayOff')}</span>
                                             )}

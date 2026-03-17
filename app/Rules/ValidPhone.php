@@ -17,9 +17,9 @@ class ValidPhone implements ValidationRule
             return;
         }
 
-        // If starts with +, must be international format with 1-3 digit country code
+        // If starts with +, must be international format
         if (preg_match('/^\+/', $phone)) {
-            if (!preg_match('/^\+\d{1,3}\d{6,14}$/', $phone)) {
+            if (!preg_match('/^\+\d{7,15}$/', $phone)) {
                 $fail(trans('booking.errorInvalidPhone'));
                 return;
             }

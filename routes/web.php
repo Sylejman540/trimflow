@@ -11,6 +11,7 @@ use App\Http\Controllers\BookingCancelController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingSlotsController;
 use App\Http\Controllers\BookingAvailabilityController;
+use App\Http\Controllers\BookingStatusController;
 use App\Http\Controllers\WalkinController;
 use App\Http\Controllers\BarberTimeOffController;
 use App\Http\Controllers\ScheduleController;
@@ -133,6 +134,7 @@ Route::post('/book/{slug}/my-appointments/cancel', [CustomerPortalController::cl
 Route::get('/book/{slug}', [BookingController::class, 'show'])->name('booking.show');
 Route::post('/book/{slug}', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/book/{slug}/confirmed', [BookingController::class, 'confirmation'])->name('booking.confirmation');
+Route::get('/book/{slug}/status/{token}', BookingStatusController::class)->name('booking.status');
 Route::get('/book/{slug}/slots', BookingSlotsController::class)->name('booking.slots');
 Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->name('booking.availability');
 Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');

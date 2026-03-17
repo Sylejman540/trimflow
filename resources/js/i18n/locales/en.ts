@@ -452,6 +452,7 @@ export default {
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
         viewMyAppts: 'View My Appointments',
+        errorInvalidPhone: 'Please enter a valid phone number (7-15 digits or +1-15 digits)',
     },
 
     // Schedule

@@ -411,8 +411,8 @@ export default function Dashboard({
                 {visibleCards.has('kpi') && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-2">
-                            <div className="flex items-center gap-2">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 shrink-0">
                                     <CalendarDays className="h-4 w-4" />
                                 </div>
@@ -423,8 +423,8 @@ export default function Dashboard({
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-2">
-                            <div className="flex items-center gap-2">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange-50 text-orange-600 shrink-0">
                                     <Clock className="h-4 w-4" />
                                 </div>
@@ -435,8 +435,8 @@ export default function Dashboard({
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-2">
-                            <div className="flex items-center gap-2">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
                                     <CheckCircle2 className="h-4 w-4" />
                                 </div>

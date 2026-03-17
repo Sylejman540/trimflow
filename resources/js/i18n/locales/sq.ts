@@ -140,6 +140,7 @@ export default {
         noShows: 'mungesa',
         vsLastMonth: 'krahasuar me muajin e kaluar',
         thisWeek: 'këtë javë',
+        topBarber: 'Berberi kryesor këtë javë',
         topService: 'Shërbimi kryesor:',
         setMonthlyGoals: 'Vendos objektivat mujore',
         revenueTarget: 'Objektivi i të ardhurave (€)',
@@ -285,6 +286,12 @@ export default {
         noBarbers: 'Nuk ka berberë ende.',
         schedule: 'Orari',
         workingHours: 'Orët e punës',
+        weeklyWorkingHours: 'Orët e punës në javë',
+        scheduleDescription: 'Ndizni/zbritni ditët dhe vendosni orë fillestar dhe përfundimi. Takimet mund të booken vetëm gjatë orëve aktive.',
+        dayOff: 'Dita e lirë',
+        to: 'deri',
+        applyToWeekdays: 'Apliko të hënë–të premte',
+        saveSchedule: 'Ruaj orarin',
         googleCalendar: 'Google Kalendari',
         connected: 'I lidhur',
         notConnected: 'Jo i lidhur',
@@ -420,6 +427,7 @@ export default {
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
         viewMyAppts: 'Shiko terminet e mia',
+        errorInvalidPhone: 'Ju lutem futni një numër telefoni të vlefshëm (7-15 shifra ose +1-15 shifra)',
     },
 
     // Time Off

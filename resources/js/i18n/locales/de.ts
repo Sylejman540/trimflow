@@ -138,6 +138,7 @@ export default {
         noShows: 'nicht erschienen',
         vsLastMonth: 'vs. letzten Monat',
         thisWeek: 'diese Woche',
+        topBarber: 'Top Friseur dieser Woche',
         topService: 'Top-Leistung:',
         setMonthlyGoals: 'Monatliche Ziele festlegen',
         revenueTarget: 'Umsatzziel (€)',
@@ -404,6 +405,7 @@ export default {
         bookAnother: 'Neuen Termin buchen',
         shopPhone: 'Telefon des Salons',
         windowExpired: 'Das Stornierungsfenster ist abgelaufen.',
+        errorInvalidPhone: 'Bitte geben Sie eine gültige Telefonnummer ein (7-15 Ziffern oder +1-15 Ziffern)',
     },
 
     // Time Off
