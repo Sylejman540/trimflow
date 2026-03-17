@@ -47,7 +47,7 @@ function HistoryCard({ appt, isBarber }: {
                         </p>
                     </div>
                     <div className="flex flex-col items-end gap-1.5 shrink-0">
-                        <Badge className={cn('text-[10px] font-bold rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
+                        <Badge className={cn('text-[10px] font-bold rounded-md px-2 py-0.5 shadow-none border shrink-0', statusVariant(appt.status))}>
                             {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status}`)}
                         </Badge>
                     </div>
@@ -197,7 +197,7 @@ export default function History({
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('apptIndex.searchPlaceholder')}
-                            className="w-full pl-10 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none placeholder:text-slate-400"
+                            className="w-full pl-10 pr-3 h-9 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none placeholder:text-slate-400"
                             onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
                 </div>

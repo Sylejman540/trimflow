@@ -150,10 +150,10 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                                 <User size={10} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-10 bg-slate-50 border-slate-200 rounded-lg">
+                                <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg">
                                     <SelectValue placeholder={t('appt.selectBarber')} />
                                 </SelectTrigger>
-                                <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                                <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                     {barbers.map(b => (
                                         <SelectItem key={b.id} value={String(b.id)}>{b.user?.name}</SelectItem>
                                     ))}
@@ -168,7 +168,7 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                                 <User size={10} /> {t('appt.customerName')}
                             </Label>
                             <Input value={data.customer_name} onChange={e => setData('customer_name', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 rounded-lg"
+                                className="h-9 bg-white border-slate-200 rounded-lg"
                                 placeholder={t('apptIndex.namePlaceholder')} autoFocus required />
                             {errors.customer_name && <p className="text-xs text-red-500">{errors.customer_name}</p>}
                         </div>
@@ -177,7 +177,7 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                                 <Phone size={10} /> {t('phone')}
                             </Label>
                             <Input value={data.customer_phone} onChange={e => setData('customer_phone', e.target.value)}
-                                className="h-10 bg-slate-50 border-slate-200 rounded-lg"
+                                className="h-9 bg-white border-slate-200 rounded-lg"
                                 placeholder={t('apptIndex.phonePlaceholder')} inputMode="tel" />
                         </div>
                     </div>
@@ -186,10 +186,10 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                             <Scissors size={10} /> {t('appt.service')}
                         </Label>
                         <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
-                            <SelectTrigger className="h-10 bg-slate-50 border-slate-200 rounded-lg">
+                            <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg">
                                 <SelectValue placeholder={t('appt.selectService')} />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
                                 {services.map(s => (
                                     <SelectItem key={s.id} value={String(s.id)}>{s.name} — {formatCents(s.price)}</SelectItem>
                                 ))}
@@ -209,13 +209,13 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                                     className={cn('px-2.5 py-1 rounded-lg text-xs font-bold border transition-colors',
                                         data.starts_at === toLocalDatetimeValue(p.date)
                                             ? 'bg-slate-900 text-white border-slate-900'
-                                            : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
+                                            : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
                                     )}>{p.label}</button>
                             ))}
                         </div>
                         <Input type="datetime-local" value={data.starts_at}
                             onChange={e => setData('starts_at', e.target.value)}
-                            className="h-10 bg-slate-50 border-slate-200 rounded-lg" required />
+                            className="h-9 bg-white border-slate-200 rounded-lg" required />
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">{t('cancel')}</Button>
@@ -281,7 +281,7 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
     const { t } = useTranslation();
     return (
         <Link href={appt.status !== 'in_progress' ? route('appointments.edit', appt.id) : route('appointments.show', appt.id)}>
-        <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50">
+        <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-3 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50">
             <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <p className="font-bold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
@@ -291,7 +291,7 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                     </p>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    <Badge className={cn('text-[10px] font-bold rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
+                    <Badge className={cn('text-[10px] font-bold rounded-md px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
                         {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status === 'in_progress' ? 'inProgress' : appt.status}`)}
                     </Badge>
                     {appt.status === 'pending' && (
@@ -300,7 +300,7 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                 </div>
             </div>
             <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-lg">
+                <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 font-bold text-xs px-2.5 py-1 rounded-md">
                     <Clock className="h-3.5 w-3.5" />{formatTime(appt.starts_at)}
                 </span>
                 <span className="font-bold text-sm text-slate-900">{formatCents(appt.price)}</span>
@@ -309,28 +309,28 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                 {appt.status === 'pending' && (
                     <>
                         <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                            className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
+                            className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
                             <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                         </button>
                         <button onClick={() => router.patch(route('appointments.decline', appt.id))}
-                            className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg active:bg-red-100 transition-colors">
+                            className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg active:bg-red-100 transition-colors">
                             <X className="h-3.5 w-3.5" /> {t('cancel')}
                         </button>
                     </>
                 )}
                 <Link href={route('appointments.show', appt.id)}
-                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
+                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-8 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
                     <Eye className="h-3.5 w-3.5" /> {t('appt.view')}
                 </Link>
                 {appt.status !== 'in_progress' && (
                     <Link href={route('appointments.edit', appt.id)}
-                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
+                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-8 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
                         <Edit className="h-3.5 w-3.5" /> {t('edit')}
                     </Link>
                 )}
                 {appt.status !== 'in_progress' && appt.can_delete && (
                     <button onClick={() => onDelete(appt)}
-                        className="h-9 w-9 flex items-center justify-center text-slate-300 active:text-red-600 active:bg-red-50 rounded-lg border border-slate-200 transition-colors">
+                        className="h-8 w-8 flex items-center justify-center text-slate-300 active:text-red-600 active:bg-red-50 rounded-lg border border-slate-200 transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                     </button>
                 )}
@@ -359,13 +359,13 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
                     <span className="text-sm font-semibold flex-1">{t('apptIndex.selected', { count: selectedIds.size })}</span>
                     <div className="flex items-center gap-2">
                         <button onClick={() => bulkAction('confirm')} disabled={bulkProcessing}
-                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-9">
+                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-8">
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t('apptIndex.confirmAll')}</span>
                             <span className="sm:hidden">{t('confirm')}</span>
                         </button>
                         <button onClick={() => bulkAction('cancel')} disabled={bulkProcessing}
-                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-9">
+                            className="flex items-center justify-center gap-1.5 text-xs font-bold bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg transition-colors disabled:opacity-50 h-8">
                             <Trash2 className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">{t('apptIndex.cancelAll')}</span>
                             <span className="sm:hidden">{t('cancel')}</span>
@@ -506,13 +506,13 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
             {/* Calendar toolbar */}
             <div className="flex flex-col gap-3 px-4 py-3 border-b border-slate-100">
                 <div className="flex items-center gap-1.5 sm:gap-2">
-                    <button onClick={prev} className="h-10 w-10 sm:h-8 sm:w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200 sm:border-0">
+                    <button onClick={prev} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200">
                         <ChevronLeft className="h-4 w-4" />
                     </button>
-                    <button onClick={next} className="h-10 w-10 sm:h-8 sm:w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200 sm:border-0">
+                    <button onClick={next} className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-500 transition-colors border border-slate-200">
                         <ChevronRight className="h-4 w-4" />
                     </button>
-                    <button onClick={goToday} className="h-10 px-3 sm:h-8 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
+                    <button onClick={goToday} className="h-8 px-3 text-xs font-semibold rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors">
                         {t('today')}
                     </button>
                 </div>
@@ -524,7 +524,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                                 key={m}
                                 onClick={() => setCalMode(m)}
                                 className={cn(
-                                    'px-3 h-10 sm:h-8 text-xs font-semibold capitalize transition-colors border-r border-slate-200 last:border-r-0',
+                                    'px-3 h-8 text-xs font-semibold capitalize transition-colors border-r border-slate-200 last:border-r-0',
                                     calMode === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-50'
                                 )}>
                                 {m}
@@ -673,11 +673,11 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
 
                             <DialogFooter className="flex items-center justify-end gap-2">
                                 <Link href={route('appointments.show', selectedAppt.id)}
-                                    className={cn(buttonVariants({ variant: 'outline', size: 'icon' }), 'h-10 w-10')}>
+                                    className={cn(buttonVariants({ variant: 'outline', size: 'icon' }), 'h-8 w-8')}>
                                     <Eye className="h-4 w-4" />
                                 </Link>
                                 <Link href={route('appointments.edit', selectedAppt.id)}
-                                    className={cn(buttonVariants({ size: 'icon' }), 'h-10 w-10 bg-slate-900 hover:bg-slate-800 text-white')}>
+                                    className={cn(buttonVariants({ size: 'icon' }), 'h-8 w-8 bg-slate-900 hover:bg-slate-800 text-white')}>
                                     <Edit className="h-4 w-4" />
                                 </Link>
                             </DialogFooter>
@@ -973,9 +973,9 @@ export default function Index({
                 <div className="flex flex-col gap-2">
                     {/* Search row */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
-                            className="w-full pl-10 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none placeholder:text-slate-400"
+                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
                             onChange={e => changeSearch(e.target.value)} />
                     </div>
 
@@ -1011,7 +1011,7 @@ export default function Index({
                                     onClick={() => changeView(mode)}
                                     title={label}
                                     className={cn(
-                                        'h-10 flex-1 sm:h-9 sm:flex-none sm:px-2.5 px-3 flex items-center justify-center gap-1.5 sm:gap-1 transition-colors border-r border-slate-200 last:border-r-0',
+                                        'h-8 flex-1 sm:flex-none sm:px-2.5 px-3 flex items-center justify-center gap-1.5 sm:gap-1 transition-colors border-r border-slate-200 last:border-r-0',
                                         view === mode
                                             ? 'bg-slate-900 text-white'
                                             : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'

@@ -664,6 +664,12 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         type="text"
                                         value={data.customer_name}
                                         onChange={e => setData('customer_name', e.target.value)}
+                                        onKeyPress={e => {
+                                            const char = e.key;
+                                            if (!/^[a-zA-Z\s\-']$/.test(char)) {
+                                                e.preventDefault();
+                                            }
+                                        }}
                                         placeholder={t('booking.namePlaceholder')}
                                         autoComplete="name"
                                         className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
