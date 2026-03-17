@@ -199,22 +199,24 @@ export function DataTable<TData, TValue>({
                             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} · {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? 'item' : 'items'}
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                size="sm"
-                                disabled={!table.getCanPreviousPage()}
-                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white"
-                                onClick={() => table.previousPage()}
-                            >
-                                <ChevronLeft className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                size="sm"
-                                disabled={!table.getCanNextPage()}
-                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white"
-                                onClick={() => table.nextPage()}
-                            >
-                                <ChevronRight className="h-4 w-4" />
-                            </Button>
+                            {table.getCanPreviousPage() && (
+                                <Button
+                                    size="sm"
+                                    className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                    onClick={() => table.previousPage()}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                            )}
+                            {table.getCanNextPage() && (
+                                <Button
+                                    size="sm"
+                                    className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                    onClick={() => table.nextPage()}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            )}
                         </div>
                     </div>
                 )}
