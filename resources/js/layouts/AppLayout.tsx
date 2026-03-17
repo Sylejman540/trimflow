@@ -242,6 +242,7 @@ const mobileNavConfig: Omit<NavItem, 'label'>[] = [
     { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments' },
     { href: '/barbers',      icon: Briefcase,       active: 'barbers.*',      labelKey: 'nav.barbers',   roles: ['platform-admin', 'shop-admin'] },
     { href: '/services',     icon: Scissors,        active: 'services.*',     labelKey: 'nav.services',  roles: ['platform-admin', 'shop-admin'] },
+    { href: '/settings',     icon: Settings,        active: 'settings.*',     labelKey: 'nav.settings' },
 ] as any[];
 
 export default function AppLayout({

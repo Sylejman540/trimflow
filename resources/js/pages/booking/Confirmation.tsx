@@ -211,31 +211,20 @@ export default function Confirmation({
                         </div>
                     )}
 
-                    {/* Status tracking link */}
-                    {cancel_token && (
-                        <p className="text-xs text-slate-400 text-center">
-                            {t('booking.trackBooking')}{' '}
-                            <a
+                    <div className="flex flex-col gap-2">
+                        {cancel_token && (
+                            <Link
                                 href={route('booking.status', [company.slug, cancel_token])}
-                                className="font-medium text-slate-600 hover:underline"
+                                className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-100 hover:bg-slate-200 text-slate-900 h-10 rounded-xl font-semibold shadow-none border border-slate-200')}
                             >
                                 {t('booking.checkStatus')}
-                            </a>
-                        </p>
-                    )}
-
-                    <div className="flex flex-col gap-2">
+                            </Link>
+                        )}
                         <Link
                             href={route('booking.show', company.slug)}
                             className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
                         >
                             <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
-                        </Link>
-                        <Link
-                            href={route('portal.show', company.slug)}
-                            className={cn(buttonVariants({ variant: 'outline' }), 'h-10 rounded-xl font-semibold shadow-none border-slate-200')}
-                        >
-                            {t('booking.viewMyAppts')}
                         </Link>
                     </div>
                     <PoweredBy />
