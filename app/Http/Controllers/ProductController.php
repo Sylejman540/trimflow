@@ -13,7 +13,7 @@ class ProductController extends Controller
         $this->authorize('viewAny', Product::class);
 
         return Inertia::render('products/Index', [
-            'products' => Product::orderBy('name')->get(),
+            'products' => Product::orderBy('name')->paginate(50),
         ]);
     }
 

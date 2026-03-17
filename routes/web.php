@@ -52,16 +52,20 @@ Route::get('/company', function () {
 Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    Route::resource('services', ServiceController::class)->except(['show']);
-    Route::resource('barbers', BarberController::class)->except(['show']);
+    // Apply rate limiting to write operations: max 60 requests per minute per user
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::resource('services', ServiceController::class)->except(['show']);
+        Route::resource('barbers', BarberController::class)->except(['show']);
     Route::get('/barbers/{barber}/schedule', [BarberController::class, 'schedule'])->name('barbers.schedule');
     Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
-    Route::resource('appointments', AppointmentController::class);
-    Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
-    Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
-    Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.update-status');
-    Route::post('appointments/bulk', [AppointmentController::class, 'bulkAction'])->name('appointments.bulk');
-    Route::middleware('role:shop-admin|platform-admin')->group(function () {
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::resource('appointments', AppointmentController::class);
+        Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+        Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');
+        Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.update-status');
+        Route::post('appointments/bulk', [AppointmentController::class, 'bulkAction'])->name('appointments.bulk');
+    });
+    Route::middleware(['role:shop-admin|platform-admin', 'throttle:60,1'])->group(function () {
         Route::get('/export/appointments', [ExportController::class, 'appointments'])->name('export.appointments');
     });
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -77,15 +81,16 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::post('/goals', [GoalController::class, 'update'])->name('goals.update');
 
 
-    Route::resource('products', ProductController::class)->except(['show']);
-    Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
-    Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
+        Route::resource('products', ProductController::class)->except(['show']);
+        Route::post('/appointments/{appointment}/products', [AppointmentProductController::class, 'store'])->name('appointment-products.store');
+        Route::delete('/appointments/{appointment}/products/{product}', [AppointmentProductController::class, 'destroy'])->name('appointment-products.destroy');
+    });
 
     Route::get('/search', SearchController::class)->name('search');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
 
-    Route::middleware('role:shop-admin|platform-admin')->group(function () {
+    Route::middleware(['role:shop-admin|platform-admin', 'throttle:60,1'])->group(function () {
         Route::patch('/settings/company', [SettingsController::class, 'updateCompany'])->name('settings.company');
         Route::post('/settings/logo', [SettingsController::class, 'uploadLogo'])->name('settings.logo');
         Route::delete('/settings/logo', [SettingsController::class, 'destroyLogo'])->name('settings.logo.destroy');

@@ -13,7 +13,7 @@ class ServiceController extends Controller
         $this->authorize('viewAny', Service::class);
 
         return Inertia::render('services/Index', [
-            'services' => Service::orderBy('name')->get(),
+            'services' => Service::orderBy('name')->paginate(50),
         ]);
     }
 

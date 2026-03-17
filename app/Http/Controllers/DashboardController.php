@@ -53,6 +53,7 @@ class DashboardController extends Controller
             ->whereDate('starts_at', $today)
             ->whereNotIn('status', ['cancelled'])
             ->orderBy('starts_at')
+            ->limit(50)
             ->get()
             ->each(fn (Appointment $a) => $a->resolveStatus())
             ->map(fn (Appointment $a) => $this->mapAppointment($a));
@@ -75,6 +76,7 @@ class DashboardController extends Controller
                 ->whereDate('starts_at', $today)
                 ->whereNotIn('status', ['cancelled'])
                 ->orderBy('starts_at')
+                ->limit(50)
                 ->get()
                 ->each(fn (Appointment $a) => $a->resolveStatus())
                 ->map(fn (Appointment $a) => $this->mapAppointment($a));

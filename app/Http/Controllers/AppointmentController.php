@@ -12,6 +12,7 @@ use App\Models\WaitlistEntry;
 use App\Notifications\AppointmentStatusChanged;
 use App\Notifications\NewInternalAppointment;
 use App\Services\RecurrenceService;
+use App\Http\Requests\StoreAppointmentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -67,8 +68,8 @@ class AppointmentController extends Controller
             'is_barber'      => $isBarber,
             'is_owner_barber' => $isOwnerBarber,
             'filter_mine'    => $filterMine,
-            'barbers'        => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
-            'services'       => Service::where('is_active', true)->orderBy('name')->get(),
+            'barbers'        => $isBarber ? [] : Barber::with('user')->where('is_active', true)->paginate(50),
+            'services'       => Service::where('is_active', true)->orderBy('name')->paginate(50),
         ]);
     }
 
@@ -92,24 +93,14 @@ class AppointmentController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreAppointmentRequest $request)
     {
         $this->authorize('create', Appointment::class);
 
         $user = Auth::user();
         $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
 
-        $validated = $request->validate([
-            'barber_id'       => $isBarber ? 'nullable' : 'required|exists:barbers,id',
-            'customer_name'   => 'required|string|max:255',
-            'customer_phone'  => 'nullable|string|max:50',
-            'customer_email'  => 'nullable|email|max:255',
-            'service_ids'     => 'required|array|min:1',
-            'service_ids.*'   => 'integer|exists:services,id',
-            'starts_at'       => 'required|date',
-            'notes'           => 'nullable|string|max:1000',
-            'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
-        ]);
+        $validated = $request->validated();
 
         $barberId = $isBarber ? $user->barber?->id : $validated['barber_id'];
         $phone = $validated['customer_phone'] ?? null;
@@ -192,7 +183,7 @@ class AppointmentController extends Controller
             'appointment'  => $appointment,
             'can_edit'     => $user->can('update', $appointment),
             'can_delete'   => $user->can('delete', $appointment),
-            'all_products' => \App\Models\Product::where('is_active', true)->orderBy('name')->get(['id', 'name', 'price', 'stock_qty']),
+            'all_products' => \App\Models\Product::where('is_active', true)->orderBy('name')->paginate(50, ['id', 'name', 'price', 'stock_qty']),
         ]);
     }
 
@@ -207,8 +198,8 @@ class AppointmentController extends Controller
 
         return Inertia::render('appointments/Edit', [
             'appointment' => $appointment,
-            'barbers' => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
-            'services' => Service::where('is_active', true)->orderBy('name')->get(),
+            'barbers' => $isBarber ? [] : Barber::with('user')->where('is_active', true)->paginate(50),
+            'services' => Service::where('is_active', true)->orderBy('name')->paginate(50),
             'is_barber' => $isBarber,
         ]);
     }

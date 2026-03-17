@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Notifications\NewPublicBooking;
 use App\Rules\ValidPhone;
 use App\Services\LoggingService;
+use App\Http\Requests\StorePublicBookingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -86,7 +87,7 @@ class BookingController extends Controller
             }
         }
 
-        // ── 5. Basic validation ────────────────────────────────────────────────
+        // ── 5. Basic validation & sanitization ─────────────────────────────────
         $validated = $request->validate([
             'barber_id'             => 'required|exists:barbers,id',
             'service_ids'           => 'required|array|min:1',
@@ -98,6 +99,12 @@ class BookingController extends Controller
             '_t'                    => 'nullable|integer',
             'cf_turnstile_response' => 'nullable|string',
         ]);
+
+        // Sanitize user inputs: strip HTML tags from customer_name and notes
+        $validated['customer_name'] = trim(strip_tags($validated['customer_name']));
+        if ($validated['notes']) {
+            $validated['notes'] = trim(strip_tags($validated['notes']));
+        }
 
         // Normalize phone: keep only digits and leading +
         $phone = $validated['customer_phone'] ? preg_replace('/[^\d+]/', '', $validated['customer_phone']) : null;

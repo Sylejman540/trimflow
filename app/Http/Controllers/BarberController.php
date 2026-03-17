@@ -25,7 +25,7 @@ class BarberController extends Controller
             ->toArray();
 
         return Inertia::render('barbers/Index', [
-            'barbers'      => Barber::with('user')->orderBy('created_at', 'desc')->get(),
+            'barbers'      => Barber::with('user')->orderBy('created_at', 'desc')->paginate(50),
             'off_today_ids' => $offTodayIds,
         ]);
     }
