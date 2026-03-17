@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, Package, Trash2, Plus, Star } from 'lucide-react';
+import { ArrowLeft, Package, Trash2, Plus, Star, Check, X } from 'lucide-react';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -137,15 +137,19 @@ export default function Show({
                             <div className="shrink-0 flex items-center gap-2">
                                 <button
                                     onClick={() => router.patch(route('appointments.decline', appointment.id))}
-                                    className="rounded-lg bg-red-100 hover:bg-red-200 text-red-700 text-sm font-bold px-4 py-2 transition-colors"
+                                    className="rounded-lg bg-red-100 hover:bg-red-200 text-red-700 h-9 w-9 lg:w-auto lg:px-4 lg:py-2 flex items-center justify-center lg:text-sm font-bold transition-colors"
+                                    title={t('decline')}
                                 >
-                                    {t('decline')}
+                                    <X className="h-4 w-4 lg:hidden" />
+                                    <span className="hidden lg:inline">{t('decline')}</span>
                                 </button>
                                 <button
                                     onClick={() => router.patch(route('appointments.confirm', appointment.id))}
-                                    className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold px-4 py-2 transition-colors"
+                                    className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white h-9 w-9 lg:w-auto lg:px-4 lg:py-2 flex items-center justify-center lg:text-sm font-bold transition-colors"
+                                    title={t('accept')}
                                 >
-                                    {t('accept')}
+                                    <Check className="h-4 w-4 lg:hidden" />
+                                    <span className="hidden lg:inline">{t('accept')}</span>
                                 </button>
                             </div>
                         </div>

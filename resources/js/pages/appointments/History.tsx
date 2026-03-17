@@ -193,7 +193,7 @@ export default function History({
                 </div>
 
                 {/* Search row */}
-                <div className="w-1/4">
+                <div className="w-full sm:w-1/4">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('apptIndex.searchPlaceholder')}

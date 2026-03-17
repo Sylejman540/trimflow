@@ -938,11 +938,11 @@ export default function Index({
         <AppLayout
             title={t('appt.title')}
             actions={
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 mb-2">
                     {is_owner_barber && (
                         <button onClick={toggleMine}
                             className={cn(buttonVariants({ variant: 'outline' }),
-                                'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors',
+                                'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors flex-1 sm:flex-none',
                                 filter_mine ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-600'
                             )}>
                             <span className="hidden sm:inline">{filter_mine ? t('appt.allAppointments') : t('appt.myAppointments')}</span>
@@ -951,7 +951,7 @@ export default function Index({
                     )}
                     {can_create && (
                         <Link href={route('appointments.create')}
-                            className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
+                            className="hidden sm:flex items-center justify-center gap-1.5 h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors shadow-sm">
                             <Plus className="h-4 w-4" />
                             {t('appt.new')}
                         </Link>
