@@ -513,22 +513,19 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         </div>
 
                         {selectedBarber && (
-                            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-4 z-10">
-                                <div className="max-w-xl mx-auto flex gap-3">
-                                    <Button
-                                        onClick={() => setStep(2)}
-                                        className="flex-1 bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
-                                    >
-                                        {t('booking.continue')} <ChevronRight className="h-4 w-4 ml-1" />
-                                    </Button>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setSelectedBarber(null)}
-                                        className="border-slate-200 text-slate-900 hover:bg-slate-50 h-11 rounded-xl font-semibold shadow-none"
-                                    >
-                                        {t('cancel')}
-                                    </Button>
-                                </div>
+                            <div className="flex gap-3 pt-4">
+                                <Button
+                                    onClick={() => setStep(2)}
+                                    className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-semibold shadow-none text-sm"
+                                >
+                                    {t('booking.continue')} <ChevronRight className="h-4 w-4 ml-1" />
+                                </Button>
+                                <button
+                                    onClick={() => setSelectedBarber(null)}
+                                    className="text-slate-500 hover:text-slate-700 font-medium text-sm transition-colors"
+                                >
+                                    {t('cancel')}
+                                </button>
                             </div>
                         )}
                     </div>
