@@ -30,6 +30,36 @@ function parseShopDate(dateStr: string): Date {
     return new Date(dateStr.replace(/([+-]\d{2}:\d{2}|Z)$/, ''));
 }
 
+function HistoryCard({ appt, isBarber }: {
+    appt: Appointment; isBarber: boolean;
+}) {
+    const { t } = useTranslation();
+    return (
+        <Link href={route('appointments.show', appt.id)}>
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50">
+                <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                        <p className="font-bold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
+                        <p className="text-xs text-slate-400 mt-0.5 truncate">
+                            {appt.service?.name ?? '-'}
+                            {!isBarber && appt.barber?.user?.name ? ` · ${appt.barber.user.name}` : ''}
+                        </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <Badge className={cn('text-[10px] font-bold rounded-full px-2.5 py-1 shadow-none border', statusVariant(appt.status))}>
+                            {t(`appt.${appt.status === 'no_show' ? 'noShow' : appt.status}`)}
+                        </Badge>
+                    </div>
+                </div>
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                    <span>{formatTime(appt.starts_at)}</span>
+                    <span>{formatCents(appt.price)}</span>
+                </div>
+            </div>
+        </Link>
+    );
+}
+
 export default function History({
     appointments: initialAppointments,
     is_barber,
@@ -175,15 +205,29 @@ export default function History({
                     </div>
                 </div>
 
-                {filtered.length === 0 ? (
-                    <div className="text-center py-12 text-slate-500">
-                        <p>{t('appt.noAppointments')}</p>
+                <div className="space-y-3">
+                    {/* Mobile cards */}
+                    <div className="sm:hidden space-y-2">
+                        {filtered.length === 0 ? (
+                            <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
+                                <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                            </div>
+                        ) : filtered.map(appt => (
+                            <HistoryCard key={appt.id} appt={appt} isBarber={is_barber} />
+                        ))}
                     </div>
-                ) : (
-                    <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
-                        <DataTable columns={columns} data={filtered} showSearch={false} />
+
+                    {/* Desktop table */}
+                    <div className="hidden sm:block">
+                        {filtered.length === 0 ? (
+                            <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
+                                <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                            </div>
+                        ) : (
+                            <DataTable columns={columns} data={filtered} showSearch={false} />
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </AppLayout>
     );
