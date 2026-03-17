@@ -154,40 +154,40 @@ export default function History({
 
             <div className="space-y-4">
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-3 space-y-2">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600 shrink-0">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                        <CardContent className="p-2.5 space-y-1.5">
+                            <div className="flex items-center gap-1.5">
+                                <div className="flex h-7 w-7 items-center justify-center rounded bg-green-50 text-green-600 shrink-0">
+                                    <CheckCircle2 className="h-3 w-3" />
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('appt.completed')}</p>
+                                <p className="text-[11px] font-medium text-muted-foreground">{t('appt.completed')}</p>
                             </div>
-                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.completed}</p>
+                            <p className="text-base font-bold ml-8">{stats.completed}</p>
                         </CardContent>
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-3 space-y-2">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600 shrink-0">
-                                    <XCircle className="h-3.5 w-3.5" />
+                        <CardContent className="p-2.5 space-y-1.5">
+                            <div className="flex items-center gap-1.5">
+                                <div className="flex h-7 w-7 items-center justify-center rounded bg-red-50 text-red-600 shrink-0">
+                                    <XCircle className="h-3 w-3" />
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('appt.cancelled')}</p>
+                                <p className="text-[11px] font-medium text-muted-foreground">{t('appt.cancelled')}</p>
                             </div>
-                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.cancelled}</p>
+                            <p className="text-base font-bold ml-8">{stats.cancelled}</p>
                         </CardContent>
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-3 space-y-2">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-600 shrink-0">
-                                    <AlertCircle className="h-3.5 w-3.5" />
+                        <CardContent className="p-2.5 space-y-1.5">
+                            <div className="flex items-center gap-1.5">
+                                <div className="flex h-7 w-7 items-center justify-center rounded bg-slate-50 text-slate-600 shrink-0">
+                                    <AlertCircle className="h-3 w-3" />
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('appt.noShow')}</p>
+                                <p className="text-[11px] font-medium text-muted-foreground">{t('appt.noShow')}</p>
                             </div>
-                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.noShow}</p>
+                            <p className="text-base font-bold ml-8">{stats.noShow}</p>
                         </CardContent>
                     </Card>
                 </div>

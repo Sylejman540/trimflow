@@ -967,7 +967,7 @@ export default function Index({
                     </div>
 
                     {/* Filters row */}
-                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-0 sm:gap-2">
                         <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
                             <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
