@@ -101,6 +101,12 @@ class BookingSlotsController extends Controller
         $cursor = $date->copy()->setTimeFromTimeString($windowStart);
         $windowEndTime = $date->copy()->setTimeFromTimeString($windowEnd);
 
+        // If today is selected and it's already past closing time, return no slots
+        $isToday = $now->format('Y-m-d') === $date->format('Y-m-d');
+        if ($isToday && $now->gte($windowEndTime)) {
+            return response()->json(['slots' => [], 'next_available' => null]);
+        }
+
         while ($cursor->copy()->addMinutes($totalDuration)->lte($windowEndTime)) {
             $slotStart = $cursor->copy();
             $slotEnd   = $cursor->copy()->addMinutes($totalDuration);

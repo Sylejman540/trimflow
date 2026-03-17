@@ -164,7 +164,7 @@ export default function Index({ services }: { services: any }) {
             <div className="space-y-2">
                 {/* Toolbar */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                    <div className="relative flex-1">
+                    <div className="relative w-full sm:w-1/4">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"

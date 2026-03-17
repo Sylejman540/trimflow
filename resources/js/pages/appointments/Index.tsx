@@ -970,9 +970,9 @@ export default function Index({
 
             <div className="space-y-2">
                 {/* Toolbar */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                     {/* Search row */}
-                    <div className="relative">
+                    <div className="relative w-full sm:w-1/4">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
                             className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
@@ -980,7 +980,7 @@ export default function Index({
                     </div>
 
                     {/* Filters row */}
-                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-0 sm:gap-2">
+                    <div className="grid grid-cols-2 sm:flex sm:items-center gap-0 sm:gap-2 sm:flex-1">
                         <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
                             <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
