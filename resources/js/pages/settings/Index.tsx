@@ -401,7 +401,7 @@ export default function Settings({
                                         <SelectContent>
                                             {Array.from({ length: 5 }, (_, i) => 20 + i).map(hour => (
                                                 <SelectItem key={hour} value={String(hour)}>
-                                                    {String(hour).padStart(2, '0')}:00 (Up to {String(hour).padStart(2, '0')}:30)
+                                                    {String(hour).padStart(2, '0')}:00
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
