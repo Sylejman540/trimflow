@@ -198,8 +198,8 @@ class AppointmentController extends Controller
 
         return Inertia::render('appointments/Edit', [
             'appointment' => $appointment,
-            'barbers' => $isBarber ? [] : Barber::with('user')->where('is_active', true)->paginate(50),
-            'services' => Service::where('is_active', true)->orderBy('name')->paginate(50),
+            'barbers' => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get(),
+            'services' => Service::where('is_active', true)->orderBy('name')->get(),
             'is_barber' => $isBarber,
         ]);
     }

@@ -193,7 +193,7 @@ export function DataTable<TData, TValue>({
                     </Table>
                 </div>
 
-                {table.getPageCount() > 0 && (
+                {table.getPageCount() > 1 && (
                     <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-slate-50">
                         <div className="text-xs text-slate-500">
                             Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} · {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? 'item' : 'items'}
