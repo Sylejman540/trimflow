@@ -313,6 +313,12 @@ export default function Edit({
                         >
                             {t('appt.updateAppointment')}
                         </Button>
+                        <Link
+                            href={route('appointments.index')}
+                            className={cn(buttonVariants({ variant: 'outline' }), 'h-11 px-6 rounded-lg text-sm font-bold border-slate-200 shadow-none')}
+                        >
+                            {t('cancel')}
+                        </Link>
                     </div>
                 </form>
             </div>
