@@ -143,14 +143,6 @@ export default function Confirmation({
                             <p className="text-sm text-slate-500">{t('booking.cancelledDesc')}</p>
                         </div>
 
-                        {/* Rebook CTA */}
-                        <Link
-                            href={route('booking.show', company.slug)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-11 rounded-xl font-semibold shadow-none w-full')}
-                        >
-                            <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
-                        </Link>
-
                         <PoweredBy />
                     </div>
                 </div>
@@ -258,14 +250,6 @@ export default function Confirmation({
                         </Link>
                     )}
 
-                    <div className="flex flex-col gap-2">
-                        <Link
-                            href={route('booking.show', company.slug)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
-                        >
-                            <CalendarDays className="mr-2 h-4 w-4" /> {t('booking.bookAnother')}
-                        </Link>
-                    </div>
                     <PoweredBy />
                 </div>
             </div>

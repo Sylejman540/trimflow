@@ -172,16 +172,6 @@ export default function Status({
                         </div>
                     </div>
 
-                    {/* CTA */}
-                    <div className="flex flex-col gap-3">
-                        <a
-                            href={route('booking.show', company.slug)}
-                            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm py-2.5 rounded-xl transition-colors text-center"
-                        >
-                            {t('booking.bookAnother')}
-                        </a>
-                    </div>
-
                     {/* Past Appointments */}
                     {past && past.length > 0 && (
                         <div className="border-t border-slate-200 pt-6 space-y-3 w-full">
