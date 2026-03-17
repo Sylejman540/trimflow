@@ -45,6 +45,9 @@ export default function History({
     const [dateFilter, setDateFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
 
+    const handleStatusChange = (v: string | null) => setStatusFilter(v ?? 'all');
+    const handleDateChange = (v: string | null) => setDateFilter(v ?? 'all');
+
     const filtered = useMemo(() => {
         return appointments
             .filter(a => {
@@ -150,7 +153,7 @@ export default function History({
                     <div className="flex gap-3 items-end">
                         <div className="flex-1">
                             <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{t('appt.dateFilter')}</Label>
-                            <Select value={dateFilter} onValueChange={setDateFilter}>
+                            <Select value={dateFilter} onValueChange={handleDateChange}>
                                 <SelectTrigger className="h-9 text-sm">
                                     <SelectValue />
                                 </SelectTrigger>
@@ -164,7 +167,7 @@ export default function History({
                         </div>
                         <div className="flex-1">
                             <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{t('appt.status')}</Label>
-                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <Select value={statusFilter} onValueChange={handleStatusChange}>
                                 <SelectTrigger className="h-9 text-sm">
                                     <SelectValue />
                                 </SelectTrigger>
