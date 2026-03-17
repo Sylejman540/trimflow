@@ -2,10 +2,11 @@ import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, Search } from 'lucide-react';
+import { Eye, Search, CheckCircle2, XCircle, AlertCircle, DollarSign } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -69,43 +70,31 @@ export default function History({
 }) {
     const { t } = useTranslation();
     const [appointments] = useState<Appointment[]>(initialAppointments);
-    const [statusFilter, setStatusFilter] = useState('all');
-    const [dateFilter, setDateFilter] = useState('all');
     const [globalSearch, setGlobalSearch] = useState('');
-
-    const handleStatusChange = (v: string | null) => setStatusFilter(v ?? 'all');
-    const handleDateChange = (v: string | null) => setDateFilter(v ?? 'all');
 
     const filtered = useMemo(() => {
         return appointments
             .filter(a => {
-                const matchesStatus = statusFilter === 'all' || a.status === statusFilter;
-                const now = new Date();
-                let matchesDate = true;
-
-                if (dateFilter === 'last7d') {
-                    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    const apptDate = parseShopDate(a.starts_at);
-                    matchesDate = apptDate >= sevenDaysAgo;
-                } else if (dateFilter === 'last30d') {
-                    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                    const apptDate = parseShopDate(a.starts_at);
-                    matchesDate = apptDate >= thirtyDaysAgo;
-                } else if (dateFilter === 'last90d') {
-                    const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-                    const apptDate = parseShopDate(a.starts_at);
-                    matchesDate = apptDate >= ninetyDaysAgo;
-                }
-
                 const search = globalSearch.toLowerCase();
                 const matchesSearch = !search || [
                     a.customer?.name, a.barber?.user?.name, a.service?.name,
                 ].some(val => val?.toLowerCase().includes(search));
-
-                return matchesStatus && matchesDate && matchesSearch;
+                return matchesSearch;
             })
             .sort((a, b) => parseShopDate(b.starts_at).getTime() - parseShopDate(a.starts_at).getTime());
-    }, [appointments, statusFilter, dateFilter, globalSearch]);
+    }, [appointments, globalSearch]);
+
+    // Calculate KPI stats
+    const stats = useMemo(() => {
+        const completed = appointments.filter(a => a.status === 'completed').length;
+        const cancelled = appointments.filter(a => a.status === 'cancelled').length;
+        const noShow = appointments.filter(a => a.status === 'no_show').length;
+        const revenue = appointments
+            .filter(a => a.status === 'completed')
+            .reduce((sum, a) => sum + a.price, 0);
+
+        return { completed, cancelled, noShow, revenue };
+    }, [appointments]);
 
     const columns: ColumnDef<Appointment>[] = [
         {
@@ -166,42 +155,65 @@ export default function History({
         <AppLayout title={t('appt.history')}>
             <Head title={t('appt.history')} />
 
-            <div className="space-y-2">
-                {/* Toolbar */}
-                <div className="flex flex-col gap-2">
-                    {/* Search row */}
+            <div className="space-y-4">
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                    <Card className="border-slate-200 shadow-none">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-green-600 shrink-0">
+                                    <CheckCircle2 className="h-4 w-4" />
+                                </div>
+                                <p className="text-xs font-medium text-muted-foreground">{t('appt.completed')}</p>
+                            </div>
+                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.completed}</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200 shadow-none">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 shrink-0">
+                                    <XCircle className="h-4 w-4" />
+                                </div>
+                                <p className="text-xs font-medium text-muted-foreground">{t('appt.cancelled')}</p>
+                            </div>
+                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.cancelled}</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200 shadow-none">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 shrink-0">
+                                    <AlertCircle className="h-4 w-4" />
+                                </div>
+                                <p className="text-xs font-medium text-muted-foreground">{t('appt.noShow')}</p>
+                            </div>
+                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.noShow}</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200 shadow-none">
+                        <CardContent className="p-4 lg:p-5 space-y-3">
+                            <div className="flex items-center gap-3">
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 shrink-0">
+                                    <DollarSign className="h-4 w-4" />
+                                </div>
+                                <p className="text-xs font-medium text-muted-foreground">{t('dash.revenueToday')}</p>
+                            </div>
+                            <p className="text-2xl lg:text-3xl font-bold ml-11">{formatCents(stats.revenue)}</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Search row */}
+                <div className="w-1/4">
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('apptIndex.searchPlaceholder')}
                             className="w-full pl-10 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none placeholder:text-slate-400"
                             onChange={e => setGlobalSearch(e.target.value)} />
-                    </div>
-
-                    {/* Filters row */}
-                    <div className="flex items-center gap-2">
-                        <Select value={dateFilter} onValueChange={v => handleDateChange(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{dateFilter === 'all' ? t('apptIndex.filterDateAll') : dateFilter === 'last7d' ? t('apptIndex.filterDateLast7d') : dateFilter === 'last30d' ? t('apptIndex.filterDateLast30d') : t('apptIndex.filterDateLast90d')}</SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">{t('apptIndex.filterDateAll')}</SelectItem>
-                                <SelectItem value="last7d">{t('apptIndex.filterDateLast7d')}</SelectItem>
-                                <SelectItem value="last30d">{t('apptIndex.filterDateLast30d')}</SelectItem>
-                                <SelectItem value="last90d">{t('apptIndex.filterDateLast90d')}</SelectItem>
-                            </SelectContent>
-                        </Select>
-
-                        <Select value={statusFilter} onValueChange={v => handleStatusChange(v ?? 'all')}>
-                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
-                                <SelectValue>{statusFilter === 'all' ? t('apptIndex.filterStatusAll') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter}`)}</SelectValue>
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
-                                <SelectItem value="all">{t('apptIndex.filterStatusAll')}</SelectItem>
-                                <SelectItem value="completed">{t('appt.completed')}</SelectItem>
-                                <SelectItem value="cancelled">{t('appt.cancelled')}</SelectItem>
-                                <SelectItem value="no_show">{t('appt.noShow')}</SelectItem>
-                            </SelectContent>
-                        </Select>
                     </div>
                 </div>
 
