@@ -320,6 +320,8 @@ export default {
         to: 'to',
         applyToWeekdays: 'Apply to Mon–Fri',
         saveSchedule: 'Save Schedule',
+        maxClosingHour: 'Maximum Closing Hour',
+        maxClosingHourDesc: 'Set the latest time barbers can end their day. This limits available closing times in scheduling.',
         googleCalendar: 'Google Calendar',
         googleCalendarDesc: "Sync appointments to this barber's Google Calendar.",
         connected: 'Connected',

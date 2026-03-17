@@ -42,7 +42,7 @@ class SettingsController extends Controller
                 ? url(route('booking.show', $company->slug))
                 : null,
             'company'  => array_merge(
-                $company->only('id', 'name', 'slug', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country', 'timezone'),
+                $company->only('id', 'name', 'slug', 'email', 'phone', 'address', 'city', 'state', 'zip', 'country', 'timezone', 'max_closing_hour'),
                 ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
             ),
             'sessions' => $sessions,

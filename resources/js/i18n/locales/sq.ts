@@ -298,6 +298,8 @@ export default {
         to: 'deri',
         applyToWeekdays: 'Apliko të hënë–të premte',
         saveSchedule: 'Ruaj orarin',
+        maxClosingHour: 'Ora maksimale e mbylljes',
+        maxClosingHourDesc: 'Vendosni kohën më të vonë kur berberat mund të mbyllin ditën. Kjo kufizon orët e disponueshme të mbylljes në planifikimin e termave.',
         googleCalendar: 'Google Kalendari',
         connected: 'I lidhur',
         notConnected: 'Jo i lidhur',

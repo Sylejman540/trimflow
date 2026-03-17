@@ -146,14 +146,14 @@ export default function Schedule({ barber, maxClosingHour = 22 }: ScheduleProps)
                                                 type="button"
                                                 onClick={() => toggle(key)}
                                                 className={cn(
-                                                    'relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0',
+                                                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0',
                                                     day.enabled ? 'bg-slate-900' : 'bg-slate-200',
                                                 )}
                                             >
                                                 <span
                                                     className={cn(
-                                                        'inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform',
-                                                        day.enabled ? 'translate-x-4' : 'translate-x-1',
+                                                        'inline-block h-4.5 w-4.5 rounded-full bg-white shadow transition-transform',
+                                                        day.enabled ? 'translate-x-5' : 'translate-x-0.5',
                                                     )}
                                                 />
                                             </button>

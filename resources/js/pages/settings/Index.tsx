@@ -392,25 +392,9 @@ export default function Settings({
 
                             <div className="pt-4 border-t border-slate-100">
                                 <div className="space-y-1.5">
-                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('barber.timezone')}</Label>
-                                    <Select value={data.timezone} onValueChange={v => setData('timezone', v ?? '')}>
-                                        <SelectTrigger className="h-10 border-slate-200 shadow-none">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {TIMEZONES.map(tz => (
-                                                <SelectItem key={tz.value} value={tz.value}>
-                                                    {tz.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="space-y-1.5 mt-4">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('barber.maxClosingHour')}</Label>
                                     <p className="text-xs text-slate-500 mb-2">{t('barber.maxClosingHourDesc')}</p>
-                                    <Select value={String(data.max_closing_hour)} onValueChange={v => setData('max_closing_hour', parseInt(v))}>
+                                    <Select value={String(data.max_closing_hour)} onValueChange={v => setData('max_closing_hour', parseInt(v ?? '22'))}>
                                         <SelectTrigger className="h-10 border-slate-200 shadow-none">
                                             <SelectValue />
                                         </SelectTrigger>

@@ -281,6 +281,8 @@ export default {
         to: 'bis',
         applyToWeekdays: 'Auf Mo–Fr anwenden',
         saveSchedule: 'Zeitplan speichern',
+        maxClosingHour: 'Späteste Schließungszeit',
+        maxClosingHourDesc: 'Legen Sie die späteste Zeit fest, zu der Barbiere ihren Tag beenden können. Dies begrenzt die verfügbaren Schließungszeiten bei der Terminplanung.',
         googleCalendar: 'Google Kalender',
         connected: 'Verbunden',
         notConnected: 'Nicht verbunden',
