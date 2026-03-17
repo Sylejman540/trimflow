@@ -346,7 +346,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         <div className="min-w-0">
                             <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
                             {(company.address || company.phone) && (
-                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? (company.phone ? `+${company.phone}` : '')}</p>
+                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? (company.phone ? `+${company.phone.replace(/^\+/, '')}` : '')}</p>
                             )}
                         </div>
                     </div>

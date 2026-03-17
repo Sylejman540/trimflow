@@ -120,7 +120,7 @@ export default function Confirmation({
                                 )}
                                 {company.phone && (
                                     <p className="text-xs text-slate-500">
-                                        +{company.phone}
+                                        +{company.phone.replace(/^\+/, '')}
                                     </p>
                                 )}
                             </div>
@@ -181,7 +181,7 @@ export default function Confirmation({
                             )}
                             {company.phone && (
                                 <p className="text-xs text-slate-500">
-                                    +{company.phone}
+                                    +{company.phone.replace(/^\+/, '')}
                                 </p>
                             )}
                         </div>
@@ -226,7 +226,7 @@ export default function Confirmation({
 
                     {company.phone && (
                         <p className="text-xs text-slate-400">
-                            {t('booking.shopPhone')}: <span className="font-medium text-slate-600">+{company.phone}</span>
+                            {t('booking.shopPhone')}: <span className="font-medium text-slate-600">+{company.phone.replace(/^\+/, '')}</span>
                         </p>
                     )}
 

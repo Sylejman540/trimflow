@@ -6,13 +6,11 @@ import { Eye, Search } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { formatCents, formatTime, cn } from '@/lib/utils';
-import { Appointment, AppointmentStatus, PageProps } from '@/types';
+import { Appointment, AppointmentStatus } from '@/types';
 
 const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
 
@@ -138,59 +136,54 @@ export default function History({
         <AppLayout title={t('appt.history')}>
             <Head title={t('appt.history')} />
 
-            <div className="flex flex-col gap-6">
+            <div className="space-y-2">
+                {/* Toolbar */}
                 <div className="flex flex-col gap-2">
+                    {/* Search row */}
                     <div className="relative">
-                        <Search className="absolute left-3 top-2.5 h-5 w-5 text-slate-400 pointer-events-none" />
-                        <Input
-                            type="text"
-                            placeholder={t('apptIndex.searchPlaceholder')}
-                            value={globalSearch}
-                            onChange={(e) => setGlobalSearch(e.target.value)}
-                            className="pl-10"
-                        />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <input type="text" value={globalSearch} placeholder={t('apptIndex.searchPlaceholder')}
+                            className="w-full pl-10 pr-3 h-10 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none placeholder:text-slate-400"
+                            onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
-                    <div className="flex gap-3 items-end">
-                        <div className="flex-1">
-                            <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{t('appt.dateFilter')}</Label>
-                            <Select value={dateFilter} onValueChange={handleDateChange}>
-                                <SelectTrigger className="h-9 text-sm">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">{t('apptIndex.filterDateAll')}</SelectItem>
-                                    <SelectItem value="last7d">{t('apptIndex.filterDateLast7d')}</SelectItem>
-                                    <SelectItem value="last30d">{t('apptIndex.filterDateLast30d')}</SelectItem>
-                                    <SelectItem value="last90d">{t('apptIndex.filterDateLast90d')}</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="flex-1">
-                            <Label className="text-xs font-semibold text-slate-600 mb-1.5 block">{t('appt.status')}</Label>
-                            <Select value={statusFilter} onValueChange={handleStatusChange}>
-                                <SelectTrigger className="h-9 text-sm">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">{t('apptIndex.filterStatusAll')}</SelectItem>
-                                    <SelectItem value="completed">{t('appt.completed')}</SelectItem>
-                                    <SelectItem value="cancelled">{t('appt.cancelled')}</SelectItem>
-                                    <SelectItem value="no_show">{t('appt.noShow')}</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+
+                    {/* Filters row */}
+                    <div className="flex items-center gap-2">
+                        <Select value={dateFilter} onValueChange={v => handleDateChange(v ?? 'all')}>
+                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{dateFilter === 'all' ? t('apptIndex.filterDateAll') : dateFilter === 'last7d' ? t('apptIndex.filterDateLast7d') : dateFilter === 'last30d' ? t('apptIndex.filterDateLast30d') : t('apptIndex.filterDateLast90d')}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">{t('apptIndex.filterDateAll')}</SelectItem>
+                                <SelectItem value="last7d">{t('apptIndex.filterDateLast7d')}</SelectItem>
+                                <SelectItem value="last30d">{t('apptIndex.filterDateLast30d')}</SelectItem>
+                                <SelectItem value="last90d">{t('apptIndex.filterDateLast90d')}</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={statusFilter} onValueChange={v => handleStatusChange(v ?? 'all')}>
+                            <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                                <SelectValue>{statusFilter === 'all' ? t('apptIndex.filterStatusAll') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter}`)}</SelectValue>
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl border-slate-200 shadow-none">
+                                <SelectItem value="all">{t('apptIndex.filterStatusAll')}</SelectItem>
+                                <SelectItem value="completed">{t('appt.completed')}</SelectItem>
+                                <SelectItem value="cancelled">{t('appt.cancelled')}</SelectItem>
+                                <SelectItem value="no_show">{t('appt.noShow')}</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
 
-                <div className="rounded-lg border border-slate-200 bg-white">
-                    {filtered.length === 0 ? (
-                        <div className="px-6 py-12 text-center text-slate-500">
-                            <p>{t('appt.noAppointments')}</p>
-                        </div>
-                    ) : (
+                {filtered.length === 0 ? (
+                    <div className="text-center py-12 text-slate-500">
+                        <p>{t('appt.noAppointments')}</p>
+                    </div>
+                ) : (
+                    <div className="rounded-lg border border-slate-200 bg-white overflow-hidden">
                         <DataTable columns={columns} data={filtered} showSearch={false} />
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );
