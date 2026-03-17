@@ -28,6 +28,17 @@ class StoreAppointmentRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'service_ids.required' => 'Please select at least one service.',
+            'service_ids.min' => 'Please select at least one service.',
+            'starts_at.required' => 'The starts at field is required.',
+            'barber_id.required' => 'Please select a barber.',
+            'customer_name.required' => 'Customer name is required.',
+        ];
+    }
+
     protected function prepareForValidation(): void
     {
         // Sanitize customer name: strip HTML tags and trim whitespace

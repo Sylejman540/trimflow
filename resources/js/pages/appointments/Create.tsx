@@ -332,7 +332,6 @@ export default function Create({
                                         );
                                     })}
                                 </div>
-                                {errors.service_ids && <p className="text-xs text-red-500 font-medium mt-2">{errors.service_ids}</p>}
                             </div>
 
                             {selectedServices.length > 0 && (
