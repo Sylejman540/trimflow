@@ -154,40 +154,40 @@ export default function History({
 
             <div className="space-y-4">
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 lg:gap-3">
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-50 text-green-600 shrink-0">
-                                    <CheckCircle2 className="h-4 w-4" />
+                        <CardContent className="p-3 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600 shrink-0">
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
                                 </div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('appt.completed')}</p>
                             </div>
-                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.completed}</p>
+                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.completed}</p>
                         </CardContent>
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-600 shrink-0">
-                                    <XCircle className="h-4 w-4" />
+                        <CardContent className="p-3 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50 text-red-600 shrink-0">
+                                    <XCircle className="h-3.5 w-3.5" />
                                 </div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('appt.cancelled')}</p>
                             </div>
-                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.cancelled}</p>
+                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.cancelled}</p>
                         </CardContent>
                     </Card>
 
                     <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-600 shrink-0">
-                                    <AlertCircle className="h-4 w-4" />
+                        <CardContent className="p-3 space-y-2">
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-600 shrink-0">
+                                    <AlertCircle className="h-3.5 w-3.5" />
                                 </div>
                                 <p className="text-xs font-medium text-muted-foreground">{t('appt.noShow')}</p>
                             </div>
-                            <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.noShow}</p>
+                            <p className="text-lg lg:text-xl font-bold ml-10">{stats.noShow}</p>
                         </CardContent>
                     </Card>
                 </div>
