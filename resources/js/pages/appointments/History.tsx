@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, Search, CheckCircle2, XCircle, AlertCircle, DollarSign } from 'lucide-react';
+import { Eye, Search, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -89,11 +89,8 @@ export default function History({
         const completed = appointments.filter(a => a.status === 'completed').length;
         const cancelled = appointments.filter(a => a.status === 'cancelled').length;
         const noShow = appointments.filter(a => a.status === 'no_show').length;
-        const revenue = appointments
-            .filter(a => a.status === 'completed')
-            .reduce((sum, a) => sum + a.price, 0);
 
-        return { completed, cancelled, noShow, revenue };
+        return { completed, cancelled, noShow };
     }, [appointments]);
 
     const columns: ColumnDef<Appointment>[] = [
@@ -157,7 +154,7 @@ export default function History({
 
             <div className="space-y-4">
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-4">
                     <Card className="border-slate-200 shadow-none">
                         <CardContent className="p-4 lg:p-5 space-y-3">
                             <div className="flex items-center gap-3">
@@ -191,18 +188,6 @@ export default function History({
                                 <p className="text-xs font-medium text-muted-foreground">{t('appt.noShow')}</p>
                             </div>
                             <p className="text-2xl lg:text-3xl font-bold ml-11">{stats.noShow}</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="border-slate-200 shadow-none">
-                        <CardContent className="p-4 lg:p-5 space-y-3">
-                            <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 shrink-0">
-                                    <DollarSign className="h-4 w-4" />
-                                </div>
-                                <p className="text-xs font-medium text-muted-foreground">{t('dash.revenueToday')}</p>
-                            </div>
-                            <p className="text-2xl lg:text-3xl font-bold ml-11">{formatCents(stats.revenue)}</p>
                         </CardContent>
                     </Card>
                 </div>

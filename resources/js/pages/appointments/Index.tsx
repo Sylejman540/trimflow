@@ -967,7 +967,7 @@ export default function Index({
                     </div>
 
                     {/* Filters row */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
                         <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
                             <SelectTrigger className="h-9 flex-1 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
@@ -991,14 +991,14 @@ export default function Index({
                             </SelectContent>
                         </Select>
 
-                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0 bg-white">
+                        <div className="flex items-center rounded-lg border border-slate-200 overflow-hidden shrink-0 bg-white w-full sm:w-auto">
                             {viewButtons.map(({ mode, icon: Icon, label }) => (
                                 <button
                                     key={mode}
                                     onClick={() => changeView(mode)}
                                     title={label}
                                     className={cn(
-                                        'h-10 px-3 sm:h-9 sm:px-2.5 flex items-center justify-center gap-1.5 sm:gap-1 transition-colors border-r border-slate-200 last:border-r-0',
+                                        'h-10 flex-1 sm:h-9 sm:flex-none sm:px-2.5 px-3 flex items-center justify-center gap-1.5 sm:gap-1 transition-colors border-r border-slate-200 last:border-r-0',
                                         view === mode
                                             ? 'bg-slate-900 text-white'
                                             : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
