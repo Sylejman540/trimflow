@@ -890,11 +890,18 @@ export default function Index({
                 return (
                     <div className="flex items-center justify-end gap-1">
                         {appt.status === 'pending' && (
-                            <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                                className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50')}
-                                title={t('apptIndex.confirmApptTooltip')}>
-                                <CheckCircle2 className="h-4 w-4" />
-                            </button>
+                            <>
+                                <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                                    className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50')}
+                                    title={t('apptIndex.confirmApptTooltip')}>
+                                    <CheckCircle2 className="h-4 w-4" />
+                                </button>
+                                <button onClick={() => setDeletingAppt(appt)}
+                                    className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50')}
+                                    title={t('cancel')}>
+                                    <X className="h-4 w-4" />
+                                </button>
+                            </>
                         )}
                         <Link href={route('appointments.show', appt.id)} className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100')}>
                             <Eye className="h-4 w-4" />
