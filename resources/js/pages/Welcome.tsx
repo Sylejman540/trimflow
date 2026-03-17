@@ -57,30 +57,6 @@ function PhoneFrame({ children, className = '', style = {} }: { children: React.
 
             {/* Screen area — clipped content */}
             <div className="absolute overflow-hidden rounded-[30px] bg-black" style={{ top: '1.5%', left: '3%', right: '3%', bottom: '1.5%' }}>
-                {/* Status Bar */}
-                <div className="absolute top-0 left-0 right-0 px-4 py-1.5 flex justify-between items-center text-white text-xs z-30 bg-gradient-to-b from-black/40 to-transparent">
-                    <div className="font-semibold">9:41</div>
-                    <div className="flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-                        </svg>
-                        <svg className="w-4 h-3" fill="currentColor" viewBox="0 0 24 24">
-                            <rect x="2" y="4" width="20" height="16" rx="2" fill="none" stroke="currentColor" strokeWidth="1.5"/>
-                            <rect x="4" y="6" width="3" height="12" fill="currentColor"/>
-                            <rect x="9" y="6" width="3" height="12" fill="currentColor"/>
-                            <rect x="14" y="6" width="3" height="12" fill="currentColor"/>
-                        </svg>
-                        <div className="flex items-center gap-0.5">
-                            <div className="w-1 h-3 bg-white/70 rounded-sm"></div>
-                            <div className="w-1 h-3.5 bg-white/70 rounded-sm"></div>
-                            <div className="w-1 h-4 bg-white rounded-sm"></div>
-                        </div>
-                        <div className="w-5 h-2.5 border border-white/70 rounded-sm flex items-center px-0.5">
-                            <div className="flex-1 h-1.5 bg-white rounded-xs"></div>
-                        </div>
-                    </div>
-                </div>
-
                 {/* Dynamic island */}
                 <div className="absolute left-1/2 -translate-x-1/2 bg-black rounded-full z-20" style={{ top: '2%', width: '35%', height: '3.5%' }} />
                 {/* Content fills screen */}
@@ -517,26 +493,15 @@ const LockInLoyalty = () => {
                         <div className="relative flex items-center justify-center mt-8 md:mt-0" style={{ height: '400px' }}>
 
                             <div
-                                className="absolute bg-pink-400 rounded-3xl"
-                                style={{ width: '85%', maxWidth: '560px', height: '280px', top: '60px', right: '0' }}
+                                className="absolute bg-blue-400 rounded-3xl"
+                                style={{ width: '95%', maxWidth: '580px', height: '300px', top: '50px', right: '-20px' }}
                             />
 
                             <div
                                 className="absolute overflow-hidden shadow-2xl"
-                                style={{ width: '55%', maxWidth: '320px', borderRadius: '20px', top: '0', right: '10%' }}
+                                style={{ width: '75%', maxWidth: '420px', borderRadius: '20px', top: '0', right: '0', zIndex: 10 }}
                             >
-                                <img src="/dashboard.png" alt="Dashboard" className="w-full h-auto object-contain" />
-                            </div>
-
-                            <div
-                                className="absolute z-20 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
-                                style={{ width: '42%', maxWidth: '230px', height: '240px', borderRadius: '20px', bottom: '0', left: '5%' }}
-                            >
-                                <img
-                                    src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=500&q=80"
-                                    alt="Barber"
-                                    className="w-full h-full object-cover"
-                                />
+                                <img src="/reports.png" alt="Reports & Analytics" className="w-full h-auto object-cover" />
                             </div>
 
                         </div>

@@ -12,6 +12,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BookingSlotsController;
 use App\Http\Controllers\BookingAvailabilityController;
 use App\Http\Controllers\BookingStatusController;
+use App\Http\Controllers\BookingApiController;
 use App\Http\Controllers\WalkinController;
 use App\Http\Controllers\BarberTimeOffController;
 use App\Http\Controllers\ScheduleController;
@@ -139,6 +140,7 @@ Route::get('/book/{slug}/status/{token}', BookingStatusController::class)->name(
 Route::get('/book/{slug}/slots', BookingSlotsController::class)->name('booking.slots');
 Route::get('/book/{slug}/availability', BookingAvailabilityController::class)->name('booking.availability');
 Route::post('/book/{slug}/cancel', BookingCancelController::class)->name('booking.cancel');
+Route::get('/api/booking-status/{slug}/{token}', [BookingApiController::class, 'status'])->name('api.booking-status');
 
 // ManyChat webhook — returns booking URL for use in ManyChat HTTP Request blocks
 Route::post('/webhooks/manychat/{slug}', ManyChatWebhookController::class)->name('webhooks.manychat');

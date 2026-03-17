@@ -268,6 +268,11 @@ export default function AppLayout({
     const [signOutOpen, setSignOutOpen] = useState(false);
 
     useEffect(() => {
+        // Sync unread count from server props whenever it changes
+        setUnreadCount(auth.unread_notifications ?? 0);
+    }, [auth.unread_notifications]);
+
+    useEffect(() => {
         const companyId = auth.company?.id;
         if (!companyId || !window.Echo) return;
 
@@ -279,8 +284,8 @@ export default function AppLayout({
 
         // Listen for new notifications via appointment events
         appointmentChannel.listen('.NotificationCreated', () => {
-            // Increment unread count when a notification is created
-            setUnreadCount(prev => prev + 1);
+            // Reload to get updated unread count from server
+            router.reload({ only: ['auth'] });
         });
 
         return () => { window.Echo.leave(`company.${companyId}.appointments`); };

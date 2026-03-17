@@ -33,14 +33,15 @@ class NotificationController extends Controller
 
     public function markRead(Request $request)
     {
+        $user = Auth::user();
         $id = $request->input('id');
 
         if ($id) {
-            Auth::user()->notifications()->where('id', $id)->update(['read_at' => now()]);
+            $user->notifications()->where('id', $id)->update(['read_at' => now()]);
         } else {
-            Auth::user()->unreadNotifications->markAsRead();
+            $user->unreadNotifications->markAsRead();
         }
 
-        return back();
+        return back()->with('unread_notifications', $user->unreadNotifications->count());
     }
 }

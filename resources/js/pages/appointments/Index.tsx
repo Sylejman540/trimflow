@@ -308,28 +308,28 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
                 {appt.status === 'pending' && (
                     <>
-                        <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.patch(route('appointments.confirm', appt.id)); }}
                             className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
                             <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                         </button>
-                        <button onClick={() => router.patch(route('appointments.decline', appt.id))}
+                        <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.patch(route('appointments.decline', appt.id)); }}
                             className="flex-1 flex items-center justify-center gap-1.5 h-8 text-xs font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg active:bg-red-100 transition-colors">
                             <X className="h-3.5 w-3.5" /> {t('cancel')}
                         </button>
                     </>
                 )}
-                <Link href={route('appointments.show', appt.id)}
+                <Link href={route('appointments.show', appt.id)} onClick={(e) => e.stopPropagation()}
                     className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-8 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
                     <Eye className="h-3.5 w-3.5" /> {t('appt.view')}
                 </Link>
                 {appt.status !== 'in_progress' && (
-                    <Link href={route('appointments.edit', appt.id)}
+                    <Link href={route('appointments.edit', appt.id)} onClick={(e) => e.stopPropagation()}
                         className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-8 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
                         <Edit className="h-3.5 w-3.5" /> {t('edit')}
                     </Link>
                 )}
                 {appt.status !== 'in_progress' && appt.can_delete && (
-                    <button onClick={() => onDelete(appt)}
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(appt); }}
                         className="h-8 w-8 flex items-center justify-center text-slate-300 active:text-red-600 active:bg-red-50 rounded-lg border border-slate-200 transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                     </button>

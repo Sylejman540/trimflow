@@ -114,25 +114,16 @@ export default function Status({
         }
     }, [i18n, booking_lang]);
 
-    // Listen for appointment status changes in real-time
+    // Auto-reload page every 5 seconds when status is pending (fallback if Echo doesn't work)
     useEffect(() => {
-        if (!appointment_id || !window.Echo) return;
+        if (currentStatus !== 'pending') return;
 
-        const channel = window.Echo.channel(`company.${company.id}`);
+        const reloadInterval = setInterval(() => {
+            window.location.reload();
+        }, 5000);
 
-        const listener = channel.listen('.AppointmentChanged', (data: any) => {
-            // AppointmentChanged broadcasts the appointment data directly
-            if (data.id === appointment_id) {
-                setCurrentStatus(data.status);
-                // Reload the entire page to get fresh appointment data
-                setTimeout(() => window.location.reload(), 100);
-            }
-        });
-
-        return () => {
-            window.Echo.leave(`company.${company.id}`);
-        };
-    }, [appointment_id, company.id]);
+        return () => clearInterval(reloadInterval);
+    }, [currentStatus]);
 
     const statusMsg = statusMessages[currentStatus] || statusMessages.pending;
 
