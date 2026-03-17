@@ -496,8 +496,8 @@ export default function AppLayout({
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
                 {/* Header */}
                 <header className="flex h-14 lg:h-16 shrink-0 items-center justify-between border-b border-slate-200 px-3 sm:px-4 lg:px-8">
-                    {/* Krahu i Majtë: Menu & Titulli & Actions */}
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                    {/* Krahu i Majtë: Menu & Titulli */}
+                    <div className="flex items-center gap-2 min-w-0">
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-50 rounded-md transition-colors shrink-0"
@@ -507,12 +507,6 @@ export default function AppLayout({
                         <h1 className="text-sm font-bold text-slate-900 tracking-tight leading-none truncate">
                             {title}
                         </h1>
-                        {/* Mobile actions inline with title */}
-                        {actions && (
-                            <div className="flex items-center gap-1 sm:gap-1.5 ml-auto sm:hidden">
-                                {actions}
-                            </div>
-                        )}
                     </div>
 
                     {/* Krahu i Djathtë: Actions, Walk-in, Lang, Notifications */}

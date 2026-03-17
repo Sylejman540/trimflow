@@ -61,6 +61,20 @@ class WalkinController extends Controller
             // Lock the barber row to prevent concurrent bookings in the same time slot
             $barber = Barber::lockForUpdate()->find($barberId);
 
+            // Check for time off
+            $today = $startsAt->format('Y-m-d');
+            $onTimeOff = \DB::table('barber_time_offs')
+                ->where('barber_id', $barberId)
+                ->where('starts_on', '<=', $today)
+                ->where('ends_on', '>=', $today)
+                ->exists();
+
+            if ($onTimeOff) {
+                throw ValidationException::withMessages([
+                    'barber_id' => 'This barber is on time off today.',
+                ]);
+            }
+
             $conflict = Appointment::where('barber_id', $barberId)
                 ->whereNotIn('status', ['cancelled', 'no_show'])
                 ->where(fn ($q) => $q
