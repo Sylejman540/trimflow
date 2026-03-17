@@ -132,8 +132,6 @@ export default function Show({ company, barbers: initialBarbers, services, recap
 
     const recaptchaRef = useRef<HTMLDivElement>(null);
 
-    const { i18n } = useTranslation();
-
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
         service_ids: [] as string[],

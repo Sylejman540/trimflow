@@ -39,8 +39,6 @@ export default {
     upcoming: 'Të ardhshme',
     past: 'Të kaluara',
     logout: 'Dil',
-    accept: 'Pranoje',
-    decline: 'Refuzo',
 
     // Days of week
     days: {

@@ -74,10 +74,6 @@ interface PastAppointment {
     service: string;
 }
 
-interface PageProps {
-    booking_lang?: string;
-}
-
 const statusStyle: Record<string, string> = {
     pending:     'bg-orange-50 text-orange-700 border-orange-100',
     confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
@@ -106,7 +102,7 @@ export default function Status({
     past?: PastAppointment[];
 }) {
     const { t, i18n } = useTranslation();
-    const { booking_lang } = usePage<PageProps>().props;
+    const { booking_lang } = usePage().props as any;
 
     // Sync language from booking session or localStorage to i18n
     useEffect(() => {
