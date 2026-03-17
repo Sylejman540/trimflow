@@ -377,8 +377,8 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                     </div>
                 )}
 
-                {/* Step 0: Service Selection */}
-                {step === 0 && (
+                {/* Step 0: Service Selection - Hidden when no services */}
+                {step === 0 && services.length > 0 && (
                     <div className="space-y-3 pb-32">
                         <h2 className="text-sm font-bold text-slate-900 uppercase tracking-widest">{t('booking.chooseServices')}</h2>
 
