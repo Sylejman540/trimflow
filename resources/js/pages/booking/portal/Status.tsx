@@ -94,6 +94,11 @@ export default function Status({
 
     const statusMsg = statusMessages[appointment.status] || statusMessages.pending;
 
+    const apptDate = useMemo(() =>
+        formatApptDate(appointment.starts_at, i18n.language),
+        [appointment.starts_at, i18n.language]
+    );
+
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
             <Head title={`Booking Status — ${company.name}`} />
@@ -133,7 +138,7 @@ export default function Status({
                         <div className="space-y-3">
                             <div className="flex items-center gap-2 text-sm text-slate-600">
                                 <CalendarDays className="h-4 w-4 text-slate-400 shrink-0" />
-                                <span>{formatDateTime(appointment.starts_at)}</span>
+                                <span>{apptDate ? `${apptDate.day}, ${apptDate.time}` : formatDateTime(appointment.starts_at)}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-slate-600">Total price</span>
@@ -173,7 +178,10 @@ export default function Status({
                                         </div>
                                         <div className="flex items-center gap-2 text-xs text-slate-500">
                                             <CalendarDays className="h-3 w-3" />
-                                            {formatDateTime(a.starts_at)}
+                                            {(() => {
+                                                const date = formatApptDate(a.starts_at, i18n.language);
+                                                return date ? `${date.day}, ${date.time}` : formatDateTime(a.starts_at);
+                                            })()}
                                         </div>
                                     </div>
                                 ))}
