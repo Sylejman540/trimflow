@@ -312,7 +312,7 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
                             className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
                             <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
                         </button>
-                        <button onClick={() => onDelete(appt)}
+                        <button onClick={() => router.patch(route('appointments.decline', appt.id))}
                             className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg active:bg-red-100 transition-colors">
                             <X className="h-3.5 w-3.5" /> {t('cancel')}
                         </button>
@@ -902,7 +902,7 @@ export default function Index({
                                     title={t('apptIndex.confirmApptTooltip')}>
                                     <CheckCircle2 className="h-4 w-4" />
                                 </button>
-                                <button onClick={() => setDeletingAppt(appt)}
+                                <button onClick={() => router.patch(route('appointments.decline', appt.id))}
                                     className={cn(buttonVariants({ variant: 'ghost', size: 'icon' }), 'h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50')}
                                     title={t('cancel')}>
                                     <X className="h-4 w-4" />

@@ -534,17 +534,15 @@ export default function AppLayout({
                             </button>
                         )}
 
-                        {/* Booking Link */}
+                        {/* Booking Link - Copy to Clipboard */}
                         {auth.company?.slug && (
-                            <a
-                                href={`/book/${auth.company.slug}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <button
+                                onClick={copyBookingLink}
                                 className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors shrink-0 sm:border sm:border-slate-200"
                                 title={t('nav.bookingLink')}
                             >
                                 <Link2 className="h-5 w-5" />
-                            </a>
+                            </button>
                         )}
 
                         {/* Language & Notifications */}
