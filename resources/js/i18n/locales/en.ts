@@ -502,6 +502,7 @@ export default {
         bookNow: 'Book Now',
         button: 'Walk-in',
         collapse: 'Collapse',
+        noBarbers: 'No barbers available for this service right now',
     },
 
     // Appointment Show page

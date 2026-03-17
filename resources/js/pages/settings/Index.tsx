@@ -69,6 +69,7 @@ interface Company {
     zip?: string;
     country?: string;
     timezone?: string;
+    max_closing_hour?: number;
     logo?: string | null;
 }
 
@@ -157,15 +158,16 @@ export default function Settings({
     })();
 
     const { data, setData, patch, processing, errors } = useForm({
-        name:     company.name     ?? '',
-        email:    company.email    ?? '',
-        phone:    company.phone    ?? '',
-        address:  company.address  ?? '',
-        city:     company.city     ?? '',
-        state:    company.state    ?? '',
-        zip:      company.zip      ?? '',
-        country:  company.country  ?? '',
-        timezone: company.timezone || detectedTimezone,
+        name:               company.name     ?? '',
+        email:              company.email    ?? '',
+        phone:              company.phone    ?? '',
+        address:            company.address  ?? '',
+        city:               company.city     ?? '',
+        state:              company.state    ?? '',
+        zip:                company.zip      ?? '',
+        country:            company.country  ?? '',
+        timezone:           company.timezone || detectedTimezone,
+        max_closing_hour:   company.max_closing_hour ?? 22,
     });
 
     function handleCompanySubmit(e: React.FormEvent) {

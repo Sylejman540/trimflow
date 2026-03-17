@@ -117,6 +117,7 @@ class BarberController extends Controller
 
         return Inertia::render('barbers/Schedule', [
             'barber' => $barber,
+            'maxClosingHour' => $barber->company->max_closing_hour ?? 22,
         ]);
     }
 

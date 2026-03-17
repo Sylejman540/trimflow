@@ -468,6 +468,7 @@ export default {
         bookNow: 'Jetzt buchen',
         button: 'Walk-in',
         collapse: 'Einklappen',
+        noBarbers: 'Zur Zeit sind keine Friseure für diesen Service verfügbar',
     },
 
     // Appointment Show page

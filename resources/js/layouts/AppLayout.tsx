@@ -155,7 +155,7 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                                 </div>
                             ) : availableBarbers.length === 0 ? (
                                 <div className="h-11 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center">
-                                    <p className="text-xs text-red-600 font-medium">No barbers available for this service right now</p>
+                                    <p className="text-xs text-red-600 font-medium">{t('walkin.noBarbers')}</p>
                                 </div>
                             ) : (
                                 <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>

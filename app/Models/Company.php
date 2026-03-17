@@ -22,6 +22,7 @@ class Company extends Model
         'country',
         'logo',
         'timezone',
+        'max_closing_hour',
         'is_active',
         'meta_access_token',
         'meta_page_id',

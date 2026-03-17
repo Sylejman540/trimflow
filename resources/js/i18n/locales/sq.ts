@@ -488,6 +488,7 @@ export default {
         bookNow: 'Rezervo Tani',
         button: 'Pa rezervim',
         collapse: 'Mbyll',
+        noBarbers: 'Nuk ka berberë në dispozicion për këtë shërbim tani',
     },
 
     // Appointment Show page

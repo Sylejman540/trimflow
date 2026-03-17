@@ -44,18 +44,27 @@ function buildInitial(raw: Record<string, unknown> | null): WorkingHours {
     return result;
 }
 
-const TIME_OPTIONS: string[] = [];
-for (let h = 6; h <= 22; h++) {
-    TIME_OPTIONS.push(`${String(h).padStart(2, '0')}:00`);
-    if (h < 22) TIME_OPTIONS.push(`${String(h).padStart(2, '0')}:30`);
+function buildTimeOptions(maxHour: number): string[] {
+    const options: string[] = [];
+    for (let h = 6; h <= maxHour; h++) {
+        options.push(`${String(h).padStart(2, '0')}:00`);
+        if (h < maxHour) options.push(`${String(h).padStart(2, '0')}:30`);
+    }
+    return options;
 }
 
-export default function Schedule({ barber }: { barber: Barber }) {
+interface ScheduleProps {
+    barber: Barber;
+    maxClosingHour?: number;
+}
+
+export default function Schedule({ barber, maxClosingHour = 22 }: ScheduleProps) {
     const { t } = useTranslation();
     const [hours, setHours] = useState<WorkingHours>(() =>
         buildInitial(barber.working_hours as Record<string, unknown> | null)
     );
     const [processing, setProcessing] = useState(false);
+    const timeOptions = buildTimeOptions(maxClosingHour);
 
     function toggle(day: DayKey) {
         setHours(prev => ({
@@ -164,7 +173,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                     onChange={e => setTime(key, 'start', e.target.value)}
                                                     className="h-8 flex-1 min-w-[90px] rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
                                                 >
-                                                    {TIME_OPTIONS.map(t => (
+                                                    {timeOptions.map(t => (
                                                         <option key={t} value={t}>{t}</option>
                                                     ))}
                                                 </select>
@@ -174,7 +183,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                     onChange={e => setTime(key, 'end', e.target.value)}
                                                     className="h-8 flex-1 min-w-[90px] rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-1 focus:ring-slate-300"
                                                 >
-                                                    {TIME_OPTIONS.filter(t => t > day.start).map(t => (
+                                                    {timeOptions.filter(t => t > day.start).map(t => (
                                                         <option key={t} value={t}>{t}</option>
                                                     ))}
                                                 </select>
