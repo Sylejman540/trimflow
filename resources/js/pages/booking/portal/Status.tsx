@@ -21,7 +21,23 @@ function PoweredBy() {
 
 function formatApptDate(startsAt: string | null | undefined, lang: string) {
     if (!startsAt) return null;
-    const [datePart, timePart] = startsAt.split(' ');
+
+    // Handle ISO8601 format: "2026-03-17T10:00:00Z" or "2026-03-17 10:00:00"
+    let datePart: string;
+    let timePart: string;
+
+    if (startsAt.includes('T')) {
+        // ISO8601 format
+        const [date, time] = startsAt.split('T');
+        datePart = date;
+        timePart = time.split(':').slice(0, 2).join(':');
+    } else {
+        // Space-separated format
+        const parts = startsAt.split(' ');
+        datePart = parts[0];
+        timePart = parts[1] || '00:00';
+    }
+
     const [y, m, d] = datePart.split('-').map(Number);
     const { days, months } = getDaysAndMonths(lang);
     const date = new Date(y, m - 1, d);
