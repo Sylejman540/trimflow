@@ -942,7 +942,7 @@ export default function Index({
                     {is_owner_barber && (
                         <button onClick={toggleMine}
                             className={cn(buttonVariants({ variant: 'outline' }),
-                                'h-9 px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors flex-1 sm:flex-none',
+                                'h-10 px-3 sm:h-9 sm:px-2.5 rounded-lg text-xs font-bold shadow-none transition-colors flex-1 sm:flex-none',
                                 filter_mine ? 'bg-slate-900 text-white border-slate-900' : 'border-slate-200 text-slate-600'
                             )}>
                             <span className="hidden sm:inline">{filter_mine ? t('appt.allAppointments') : t('appt.myAppointments')}</span>
