@@ -467,6 +467,7 @@ export default {
         statusTitle: 'Booking Status',
         statusPending: 'Waiting for Confirmation',
         statusPendingDesc: 'The shop will confirm your appointment shortly.',
+        pendingHint: 'Come back in a few minutes to check if your appointment is approved. The status will update automatically.',
         statusConfirmed: 'Your Appointment is Confirmed!',
         statusConfirmedDesc: 'Your appointment is confirmed. We look forward to seeing you.',
         statusInProgress: 'Your Appointment is In Progress',

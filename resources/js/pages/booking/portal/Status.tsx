@@ -176,7 +176,7 @@ export default function Status({
                         <p className="text-sm text-slate-500 mt-1">{t(statusMsg.key)}</p>
                         {currentStatus === 'pending' && (
                             <p className="text-xs text-slate-400 mt-3 bg-slate-50 rounded-lg px-3 py-2">
-                                💡 Come back in a few minutes to check if your appointment is approved. The status will update automatically.
+                                💡 {t('booking.pendingHint')}
                             </p>
                         )}
                     </div>

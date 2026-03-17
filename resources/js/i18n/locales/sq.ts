@@ -440,6 +440,7 @@ export default {
         statusTitle: 'Statusi i Rezervimit',
         statusPending: 'Duke Pritur Konfirmimin',
         statusPendingDesc: 'Dyqani do të konfirmojë termin tuaj së shpejti.',
+        pendingHint: 'Kthehuni në disa minuta për të kontrolluar nëse termini juaj është miratuar. Statusi do të përditësohet automatikisht.',
         statusConfirmed: 'Termini juaj është Konfirmuar!',
         statusConfirmedDesc: 'Termini juaj është konfirmuar. Presim me ardhjen tuaj.',
         statusInProgress: 'Termini juaj po ecën',

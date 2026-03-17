@@ -420,6 +420,7 @@ export default {
         statusTitle: 'Buchungsstatus',
         statusPending: 'Warten auf Bestätigung',
         statusPendingDesc: 'Der Salon wird Ihren Termin in Kürze bestätigen.',
+        pendingHint: 'Kommen Sie in wenigen Minuten zurück, um zu sehen, ob Ihr Termin genehmigt wurde. Der Status wird automatisch aktualisiert.',
         statusConfirmed: 'Ihr Termin ist Bestätigt!',
         statusConfirmedDesc: 'Ihr Termin ist bestätigt. Wir freuen uns auf Ihren Besuch.',
         statusInProgress: 'Ihr Termin läuft',
