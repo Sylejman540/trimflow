@@ -1,8 +1,9 @@
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Scissors, CalendarDays, Clock, CheckCircle2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { formatCents, formatDateTime, cn } from '@/lib/utils';
+import { getDaysAndMonths } from '@/i18n/locales/utils';
 
 function PoweredBy() {
     return (
