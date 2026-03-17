@@ -513,7 +513,7 @@ export default function AppLayout({
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
                         {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
                         {actions && (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1 sm:gap-1.5">
                                 {actions}
                             </div>
                         )}
@@ -527,9 +527,9 @@ export default function AppLayout({
                         {walkin && (
                             <button
                                 onClick={() => setWalkinOpen(true)}
-                                className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
+                                className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-[11px] font-bold transition-all shadow-sm active:scale-95 shrink-0"
                             >
-                                <Zap className="h-3.5 w-3.5 fill-current" />
+                                <Zap className="h-4 w-4 sm:h-3.5 sm:w-3.5 fill-current" />
                                 {t('dash.walkin')}
                             </button>
                         )}
@@ -538,10 +538,10 @@ export default function AppLayout({
                         {auth.company?.slug && (
                             <button
                                 onClick={copyBookingLink}
-                                className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors shrink-0 sm:border sm:border-slate-200"
+                                className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors shrink-0 sm:border sm:border-slate-200"
                                 title={t('nav.bookingLink')}
                             >
-                                <Link2 className="h-5 w-5" />
+                                <Link2 className="h-5 w-5 sm:h-5 sm:w-5" />
                             </button>
                         )}
 
@@ -553,9 +553,9 @@ export default function AppLayout({
 
                             <Link
                                 href={route('notifications.index')}
-                                className="relative flex items-center justify-center w-9 h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                                className="relative flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                             >
-                                <Bell size={18} />
+                                <Bell size={20} className="sm:w-[18px] sm:h-[18px]" />
                                 {auth.unread_notifications > 0 && (
                                     <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white ring-2 ring-white">
                                         {auth.unread_notifications > 9 ? '9+' : auth.unread_notifications}
