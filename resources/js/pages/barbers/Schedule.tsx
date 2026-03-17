@@ -195,7 +195,13 @@ export default function Schedule({ barber }: { barber: Barber }) {
                         </CardContent>
                     </Card>
 
-                    <div className="flex justify-end px-1">
+                    <div className="flex gap-2 justify-end px-1">
+                        <Link
+                            href={route('barbers.index')}
+                            className={cn(buttonVariants({ variant: 'outline' }), 'h-10 px-6 rounded-lg text-xs font-bold border-slate-200 shadow-none')}
+                        >
+                            {t('cancel')}
+                        </Link>
                         <Button
                             onClick={handleSubmit}
                             disabled={processing}
