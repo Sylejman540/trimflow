@@ -8,6 +8,8 @@ export default {
     back: 'Kthehu',
     close: 'Mbyll',
     confirm: 'Konfirmo',
+    decline: 'Refuzo',
+    accept: 'Prano',
     loading: 'Po ngarkohet…',
     noResults: 'Nuk u gjet asgjë.',
     actions: 'Veprime',

@@ -9,6 +9,8 @@ export default {
     back: 'Back',
     close: 'Close',
     confirm: 'Confirm',
+    decline: 'Decline',
+    accept: 'Accept',
     loading: 'Loading…',
     noResults: 'No results found.',
     actions: 'Actions',

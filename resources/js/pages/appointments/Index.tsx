@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import {
     Edit, Eye, Plus, Trash2, Search, CheckCircle2, RefreshCw,
     User, Scissors, Calendar, Phone, List, LayoutGrid, Kanban,
-    ChevronLeft, ChevronRight, Clock, MoreHorizontal,
+    ChevronLeft, ChevronRight, Clock, MoreHorizontal, X,
 } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
@@ -307,10 +307,16 @@ function ApptCard({ appt, isBarber, isOwnerBarber, onDelete }: {
             </div>
             <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
                 {appt.status === 'pending' && (
-                    <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
-                        className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
-                    </button>
+                    <>
+                        <button onClick={() => router.patch(route('appointments.confirm', appt.id))}
+                            className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg active:bg-emerald-100 transition-colors">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> {t('confirm')}
+                        </button>
+                        <button onClick={() => onDelete(appt)}
+                            className="flex-1 flex items-center justify-center gap-1.5 h-9 text-xs font-bold text-red-700 bg-red-50 border border-red-100 rounded-lg active:bg-red-100 transition-colors">
+                            <X className="h-3.5 w-3.5" /> {t('cancel')}
+                        </button>
+                    </>
                 )}
                 <Link href={route('appointments.show', appt.id)}
                     className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9 text-xs font-bold border-slate-200 shadow-none gap-1.5')}>
