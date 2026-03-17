@@ -511,17 +511,6 @@ export default function AppLayout({
 
                     {/* Krahu i Djathtë: Actions, Walk-in, Lang, Notifications */}
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
-                        {/* Company Selector */}
-                        {auth.company?.name && (
-                            <button
-                                onClick={() => {}}
-                                className="h-10 sm:h-9 px-3 sm:px-4 lg:px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm sm:text-xs font-semibold transition-colors"
-                                title={auth.company.name}
-                            >
-                                {auth.company.name}
-                            </button>
-                        )}
-
                         {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
                         {actions && (
                             <div className="flex items-center gap-1 sm:gap-1.5">
