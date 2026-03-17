@@ -211,15 +211,16 @@ export default function Confirmation({
                         </div>
                     )}
 
+                    {cancel_token && (
+                        <Link
+                            href={route('booking.status', [company.slug, cancel_token])}
+                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-100 hover:bg-slate-200 text-slate-900 h-10 rounded-xl font-semibold shadow-none border border-slate-200')}
+                        >
+                            {t('booking.checkStatus')}
+                        </Link>
+                    )}
+
                     <div className="flex flex-col gap-2">
-                        {cancel_token && (
-                            <Link
-                                href={route('booking.status', [company.slug, cancel_token])}
-                                className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-100 hover:bg-slate-200 text-slate-900 h-10 rounded-xl font-semibold shadow-none border border-slate-200')}
-                            >
-                                {t('booking.checkStatus')}
-                            </Link>
-                        )}
                         <Link
                             href={route('booking.show', company.slug)}
                             className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 hover:bg-slate-800 h-10 rounded-xl font-semibold shadow-none')}
