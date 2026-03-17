@@ -980,9 +980,9 @@ export default function Index({
                     </div>
 
                     {/* Filters row */}
-                    <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-1">
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2">
                         <Select value={dateFilter} onValueChange={v => changeDateFilter(v ?? 'today')}>
-                            <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectTrigger className="h-9 w-full bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{dateFilter === 'all' ? t('all') : dateFilter === 'today' ? t('today') : t('tomorrow')}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
@@ -993,7 +993,7 @@ export default function Index({
                         </Select>
 
                         <Select value={statusFilter} onValueChange={v => changeStatus(v ?? 'all')}>
-                            <SelectTrigger className="h-9 bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
+                            <SelectTrigger className="h-9 w-full bg-white border-slate-200 rounded-lg text-xs font-semibold shadow-none focus:ring-0">
                                 <SelectValue>{statusFilter === 'all' ? t('all') : t(`appt.${statusFilter === 'no_show' ? 'noShow' : statusFilter === 'in_progress' ? 'inProgress' : statusFilter}`)}</SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-200 shadow-none">
