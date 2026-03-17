@@ -61,7 +61,7 @@ class CustomerPortalController extends Controller
             ->map(fn ($a) => $this->mapAppointment($a));
 
         return Inertia::render('booking/portal/Appointments', [
-            'company'   => $company->only('id', 'name', 'slug', 'phone'),
+            'company'   => $company->only('id', 'name', 'slug', 'phone', 'address', 'city'),
             'customer'  => ['name' => $customer->name, 'phone' => $customer->phone],
             'upcoming'  => $upcoming,
             'past'      => $past,

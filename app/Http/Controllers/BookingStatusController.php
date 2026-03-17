@@ -37,7 +37,7 @@ class BookingStatusController extends Controller
 
         return Inertia::render('booking/portal/Status', [
             'company'     => array_merge(
-                $company->only('id', 'name', 'slug'),
+                $company->only('id', 'name', 'slug', 'phone', 'address', 'city'),
                 ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
             ),
             'appointment' => [
