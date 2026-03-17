@@ -28,7 +28,7 @@ class NewPublicBooking extends Notification
     {
         $customer = $this->appointment->customer?->name ?? 'A customer';
         $service  = $this->appointment->service?->name  ?? 'appointment';
-        $time     = $this->appointment->starts_at->format('M j \a\t g:i A');
+        $time     = $this->appointment->starts_at->format('M j \a\t H:i');
 
         return [
             'appointment_id' => $this->appointment->id,
@@ -50,7 +50,7 @@ class NewPublicBooking extends Notification
             ? $appt->services->pluck('name')->join(', ')
             : $service;
 
-        $time   = $appt->starts_at->format('l, F j \a\t g:i A');
+        $time   = $appt->starts_at->format('l, F j \a\t H:i');
         $barber = $appt->barber?->user?->name ?? 'your barber';
 
         $mail = (new MailMessage)

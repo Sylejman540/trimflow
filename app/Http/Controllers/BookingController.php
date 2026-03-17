@@ -377,7 +377,7 @@ class BookingController extends Controller
 
         return Inertia::render('booking/Confirmation', [
             'company'           => array_merge(
-                $company->only('id', 'name', 'slug', 'phone'),
+                $company->only('id', 'name', 'slug', 'phone', 'address', 'city'),
                 ['logo' => $company->logo ? asset('storage/' . $company->logo) : null]
             ),
             'cancel_token'      => session('cancel_token'),

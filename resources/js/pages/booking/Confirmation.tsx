@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Scissors, CalendarDays, X, AlertCircle, Calendar, User } from 'lucide-react';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { getDaysAndMonths } from '@/i18n/locales/utils';
 
@@ -27,6 +27,8 @@ interface Company {
     name: string;
     slug: string;
     phone?: string;
+    address?: string;
+    city?: string;
     logo?: string | null;
 }
 
@@ -58,9 +60,21 @@ export default function Confirmation({
     appt_services?: string | null;
 }) {
     const { t, i18n } = useTranslation();
-    const apptDate = formatApptDate(appt_starts_at, i18n.language);
     const { props } = usePage();
     const cancelled = (props as any).flash?.cancelled ?? false;
+
+    // For public pages, sync language from localStorage to i18n
+    useEffect(() => {
+        const savedLang = localStorage.getItem('fade_lang');
+        if (savedLang && savedLang !== i18n.language) {
+            i18n.changeLanguage(savedLang);
+        }
+    }, [i18n]);
+
+    const apptDate = useMemo(() =>
+        formatApptDate(appt_starts_at, i18n.language),
+        [appt_starts_at, i18n.language]
+    );
 
     const [secondsLeft, setSecondsLeft] = useState<number>(() => {
         if (!cancel_expires_at) return 0;
@@ -89,15 +103,27 @@ export default function Confirmation({
             <div className="min-h-screen bg-slate-50 flex flex-col">
                 <Head title={`Cancelled — ${company.name}`} />
                 <div className="bg-white border-b border-slate-200">
-                    <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
+                    <div className="max-w-2xl mx-auto px-4 py-4 flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
                                 {company.logo
                                     ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
                                     : <Scissors className="h-4 w-4 text-slate-500" />
                                 }
                             </div>
-                            <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-slate-900">{company.name}</p>
+                                {(company.address || company.city) && (
+                                    <p className="text-xs text-slate-500 truncate">
+                                        {[company.address, company.city].filter(Boolean).join(', ')}
+                                    </p>
+                                )}
+                                {company.phone && (
+                                    <p className="text-xs text-slate-500">
+                                        +{company.phone}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                         <LanguageSwitcher compact />
                     </div>
@@ -138,15 +164,27 @@ export default function Confirmation({
 
             {/* Header */}
             <div className="bg-white border-b border-slate-200">
-                <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
+                <div className="max-w-2xl mx-auto px-4 py-4 flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3 min-w-0 flex-1">
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 shrink-0 overflow-hidden">
                             {company.logo
                                 ? <img src={company.logo} alt={company.name} className="h-full w-full object-cover" />
                                 : <Scissors className="h-4 w-4 text-slate-500" />
                             }
                         </div>
-                        <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold text-slate-900">{company.name}</p>
+                            {(company.address || company.city) && (
+                                <p className="text-xs text-slate-500 truncate">
+                                    {[company.address, company.city].filter(Boolean).join(', ')}
+                                </p>
+                            )}
+                            {company.phone && (
+                                <p className="text-xs text-slate-500">
+                                    +{company.phone}
+                                </p>
+                            )}
+                        </div>
                     </div>
                     <LanguageSwitcher compact />
                 </div>

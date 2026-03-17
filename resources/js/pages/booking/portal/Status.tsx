@@ -1,6 +1,7 @@
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Scissors, CalendarDays, Clock, CheckCircle2 } from 'lucide-react';
+import { useEffect } from 'react';
 import { formatCents, formatDateTime, cn } from '@/lib/utils';
 
 function PoweredBy() {
@@ -68,7 +69,15 @@ export default function Status({
     appointment: Appointment;
     past?: PastAppointment[];
 }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+
+    // For public pages, sync language from localStorage to i18n
+    useEffect(() => {
+        const savedLang = localStorage.getItem('fade_lang');
+        if (savedLang && savedLang !== i18n.language) {
+            i18n.changeLanguage(savedLang);
+        }
+    }, [i18n]);
 
     const statusMsg = statusMessages[appointment.status] || statusMessages.pending;
 
