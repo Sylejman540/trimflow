@@ -142,7 +142,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
             icon: Users,
             label: t('setup.barbersLabel'),
             sub: t('setup.barbersSub'),
-            href: route('barbers.index'),
+            href: route('barbers.index') + '?from=setup',
             linkLabel: t('setup.barbersLink'),
         },
         {
@@ -150,7 +150,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
             icon: Scissors,
             label: t('setup.servicesLabel'),
             sub: t('setup.servicesSub'),
-            href: route('services.index'),
+            href: route('services.index') + '?from=setup',
             linkLabel: t('setup.servicesLink'),
         },
     ];

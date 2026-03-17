@@ -152,6 +152,15 @@ export default function Index({ services }: { services: any }) {
         >
             <Head title={t('svc.title')} />
 
+            {/* Back to Dashboard button when coming from setup */}
+            {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('from') && (
+                <div className="mb-3 pb-3 border-b border-slate-200">
+                    <a href={route('dashboard')} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors">
+                        ← {t('back')}
+                    </a>
+                </div>
+            )}
+
             <div className="space-y-2">
                 {/* Toolbar */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">

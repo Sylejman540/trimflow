@@ -34,7 +34,12 @@ export default function Create({
     const { t, i18n } = useTranslation();
 
     const [currentStep, setCurrentStep] = useState<WizardStep>(isBarber ? 'customer' : 'barber');
-    const [selectedDate, setSelectedDate] = useState('');
+    const todayStr = useMemo(() => {
+        const d = new Date();
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    }, []);
+    const [selectedDate, setSelectedDate] = useState(todayStr);
     const [slots, setSlots] = useState<string[] | null>(null);
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState('');
@@ -51,12 +56,6 @@ export default function Create({
     const selectedServices = services.filter(s => data.service_ids.includes(String(s.id)));
     const totalDuration = selectedServices.reduce((sum, s) => sum + s.duration, 0);
     const totalPrice = selectedServices.reduce((sum, s) => sum + s.price, 0);
-
-    const todayStr = useMemo(() => {
-        const d = new Date();
-        const pad = (n: number) => String(n).padStart(2, '0');
-        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-    }, []);
 
     function formatDateWithDay(dateStr: string) {
         if (!dateStr) return '';
@@ -254,11 +253,15 @@ export default function Create({
                                 </Label>
                                 <Select value={data.barber_id} onValueChange={(v) => setData('barber_id', v ?? '')}>
                                     <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                        <SelectValue placeholder={t('appt.selectBarber')} />
+                                        {selectedBarber ? (
+                                            <span className="font-medium text-slate-900">{selectedBarber.user?.name}</span>
+                                        ) : (
+                                            <SelectValue placeholder={t('appt.selectBarber')} />
+                                        )}
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                         {barbers.map((b) => (
-                                            <SelectItem key={b.id} value={String(b.id)} className="text-sm">
+                                            <SelectItem key={b.id} value={String(b.id)} label={b.user?.name ?? ''} className="text-sm">
                                                 {b.user?.name ?? ''}
                                             </SelectItem>
                                         ))}
@@ -381,7 +384,7 @@ export default function Create({
 
                             {canShowSlots && selectedDate && !barberNotWorking && (
                                 <div className="space-y-3">
-                                    <Label className="text-sm font-bold text-slate-900">Available Times</Label>
+                                    <Label className="text-sm font-bold text-slate-900">{t('appt.availableTimes')}</Label>
                                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                                         {slotsLoading && (
                                             <div className="flex items-center gap-2 py-4 justify-center text-xs text-slate-400">

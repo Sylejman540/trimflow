@@ -217,6 +217,7 @@ export default {
         markNoShow: 'Mark No-Show',
         selectBarberAndServiceFirst: 'Select a barber and service first to see available times.',
         checkingAvailability: 'Checking availability…',
+        availableTimes: 'Available Times',
         noSlotsOnDate: 'No available slots on this day — barber is off or fully booked.',
         bookingDetails: 'Booking Details',
         bookingDetailsDesc: 'Fill in the information below to schedule a new session.',
@@ -401,6 +402,7 @@ export default {
     booking: {
         chooseBarber: 'Choose a Barber',
         chooseServices: 'Choose Services',
+        noServices: 'No services available.',
         pickDateTime: 'Pick a Date & Time',
         yourDetails: 'Your Details',
         bookingSummary: 'Booking Summary',

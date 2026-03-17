@@ -198,6 +198,7 @@ export default {
         markNoShow: 'Shëno si nuk u paraqit',
         selectBarberAndServiceFirst: 'Zgjidh berberin dhe shërbimin për të parë oraret e lira.',
         checkingAvailability: 'Duke kontrolluar disponueshmërinë…',
+        availableTimes: 'Oraret e lira',
         noSlotsOnDate: 'Nuk ka orare të lira këtë ditë — berberi është lirë ose plotësisht i zënë.',
         bookingDetails: 'Detajet e rezervimit',
         bookingDetailsDesc: 'Plotëso informacionin për të caktuar një takim të ri.',
@@ -376,6 +377,7 @@ export default {
     booking: {
         chooseBarber: 'Zgjidhni berberin',
         chooseServices: 'Zgjidhni shërbimet',
+        noServices: 'Nuk ka shërbime të disponueshme.',
         pickDateTime: 'Zgjidhni datën dhe orën',
         yourDetails: 'Të dhënat tuaja',
         bookingSummary: 'Përmbledhja e rezervimit',

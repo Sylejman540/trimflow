@@ -179,6 +179,7 @@ export default {
         markNoShow: 'Als nicht erschienen markieren',
         selectBarberAndServiceFirst: 'Wählen Sie zuerst einen Friseur und eine Leistung, um verfügbare Zeiten zu sehen.',
         checkingAvailability: 'Verfügbarkeit wird geprüft…',
+        availableTimes: 'Verfügbare Zeiten',
         noSlotsOnDate: 'Keine verfügbaren Zeiten an diesem Tag — Friseur ist frei oder vollständig ausgebucht.',
         bookingDetails: 'Buchungsdetails',
         bookingDetailsDesc: 'Füllen Sie die Informationen aus, um einen neuen Termin zu planen.',
@@ -354,6 +355,7 @@ export default {
     booking: {
         chooseBarber: 'Friseur wählen',
         chooseServices: 'Leistungen wählen',
+        noServices: 'Keine Dienstleistungen verfügbar.',
         pickDateTime: 'Datum & Uhrzeit wählen',
         yourDetails: 'Ihre Angaben',
         bookingSummary: 'Buchungsübersicht',
