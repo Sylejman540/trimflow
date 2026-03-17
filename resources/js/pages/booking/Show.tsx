@@ -66,7 +66,7 @@ function isValidPhone(phone: string): boolean {
 
     // If starts with +, must be international format
     if (cleaned.startsWith('+')) {
-        return /^\+\d{1,3}\d{6,14}$/.test(cleaned);
+        return /^\+\d{7,15}$/.test(cleaned);
     }
     // Local format: 7-15 digits
     return /^\d{7,15}$/.test(cleaned);
@@ -346,7 +346,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         <div className="min-w-0">
                             <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
                             {(company.address || company.phone) && (
-                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? company.phone}</p>
+                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? (company.phone ? `+${company.phone}` : '')}</p>
                             )}
                         </div>
                     </div>

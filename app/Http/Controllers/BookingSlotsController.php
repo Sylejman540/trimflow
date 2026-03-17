@@ -66,9 +66,9 @@ class BookingSlotsController extends Controller
                 [$windowStart, $windowEnd] = array_values($dayHours);
             }
         } else {
-            // No schedule set — use default business hours
+            // No schedule set — use default business hours (9am to 8pm)
             $windowStart = '09:00';
-            $windowEnd   = '18:00';
+            $windowEnd   = '20:00';
         }
 
         // Check time-off

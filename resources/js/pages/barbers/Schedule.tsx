@@ -114,10 +114,10 @@ export default function Schedule({ barber }: { barber: Barber }) {
                         <CardHeader className="pb-3 px-4 lg:px-6">
                             <div className="flex items-center gap-2">
                                 <Clock className="h-4 w-4 text-slate-400" />
-                                <CardTitle className="text-base">Weekly Working Hours</CardTitle>
+                                <CardTitle className="text-base">{t('barber.weeklyWorkingHours')}</CardTitle>
                             </div>
                             <CardDescription>
-                                Toggle days on/off and set start &amp; end times. Appointments can only be booked during active hours.
+                                {t('barber.scheduleDescription')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-1 px-3 lg:px-6">
@@ -150,7 +150,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                             </button>
                                             <span className="flex-1 text-sm font-medium text-slate-900">{label}</span>
                                             {!day.enabled && (
-                                                <span className="text-xs text-slate-400 italic">Day off</span>
+                                                <span className="text-xs text-slate-400 italic">{t('barber.dayOff')}</span>
                                             )}
                                         </div>
 
@@ -168,7 +168,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                         <option key={t} value={t}>{t}</option>
                                                     ))}
                                                 </select>
-                                                <span className="text-xs text-slate-400">to</span>
+                                                <span className="text-xs text-slate-400">{t('barber.to')}</span>
                                                 <select
                                                     value={day.end}
                                                     onChange={e => setTime(key, 'end', e.target.value)}
@@ -184,7 +184,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                                                         onClick={applyToWeekdays}
                                                         className="text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors whitespace-nowrap"
                                                     >
-                                                        Apply to Mon–Fri
+                                                        {t('barber.applyToWeekdays')}
                                                     </button>
                                                 )}
                                             </div>
@@ -201,7 +201,7 @@ export default function Schedule({ barber }: { barber: Barber }) {
                             disabled={processing}
                             className="w-full sm:w-auto bg-slate-900 text-white hover:bg-slate-800 h-10 px-6 rounded-lg text-xs font-bold shadow-none"
                         >
-                            Save Schedule
+                            {t('barber.saveSchedule')}
                         </Button>
                     </div>
                 </div>

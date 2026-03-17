@@ -252,16 +252,15 @@ export default function Create({
                                     <User size={16} />{t('appt.assignedBarber')}
                                 </Label>
                                 <Select value={data.barber_id} onValueChange={(v) => setData('barber_id', v ?? '')}>
-                                    <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                        {selectedBarber ? (
-                                            <span className="font-medium text-slate-900">{selectedBarber.user?.name}</span>
-                                        ) : (
-                                            <SelectValue placeholder={t('appt.selectBarber')} />
+                                    <SelectTrigger className={cn("h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg", data.barber_id && selectedBarber && "*:data-[slot=select-value]:opacity-0")}>
+                                        <SelectValue placeholder={t('appt.selectBarber')} />
+                                        {data.barber_id && selectedBarber && (
+                                            <span className="text-slate-900 font-medium">{selectedBarber.user?.name}</span>
                                         )}
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                         {barbers.map((b) => (
-                                            <SelectItem key={b.id} value={String(b.id)} label={b.user?.name ?? ''} className="text-sm">
+                                            <SelectItem key={b.id} value={String(b.id)} className="text-sm">
                                                 {b.user?.name ?? ''}
                                             </SelectItem>
                                         ))}
@@ -400,22 +399,25 @@ export default function Create({
                                         )}
 
                                         {!slotsLoading && slots !== null && slots.length > 0 && (
-                                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                                {slots.map(slot => (
-                                                    <button
-                                                        key={slot}
-                                                        type="button"
-                                                        onClick={() => pickSlot(slot)}
-                                                        className={cn(
-                                                            'h-10 rounded-lg text-sm font-bold border transition-all',
-                                                            selectedSlot === slot
-                                                                ? 'bg-slate-900 text-white border-slate-900'
-                                                                : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50',
-                                                        )}
-                                                    >
-                                                        {slot}
-                                                    </button>
-                                                ))}
+                                            <div className="space-y-3">
+                                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1.5">
+                                                    {slots.map(slot => (
+                                                        <button
+                                                            key={slot}
+                                                            type="button"
+                                                            onClick={() => pickSlot(slot)}
+                                                            className={cn(
+                                                                'py-2 px-3 rounded-lg text-xs font-bold border transition-all',
+                                                                selectedSlot === slot
+                                                                    ? 'bg-slate-900 text-white border-slate-900'
+                                                                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50',
+                                                            )}
+                                                        >
+                                                            {slot}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-slate-400 text-center">{slots.length} {t('appt.availableTimes').toLowerCase()}</p>
                                             </div>
                                         )}
                                     </div>

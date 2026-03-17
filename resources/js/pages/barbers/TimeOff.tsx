@@ -46,6 +46,7 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
         ends_on: todayStr(),
         reason: '',
     });
+    const selectedBarber = barbers.find(b => String(b.id) === data.barber_id);
 
     function submit(e: FormEvent) {
         e.preventDefault();
@@ -247,8 +248,11 @@ export default function TimeOff({ time_offs, barbers, can_manage }: { time_offs:
                                 <User size={12} /> {t('appt.barber')}
                             </Label>
                             <Select value={data.barber_id} onValueChange={v => setData('barber_id', v ?? '')}>
-                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs">
+                                <SelectTrigger className={cn("h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl text-xs", data.barber_id && selectedBarber && "*:data-[slot=select-value]:opacity-0")}>
                                     <SelectValue placeholder={t('search')} />
+                                    {data.barber_id && selectedBarber && (
+                                        <span className="text-slate-900 font-medium">{selectedBarber.user.name}</span>
+                                    )}
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                     {barbers.map(b => (
