@@ -515,11 +515,10 @@ export default function AppLayout({
                         {auth.company?.name && (
                             <button
                                 onClick={() => {}}
-                                className="flex items-center gap-2 h-10 sm:h-9 px-3 sm:px-4 lg:px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm sm:text-xs font-semibold transition-colors"
+                                className="h-10 sm:h-9 px-3 sm:px-4 lg:px-5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm sm:text-xs font-semibold transition-colors"
                                 title={auth.company.name}
                             >
-                                <Briefcase className="h-4 w-4 sm:h-3.5 sm:w-3.5 shrink-0" />
-                                <span className="truncate max-w-[120px]">{auth.company.name}</span>
+                                {auth.company.name}
                             </button>
                         )}
 
