@@ -363,12 +363,7 @@ class BookingController extends Controller
 
         $customer->increment('booking_total');
 
-        return redirect()->route('booking.confirmation', $slug)
-            ->with('cancel_token', $cancelToken)
-            ->with('cancel_expires_at', $cancelExpires->toIso8601String())
-            ->with('appt_starts_at', $startsAt->format('Y-m-d H:i'))
-            ->with('appt_barber_name', $barber->user?->name)
-            ->with('appt_services', $services->pluck('name')->join(', '));
+        return redirect()->route('booking.status', [$slug, $cancelToken]);
     }
 
     public function confirmation(string $slug)
