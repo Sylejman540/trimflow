@@ -68,8 +68,8 @@ class AppointmentController extends Controller
             'is_barber'      => $isBarber,
             'is_owner_barber' => $isOwnerBarber,
             'filter_mine'    => $filterMine,
-            'barbers'        => $isBarber ? [] : Barber::with('user')->where('is_active', true)->paginate(50),
-            'services'       => Service::where('is_active', true)->orderBy('name')->paginate(50),
+            'barbers'        => $isBarber ? [] : Barber::with('user')->where('is_active', true)->get()->toArray(),
+            'services'       => Service::where('is_active', true)->orderBy('name')->get()->toArray(),
         ]);
     }
 

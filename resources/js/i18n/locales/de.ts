@@ -396,8 +396,6 @@ export default {
         bookAnother: 'Neuen Termin buchen',
         shopPhone: 'Telefon des Salons',
         windowExpired: 'Das Stornierungsfenster ist abgelaufen.',
-        noServices: 'Keine Leistungen verfügbar',
-        noServicesDesc: 'Der Salon hat noch keine Leistungen hinzugefügt.',
     },
 
     // Time Off

@@ -52,7 +52,7 @@ function DeleteModal({ service, open, onOpenChange }: {
     );
 }
 
-export default function Index({ services }: { services: Service[] }) {
+export default function Index({ services }: { services: any }) {
     const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('services_status') ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('services_search') ?? '');
@@ -63,7 +63,9 @@ export default function Index({ services }: { services: Service[] }) {
     function changeStatus(v: string) { localStorage.setItem('services_status', v); setStatusFilter(v); }
     function changeSearch(v: string) { localStorage.setItem('services_search', v); setGlobalSearch(v); }
 
-    const filtered = services.filter((s) => {
+    // Handle both paginated and non-paginated responses
+    const servicesList = Array.isArray(services) ? services : (services?.data || []);
+    const filtered = servicesList.filter((s: any) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? s.is_active : !s.is_active);
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [s.name, s.category].some(v => v?.toLowerCase().includes(search));
@@ -194,7 +196,7 @@ export default function Index({ services }: { services: Service[] }) {
                                 </div>
                             </div>
                         )}
-                        {filtered.map(service => {
+                        {filtered.map((service: any) => {
                             const color = (service as any).color;
                             return (
                                 <div key={service.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">

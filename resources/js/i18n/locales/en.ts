@@ -444,8 +444,6 @@ export default {
         shopPhone: "Shop's Phone",
         windowExpired: 'The cancellation window has expired.',
         viewMyAppts: 'View My Appointments',
-        noServices: 'No Services Available',
-        noServicesDesc: 'The shop has not added any services yet.',
     },
 
     // Schedule

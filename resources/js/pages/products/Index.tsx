@@ -50,7 +50,7 @@ function DeleteModal({ product, open, onOpenChange }: {
     );
 }
 
-export default function Index({ products }: { products: Product[] }) {
+export default function Index({ products }: { products: any }) {
     const { t } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('products_status') ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('products_search') ?? '');
@@ -61,7 +61,9 @@ export default function Index({ products }: { products: Product[] }) {
     function changeStatus(v: string) { localStorage.setItem('products_status', v); setStatusFilter(v); }
     function changeSearch(v: string) { localStorage.setItem('products_search', v); setGlobalSearch(v); }
 
-    const filtered = products.filter((p) => {
+    // Handle both paginated and non-paginated responses
+    const productsList = Array.isArray(products) ? products : (products?.data || []);
+    const filtered = productsList.filter((p: any) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? p.is_active : !p.is_active);
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [p.name, p.category].some(v => v?.toLowerCase().includes(search));
@@ -199,7 +201,7 @@ export default function Index({ products }: { products: Product[] }) {
                                 </div>
                             </div>
                         )}
-                        {filtered.map(product => {
+                        {filtered.map((product: any) => {
                             const isLow = product.stock_qty <= product.low_stock_threshold;
                             return (
                                 <div key={product.id} className="bg-white border border-slate-200 rounded-xl p-4 space-y-3">

@@ -49,12 +49,15 @@ function DeleteBarberModal({ barber, open, onOpenChange }: {
     );
 }
 
-export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber[]; off_today_ids?: number[] }) {
+export default function Index({ barbers, off_today_ids = [] }: { barbers: any; off_today_ids?: number[] }) {
     const { t, i18n } = useTranslation();
     const [statusFilter, setStatusFilter] = useState(() => localStorage.getItem('barbers_status') ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('barbers_search') ?? '');
     const [deletingBarber, setDeletingBarber] = useState<Barber | null>(null);
     const [view, setView] = useState<ViewMode>(() => (localStorage.getItem('barbers_view') as ViewMode) ?? 'list');
+
+    // Handle both paginated and non-paginated responses
+    const barbersList = Array.isArray(barbers) ? barbers : (barbers?.data || []);
 
     function changeView(v: ViewMode) { localStorage.setItem('barbers_view', v); setView(v); }
     function changeStatus(v: string) { localStorage.setItem('barbers_status', v); setStatusFilter(v); }
@@ -112,7 +115,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         router.post(route('barbers.toggle-availability', barberId), {}, { preserveScroll: true });
     }
 
-    const filtered = barbers.filter((b) => {
+    const filtered = barbersList.filter((b: any) => {
         const matchesStatus = statusFilter === 'all' || (statusFilter === 'active' ? b.is_active : !b.is_active);
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [b.user?.name, b.user?.email, b.specialty].some(v => v?.toLowerCase().includes(search));
@@ -213,6 +216,15 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
         >
             <Head title={t('barber.title')} />
 
+            {/* Back to Dashboard button when coming from setup */}
+            {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('from') && (
+                <div className="mb-3 pb-3 border-b border-slate-200">
+                    <a href={route('dashboard')} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors">
+                        ← {t('back')}
+                    </a>
+                </div>
+            )}
+
             <div className="space-y-2">
                 {/* Toolbar */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -257,7 +269,7 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: Barber
                                 </div>
                             </div>
                         )}
-                        {filtered.map(barber => {
+                        {filtered.map((barber: any) => {
                             const isOff = off_today_ids.includes(barber.id);
                             return (
                                 <div key={barber.id} className={cn("bg-white border rounded-xl p-4 space-y-3", isOff ? "border-amber-200 bg-amber-50/30" : "border-slate-200")}>

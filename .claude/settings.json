@@ -58,7 +58,9 @@
       "Bash(grep \"appt\\\\.$key\" /Users/sylejman/Herd/trimflow/resources/js/i18n/locales/en.ts)",
       "Bash(grep -rn \"TODO\\\\|FIXME\\\\|XXX\\\\|HACK\\\\|BUG\" /Users/sylejman/Herd/trimflow/resources/js --include=*.tsx --include=*.ts)",
       "Bash(grep -r \"N+1\\\\|missing.*index\\\\|TODO\\\\|FIXME\\\\|XXX\\\\|HACK\" /Users/sylejman/Herd/trimflow/app --include=*.php)",
-      "Bash(grep -E \"orderBy.*->get\\\\\\(\\\\\\)\" /Users/sylejman/Herd/trimflow/app/Http/Controllers/*.php)"
+      "Bash(grep -E \"orderBy.*->get\\\\\\(\\\\\\)\" /Users/sylejman/Herd/trimflow/app/Http/Controllers/*.php)",
+      "Bash(grep -n \"view === ''list''\\\\|view === ''kanban''\\\\|view === ''calendar''\" /Users/sylejman/Herd/trimflow/resources/js/pages/appointments/Index.tsx)",
+      "Bash(TaskOutput --task_id bvog1sgc1 --block false)"
     ],
     "additionalDirectories": [
       "/Users/sylejman/Herd/trimflow/resources/js/pages/Profile/Partials",

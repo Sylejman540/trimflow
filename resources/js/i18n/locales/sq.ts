@@ -418,8 +418,6 @@ export default {
         shopPhone: 'Telefoni i dyqanit',
         windowExpired: 'Dritarja e anulimit ka skaduar.',
         viewMyAppts: 'Shiko terminet e mia',
-        noServices: 'Nuk ka shërbime',
-        noServicesDesc: 'Dyqani nuk ka shtuar asnjë shërbim.',
     },
 
     // Time Off
