@@ -1,6 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { Scissors, CalendarDays, Clock } from 'lucide-react';
+import { Scissors, CalendarDays, Clock, CheckCircle2 } from 'lucide-react';
 import { formatCents, formatDateTime, cn } from '@/lib/utils';
 
 function PoweredBy() {
@@ -32,6 +32,15 @@ interface Appointment {
     price: number;
 }
 
+interface PastAppointment {
+    id: number;
+    starts_at: string;
+    status: string;
+    price: number;
+    barber: string;
+    service: string;
+}
+
 const statusStyle: Record<string, string> = {
     pending:     'bg-orange-50 text-orange-700 border-orange-100',
     confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
@@ -53,9 +62,11 @@ const statusMessages: Record<string, { title: string; key: string }> = {
 export default function Status({
     company,
     appointment,
+    past,
 }: {
     company: Company;
     appointment: Appointment;
+    past?: PastAppointment[];
 }) {
     const { t } = useTranslation();
 
@@ -117,13 +128,36 @@ export default function Status({
                         >
                             {t('booking.bookAnother')}
                         </a>
-                        <a
-                            href={route('portal.show', company.slug)}
-                            className="w-full text-slate-600 hover:text-slate-900 font-medium text-sm py-2.5 text-center border border-slate-200 rounded-xl transition-colors"
-                        >
-                            {t('booking.viewMyAppts')}
-                        </a>
                     </div>
+
+                    {/* Past Appointments */}
+                    {past && past.length > 0 && (
+                        <div className="border-t border-slate-200 pt-6 space-y-3 w-full">
+                            <div className="flex items-center gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-slate-400" />
+                                <h3 className="text-sm font-bold text-slate-700">Past Appointments</h3>
+                            </div>
+                            <div className="space-y-2">
+                                {past.map(a => (
+                                    <div key={a.id} className="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div>
+                                                <p className="font-semibold text-slate-900 text-sm">{a.service}</p>
+                                                <p className="text-xs text-slate-400 mt-0.5">with {a.barber}</p>
+                                            </div>
+                                            <span className={cn("inline-flex items-center text-[10px] font-bold tracking-wider border rounded-md px-2 py-0.5 shrink-0", statusStyle[a.status] ?? 'bg-slate-50 text-slate-500 border-slate-100')}>
+                                                {a.status.replace('_', ' ')}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-slate-500">
+                                            <CalendarDays className="h-3 w-3" />
+                                            {formatDateTime(a.starts_at)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <PoweredBy />
                 </div>

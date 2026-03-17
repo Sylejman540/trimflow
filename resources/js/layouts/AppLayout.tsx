@@ -257,7 +257,15 @@ export default function AppLayout({
     // Initialize user-specific language preference
     useEffect(() => {
         if (auth.user?.id) {
-            initializeUserLanguage(auth.user.id);
+            // First try to use database language from auth.user
+            const { i18n } = require('react-i18next');
+            const userLang = (auth.user as any)?.language;
+            if (userLang) {
+                i18n.changeLanguage(userLang);
+                localStorage.setItem(`fade_lang_${auth.user.id}`, userLang);
+            } else {
+                initializeUserLanguage(auth.user.id);
+            }
         }
     }, [auth.user?.id]);
 

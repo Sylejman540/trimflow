@@ -54,6 +54,8 @@ Route::middleware('auth')->group(function () {
 
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
+    Route::post('user/update-language', [\App\Http\Controllers\UserLanguageController::class, 'update'])->name('user.update-language');
+
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });

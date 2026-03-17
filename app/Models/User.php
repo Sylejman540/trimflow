@@ -20,6 +20,7 @@ class User extends Authenticatable
         'email',
         'password',
         'company_id',
+        'language',
     ];
 
     public function company(): BelongsTo

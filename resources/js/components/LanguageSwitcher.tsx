@@ -30,6 +30,19 @@ export default function LanguageSwitcher({ compact = false, userId }: Props) {
         i18n.changeLanguage(code);
         const key = userId ? `fade_lang_${userId}` : 'fade_lang';
         localStorage.setItem(key, code);
+
+        // Save to database if user is logged in
+        if (userId) {
+            fetch(route('user.update-language'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                },
+                body: JSON.stringify({ language: code }),
+            }).catch(() => {/* ignore errors */});
+        }
+
         setOpen(false);
     }
 
