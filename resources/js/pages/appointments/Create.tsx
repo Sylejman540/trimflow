@@ -420,7 +420,6 @@ export default function Create({
                                             </div>
                                         )}
                                     </div>
-                                    {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
                                 </div>
                             )}
                         </div>

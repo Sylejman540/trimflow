@@ -216,7 +216,6 @@ function QuickBookModal({ open, onClose, barbers, services, isBarber }: {
                         <Input type="datetime-local" value={data.starts_at}
                             onChange={e => setData('starts_at', e.target.value)}
                             className="h-10 bg-slate-50 border-slate-200 rounded-lg" required />
-                        {errors.starts_at && <p className="text-xs text-red-500">{errors.starts_at}</p>}
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="ghost" onClick={onClose} className="text-slate-500 shadow-none">{t('cancel')}</Button>

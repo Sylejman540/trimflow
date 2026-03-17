@@ -513,16 +513,16 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         </div>
 
                         {selectedBarber && (
-                            <div className="flex gap-3 pt-4">
-                                <Button
+                            <div className="flex gap-2 pt-4">
+                                <button
                                     onClick={() => setStep(2)}
-                                    className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg font-semibold shadow-none text-sm"
+                                    className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
                                 >
-                                    {t('booking.continue')} <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
+                                    {t('booking.continue')} <ChevronRight className="h-4 w-4" />
+                                </button>
                                 <button
                                     onClick={() => setSelectedBarber(null)}
-                                    className="text-slate-500 hover:text-slate-700 font-medium text-sm transition-colors"
+                                    className="text-slate-500 hover:text-slate-700 text-xs font-medium transition-colors"
                                 >
                                     {t('cancel')}
                                 </button>
