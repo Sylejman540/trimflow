@@ -513,7 +513,7 @@ export default function Create({
                                     disabled={!canProceed()}
                                     className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
-                                    Next
+                                    {t('booking.continue')}
                                     <ChevronRight className="w-4 h-4" />
                                 </Button>
                             </>
