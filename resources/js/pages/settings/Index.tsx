@@ -390,6 +390,41 @@ export default function Settings({
                                 </div>
                             </div>
 
+                            <div className="pt-4 border-t border-slate-100">
+                                <div className="space-y-1.5">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('barber.timezone')}</Label>
+                                    <Select value={data.timezone} onValueChange={v => setData('timezone', v ?? '')}>
+                                        <SelectTrigger className="h-10 border-slate-200 shadow-none">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {TIMEZONES.map(tz => (
+                                                <SelectItem key={tz.value} value={tz.value}>
+                                                    {tz.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-1.5 mt-4">
+                                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-400">{t('barber.maxClosingHour')}</Label>
+                                    <p className="text-xs text-slate-500 mb-2">{t('barber.maxClosingHourDesc')}</p>
+                                    <Select value={String(data.max_closing_hour)} onValueChange={v => setData('max_closing_hour', parseInt(v))}>
+                                        <SelectTrigger className="h-10 border-slate-200 shadow-none">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {Array.from({ length: 5 }, (_, i) => 20 + i).map(hour => (
+                                                <SelectItem key={hour} value={String(hour)}>
+                                                    {String(hour).padStart(2, '0')}:00 (Up to {String(hour).padStart(2, '0')}:30)
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
                             <div className="pt-2">
                                 <Button
                                     type="submit"
