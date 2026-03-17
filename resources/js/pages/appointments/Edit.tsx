@@ -204,7 +204,9 @@ export default function Edit({
 
                         <Select value={data.service_ids[0] ?? ''} onValueChange={v => setData('service_ids', v ? [v] : [])}>
                             <SelectTrigger className="h-11 bg-white border-slate-300 focus:bg-white rounded-lg font-medium shadow-sm">
-                                <SelectValue placeholder={t('appt.selectService')} />
+                                <SelectValue placeholder={t('appt.selectService')}>
+                                    {data.service_ids[0] ? services.find(s => String(s.id) === data.service_ids[0])?.name : t('appt.selectService')}
+                                </SelectValue>
                             </SelectTrigger>
                             <SelectContent className="rounded-xl border-slate-300 shadow-2xl w-[var(--radix-select-trigger-width)]">
                                 {services.map(s => (
