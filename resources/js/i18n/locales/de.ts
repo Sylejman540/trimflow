@@ -89,6 +89,8 @@ export default {
         groupInsights: 'Einblicke',
         dashboardDesc: 'Statistiken & Termine',
         appointmentsDesc: 'Alle Buchungen & Walk-ins',
+        history: 'Verlauf',
+        historyDesc: 'Frühere & abgeschlossene Termine',
         barbersDesc: 'Team & Zeitpläne',
         timeoffDesc: 'Abwesenheiten verwalten',
         servicesDesc: 'Schnitte, Trimmen & mehr',
@@ -158,6 +160,7 @@ export default {
 
     appt: {
         title: 'Termine',
+        history: 'Verlauf',
         new: 'Neuer Termin',
         create: 'Termin erstellen',
         edit: 'Termin bearbeiten',
@@ -166,6 +169,9 @@ export default {
         service: 'Leistung',
         startsAt: 'Startzeit',
         endsAt: 'Endzeit',
+        status: 'Status',
+        price: 'Preis',
+        dateFilter: 'Datumbereich',
         pending: 'Ausstehend',
         confirmed: 'Bestätigt',
         inProgress: 'In Bearbeitung',
@@ -736,6 +742,12 @@ export default {
         phonePlaceholder: '+49 XXX XXXXXXXX',
         minLabel: 'Min.',
         nowLabel: 'Jetzt',
+        searchPlaceholder: 'Nach Name, Friseur oder Leistung suchen…',
+        filterStatusAll: 'Alle Status',
+        filterDateAll: 'Alle Daten',
+        filterDateLast7d: 'Letzte 7 Tage',
+        filterDateLast30d: 'Letzte 30 Tage',
+        filterDateLast90d: 'Letzte 90 Tage',
     },
 
     // Landing page

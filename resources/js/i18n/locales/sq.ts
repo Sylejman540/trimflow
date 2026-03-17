@@ -91,6 +91,8 @@ export default {
         groupInsights: 'Analiza',
         dashboardDesc: 'Statistika & të ardhshmet',
         appointmentsDesc: 'Të gjitha rezervimet',
+        history: 'Historiku',
+        historyDesc: 'Terminet e kaluara & të përfunduara',
         barbersDesc: 'Ekipi & oraret',
         timeoffDesc: 'Menaxho pushimet',
         servicesDesc: 'Prerje, rregullim & më shumë',
@@ -177,6 +179,7 @@ export default {
 
     appt: {
         title: 'Terminet',
+        history: 'Historiku',
         new: 'Termin i ri',
         create: 'Krijo termin',
         edit: 'Ndrysho termin',
@@ -185,6 +188,9 @@ export default {
         service: 'Shërbimi',
         startsAt: 'Ora e fillimit',
         endsAt: 'Ora e mbarimit',
+        status: 'Statusi',
+        price: 'Çmimi',
+        dateFilter: 'Periudha e datës',
         pending: 'Në pritje',
         confirmed: 'I konfirmuar',
         inProgress: 'Në vazhdim',
@@ -758,6 +764,12 @@ export default {
         phonePlaceholder: '+355 6X XXX XXXX',
         minLabel: 'min',
         nowLabel: 'Tani',
+        searchPlaceholder: 'Kërko sipas emrit, berberi ose shërbimi…',
+        filterStatusAll: 'Të gjitha statuset',
+        filterDateAll: 'Të gjitha datat',
+        filterDateLast7d: '7 ditët e fundit',
+        filterDateLast30d: '30 ditët e fundit',
+        filterDateLast90d: '90 ditët e fundit',
     },
 
     // Landing page

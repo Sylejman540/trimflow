@@ -26,6 +26,7 @@ import {
     Link2,
     Copy,
     Check,
+    History,
 } from 'lucide-react';
 import { cn, formatCents } from '@/lib/utils';
 import { PageProps } from '@/types';
@@ -217,6 +218,7 @@ const navGroups: NavGroup[] = [
         items: [
             { href: '/dashboard',    icon: LayoutDashboard, active: 'dashboard',      labelKey: 'nav.dashboard',    descKey: 'nav.dashboardDesc' },
             { href: '/appointments', icon: CalendarDays,    active: 'appointments.*', labelKey: 'nav.appointments', descKey: 'nav.appointmentsDesc' },
+            { href: '/appointments/history', icon: History, active: 'appointments.history', labelKey: 'nav.history', descKey: 'nav.historyDesc' },
         ],
     },
     {

@@ -60,6 +60,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
     Route::get('/barbers/{barber}/schedule', [BarberController::class, 'schedule'])->name('barbers.schedule');
     Route::put('/barbers/{barber}/schedule', [BarberController::class, 'updateSchedule'])->name('barbers.schedule.update');
     Route::middleware('throttle:60,1')->group(function () {
+        Route::get('appointments/history', [AppointmentController::class, 'history'])->name('appointments.history');
         Route::resource('appointments', AppointmentController::class);
         Route::patch('appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
         Route::patch('appointments/{appointment}/decline', [AppointmentController::class, 'decline'])->name('appointments.decline');

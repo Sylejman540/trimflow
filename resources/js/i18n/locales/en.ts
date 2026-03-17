@@ -105,6 +105,8 @@ export default {
         groupInsights: 'Insights',
         dashboardDesc: 'Stats, revenue & upcoming',
         appointmentsDesc: 'All bookings & walk-ins',
+        history: 'History',
+        historyDesc: 'Past & completed appointments',
         barbersDesc: 'Team members & schedules',
         timeoffDesc: 'Manage time off requests',
         servicesDesc: 'Haircuts, trims & more',
@@ -195,6 +197,7 @@ export default {
     // Appointments
     appt: {
         title: 'Appointments',
+        history: 'History',
         new: 'New Appointment',
         create: 'Create Appointment',
         edit: 'Edit Appointment',
@@ -203,6 +206,9 @@ export default {
         service: 'Service',
         startsAt: 'Start Time',
         endsAt: 'End Time',
+        status: 'Status',
+        price: 'Price',
+        dateFilter: 'Date Range',
         pending: 'Pending',
         confirmed: 'Confirmed',
         inProgress: 'In Progress',
@@ -926,5 +932,11 @@ export default {
         phonePlaceholder: '+1 555 000-0000',
         minLabel: 'min',
         nowLabel: 'Now',
+        searchPlaceholder: 'Search by name, barber, or service…',
+        filterStatusAll: 'All statuses',
+        filterDateAll: 'All dates',
+        filterDateLast7d: 'Last 7 days',
+        filterDateLast30d: 'Last 30 days',
+        filterDateLast90d: 'Last 90 days',
     },
 } as const;

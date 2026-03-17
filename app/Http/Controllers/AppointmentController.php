@@ -73,6 +73,35 @@ class AppointmentController extends Controller
         ]);
     }
 
+    public function history()
+    {
+        $this->authorize('viewAny', Appointment::class);
+
+        $user = Auth::user();
+        $isBarber = $user->hasRole('barber') && !$user->hasRole('shop-admin');
+        $barberId = $isBarber ? $user->barber?->id : null;
+
+        $query = Appointment::with(['barber.user', 'customer', 'service', 'services'])
+            ->whereIn('status', ['completed', 'cancelled', 'no_show'])
+            ->orderBy('starts_at', 'desc');
+
+        if ($barberId) {
+            $query->where('barber_id', $barberId);
+        }
+
+        $appointments = $query->get()->map(function (Appointment $appt) use ($user) {
+            $data = $appt->toArray();
+            $data['can_edit'] = false;
+            $data['can_delete'] = $user->can('delete', $appt);
+            return $data;
+        });
+
+        return Inertia::render('appointments/History', [
+            'appointments' => $appointments,
+            'is_barber' => $isBarber,
+        ]);
+    }
+
     public function create()
     {
         $this->authorize('create', Appointment::class);
