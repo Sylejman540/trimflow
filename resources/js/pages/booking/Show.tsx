@@ -132,6 +132,8 @@ export default function Show({ company, barbers: initialBarbers, services, recap
 
     const recaptchaRef = useRef<HTMLDivElement>(null);
 
+    const { i18n } = useTranslation();
+
     const { data, setData, post, processing, errors } = useForm({
         barber_id: '',
         service_ids: [] as string[],
@@ -142,6 +144,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
         _hp: '',
         _t: '',
         recaptcha_token: '',
+        lang: i18n.language,
     });
 
     const categories = useMemo(() => {
@@ -160,6 +163,11 @@ export default function Show({ company, barbers: initialBarbers, services, recap
         setData('_t', String(Math.floor(Date.now() / 1000)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Update form lang when i18n language changes
+    useEffect(() => {
+        setData('lang', i18n.language);
+    }, [i18n.language, setData]);
 
     // Load Google reCAPTCHA script
     useEffect(() => {
