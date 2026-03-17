@@ -255,6 +255,7 @@ export default function AppLayout({
 }: PropsWithChildren<{ title?: string; actions?: ReactNode; mobileAction?: ReactNode }>) {
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
+    const [unreadCount, setUnreadCount] = useState(auth.unread_notifications ?? 0);
 
     const toggleCollapsed = (val: boolean) => {
         localStorage.setItem('sidebar_collapsed', String(val));
@@ -270,9 +271,16 @@ export default function AppLayout({
         const companyId = auth.company?.id;
         if (!companyId || !window.Echo) return;
 
-        const channel = window.Echo.channel(`company.${companyId}.appointments`);
-        channel.listen('.AppointmentChanged', () => {
+        // Listen for appointment changes
+        const appointmentChannel = window.Echo.channel(`company.${companyId}.appointments`);
+        appointmentChannel.listen('.AppointmentChanged', () => {
             router.reload({ only: ['appointments', 'stats', 'upcoming', 'recent'] });
+        });
+
+        // Listen for new notifications via appointment events
+        appointmentChannel.listen('.NotificationCreated', () => {
+            // Increment unread count when a notification is created
+            setUnreadCount(prev => prev + 1);
         });
 
         return () => { window.Echo.leave(`company.${companyId}.appointments`); };
@@ -558,9 +566,9 @@ export default function AppLayout({
                                 className="relative flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                             >
                                 <Bell size={20} className="sm:w-[18px] sm:h-[18px]" />
-                                {auth.unread_notifications > 0 && (
+                                {unreadCount > 0 && (
                                     <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-900 text-[9px] font-bold text-white ring-2 ring-white">
-                                        {auth.unread_notifications > 9 ? '9+' : auth.unread_notifications}
+                                        {unreadCount > 9 ? '9+' : unreadCount}
                                     </span>
                                 )}
                             </Link>

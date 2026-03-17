@@ -121,10 +121,11 @@ export default function Status({
         const channel = window.Echo.channel(`company.${company.id}`);
 
         const listener = channel.listen('.AppointmentChanged', (data: any) => {
-            if (data.appointment?.id === appointment_id) {
-                setCurrentStatus(data.appointment.status);
-                // Reload page data after a short delay to ensure consistency
-                setTimeout(() => router.reload(), 500);
+            // AppointmentChanged broadcasts the appointment data directly
+            if (data.id === appointment_id) {
+                setCurrentStatus(data.status);
+                // Reload the entire page to get fresh appointment data
+                setTimeout(() => window.location.reload(), 100);
             }
         });
 
@@ -173,6 +174,11 @@ export default function Status({
                         </span>
                         <h2 className="text-2xl font-semibold text-slate-900">{t(statusMsg.title)}</h2>
                         <p className="text-sm text-slate-500 mt-1">{t(statusMsg.key)}</p>
+                        {currentStatus === 'pending' && (
+                            <p className="text-xs text-slate-400 mt-3 bg-slate-50 rounded-lg px-3 py-2">
+                                💡 Come back in a few minutes to check if your appointment is approved. The status will update automatically.
+                            </p>
+                        )}
                     </div>
 
                     {/* Appointment Card */}

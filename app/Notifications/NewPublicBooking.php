@@ -2,10 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Events\NotificationCreated;
 use App\Models\Appointment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Event;
 
 class NewPublicBooking extends Notification
 {
@@ -20,6 +22,12 @@ class NewPublicBooking extends Notification
         if (! empty($notifiable->email)) {
             $channels[] = 'mail';
         }
+
+        // Broadcast notification created event
+        Event::dispatch(new NotificationCreated(
+            $this->appointment->company_id,
+            $notifiable->id
+        ));
 
         return $channels;
     }
