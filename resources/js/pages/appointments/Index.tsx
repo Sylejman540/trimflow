@@ -938,7 +938,7 @@ export default function Index({
         <AppLayout
             title={t('appt.title')}
             actions={
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 mb-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-1.5 mb-2 mt-2">
                     {is_owner_barber && (
                         <button onClick={toggleMine}
                             className={cn(buttonVariants({ variant: 'outline' }),

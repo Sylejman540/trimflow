@@ -75,6 +75,31 @@ class WalkinController extends Controller
                 ]);
             }
 
+            // Check if barber is within working hours
+            $dayOfWeek = strtolower($startsAt->format('l'));
+            $time = $startsAt->format('H:i');
+            $workingHours = $barber->working_hours ?? [];
+
+            if (isset($workingHours[$dayOfWeek])) {
+                $daySchedule = $workingHours[$dayOfWeek];
+                if ($daySchedule['is_off'] ?? false) {
+                    throw ValidationException::withMessages([
+                        'barber_id' => 'This barber is not working on ' . ucfirst($dayOfWeek) . '.',
+                    ]);
+                }
+
+                $startTime = $daySchedule['start'] ?? null;
+                $endTime = $daySchedule['end'] ?? null;
+
+                if ($startTime && $endTime) {
+                    if ($time < $startTime || $time >= $endTime) {
+                        throw ValidationException::withMessages([
+                            'barber_id' => 'This barber is not working at ' . $time . '. Working hours: ' . $startTime . ' - ' . $endTime . '.',
+                        ]);
+                    }
+                }
+            }
+
             $conflict = Appointment::where('barber_id', $barberId)
                 ->whereNotIn('status', ['cancelled', 'no_show'])
                 ->where(fn ($q) => $q
@@ -150,7 +175,32 @@ class WalkinController extends Controller
                 ->where('ends_on', '>=', $today)
                 ->exists();
 
-            return !$onTimeOff;
+            if ($onTimeOff) {
+                return false;
+            }
+
+            // Check if barber is within working hours
+            $dayOfWeek = strtolower($now->format('l'));
+            $time = $now->format('H:i');
+            $workingHours = $barber->working_hours ?? [];
+
+            if (isset($workingHours[$dayOfWeek])) {
+                $daySchedule = $workingHours[$dayOfWeek];
+                if ($daySchedule['is_off'] ?? false) {
+                    return false;
+                }
+
+                $startTime = $daySchedule['start'] ?? null;
+                $endTime = $daySchedule['end'] ?? null;
+
+                if ($startTime && $endTime) {
+                    if ($time < $startTime || $time >= $endTime) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         })->pluck('id')->values()->toArray();
 
         return response()->json(['barbers' => $availableBarberIds]);
