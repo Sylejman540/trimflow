@@ -19,6 +19,18 @@ function PoweredBy() {
     );
 }
 
+function formatApptDate(startsAt: string | null | undefined, lang: string) {
+    if (!startsAt) return null;
+    const [datePart, timePart] = startsAt.split(' ');
+    const [y, m, d] = datePart.split('-').map(Number);
+    const { days, months } = getDaysAndMonths(lang);
+    const date = new Date(y, m - 1, d);
+    const dayName = days[date.getDay()];
+    const monthName = months[date.getMonth()];
+    const dayLabel = `${dayName}, ${monthName} ${d}, ${y}`;
+    return { day: dayLabel, time: timePart };
+}
+
 interface Company {
     id: number;
     name: string;

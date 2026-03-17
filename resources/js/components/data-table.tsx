@@ -193,26 +193,29 @@ export function DataTable<TData, TValue>({
                     </Table>
                 </div>
 
-                {table.getPageCount() > 1 && (
-                    <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-slate-50">
-                        {table.getCanPreviousPage() && (
+                {table.getPageCount() > 0 && (
+                    <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-slate-50">
+                        <div className="text-xs text-slate-500">
+                            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()} · {table.getFilteredRowModel().rows.length} {table.getFilteredRowModel().rows.length === 1 ? 'item' : 'items'}
+                        </div>
+                        <div className="flex items-center gap-2">
                             <Button
                                 size="sm"
-                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                disabled={!table.getCanPreviousPage()}
+                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                                 onClick={() => table.previousPage()}
                             >
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                        )}
-                        {table.getCanNextPage() && (
                             <Button
                                 size="sm"
-                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 text-white"
+                                disabled={!table.getCanNextPage()}
+                                className="h-8 w-8 p-0 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-white"
                                 onClick={() => table.nextPage()}
                             >
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
-                        )}
+                        </div>
                     </div>
                 )}
             </div>
