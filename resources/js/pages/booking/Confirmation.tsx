@@ -211,6 +211,19 @@ export default function Confirmation({
                         </div>
                     )}
 
+                    {/* Status tracking link */}
+                    {cancel_token && (
+                        <p className="text-xs text-slate-400 text-center">
+                            {t('booking.trackBooking')}{' '}
+                            <a
+                                href={route('booking.status', [company.slug, cancel_token])}
+                                className="font-medium text-slate-600 hover:underline"
+                            >
+                                {t('booking.checkStatus')}
+                            </a>
+                        </p>
+                    )}
+
                     <div className="flex flex-col gap-2">
                         <Link
                             href={route('booking.show', company.slug)}
