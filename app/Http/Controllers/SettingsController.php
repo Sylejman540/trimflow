@@ -54,15 +54,16 @@ class SettingsController extends Controller
         abort_unless(Auth::user()->hasRole('shop-admin'), 403);
 
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'nullable|email|max:255',
-            'phone'    => 'nullable|string|max:50',
-            'address'  => 'nullable|string|max:255',
-            'city'     => 'nullable|string|max:100',
-            'state'    => 'nullable|string|max:100',
-            'zip'      => 'nullable|string|max:20',
-            'country'  => 'nullable|string|max:100',
-            'timezone' => 'nullable|string|max:100',
+            'name'                => 'required|string|max:255',
+            'email'               => 'nullable|email|max:255',
+            'phone'               => 'nullable|string|max:50',
+            'address'             => 'nullable|string|max:255',
+            'city'                => 'nullable|string|max:100',
+            'state'               => 'nullable|string|max:100',
+            'zip'                 => 'nullable|string|max:20',
+            'country'             => 'nullable|string|max:100',
+            'timezone'            => 'nullable|string|max:100',
+            'max_closing_hour'    => 'nullable|integer|min:20|max:24',
         ]);
 
         Auth::user()->company->update($validated);
