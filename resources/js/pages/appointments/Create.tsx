@@ -252,7 +252,7 @@ export default function Create({
                                     <User size={16} />{t('appt.assignedBarber')}
                                 </Label>
                                 <Select value={data.barber_id} onValueChange={(v) => setData('barber_id', v ?? '')}>
-                                    <SelectTrigger className={cn("h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg", data.barber_id && selectedBarber && "*:data-[slot=select-value]:opacity-0")}>
+                                    <SelectTrigger className={cn("h-9 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg", data.barber_id && selectedBarber && "*:data-[slot=select-value]:opacity-0")}>
                                         <SelectValue placeholder={t('appt.selectBarber')} />
                                         {data.barber_id && selectedBarber && (
                                             <span className="text-slate-900 font-medium">{selectedBarber.user?.name}</span>
@@ -293,7 +293,7 @@ export default function Create({
                                     id="customer_name"
                                     value={data.customer_name}
                                     onChange={(e) => setData('customer_name', e.target.value)}
-                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                    className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                     placeholder="e.g. John Doe"
                                     autoFocus
                                 />
@@ -364,7 +364,7 @@ export default function Create({
                                     value={selectedDate}
                                     min={todayStr}
                                     onChange={e => setSelectedDate(e.target.value)}
-                                    className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                    className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 />
                                 {selectedDate && (
                                     <p className="text-xs text-slate-600 font-medium">{formatDateWithDay(selectedDate)}</p>
@@ -478,7 +478,7 @@ export default function Create({
                                     <Tag size={16} />{t('appt.repeat')}
                                 </Label>
                                 <Select value={data.recurrence_rule} onValueChange={(v) => setData('recurrence_rule', v ?? 'none')}>
-                                    <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                    <SelectTrigger className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -501,7 +501,7 @@ export default function Create({
                                         type="button"
                                         onClick={prevStep}
                                         variant="outline"
-                                        className="h-11 rounded-lg text-sm font-bold"
+                                        className="h-9 rounded-lg text-sm font-bold"
                                     >
                                         <ArrowLeft className="w-4 h-4 mr-2" />
                                         {t('back')}
@@ -511,7 +511,7 @@ export default function Create({
                                     type="button"
                                     onClick={nextStep}
                                     disabled={!canProceed()}
-                                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-9 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     {t('booking.continue')}
                                     <ChevronRight className="w-4 h-4" />
@@ -522,7 +522,7 @@ export default function Create({
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="flex-1 sm:flex-none bg-slate-900 hover:bg-slate-800 text-white h-9 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     <Check className="w-4 h-4" />
                                     {t('appt.bookAppointment')}
@@ -531,7 +531,7 @@ export default function Create({
                         )}
                         <Link
                             href={route('appointments.index')}
-                            className="text-slate-500 hover:text-slate-900 text-sm font-bold h-11 px-4 rounded-lg hover:bg-slate-50 transition-all flex items-center"
+                            className="text-slate-500 hover:text-slate-900 text-sm font-bold h-9 px-4 rounded-lg hover:bg-slate-50 transition-all flex items-center"
                         >
                             {t('cancel')}
                         </Link>

@@ -108,7 +108,7 @@ export default function Edit({
                                 value={data.status}
                                 onValueChange={(v) => v && setData('status', v as typeof data.status)}
                             >
-                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg capitalize">
+                                <SelectTrigger className="h-9 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg capitalize">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -135,7 +135,7 @@ export default function Edit({
                                     value={data.barber_id}
                                     onValueChange={(v) => setData('barber_id', v ?? '')}
                                 >
-                                    <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
+                                    <SelectTrigger className="h-9 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
                                         <SelectValue placeholder={t('appt.selectBarber')} />
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
@@ -161,7 +161,7 @@ export default function Edit({
                                 id="customer_name"
                                 value={data.customer_name}
                                 onChange={(e) => setData('customer_name', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="e.g. John Doe"
                                 required
                             />
@@ -175,7 +175,7 @@ export default function Edit({
                                 id="customer_phone"
                                 value={data.customer_phone}
                                 onChange={(e) => setData('customer_phone', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="+1 (555) 000-0000"
                             />
                             {errors.customer_phone && <p className="text-xs text-red-500 font-medium">{errors.customer_phone}</p>}
@@ -189,7 +189,7 @@ export default function Edit({
                                 type="email"
                                 value={data.customer_email}
                                 onChange={(e) => setData('customer_email', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 placeholder="customer@email.com"
                             />
                             {errors.customer_email && <p className="text-xs text-red-500 font-medium">{errors.customer_email}</p>}
@@ -203,7 +203,7 @@ export default function Edit({
                         </Label>
 
                         <Select value={data.service_ids[0] ?? ''} onValueChange={v => setData('service_ids', v ? [v] : [])}>
-                            <SelectTrigger className="h-11 bg-white border-slate-300 focus:bg-white rounded-lg font-medium shadow-sm">
+                            <SelectTrigger className="h-9 bg-white border-slate-300 focus:bg-white rounded-lg font-medium shadow-sm">
                                 <SelectValue placeholder={t('appt.selectService')}>
                                     {data.service_ids[0] ? services.find(s => String(s.id) === data.service_ids[0])?.name : t('appt.selectService')}
                                 </SelectValue>
@@ -244,7 +244,7 @@ export default function Edit({
                                 type="datetime-local"
                                 value={data.starts_at}
                                 onChange={(e) => setData('starts_at', e.target.value)}
-                                className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
+                                className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg"
                                 required
                             />
                             {errors.starts_at && <p className="text-xs text-red-500 font-medium">{errors.starts_at}</p>}
@@ -260,7 +260,7 @@ export default function Edit({
                                 min={0}
                                 step={0.5}
                                 decimal
-                                className="h-11"
+                                className="h-9"
                             />
                             {errors.tip_amount && <p className="text-xs text-red-500 font-medium">{errors.tip_amount}</p>}
                         </div>

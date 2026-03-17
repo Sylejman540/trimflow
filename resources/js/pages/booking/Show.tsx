@@ -453,7 +453,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         <span>{selectedServices.length} {selectedServices.length === 1 ? t('booking.service') : t('booking.services')} · {totalDuration} {t('booking.min')}</span>
                                         <span className="font-bold text-slate-900">{formatCents(totalPrice)}</span>
                                     </div>
-                                    <Button onClick={proceedFromServices} className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none">
+                                    <Button onClick={proceedFromServices} className="w-full bg-slate-900 hover:bg-slate-800 text-white h-9 rounded-lg font-semibold shadow-none text-sm">
                                         {t('booking.continue')} <ChevronRight className="h-4 w-4 ml-1" />
                                     </Button>
                                 </div>
@@ -522,13 +522,13 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                             <div className="flex gap-2 pt-4">
                                 <button
                                     onClick={() => setStep(2)}
-                                    className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm"
+                                    className="h-9 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition-colors flex items-center gap-1.5 shadow-sm"
                                 >
                                     {t('booking.continue')} <ChevronRight className="h-4 w-4" />
                                 </button>
                                 <button
                                     onClick={() => setSelectedBarber(null)}
-                                    className="text-slate-500 hover:text-slate-700 text-xs font-medium transition-colors"
+                                    className="text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors"
                                 >
                                     {t('cancel')}
                                 </button>
@@ -565,7 +565,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                     max={(() => { const d = new Date(); d.setDate(d.getDate() + 60); return d.toISOString().split('T')[0]; })()}
                                     value={selectedDate}
                                     onChange={e => setSelectedDate(e.target.value)}
-                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
+                                    className="w-full h-9 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900"
                                 />
                                 {selectedDate && (
                                     <p className="text-xs text-slate-500 mt-1.5 font-medium">{formatDateWithDay(selectedDate, t)}</p>
@@ -672,7 +672,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         }}
                                         placeholder={t('booking.namePlaceholder')}
                                         autoComplete="name"
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
+                                        className="w-full h-9 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
                                         required
                                     />
                                     {errors.customer_name && <p className="text-xs text-red-500 mt-1">{errors.customer_name}</p>}
@@ -689,7 +689,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         placeholder={t('booking.phonePlaceholder')}
                                         autoComplete="tel"
                                         inputMode="tel"
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
+                                        className="w-full h-9 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 placeholder:text-slate-400"
                                     />
                                     {phoneError && <p className="text-xs text-red-500 mt-1">{t('booking.errorInvalidPhone')}</p>}
                                     {!phoneError && errors.customer_phone && <p className="text-xs text-red-500 mt-1">{errors.customer_phone}</p>}
@@ -701,7 +701,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                                         onChange={e => setData('notes', e.target.value)}
                                         placeholder={t('booking.specialRequests')}
                                         rows={3}
-                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 resize-none placeholder:text-slate-400"
+                                        className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-slate-900 resize-none placeholder:text-slate-400 min-h-24"
                                     />
                                 </div>
                             </div>
@@ -720,7 +720,7 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                             <Button
                                 type="submit"
                                 disabled={processing || !data.customer_name || (data.customer_phone && !isValidPhone(data.customer_phone)) || phoneError}
-                                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-11 rounded-xl font-semibold shadow-none"
+                                className="w-full bg-slate-900 hover:bg-slate-800 text-white h-9 rounded-lg font-semibold shadow-none text-sm"
                             >
                                 {processing ? (
                                     <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> {t('booking.booking')}</span>
