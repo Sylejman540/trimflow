@@ -355,25 +355,27 @@ export default function Show({ company, barbers: initialBarbers, services, recap
             </div>
 
             <div className="max-w-xl mx-auto px-4 py-6">
-                {/* Step Indicator */}
-                <div className="flex items-center justify-center gap-1 mb-6">
-                    {STEPS.map((label, i) => (
-                        <div key={i} className="flex items-center gap-1">
-                            <div className={cn(
-                                'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold transition-colors shrink-0',
-                                i < step ? 'bg-slate-900 text-white' :
-                                i === step ? 'bg-slate-900 text-white ring-2 ring-slate-900 ring-offset-2' :
-                                'bg-slate-100 text-slate-400'
-                            )}>
-                                {i < step ? <CheckCircle2 className="h-3.5 w-3.5" /> : i + 1}
+                {/* Step Indicator - Hidden when no services */}
+                {services.length > 0 && (
+                    <div className="flex items-center justify-center gap-1 mb-6">
+                        {STEPS.map((label, i) => (
+                            <div key={i} className="flex items-center gap-1">
+                                <div className={cn(
+                                    'flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold transition-colors shrink-0',
+                                    i < step ? 'bg-slate-900 text-white' :
+                                    i === step ? 'bg-slate-900 text-white ring-2 ring-slate-900 ring-offset-2' :
+                                    'bg-slate-100 text-slate-400'
+                                )}>
+                                    {i < step ? <CheckCircle2 className="h-3.5 w-3.5" /> : i + 1}
+                                </div>
+                                <span className={cn('hidden sm:block text-[11px] font-semibold', i === step ? 'text-slate-900' : 'text-slate-400')}>
+                                    {label}
+                                </span>
+                                {i < STEPS.length - 1 && <ChevronRight className="h-3.5 w-3.5 text-slate-300 mx-0.5" />}
                             </div>
-                            <span className={cn('hidden sm:block text-[11px] font-semibold', i === step ? 'text-slate-900' : 'text-slate-400')}>
-                                {label}
-                            </span>
-                            {i < STEPS.length - 1 && <ChevronRight className="h-3.5 w-3.5 text-slate-300 mx-0.5" />}
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
 
                 {/* Step 0: Service Selection */}
                 {step === 0 && (
@@ -399,45 +401,53 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         )}
 
                         <div className="space-y-2">
-                            {filteredServices.map(s => {
-                                const isSelected = !!selectedServices.find(x => x.id === s.id);
-                                const colorHex = s.color && COLOR_HEX[s.color] ? COLOR_HEX[s.color] : undefined;
-                                return (
-                                    <button
-                                        key={s.id}
-                                        onClick={() => toggleService(s)}
-                                        className={cn(
-                                            'relative w-full flex items-center justify-between bg-white border rounded-xl p-4 transition-all text-left active:scale-[0.99]',
-                                            isSelected
-                                                ? 'border-slate-900 ring-1 ring-slate-900 shadow-sm'
-                                                : 'border-slate-200 hover:border-slate-400 hover:shadow-sm'
-                                        )}
-                                        style={colorHex && !isSelected ? { borderLeftColor: colorHex, borderLeftWidth: 3 } : undefined}
-                                    >
-                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            {colorHex && (
-                                                <span className="w-2 h-2 rounded-full shrink-0" style={{ background: colorHex }} />
+                            {filteredServices.length > 0 ? (
+                                filteredServices.map(s => {
+                                    const isSelected = !!selectedServices.find(x => x.id === s.id);
+                                    const colorHex = s.color && COLOR_HEX[s.color] ? COLOR_HEX[s.color] : undefined;
+                                    return (
+                                        <button
+                                            key={s.id}
+                                            onClick={() => toggleService(s)}
+                                            className={cn(
+                                                'relative w-full flex items-center justify-between bg-white border rounded-xl p-4 transition-all text-left active:scale-[0.99]',
+                                                isSelected
+                                                    ? 'border-slate-900 ring-1 ring-slate-900 shadow-sm'
+                                                    : 'border-slate-200 hover:border-slate-400 hover:shadow-sm'
                                             )}
-                                            <div className="min-w-0">
-                                                <p className="text-sm font-semibold text-slate-900">{s.name}</p>
-                                                {s.description && <p className="text-xs text-slate-500 mt-0.5 truncate">{s.description}</p>}
-                                                <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
-                                                    <Clock className="h-3 w-3" /> {s.duration} {t('booking.min')}
-                                                </p>
+                                            style={colorHex && !isSelected ? { borderLeftColor: colorHex, borderLeftWidth: 3 } : undefined}
+                                        >
+                                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                {colorHex && (
+                                                    <span className="w-2 h-2 rounded-full shrink-0" style={{ background: colorHex }} />
+                                                )}
+                                                <div className="min-w-0">
+                                                    <p className="text-sm font-semibold text-slate-900">{s.name}</p>
+                                                    {s.description && <p className="text-xs text-slate-500 mt-0.5 truncate">{s.description}</p>}
+                                                    <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1">
+                                                        <Clock className="h-3 w-3" /> {s.duration} {t('booking.min')}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 ml-4 shrink-0">
-                                            <span className="text-sm font-bold text-slate-900">{formatCents(s.price)}</span>
-                                            <div className={cn(
-                                                'flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors shrink-0',
-                                                isSelected ? 'bg-slate-900 border-slate-900' : 'border-slate-300 bg-white'
-                                            )}>
-                                                {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                            <div className="flex items-center gap-3 ml-4 shrink-0">
+                                                <span className="text-sm font-bold text-slate-900">{formatCents(s.price)}</span>
+                                                <div className={cn(
+                                                    'flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors shrink-0',
+                                                    isSelected ? 'bg-slate-900 border-slate-900' : 'border-slate-300 bg-white'
+                                                )}>
+                                                    {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </button>
-                                );
-                            })}
+                                        </button>
+                                    );
+                                })
+                            ) : (
+                                <div className="flex flex-col items-center justify-center py-12 text-center">
+                                    <Scissors className="h-8 w-8 text-slate-300 mb-3" />
+                                    <p className="text-sm font-semibold text-slate-900">{t('booking.noServices')}</p>
+                                    <p className="text-xs text-slate-500 mt-1">{t('booking.noServicesDesc')}</p>
+                                </div>
+                            )}
                         </div>
 
                         {selectedServices.length > 0 && (

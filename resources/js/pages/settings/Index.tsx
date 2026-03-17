@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/AppLayout';
 import { PageProps } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
@@ -125,6 +125,15 @@ export default function Settings({
     const [copied, setCopied] = useState(false);
     const [logoPreview, setLogoPreview] = useState<string | null>(company.logo ?? null);
     const [logoUploading, setLogoUploading] = useState(false);
+
+    // Read tab from URL parameter on mount
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab && TABS.some(t => t.id === tab)) {
+            setActiveTab(tab);
+        }
+    }, []);
 
     function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];

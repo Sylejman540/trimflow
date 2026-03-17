@@ -134,7 +134,7 @@ function SetupChecklist({ setup }: { setup: Setup }) {
             icon: Building2,
             label: t('setup.shopInfoLabel'),
             sub: t('setup.shopInfoSub'),
-            href: route('settings.index'),
+            href: route('settings.index') + '?tab=shop',
             linkLabel: t('setup.shopInfoLink'),
         },
         {
