@@ -18,7 +18,7 @@ function PoweredBy() {
     );
 }
 
-interface Company { id: number; name: string; slug: string; phone?: string; }
+interface Company { id: number; name: string; slug: string; phone?: string; address?: string; city?: string; }
 interface Customer { name: string; phone: string; }
 interface Appt {
     id: number;
@@ -106,7 +106,11 @@ export default function PortalAppointments({
                         </div>
                         <div>
                             <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
-                            <p className="text-xs text-slate-400">{customer.name}</p>
+                            <div className="text-xs text-slate-500 space-y-0.5">
+                                {company.phone && <p>{company.phone}</p>}
+                                {company.address && company.city && <p>{company.address}, {company.city}</p>}
+                            </div>
+                            <p className="text-xs text-slate-400 mt-1.5">{customer.name}</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">

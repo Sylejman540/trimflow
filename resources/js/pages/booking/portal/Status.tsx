@@ -52,6 +52,9 @@ interface Company {
     name: string;
     slug: string;
     logo?: string | null;
+    phone?: string;
+    address?: string;
+    city?: string;
 }
 
 interface Appointment {
@@ -128,7 +131,13 @@ export default function Status({
                             : <Scissors className="h-4 w-4 text-slate-500" />
                         }
                     </div>
-                    <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                    <div>
+                        <h1 className="text-base font-semibold text-slate-900">{company.name}</h1>
+                        <div className="text-xs text-slate-500 space-y-0.5">
+                            {company.phone && <p>{company.phone}</p>}
+                            {company.address && company.city && <p>{company.address}, {company.city}</p>}
+                        </div>
+                    </div>
                 </div>
             </div>
 
