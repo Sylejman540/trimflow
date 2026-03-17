@@ -363,7 +363,9 @@ class BookingController extends Controller
 
         $customer->increment('booking_total');
 
-        return redirect()->route('booking.status', [$slug, $cancelToken]);
+        $lang = request('lang') ?? app()->getLocale();
+        return redirect()->route('booking.status', [$slug, $cancelToken])
+            ->with('booking_lang', $lang);
     }
 
     public function confirmation(string $slug)

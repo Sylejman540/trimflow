@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { Scissors, CalendarDays, Clock, CheckCircle2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
@@ -74,6 +74,10 @@ interface PastAppointment {
     service: string;
 }
 
+interface PageProps {
+    booking_lang?: string;
+}
+
 const statusStyle: Record<string, string> = {
     pending:     'bg-orange-50 text-orange-700 border-orange-100',
     confirmed:   'bg-blue-50 text-blue-700 border-blue-100',
@@ -102,14 +106,16 @@ export default function Status({
     past?: PastAppointment[];
 }) {
     const { t, i18n } = useTranslation();
+    const { booking_lang } = usePage<PageProps>().props;
 
-    // For public pages, sync language from localStorage to i18n
+    // Sync language from booking session or localStorage to i18n
     useEffect(() => {
-        const savedLang = localStorage.getItem('fade_lang');
-        if (savedLang && savedLang !== i18n.language) {
-            i18n.changeLanguage(savedLang);
+        const lang = booking_lang || localStorage.getItem('fade_lang');
+        if (lang && lang !== i18n.language) {
+            i18n.changeLanguage(lang);
+            localStorage.setItem('fade_lang', lang);
         }
-    }, [i18n]);
+    }, [i18n, booking_lang]);
 
     const statusMsg = statusMessages[appointment.status] || statusMessages.pending;
 
