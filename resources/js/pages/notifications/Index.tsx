@@ -1,6 +1,7 @@
 import { Head, router, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { BellOff, CalendarDays, CheckCircle2, XCircle, AlertTriangle, Check, ArrowRight, ChevronLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/AppLayout';
 import { cn } from '@/lib/utils';
 
@@ -35,6 +36,20 @@ export default function Index({
     unread_count: number;
 }) {
     const { t } = useTranslation();
+    const [canGoBack, setCanGoBack] = useState(false);
+
+    useEffect(() => {
+        // Check if we can go back (there's history)
+        setCanGoBack(window.history.length > 1);
+    }, []);
+
+    function handleBack() {
+        if (canGoBack) {
+            window.history.back();
+        } else {
+            router.visit(route('dashboard'));
+        }
+    }
 
     function markOne(id: string) {
         router.post(route('notifications.read'), { id }, { preserveScroll: true });
@@ -45,13 +60,13 @@ export default function Index({
             title={t('notif.title')}
             actions={
                 <div className="flex items-center gap-2">
-                    <Link
-                        href={route('dashboard')}
+                    <button
+                        onClick={handleBack}
                         className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
                     >
                         <ChevronLeft className="h-4 w-4" />
                         {t('back')}
-                    </Link>
+                    </button>
                     {unread_count > 0 && (
                         <button
                             onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}

@@ -511,6 +511,18 @@ export default function AppLayout({
 
                     {/* Krahu i Djathtë: Actions, Walk-in, Lang, Notifications */}
                     <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 shrink-0">
+                        {/* Company Selector */}
+                        {auth.company?.name && (
+                            <button
+                                onClick={() => {}}
+                                className="hidden sm:flex items-center gap-1.5 h-9 px-3 lg:px-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors shadow-sm"
+                                title={auth.company.name}
+                            >
+                                <Briefcase className="h-3.5 w-3.5 shrink-0" />
+                                <span className="truncate max-w-[120px]">{auth.company.name}</span>
+                            </button>
+                        )}
+
                         {/* Butonat specifikë të faqes (p.sh. Add, Export) */}
                         {actions && (
                             <div className="flex items-center gap-1 sm:gap-1.5">
@@ -534,15 +546,17 @@ export default function AppLayout({
                             </button>
                         )}
 
-                        {/* Booking Link - Copy to Clipboard */}
+                        {/* Booking Link - Navigate to booking page */}
                         {auth.company?.slug && (
-                            <button
-                                onClick={copyBookingLink}
+                            <a
+                                href={`/book/${auth.company.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 rounded-lg text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-colors shrink-0 sm:border sm:border-slate-200"
                                 title={t('nav.bookingLink')}
                             >
                                 <Link2 className="h-5 w-5 sm:h-5 sm:w-5" />
-                            </button>
+                            </a>
                         )}
 
                         {/* Language & Notifications */}
