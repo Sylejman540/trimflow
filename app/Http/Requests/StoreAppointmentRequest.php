@@ -22,7 +22,7 @@ class StoreAppointmentRequest extends FormRequest
             'customer_email'  => 'nullable|email|max:255',
             'service_ids'     => 'required|array|min:1',
             'service_ids.*'   => 'integer|exists:services,id',
-            'starts_at'       => 'required|date',
+            'starts_at'       => 'required|date_format:Y-m-d\TH:i',
             'notes'           => 'nullable|string|max:1000',
             'recurrence_rule' => 'nullable|in:none,weekly,biweekly,monthly',
         ];

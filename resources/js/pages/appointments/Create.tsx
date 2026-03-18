@@ -480,22 +480,6 @@ export default function Create({
                                 />
                             </div>
 
-                            <div className="space-y-3">
-                                <Label className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                                    <Tag size={16} />{t('appt.repeat')}
-                                </Label>
-                                <Select value={data.recurrence_rule} onValueChange={(v) => setData('recurrence_rule', v ?? 'none')}>
-                                    <SelectTrigger className="h-9 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                                        <SelectItem value="none">{t('appt.doesNotRepeat')}</SelectItem>
-                                        <SelectItem value="weekly">{t('appt.weekly')}</SelectItem>
-                                        <SelectItem value="biweekly">{t('appt.biweekly')}</SelectItem>
-                                        <SelectItem value="monthly">{t('appt.monthly')}</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
                         </div>
                     )}
 
