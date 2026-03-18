@@ -23,11 +23,11 @@ class NewPublicBooking extends Notification
             $channels[] = 'mail';
         }
 
-        // Broadcast notification created event
-        Event::dispatch(new NotificationCreated(
-            $this->appointment->company_id,
-            $notifiable->id
-        ));
+        // Broadcast notification created event (disabled - requires Pusher)
+        // Event::dispatch(new NotificationCreated(
+        //     $this->appointment->company_id,
+        //     $notifiable->id
+        // ));
 
         return $channels;
     }

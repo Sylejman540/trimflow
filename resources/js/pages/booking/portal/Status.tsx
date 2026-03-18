@@ -221,7 +221,7 @@ export default function Status({
                                 <span>{apptDate ? `${apptDate.day}, ${apptDate.time}` : formatDateTime(appointment.starts_at)}</span>
                             </div>
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-slate-600">Total price</span>
+                                <span className="text-slate-600">{t('booking.totalPrice')}</span>
                                 <span className="font-semibold text-slate-900">{formatCents(appointment.price)}</span>
                             </div>
                         </div>

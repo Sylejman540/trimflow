@@ -420,6 +420,7 @@ export default {
         services: 'shërbime',
         service: 'shërbim',
         min: 'min',
+        totalPrice: 'Çmimi total',
         step: {
             barber: 'Berberi',
             service: 'Shërbimi',

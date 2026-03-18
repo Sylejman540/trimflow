@@ -401,6 +401,7 @@ export default {
         services: 'Leistungen',
         service: 'Leistung',
         min: 'Min.',
+        totalPrice: 'Gesamtpreis',
         step: {
             barber: 'Friseur',
             service: 'Leistung',

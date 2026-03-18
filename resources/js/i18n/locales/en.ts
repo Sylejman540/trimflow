@@ -446,6 +446,7 @@ export default {
         services: 'services',
         service: 'service',
         min: 'min',
+        totalPrice: 'Total price',
         step: {
             barber: 'Barber',
             service: 'Service',
