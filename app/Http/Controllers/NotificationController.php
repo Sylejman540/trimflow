@@ -28,7 +28,7 @@ class NotificationController extends Controller
         return Inertia::render('notifications/Index', [
             'notifications' => $notifications,
             'unread_count'  => 0,
-        ]);
+        ])->with('status', 'notifications-read');
     }
 
     public function markRead(Request $request)

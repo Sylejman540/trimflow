@@ -309,6 +309,7 @@ export default function AppLayout({
 
     useEffect(() => {
         // Sync unread count from server props whenever it changes
+        console.log('Updating unread count from auth:', auth.unread_notifications);
         setUnreadCount(auth.unread_notifications ?? 0);
     }, [auth.unread_notifications]);
 
@@ -618,7 +619,9 @@ export default function AppLayout({
 
                             <Link
                                 href={route('notifications.index')}
-                                onClick={() => setUnreadCount(0)}
+                                onClick={() => {
+                                    setUnreadCount(0);
+                                }}
                                 className="relative flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                             >
                                 <Bell size={20} className="sm:w-[18px] sm:h-[18px]" />
