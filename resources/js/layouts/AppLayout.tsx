@@ -216,7 +216,11 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                         ) : (
                             <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
                                 <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                    <SelectValue placeholder={t('walkin.selectService')} />
+                                    {data.service_id ? (
+                                        <span className="text-slate-900 font-medium">{walkin.services.find(s => String(s.id) === data.service_id)?.name}</span>
+                                    ) : (
+                                        <SelectValue placeholder={t('walkin.selectService')} />
+                                    )}
                                 </SelectTrigger>
                                 <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
                                     {walkin.services.map(s => (
