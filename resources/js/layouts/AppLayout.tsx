@@ -48,38 +48,82 @@ interface WalkinProps {
     services: WalkinService[];
 }
 
-function playNotificationSound() {
-    console.log('Playing notification sound...');
+function playNotificationSound(type: 'default' | 'bell' | 'chime' | 'ping' = 'default') {
+    console.log('Playing notification sound:', type);
     try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
         console.log('Audio context created, state:', audioContext.state);
 
-        // Create two beeps for a more noticeable sound
         const now = audioContext.currentTime;
 
-        // First beep - 800Hz
-        const osc1 = audioContext.createOscillator();
-        const gain1 = audioContext.createGain();
-        osc1.connect(gain1);
-        gain1.connect(audioContext.destination);
-        osc1.frequency.value = 800;
-        osc1.type = 'sine';
-        gain1.gain.setValueAtTime(0.3, now);
-        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-        osc1.start(now);
-        osc1.stop(now + 0.15);
+        if (type === 'default') {
+            // Two beeps - 800Hz then 1000Hz
+            const osc1 = audioContext.createOscillator();
+            const gain1 = audioContext.createGain();
+            osc1.connect(gain1);
+            gain1.connect(audioContext.destination);
+            osc1.frequency.value = 800;
+            osc1.type = 'sine';
+            gain1.gain.setValueAtTime(0.3, now);
+            gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+            osc1.start(now);
+            osc1.stop(now + 0.15);
 
-        // Second beep - 1000Hz (delayed 100ms)
-        const osc2 = audioContext.createOscillator();
-        const gain2 = audioContext.createGain();
-        osc2.connect(gain2);
-        gain2.connect(audioContext.destination);
-        osc2.frequency.value = 1000;
-        osc2.type = 'sine';
-        gain2.gain.setValueAtTime(0.3, now + 0.2);
-        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-        osc2.start(now + 0.2);
-        osc2.stop(now + 0.35);
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            osc2.frequency.value = 1000;
+            osc2.type = 'sine';
+            gain2.gain.setValueAtTime(0.3, now + 0.2);
+            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+            osc2.start(now + 0.2);
+            osc2.stop(now + 0.35);
+        } else if (type === 'bell') {
+            // Bell sound - three ascending tones
+            const frequencies = [523.25, 659.25, 783.99]; // C, E, G (major chord)
+            frequencies.forEach((freq, idx) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                const startTime = now + idx * 0.1;
+                gain.gain.setValueAtTime(0.2, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+                osc.start(startTime);
+                osc.stop(startTime + 0.2);
+            });
+        } else if (type === 'chime') {
+            // Chime - high pitched descending tones
+            const frequencies = [1046.50, 783.99, 587.33]; // C, G, D (descending)
+            frequencies.forEach((freq, idx) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                const startTime = now + idx * 0.12;
+                gain.gain.setValueAtTime(0.25, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
+                osc.start(startTime);
+                osc.stop(startTime + 0.25);
+            });
+        } else if (type === 'ping') {
+            // Single high ping
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = 1200;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.start(now);
+            osc.stop(now + 0.1);
+        }
 
         console.log('Sound playing completed');
     } catch (e) {
@@ -334,7 +378,7 @@ export default function AppLayout({
                 // Play notification sound if enabled
                 console.log('Sound enabled?', (auth.user as any).notifications_sound);
                 if ((auth.user as any).notifications_sound) {
-                    playNotificationSound();
+                    playNotificationSound('chime');
                 }
             }
         });
