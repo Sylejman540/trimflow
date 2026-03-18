@@ -8,7 +8,7 @@ import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+    Select, SelectContent, SelectItem, SelectTrigger,
 } from '@/components/ui/select';
 import { formatCents, formatTime, cn } from '@/lib/utils';
 import { Appointment, AppointmentStatus } from '@/types';
@@ -17,6 +17,19 @@ const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show']
 
 function capitalize(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function getStatusLabel(status: string, t: any): string {
+    switch (status) {
+        case 'all':
+            return capitalize(t('all'));
+        case 'completed':
+            return capitalize(t('appt.completed'));
+        case 'cancelled':
+            return capitalize(t('appt.cancelled'));
+        default:
+            return status;
+    }
 }
 
 function statusVariant(status: AppointmentStatus) {
@@ -211,7 +224,7 @@ export default function History({
                     <div className="w-full sm:w-auto">
                         <Select value={statusFilter} onValueChange={v => setStatusFilter(v ?? 'all')}>
                             <SelectTrigger className="h-8 text-xs border-slate-200 bg-white">
-                                <SelectValue />
+                                <span>{getStatusLabel(statusFilter, t)}</span>
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">{capitalize(t('all'))}</SelectItem>
