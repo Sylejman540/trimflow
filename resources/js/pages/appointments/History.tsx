@@ -235,7 +235,7 @@ export default function History({
                     </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-3 sm:hidden:mt-0">
                     {/* Mobile cards */}
                     <div className="sm:hidden space-y-2">
                         {filtered.length === 0 ? (

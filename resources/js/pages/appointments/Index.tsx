@@ -378,7 +378,7 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
             )}
 
             {/* Mobile cards */}
-            <div className="sm:hidden space-y-2">
+            <div className="sm:hidden space-y-2 mt-4">
                 {filtered.length === 0 ? (
                     <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
                         <Calendar className="h-8 w-8 text-slate-200" />
@@ -408,8 +408,8 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
 
 // ─── Calendar View ────────────────────────────────────────────────────────────
 
-function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
-    filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void;
+function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [] }: {
+    filtered: Appointment[]; isBarber: boolean; isOwnerBarber: boolean; onDelete: (a: Appointment) => void; barbers?: Barber[];
 }) {
     const { t } = useTranslation();
     const [calMode, setCalMode] = useState<'day' | 'week' | 'month'>('week');
@@ -433,7 +433,23 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
         return days;
     }, [anchor]);
 
-    const hours = Array.from({ length: 14 }, (_, i) => i + 7); // 7am–8pm
+    // Calculate latest working hour from all barbers
+    const latestHour = useMemo(() => {
+        let latest = 20; // default to 8pm
+        barbers.forEach(barber => {
+            if (barber.working_hours && typeof barber.working_hours === 'object') {
+                Object.values(barber.working_hours).forEach(dayHours => {
+                    if (dayHours && typeof dayHours === 'object' && 'end' in dayHours) {
+                        const [endHour] = (dayHours.end as string).split(':').map(Number);
+                        if (endHour > latest) latest = endHour;
+                    }
+                });
+            }
+        });
+        return latest;
+    }, [barbers]);
+
+    const hours = Array.from({ length: latestHour - 7 + 1 }, (_, i) => i + 7);
 
     // Month view days
     const monthDays = useMemo(() => {
@@ -600,7 +616,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete }: {
                             <>
                                 <div key={`h-${hour}`} className="border-b border-slate-100 px-1 py-1 text-right">
                                     <span className="text-[10px] text-slate-400 font-medium">
-                                        {hour === 12 ? '12pm' : hour < 12 ? `${hour}am` : `${hour - 12}pm`}
+                                        {String(hour).padStart(2, '0')}:00
                                     </span>
                                 </div>
                                 {displayDays.map(day => {
@@ -1040,6 +1056,7 @@ export default function Index({
                         filtered={filtered}
                         isBarber={is_barber} isOwnerBarber={is_owner_barber}
                         onDelete={setDeletingAppt}
+                        barbers={barbers}
                     />
                 )}
                 {view === 'kanban' && (

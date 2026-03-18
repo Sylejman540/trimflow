@@ -136,7 +136,11 @@ export default function Edit({
                                     onValueChange={(v) => setData('barber_id', v ?? '')}
                                 >
                                     <SelectTrigger className="h-9 bg-slate-50 border-slate-200 focus:bg-white transition-all rounded-lg">
-                                        <SelectValue placeholder={t('appt.selectBarber')} />
+                                        {data.barber_id ? (
+                                            <span className="text-slate-900 font-medium">{barbers.find(b => String(b.id) === data.barber_id)?.user?.name}</span>
+                                        ) : (
+                                            <SelectValue placeholder={t('appt.selectBarber')} />
+                                        )}
                                     </SelectTrigger>
                                     <SelectContent className="rounded-xl border-slate-200 shadow-xl">
                                         {barbers.map((b) => (
