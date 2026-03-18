@@ -51,7 +51,7 @@ Route::get('/company', function () {
     return Inertia::render('Company');
 })->name('company.page');
 
-Route::middleware(['auth', 'verified', 'company'])->group(function () {
+Route::middleware(['auth', 'company'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     // Apply rate limiting to write operations: max 60 requests per minute per user
@@ -107,7 +107,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 });
 
 // Platform super-admin panel
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
     Route::patch('/companies/{company}/toggle', [AdminDashboardController::class, 'toggleCompany'])->name('companies.toggle');
 

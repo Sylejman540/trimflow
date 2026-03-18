@@ -35,7 +35,6 @@ class SettingsController extends Controller
             ->values();
 
         return Inertia::render('settings/Index', [
-            'mustVerifyEmail'    => $user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail,
             'status'             => session('status'),
             'can_manage_company' => ! $isBarber,
             'booking_url'        => (! $isBarber && $company)

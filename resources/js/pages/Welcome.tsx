@@ -79,7 +79,6 @@ function PremiumiPhoneMockup() {
                 style={{
                     width: '300px',
                     transform: 'rotateX(5deg) rotateZ(8deg)',
-                    filter: 'drop-shadow(0 40px 60px rgba(0,0,0,0.3))',
                 }}
             >
                 {/* iPhone frame */}
@@ -182,15 +181,6 @@ function PremiumiPhoneMockup() {
                 </div>
             </div>
 
-            {/* Ambient glow */}
-            <div
-                className="absolute inset-0 rounded-[50px] opacity-30 blur-2xl -z-10"
-                style={{
-                    background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%)',
-                    width: '300px',
-                    aspectRatio: '9/19.5',
-                }}
-            />
         </div>
     );
 }
@@ -243,7 +233,7 @@ function CookieBanner() {
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="fixed bottom-0 inset-x-0 z-[200] px-4 pb-4 sm:px-6"
         >
-            <div className="max-w-3xl mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-2xl shadow-black/60">
+            <div className="max-w-3xl mx-auto bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4  shadow-black/60">
                 <div className="flex-1 text-sm text-zinc-300 leading-relaxed">
                     {t('land.cookieText')}{' '}
                     <a href="#" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
@@ -471,19 +461,19 @@ const Hero = () => {
                         <div className="absolute rounded-3xl bg-slate-400" style={{ left: '1%', right: '1%', top: '140px', bottom: '60px' }} />
 
                         {/* Left phone */}
-                        <PhoneFrame className="relative z-20 -rotate-3 shadow-2xl flex-shrink-0" style={{ width: '220px' }}>
+                        <PhoneFrame className="relative z-20 -rotate-3  flex-shrink-0" style={{ width: '220px' }}>
                             <img src="/left-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
 
                         {/* Center phone — video */}
-                        <PhoneFrame className="relative z-30 shadow-2xl flex-shrink-0" style={{ width: '260px' }}>
+                        <PhoneFrame className="relative z-30  flex-shrink-0" style={{ width: '260px' }}>
                             <video autoPlay loop muted playsInline className="w-full h-full object-cover">
                                 <source src="/videos/haircut.mp4" type="video/mp4" />
                             </video>
                         </PhoneFrame>
 
                         {/* Right phone */}
-                        <PhoneFrame className="relative z-20 rotate-3 shadow-2xl flex-shrink-0" style={{ width: '220px' }}>
+                        <PhoneFrame className="relative z-20 rotate-3  flex-shrink-0" style={{ width: '220px' }}>
                             <img src="/right-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
                     </div>
@@ -621,7 +611,7 @@ const LockInLoyalty = () => {
                             />
 
                             <div
-                                className="absolute overflow-hidden shadow-2xl"
+                                className="absolute overflow-hidden "
                                 style={{ width: '55%', maxWidth: '320px', borderRadius: '20px', top: '0', right: '10%' }}
                             >
                                 <img src="/reports.png" alt="Reports" className="w-full h-auto object-contain" />
