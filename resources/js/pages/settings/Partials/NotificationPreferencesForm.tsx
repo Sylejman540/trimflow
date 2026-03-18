@@ -1,31 +1,58 @@
 import { useTranslation } from 'react-i18next';
-import { useForm } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
+import { router, usePage } from '@inertiajs/react';
 import { Switch } from '@/components/ui/switch';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { User } from '@/types';
 
 export default function NotificationPreferencesForm({ user }: { user: User }) {
     const { t } = useTranslation();
+    const page = usePage();
     const [showFeedback, setShowFeedback] = useState(false);
-    const { data, setData, patch, processing } = useForm({
-        notifications_sound: user.notifications_sound ?? true,
-        notifications_email: user.notifications_email ?? true,
-    });
+    const [notificationsSound, setNotificationsSound] = useState(user.notifications_sound ?? true);
+    const [notificationsEmail, setNotificationsEmail] = useState(user.notifications_email ?? true);
+    const [processing, setProcessing] = useState(false);
+
+    // Sync with updated auth user from server
+    useEffect(() => {
+        const authUser = (page.props.auth as any)?.user;
+        if (authUser) {
+            setNotificationsSound(authUser.notifications_sound ?? true);
+            setNotificationsEmail(authUser.notifications_email ?? true);
+        }
+    }, [page.props.auth]);
 
     const handleToggle = (key: 'notifications_sound' | 'notifications_email', value: boolean) => {
-        setData(key, value);
-        // Immediately save after toggle
-        setTimeout(() => {
-            patch(route('settings.update-notifications'), {
-                data: { ...data, [key]: value },
+        setProcessing(true);
+
+        const newSound = key === 'notifications_sound' ? value : notificationsSound;
+        const newEmail = key === 'notifications_email' ? value : notificationsEmail;
+
+        setNotificationsSound(newSound);
+        setNotificationsEmail(newEmail);
+
+        router.patch(
+            route('settings.update-notifications'),
+            {
+                notifications_sound: newSound,
+                notifications_email: newEmail,
+            },
+            {
+                preserveScroll: true,
                 onSuccess: () => {
                     setShowFeedback(true);
                     setTimeout(() => setShowFeedback(false), 3000);
                 },
-            });
-        }, 0);
+                onError: () => {
+                    // Reset on error
+                    setNotificationsSound(user.notifications_sound ?? true);
+                    setNotificationsEmail(user.notifications_email ?? true);
+                },
+                onFinish: () => {
+                    setProcessing(false);
+                },
+            }
+        );
     };
 
     return (
@@ -48,11 +75,11 @@ export default function NotificationPreferencesForm({ user }: { user: User }) {
                         <p className="text-xs text-slate-500 mt-0.5">{t('settingsPage.soundNotificationsDesc')}</p>
                     </div>
                     <Switch
-                        checked={data.notifications_sound}
+                        checked={notificationsSound}
                         onCheckedChange={(checked) => {
-                            setData('notifications_sound', checked);
+                            handleToggle('notifications_sound', checked);
                         }}
-                        onBlur={() => handleSave('notifications_sound')}
+                        disabled={processing}
                     />
                 </div>
 
@@ -63,11 +90,11 @@ export default function NotificationPreferencesForm({ user }: { user: User }) {
                         <p className="text-xs text-slate-500 mt-0.5">{t('settingsPage.emailNotificationsDesc')}</p>
                     </div>
                     <Switch
-                        checked={data.notifications_email}
+                        checked={notificationsEmail}
                         onCheckedChange={(checked) => {
-                            setData('notifications_email', checked);
+                            handleToggle('notifications_email', checked);
                         }}
-                        onBlur={() => handleSave('notifications_email')}
+                        disabled={processing}
                     />
                 </div>
             </div>

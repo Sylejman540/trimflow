@@ -611,6 +611,7 @@ export default function AppLayout({
 
                             <Link
                                 href={route('notifications.index')}
+                                onClick={() => setUnreadCount(0)}
                                 className="relative flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                             >
                                 <Bell size={20} className="sm:w-[18px] sm:h-[18px]" />

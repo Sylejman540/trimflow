@@ -114,6 +114,6 @@ class SettingsController extends Controller
 
         Auth::user()->update($validated);
 
-        return back();
+        return back()->with('status', 'preferences-updated');
     }
 }

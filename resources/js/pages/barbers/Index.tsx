@@ -120,6 +120,13 @@ export default function Index({ barbers, off_today_ids = [] }: { barbers: any; o
         const search = globalSearch.toLowerCase();
         const matchesSearch = !search || [b.user?.name, b.user?.email, b.specialty].some(v => v?.toLowerCase().includes(search));
         return matchesStatus && matchesSearch;
+    }).sort((a: any, b: any) => {
+        // Generalist (no specialty) always comes first
+        const aIsGeneralist = !a.specialty;
+        const bIsGeneralist = !b.specialty;
+        if (aIsGeneralist && !bIsGeneralist) return -1;
+        if (!aIsGeneralist && bIsGeneralist) return 1;
+        return 0;
     });
 
     const columns: ColumnDef<Barber>[] = [
