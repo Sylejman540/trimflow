@@ -49,8 +49,10 @@ interface WalkinProps {
 }
 
 function playNotificationSound() {
+    console.log('Playing notification sound...');
     try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        console.log('Audio context created, state:', audioContext.state);
 
         // Create two beeps for a more noticeable sound
         const now = audioContext.currentTime;
@@ -78,6 +80,8 @@ function playNotificationSound() {
         gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
         osc2.start(now + 0.2);
         osc2.stop(now + 0.35);
+
+        console.log('Sound playing completed');
     } catch (e) {
         // Audio context not supported
         console.warn('Notification sound not supported:', e);
@@ -320,11 +324,14 @@ export default function AppLayout({
 
         // Listen for new notifications via appointment events
         appointmentChannel.listen('.NotificationCreated', (data: any) => {
+            console.log('NotificationCreated event received:', data, 'current user:', auth.user.id);
             // Only increment if we have the right data structure
             if (data?.user_id === auth.user.id) {
+                console.log('Notification is for current user');
                 setUnreadCount(prev => prev + 1);
 
                 // Play notification sound if enabled
+                console.log('Sound enabled?', (auth.user as any).notifications_sound);
                 if ((auth.user as any).notifications_sound) {
                     playNotificationSound();
                 }
