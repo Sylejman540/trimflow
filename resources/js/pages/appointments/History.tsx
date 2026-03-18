@@ -54,7 +54,7 @@ function HistoryCard({ appt, isBarber }: {
     const { t } = useTranslation();
     return (
         <Link href={route('appointments.show', appt.id)}>
-            <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50">
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 space-y-2.5 active:bg-slate-50 transition-colors cursor-pointer hover:bg-slate-50 mb-3">
                 <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                         <p className="font-bold text-slate-900 text-sm truncate">{appt.customer?.name ?? '-'}</p>
@@ -171,9 +171,9 @@ export default function History({
         <AppLayout title={t('appt.history')}>
             <Head title={t('appt.history')} />
 
-            <div className="space-y-4">
+            <div>
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
                     <Card className="border-slate-200 shadow-none">
                         <CardContent className="p-2.5 space-y-1.5">
                             <div className="flex items-center gap-1.5">
@@ -212,7 +212,7 @@ export default function History({
                 </div>
 
                 {/* Toolbar */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
                     {/* Search row */}
                     <div className="relative w-full sm:w-1/4 shrink-0">
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
@@ -235,9 +235,8 @@ export default function History({
                     </div>
                 </div>
 
-                <div className="space-y-3 sm:hidden:mt-0">
-                    {/* Mobile cards */}
-                    <div className="sm:hidden space-y-2">
+                {/* Mobile cards */}
+                <div className="sm:hidden space-y-3 mt-6">
                         {filtered.length === 0 ? (
                             <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
                                 <Calendar className="h-8 w-8 text-slate-200" />
@@ -261,7 +260,6 @@ export default function History({
                             <DataTable columns={columns} data={filtered} showSearch={false} />
                         )}
                     </div>
-                </div>
             </div>
         </AppLayout>
     );

@@ -539,22 +539,25 @@ export default function AppLayout({
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full',
             )}>
                 {/* Brand */}
-                <div className="flex h-16 items-center justify-between px-6 shrink-0">
-                    <Link href="/dashboard" className="flex items-center gap-4">
-                        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div className="px-6 py-4 shrink-0 flex items-center justify-between gap-3">
+                    <Link href="/dashboard" className="flex items-start gap-3 flex-1 min-w-0">
+                        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                             <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#111827" />
                             <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
                         </svg>
                         {!isCollapsed && (
-                            <span className="text-xl font-black tracking-tight text-slate-900" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '0.04em' }}>
-                                Fade
-                            </span>
+                            <div className="flex flex-col gap-0.5 min-w-0 flex-1">
+                                <p className="text-lg font-black text-slate-900">Fade</p>
+                                {auth.company && (
+                                    <p className="text-xs font-semibold text-slate-600 truncate">{auth.company.name}</p>
+                                )}
+                            </div>
                         )}
                     </Link>
                     {/* Close button on mobile */}
                     <button
                         onClick={() => setSidebarOpen(false)}
-                        className="lg:hidden p-2 text-slate-400 hover:text-slate-900 rounded-md"
+                        className="lg:hidden p-2 text-slate-400 hover:text-slate-900 rounded-md flex-shrink-0"
                     >
                         <X size={20} />
                     </button>

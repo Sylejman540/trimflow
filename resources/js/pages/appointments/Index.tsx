@@ -613,8 +613,8 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [
 
                         {/* Hour rows */}
                         {hours.map(hour => (
-                            <>
-                                <div key={`h-${hour}`} className="border-b border-slate-100 px-1 py-1 text-right">
+                            <div key={`hour-${hour}`}>
+                                <div className="border-b border-slate-100 px-1 py-1 text-right">
                                     <span className="text-[10px] text-slate-400 font-medium">
                                         {String(hour).padStart(2, '0')}:00
                                     </span>
@@ -636,7 +636,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [
                                         </div>
                                     );
                                 })}
-                            </>
+                            </div>
                         ))}
                     </div>
                 </div>
