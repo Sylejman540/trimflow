@@ -16,11 +16,16 @@ export default function NotificationPreferencesForm({ user }: { user: User }) {
     // Sync with updated auth user from server
     useEffect(() => {
         const authUser = (page.props.auth as any)?.user;
+        console.log('Auth user updated:', authUser?.notifications_sound, authUser?.notifications_email);
         if (authUser) {
             setNotificationsSound(authUser.notifications_sound ?? true);
             setNotificationsEmail(authUser.notifications_email ?? true);
         }
-    }, [page.props.auth]);
+    }, [(page.props.auth as any)?.user?.notifications_sound, (page.props.auth as any)?.user?.notifications_email]);
+
+    useEffect(() => {
+        console.log('Local state:', { notificationsSound, notificationsEmail });
+    }, [notificationsSound, notificationsEmail]);
 
     const handleToggle = (key: 'notifications_sound' | 'notifications_email', value: boolean) => {
         setProcessing(true);
