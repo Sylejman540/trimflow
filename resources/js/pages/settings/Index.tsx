@@ -202,20 +202,22 @@ export default function Settings({
         setTimeout(() => setCopied(false), 2000);
     }
 
+    const showBackButton = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('tab');
+
     return (
-        <AppLayout title={t('settingsPage.title')}>
+        <AppLayout
+            title={t('settingsPage.title')}
+            actions={
+                showBackButton && (
+                    <a href={route('dashboard')} className="inline-flex items-center gap-1 h-10 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors">
+                        ← {t('back')}
+                    </a>
+                )
+            }
+        >
             <Head title={t('settingsPage.title')} />
 
             <div className="max-w-3xl mx-auto space-y-6">
-                {/* Back to Dashboard button when coming from setup */}
-                {typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('tab') && (
-                    <div className="flex items-center gap-2">
-                        <a href={route('dashboard')} className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors">
-                            ← {t('back')}
-                        </a>
-                    </div>
-                )}
-
                 {/* Tab Navigation */}
                 <div className="flex items-center gap-1 overflow-x-auto no-scrollbar border-b border-slate-200 -mx-4 px-4 lg:mx-0 lg:px-0">
                     {TABS.filter(tab => tab.id !== 'shop' || can_manage_company).map((tab) => {

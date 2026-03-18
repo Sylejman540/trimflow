@@ -193,12 +193,12 @@ export default function History({
                 </div>
 
                 {/* Toolbar */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     {/* Search row */}
-                    <div className="relative w-full sm:w-1/4 shrink-0">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <input type="text" value={globalSearch} placeholder={t('search')}
-                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
+                            className="w-full pl-10 pr-4 h-10 bg-white border-2 border-slate-300 rounded-lg text-sm focus:outline-none focus:border-slate-900 focus:shadow-md placeholder:text-slate-400 transition-all"
                             onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
                 </div>
