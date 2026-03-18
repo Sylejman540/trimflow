@@ -685,6 +685,13 @@ export default {
         agentLeaveBlank: 'Lëreni bosh për të mbajtur vlerën aktuale',
         agentEnable: 'Aktivizo Agjentin AI të Instagram',
         agentEnableDesc: 'Kur është aktiv, agjenti do të përgjigjet automatikisht çdo mesazhi.',
+        notifications: 'Njoftime',
+        notificationsDesc: 'Kontrollo se si dëshiron të marrësh njoftimet për termina.',
+        soundNotifications: 'Njoftime me Zë',
+        soundNotificationsDesc: 'Lëshon një zë kur marrësh njoftim.',
+        emailNotifications: 'Njoftime me Email',
+        emailNotificationsDesc: 'Merr njoftim përmes email kur termina futen ose përditësohen.',
+        preferencesSaved: 'Preferencat e njoftimeve u ruajtën',
     },
 
     notif: {

@@ -24,6 +24,9 @@ export interface User {
     email: string;
     email_verified_at?: string;
     company_id: number | null;
+    language?: string;
+    notifications_sound: boolean;
+    notifications_email: boolean;
     created_at: string;
     updated_at: string;
 }

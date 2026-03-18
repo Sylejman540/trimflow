@@ -95,6 +95,7 @@ Route::middleware(['auth', 'verified', 'company'])->group(function () {
 
     Route::middleware(['role:shop-admin|platform-admin', 'throttle:60,1'])->group(function () {
         Route::patch('/settings/company', [SettingsController::class, 'updateCompany'])->name('settings.company');
+        Route::patch('/settings/notifications', [SettingsController::class, 'updateNotifications'])->name('settings.update-notifications');
         Route::post('/settings/logo', [SettingsController::class, 'uploadLogo'])->name('settings.logo');
         Route::delete('/settings/logo', [SettingsController::class, 'destroyLogo'])->name('settings.logo.destroy');
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

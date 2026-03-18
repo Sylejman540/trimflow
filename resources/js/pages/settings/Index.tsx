@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
-import { User, Building2, ShieldCheck, AlertTriangle, Monitor, Smartphone, Key, Link2, Copy, Check, Camera, Trash2 } from 'lucide-react';
+import NotificationPreferencesForm from './Partials/NotificationPreferencesForm';
+import { User, Building2, ShieldCheck, AlertTriangle, Monitor, Smartphone, Key, Link2, Copy, Check, Camera, Trash2, Bell } from 'lucide-react';
 import { router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -107,6 +108,7 @@ function fmtLastActive(timestamp: number): string {
 const TABS = [
     { id: 'account',  labelKey: 'profile.general',    icon: User },
     { id: 'shop',     labelKey: 'settingsPage.shopInfo', icon: Building2 },
+    { id: 'notifications', labelKey: 'settingsPage.notifications', icon: Bell },
     { id: 'security', labelKey: 'profile.security',   icon: ShieldCheck },
     { id: 'sessions', labelKey: 'profile.sessions',   icon: Monitor },
     { id: 'danger',   labelKey: 'profile.dangerZone', icon: AlertTriangle },
@@ -419,6 +421,13 @@ export default function Settings({
                                 </Button>
                             </div>
                         </form>
+                    </div>
+                )}
+
+                {/* Notifications Tab */}
+                {activeTab === 'notifications' && (
+                    <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-8 animate-in fade-in slide-in-from-bottom-2 duration-200">
+                        <NotificationPreferencesForm user={auth.user} />
                     </div>
                 )}
 

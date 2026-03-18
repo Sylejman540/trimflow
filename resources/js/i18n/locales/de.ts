@@ -665,6 +665,13 @@ export default {
         agentLeaveBlank: 'Leer lassen, um den aktuellen Wert beizubehalten',
         agentEnable: 'Instagram KI-Agent aktivieren',
         agentEnableDesc: 'Wenn aktiviert, antwortet die KI automatisch auf alle eingehenden DMs und bucht Termine.',
+        notifications: 'Benachrichtigungen',
+        notificationsDesc: 'Steuern Sie, wie Sie Terminbenachrichtigungen erhalten.',
+        soundNotifications: 'Ton-Benachrichtigungen',
+        soundNotificationsDesc: 'Sound abspielen, wenn Sie eine Benachrichtigung erhalten.',
+        emailNotifications: 'E-Mail-Benachrichtigungen',
+        emailNotificationsDesc: 'E-Mail-Benachrichtigungen erhalten, wenn Termine gebucht oder aktualisiert werden.',
+        preferencesSaved: 'Benachrichtigungseinstellungen gespeichert',
     },
 
     notif: {

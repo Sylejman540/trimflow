@@ -706,6 +706,13 @@ export default {
         agentLeaveBlank: 'Leave blank to keep current',
         agentEnable: 'Enable Instagram AI Agent',
         agentEnableDesc: 'When on, the AI will auto-reply to every incoming DM and book appointments.',
+        notifications: 'Notifications',
+        notificationsDesc: 'Control how you receive appointment notifications.',
+        soundNotifications: 'Sound Notifications',
+        soundNotificationsDesc: 'Play a sound when you receive a notification.',
+        emailNotifications: 'Email Notifications',
+        emailNotificationsDesc: 'Get notified by email when appointments are booked or updated.',
+        preferencesSaved: 'Notification preferences saved',
     },
 
     // Notifications

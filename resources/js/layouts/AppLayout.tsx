@@ -48,6 +48,42 @@ interface WalkinProps {
     services: WalkinService[];
 }
 
+function playNotificationSound() {
+    try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+        // Create two beeps for a more noticeable sound
+        const now = audioContext.currentTime;
+
+        // First beep - 800Hz
+        const osc1 = audioContext.createOscillator();
+        const gain1 = audioContext.createGain();
+        osc1.connect(gain1);
+        gain1.connect(audioContext.destination);
+        osc1.frequency.value = 800;
+        osc1.type = 'sine';
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc1.start(now);
+        osc1.stop(now + 0.15);
+
+        // Second beep - 1000Hz (delayed 100ms)
+        const osc2 = audioContext.createOscillator();
+        const gain2 = audioContext.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioContext.destination);
+        osc2.frequency.value = 1000;
+        osc2.type = 'sine';
+        gain2.gain.setValueAtTime(0.3, now + 0.2);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        osc2.start(now + 0.2);
+        osc2.stop(now + 0.35);
+    } catch (e) {
+        // Audio context not supported
+        console.warn('Notification sound not supported:', e);
+    }
+}
+
 function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => void; walkin: WalkinProps }) {
     const { t } = useTranslation();
     const [availableBarbers, setAvailableBarbers] = useState<WalkinBarber[]>([]);
@@ -288,26 +324,10 @@ export default function AppLayout({
             if (data?.user_id === auth.user.id) {
                 setUnreadCount(prev => prev + 1);
 
-                // Play notification sound
-                const audio = new Audio('data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==');
-                audio.play().catch(() => {
-                    // Fallback: use Web Audio API if audio element fails
-                    try {
-                        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-                        oscillator.frequency.value = 800;
-                        oscillator.type = 'sine';
-                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                        oscillator.start(audioContext.currentTime);
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                    } catch (e) {
-                        // Audio not supported
-                    }
-                });
+                // Play notification sound if enabled
+                if ((auth.user as any).notifications_sound) {
+                    playNotificationSound();
+                }
             }
         });
 

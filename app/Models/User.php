@@ -21,6 +21,8 @@ class User extends Authenticatable
         'password',
         'company_id',
         'language',
+        'notifications_sound',
+        'notifications_email',
     ];
 
     public function company(): BelongsTo
@@ -58,6 +60,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notifications_sound' => 'boolean',
+            'notifications_email' => 'boolean',
         ];
     }
 }

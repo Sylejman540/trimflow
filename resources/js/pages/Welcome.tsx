@@ -70,6 +70,131 @@ function PhoneFrame({ children, className = '', style = {} }: { children: React.
     );
 }
 
+function PremiumiPhoneMockup() {
+    return (
+        <div className="relative inline-block" style={{ perspective: '1000px' }}>
+            {/* Phone container with subtle tilt and shadow */}
+            <div
+                className="relative"
+                style={{
+                    width: '300px',
+                    transform: 'rotateX(5deg) rotateZ(8deg)',
+                    filter: 'drop-shadow(0 40px 60px rgba(0,0,0,0.3))',
+                }}
+            >
+                {/* iPhone frame */}
+                <div
+                    className="relative rounded-[50px] bg-black overflow-hidden"
+                    style={{
+                        aspectRatio: '9/19.5',
+                        boxShadow: `
+                            inset 0 0 0 10px #1a1a1a,
+                            inset 0 0 0 11px #333,
+                            0 0 0 1px rgba(255,255,255,0.1),
+                            0 0 60px rgba(0,0,0,0.4)
+                        `,
+                    }}
+                >
+                    {/* Screen area */}
+                    <div className="relative w-full h-full bg-gradient-to-b from-slate-50 to-white overflow-hidden">
+                        {/* Dynamic island */}
+                        <div
+                            className="absolute left-1/2 -translate-x-1/2 bg-black rounded-full z-20"
+                            style={{ top: '8px', width: '130px', height: '28px' }}
+                        />
+
+                        {/* Dashboard content */}
+                        <div className="p-5 space-y-4 pt-10">
+                            {/* Header */}
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h1 className="text-lg font-bold text-slate-900">Dashboard</h1>
+                                    <p className="text-xs text-slate-500">Today</p>
+                                </div>
+                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <div className="w-6 h-6 rounded-full bg-blue-500"></div>
+                                </div>
+                            </div>
+
+                            {/* Stats cards */}
+                            <div className="space-y-2.5">
+                                {/* Appointments card */}
+                                <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-0.5">Appointments</p>
+                                            <p className="text-2xl font-bold text-slate-900">12</p>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                            <span className="text-lg">📅</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-full w-3/4 bg-blue-500 rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                {/* Revenue card */}
+                                <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-0.5">Revenue</p>
+                                            <p className="text-2xl font-bold text-slate-900">$2,450</p>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                                            <span className="text-lg">💰</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-full w-4/5 bg-emerald-500 rounded-full"></div>
+                                    </div>
+                                </div>
+
+                                {/* Completion rate card */}
+                                <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-xs text-slate-500 mb-0.5">Completion Rate</p>
+                                            <p className="text-2xl font-bold text-slate-900">98%</p>
+                                        </div>
+                                        <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                                            <span className="text-lg">✓</span>
+                                        </div>
+                                    </div>
+                                    <div className="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className="h-full w-11/12 bg-amber-500 rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* CTA Button */}
+                            <button className="w-full bg-blue-600 text-white rounded-xl py-2.5 text-xs font-semibold mt-4 hover:bg-blue-700 transition-colors">
+                                View Details
+                            </button>
+                        </div>
+
+                        {/* Home indicator */}
+                        <div
+                            className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black rounded-full z-20"
+                            style={{ width: '120px', height: '4px' }}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Ambient glow */}
+            <div
+                className="absolute inset-0 rounded-[50px] opacity-30 blur-2xl -z-10"
+                style={{
+                    background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.3) 0%, transparent 70%)',
+                    width: '300px',
+                    aspectRatio: '9/19.5',
+                }}
+            />
+        </div>
+    );
+}
+
 function Logo() {
     return (
         <div className="flex items-center gap-2.5">
@@ -334,31 +459,31 @@ const Hero = () => {
                     className="w-full"
                 >
                     {/* Mobile: single centered phone */}
-                    <div className="flex md:hidden justify-center relative" style={{ height: '400px' }}>
-                        <div className="absolute left-0 right-0 rounded-3xl bg-slate-400" style={{ top: '60px', bottom: '60px' }} />
-                        <PhoneFrame className="relative z-10" style={{ width: '180px' }}>
+                    <div className="flex md:hidden justify-center relative px-4" style={{ height: '500px', paddingTop: '20px', paddingBottom: '20px' }}>
+                        <div className="absolute left-0 right-0 rounded-3xl bg-slate-400" style={{ top: '80px', bottom: '80px' }} />
+                        <PhoneFrame className="relative z-10" style={{ width: '200px' }}>
                             <img src="/left-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
                     </div>
 
                     {/* Desktop: full floating layout */}
-                    <div className="hidden md:flex relative items-center justify-center gap-16" style={{ height: '600px' }}>
-                        <div className="absolute rounded-3xl bg-slate-400" style={{ left: '2%', right: '2%', top: '160px', bottom: '100px' }} />
+                    <div className="hidden md:flex relative items-center justify-center gap-12 lg:gap-16 px-4" style={{ height: '700px', paddingTop: '40px', paddingBottom: '40px' }}>
+                        <div className="absolute rounded-3xl bg-slate-400" style={{ left: '1%', right: '1%', top: '140px', bottom: '60px' }} />
 
                         {/* Left phone */}
-                        <PhoneFrame className="relative z-20 -rotate-3 shadow-2xl" style={{ width: '210px', marginTop: '32px' }}>
+                        <PhoneFrame className="relative z-20 -rotate-3 shadow-2xl flex-shrink-0" style={{ width: '220px' }}>
                             <img src="/left-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
 
                         {/* Center phone — video */}
-                        <PhoneFrame className="relative z-30 shadow-2xl" style={{ width: '245px' }}>
+                        <PhoneFrame className="relative z-30 shadow-2xl flex-shrink-0" style={{ width: '260px' }}>
                             <video autoPlay loop muted playsInline className="w-full h-full object-cover">
                                 <source src="/videos/haircut.mp4" type="video/mp4" />
                             </video>
                         </PhoneFrame>
 
                         {/* Right phone */}
-                        <PhoneFrame className="relative z-20 rotate-3 shadow-2xl" style={{ width: '210px', marginTop: '32px' }}>
+                        <PhoneFrame className="relative z-20 rotate-3 shadow-2xl flex-shrink-0" style={{ width: '220px' }}>
                             <img src="/right-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
                     </div>

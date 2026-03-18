@@ -104,4 +104,16 @@ class SettingsController extends Controller
 
         return back()->with('success', 'Logo removed.');
     }
+
+    public function updateNotifications(Request $request)
+    {
+        $validated = $request->validate([
+            'notifications_sound' => 'required|boolean',
+            'notifications_email' => 'required|boolean',
+        ]);
+
+        Auth::user()->update($validated);
+
+        return back();
+    }
 }

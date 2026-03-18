@@ -22,7 +22,7 @@ class AppointmentStatusChanged extends Notification
     {
         $channels = ['database'];
 
-        if (! empty($notifiable->email)) {
+        if (! empty($notifiable->email) && $notifiable->notifications_email) {
             $channels[] = 'mail';
         }
 
