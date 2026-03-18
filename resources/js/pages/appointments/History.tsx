@@ -15,6 +15,10 @@ import { Appointment, AppointmentStatus } from '@/types';
 
 const DONE_STATUSES: AppointmentStatus[] = ['completed', 'cancelled', 'no_show'];
 
+function capitalize(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function statusVariant(status: AppointmentStatus) {
     const map: Record<AppointmentStatus, string> = {
         pending:     'bg-orange-50 text-orange-700 border-orange-100',
@@ -210,9 +214,9 @@ export default function History({
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">{t('all')}</SelectItem>
-                                <SelectItem value="completed">{t('appt.completed')}</SelectItem>
-                                <SelectItem value="cancelled">{t('appt.cancelled')}</SelectItem>
+                                <SelectItem value="all">{capitalize(t('all'))}</SelectItem>
+                                <SelectItem value="completed">{capitalize(t('appt.completed'))}</SelectItem>
+                                <SelectItem value="cancelled">{capitalize(t('appt.cancelled'))}</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
