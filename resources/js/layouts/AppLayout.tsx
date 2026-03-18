@@ -283,13 +283,36 @@ export default function AppLayout({
         });
 
         // Listen for new notifications via appointment events
-        appointmentChannel.listen('.NotificationCreated', () => {
-            // Reload to get updated unread count from server
-            router.reload({ only: ['auth'] });
+        appointmentChannel.listen('.NotificationCreated', (data: any) => {
+            // Only increment if we have the right data structure
+            if (data?.user_id === auth.user.id) {
+                setUnreadCount(prev => prev + 1);
+
+                // Play notification sound
+                const audio = new Audio('data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEAQB8AAAB9AAACABAAZGF0YQIAAAAAAA==');
+                audio.play().catch(() => {
+                    // Fallback: use Web Audio API if audio element fails
+                    try {
+                        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        oscillator.frequency.value = 800;
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    } catch (e) {
+                        // Audio not supported
+                    }
+                });
+            }
         });
 
         return () => { window.Echo.leave(`company.${companyId}.appointments`); };
-    }, [auth.company?.id]);
+    }, [auth.company?.id, auth.user.id]);
 
     function copyBookingLink() {
         const url = `${window.location.origin}/book/${auth.company?.slug}`;

@@ -337,9 +337,7 @@ const Hero = () => {
                     <div className="flex md:hidden justify-center relative" style={{ height: '400px' }}>
                         <div className="absolute left-0 right-0 rounded-3xl bg-slate-400" style={{ top: '60px', bottom: '60px' }} />
                         <PhoneFrame className="relative z-10" style={{ width: '180px' }}>
-                            <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-                                <source src="/videos/haircut.mp4" type="video/mp4" />
-                            </video>
+                            <img src="/left-side.png" alt="App screen" className="w-full h-full object-cover" />
                         </PhoneFrame>
                     </div>
 
@@ -493,15 +491,26 @@ const LockInLoyalty = () => {
                         <div className="relative flex items-center justify-center mt-8 md:mt-0" style={{ height: '400px' }}>
 
                             <div
-                                className="absolute bg-blue-400 rounded-3xl"
-                                style={{ width: '95%', maxWidth: '580px', height: '300px', top: '50px', right: '-20px' }}
+                                className="absolute bg-pink-400 rounded-3xl"
+                                style={{ width: '85%', maxWidth: '560px', height: '280px', top: '60px', right: '0' }}
                             />
 
                             <div
                                 className="absolute overflow-hidden shadow-2xl"
-                                style={{ width: '75%', maxWidth: '420px', borderRadius: '20px', top: '0', right: '0', zIndex: 10 }}
+                                style={{ width: '55%', maxWidth: '320px', borderRadius: '20px', top: '0', right: '10%' }}
                             >
-                                <img src="/reports.png" alt="Reports & Analytics" className="w-full h-auto object-cover" />
+                                <img src="/reports.png" alt="Reports" className="w-full h-auto object-contain" />
+                            </div>
+
+                            <div
+                                className="absolute z-20 overflow-hidden shadow-[0_30px_70px_rgba(0,0,0,0.6)]"
+                                style={{ width: '42%', maxWidth: '230px', height: '240px', borderRadius: '20px', bottom: '0', left: '5%' }}
+                            >
+                                <img
+                                    src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=500&q=80"
+                                    alt="Barber"
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
 
                         </div>
