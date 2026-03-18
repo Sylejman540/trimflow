@@ -340,6 +340,7 @@ export default function AppLayout({
     const { auth, walkin, flash } = usePage<PageProps & { walkin: WalkinProps | null; flash: { success?: string; error?: string } }>().props;
     const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === 'true');
     const [unreadCount, setUnreadCount] = useState(auth.unread_notifications ?? 0);
+    const [hasUserClearedNotifications, setHasUserClearedNotifications] = useState(false);
 
     const toggleCollapsed = (val: boolean) => {
         localStorage.setItem('sidebar_collapsed', String(val));
@@ -353,9 +354,12 @@ export default function AppLayout({
 
     useEffect(() => {
         // Sync unread count from server props whenever it changes
-        console.log('Updating unread count from auth:', auth.unread_notifications);
-        setUnreadCount(auth.unread_notifications ?? 0);
-    }, [auth.unread_notifications]);
+        // But don't sync if user just cleared notifications
+        if (!hasUserClearedNotifications) {
+            console.log('Updating unread count from auth:', auth.unread_notifications);
+            setUnreadCount(auth.unread_notifications ?? 0);
+        }
+    }, [auth.unread_notifications, hasUserClearedNotifications]);
 
     useEffect(() => {
         const companyId = auth.company?.id;
@@ -665,6 +669,7 @@ export default function AppLayout({
                                 href={route('notifications.index')}
                                 onClick={() => {
                                     setUnreadCount(0);
+                                    setHasUserClearedNotifications(true);
                                 }}
                                 className="relative flex items-center justify-center w-9 h-9 sm:w-9 sm:h-9 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
                             >

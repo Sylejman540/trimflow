@@ -5,6 +5,33 @@ import { useEffect, useMemo, useState } from 'react';
 import { formatCents, formatDateTime, cn } from '@/lib/utils';
 import { getDaysAndMonths } from '@/i18n/locales/utils';
 
+function playNotificationSound(type: 'default' | 'bell' | 'chime' | 'ping' = 'chime') {
+    try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const now = audioContext.currentTime;
+
+        if (type === 'chime') {
+            // Chime - high pitched descending tones
+            const frequencies = [1046.50, 783.99, 587.33]; // C, G, D (descending)
+            frequencies.forEach((freq, idx) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                const startTime = now + idx * 0.12;
+                gain.gain.setValueAtTime(0.25, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
+                osc.start(startTime);
+                osc.stop(startTime + 0.25);
+            });
+        }
+    } catch (e) {
+        console.warn('Notification sound not supported:', e);
+    }
+}
+
 function PoweredBy() {
     return (
         <div className="py-6 text-center">
@@ -113,6 +140,15 @@ export default function Status({
             localStorage.setItem('fade_lang', lang);
         }
     }, [i18n, booking_lang]);
+
+    // Play sound when status changes from pending to confirmed/cancelled
+    useEffect(() => {
+        if (appointment.status !== 'pending' && currentStatus === 'pending') {
+            // Status changed from pending to something else
+            playNotificationSound('chime');
+            setCurrentStatus(appointment.status);
+        }
+    }, [appointment.status, currentStatus]);
 
     // Auto-reload page every 5 seconds when status is pending (fallback if Echo doesn't work)
     useEffect(() => {

@@ -324,15 +324,28 @@ class BookingController extends Controller
             LoggingService::logBroadcastError('appointment.changed', $e);
         }
 
-        // ── 17. Notify barber + admins ─────────────────────────────────────────
-        if ($barber->user) {
-            $barber->user->notify(new NewPublicBooking($appointment));
+        // ── 17. Notify barber + shop owner ────────────────────────────────────────
+        // If the barber is a shop admin, only notify them
+        // Otherwise, notify both the barber and shop admins
+        $barberUser = $barber->user;
+
+        if ($barberUser) {
+            // Check if barber is a shop admin
+            $isBarberShopAdmin = $barberUser->hasRole(['shop-admin', 'platform-admin']);
+
+            if ($isBarberShopAdmin) {
+                // Barber is the shop owner, only notify them
+                $barberUser->notify(new NewPublicBooking($appointment));
+            } else {
+                // Barber is an employee, notify both barber and shop owner
+                $barberUser->notify(new NewPublicBooking($appointment));
+
+                // Notify shop admins
+                User::where('company_id', $company->id)
+                    ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
+                    ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
+            }
         }
-        $barberUserId = $barber->user?->id;
-        User::where('company_id', $company->id)
-            ->whereHas('roles', fn($q) => $q->whereIn('name', ['shop-admin', 'platform-admin']))
-            ->when($barberUserId, fn($q) => $q->where('id', '!=', $barberUserId))
-            ->each(fn(User $u) => $u->notify(new NewPublicBooking($appointment)));
 
         // ── 17. Commit rate limits + update fingerprint (only if phone provided) ───
         if ($phone) {
