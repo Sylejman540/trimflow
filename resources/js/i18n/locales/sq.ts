@@ -12,6 +12,7 @@ export default {
     accept: 'Prano',
     loading: 'Po ngarkohet…',
     noResults: 'Nuk u gjet asgjë.',
+    noResultsHint: 'Përpiquni të ndryshoni filtrat ose kushtet e kërkimit',
     actions: 'Veprime',
     status: 'Statusi',
     active: 'Aktiv',
@@ -198,9 +199,9 @@ export default {
         cancelled: 'I anuluar',
         noShow: 'Nuk u paraqit',
         bookingSource: 'Burimi i rezervimit',
-        noAppointments: 'Nuk u gjetën takime.',
+        noAppointments: 'Nuk u gjetën termine.',
         noAppointmentsHint: 'Këto janë oraret e vetme të lira — të gjitha oraret e tjera janë tashmë të rezervuara.',
-        cancelAppt: 'Anulo takimin',
+        cancelAppt: 'Anulo terminin',
         markComplete: 'Shëno si i përfunduar',
         markNoShow: 'Shëno si nuk u paraqit',
         selectBarberAndServiceFirst: 'Zgjidh berberin dhe shërbimin për të parë oraret e lira.',
@@ -392,7 +393,8 @@ export default {
     booking: {
         chooseBarber: 'Zgjidhni berberin',
         chooseServices: 'Zgjidhni shërbimet',
-        noServices: 'Nuk ka shërbime të disponueshme.',
+        noServices: 'Nuk ka shërbime',
+        noServicesDesc: 'Dyqani nuk ka shtuar shërbime ende.',
         pickDateTime: 'Zgjidhni datën dhe orën',
         yourDetails: 'Të dhënat tuaja',
         bookingSummary: 'Përmbledhja e rezervimit',
@@ -492,6 +494,8 @@ export default {
         button: 'Pa rezervim',
         collapse: 'Mbyll',
         noBarbers: 'Nuk ka berberë në dispozicion për këtë shërbim tani',
+        noServices: 'Nuk ka shërbime në dispozicion',
+        noServicesDesc: 'Shtoni shërbime më parë.',
     },
 
     // Appointment Show page

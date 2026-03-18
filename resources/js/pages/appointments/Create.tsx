@@ -309,29 +309,36 @@ export default function Create({
                                 <Label className="text-sm font-bold text-slate-900 flex items-center gap-2 mb-3">
                                     <Scissors size={16} />{t('appt.serviceType')}
                                 </Label>
-                                <div className="flex flex-wrap gap-2">
-                                    {services.map((s) => {
-                                        const isSelected = data.service_ids.includes(String(s.id));
-                                        return (
-                                            <button
-                                                key={s.id}
-                                                type="button"
-                                                onClick={() => toggleService(s)}
-                                                className={cn(
-                                                    'flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-all',
-                                                    isSelected
-                                                        ? 'bg-slate-900 border-slate-900 text-white'
-                                                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400',
-                                                )}
-                                            >
-                                                <span className="text-sm font-semibold">{s.name}</span>
-                                                <span className={cn('text-[11px] mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
-                                                    {formatDuration(s.duration)} · {formatCents(s.price)}
-                                                </span>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                                {services.length === 0 ? (
+                                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg text-center">
+                                        <p className="text-sm font-semibold text-amber-900 mb-2">{t('walkin.noServices')}</p>
+                                        <p className="text-xs text-amber-800">{t('walkin.noServicesDesc')}</p>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-wrap gap-2">
+                                        {services.map((s) => {
+                                            const isSelected = data.service_ids.includes(String(s.id));
+                                            return (
+                                                <button
+                                                    key={s.id}
+                                                    type="button"
+                                                    onClick={() => toggleService(s)}
+                                                    className={cn(
+                                                        'flex flex-col items-start px-3 py-2 rounded-lg border text-left transition-all',
+                                                        isSelected
+                                                            ? 'bg-slate-900 border-slate-900 text-white'
+                                                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-400',
+                                                    )}
+                                                >
+                                                    <span className="text-sm font-semibold">{s.name}</span>
+                                                    <span className={cn('text-[11px] mt-0.5', isSelected ? 'text-slate-300' : 'text-slate-400')}>
+                                                        {formatDuration(s.duration)} · {formatCents(s.price)}
+                                                    </span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
                             {selectedServices.length > 0 && (

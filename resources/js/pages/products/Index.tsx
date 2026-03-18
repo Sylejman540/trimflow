@@ -196,8 +196,8 @@ export default function Index({ products }: { products: any }) {
                             <div className="col-span-full flex flex-col items-center justify-center gap-3 py-12">
                                 <Inbox className="h-12 w-12 text-slate-200" />
                                 <div className="text-center">
-                                    <p className="text-sm font-semibold text-slate-700">No results found</p>
-                                    <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
+                                    <p className="text-sm font-semibold text-slate-700">{t('noResults')}</p>
+                                    <p className="text-xs text-slate-400 mt-1">{t('noResultsHint')}</p>
                                 </div>
                             </div>
                         )}

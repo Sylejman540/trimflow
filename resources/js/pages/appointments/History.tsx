@@ -2,7 +2,7 @@ import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, Search, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
+import { Eye, Search, CheckCircle2, XCircle, AlertCircle, Calendar } from 'lucide-react';
 import AppLayout from '@/layouts/AppLayout';
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
@@ -192,12 +192,13 @@ export default function History({
                     </Card>
                 </div>
 
-                {/* Search row */}
-                <div className="w-full sm:w-1/4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input type="text" value={globalSearch} placeholder={t('apptIndex.searchPlaceholder')}
-                            className="w-full pl-10 pr-3 h-9 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none placeholder:text-slate-400"
+                {/* Toolbar */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                    {/* Search row */}
+                    <div className="relative w-full sm:w-1/4 shrink-0">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                        <input type="text" value={globalSearch} placeholder={t('search')}
+                            className="w-full pl-8 pr-3 h-8 bg-white border border-slate-200 rounded-lg text-xs focus:outline-none placeholder:text-slate-400"
                             onChange={e => setGlobalSearch(e.target.value)} />
                     </div>
                 </div>
@@ -207,7 +208,9 @@ export default function History({
                     <div className="sm:hidden space-y-2">
                         {filtered.length === 0 ? (
                             <div className="py-10 flex flex-col items-center gap-2 text-center px-6">
+                                <Calendar className="h-8 w-8 text-slate-200" />
                                 <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                                <p className="text-xs text-slate-400">{t('appt.noAppointmentsHint')}</p>
                             </div>
                         ) : filtered.map(appt => (
                             <HistoryCard key={appt.id} appt={appt} isBarber={is_barber} />
@@ -218,7 +221,9 @@ export default function History({
                     <div className="hidden sm:block">
                         {filtered.length === 0 ? (
                             <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
+                                <Calendar className="h-10 w-10 text-slate-200" />
                                 <p className="text-sm font-semibold text-slate-700">{t('appt.noAppointments')}</p>
+                                <p className="text-xs text-slate-400 max-w-sm">{t('appt.noAppointmentsHint')}</p>
                             </div>
                         ) : (
                             <DataTable columns={columns} data={filtered} showSearch={false} />

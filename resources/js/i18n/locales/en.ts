@@ -12,7 +12,8 @@ export default {
     decline: 'Decline',
     accept: 'Accept',
     loading: 'Loading…',
-    noResults: 'No results found.',
+    noResults: 'No results found',
+    noResultsHint: 'Try adjusting your filters or search terms',
     actions: 'Actions',
     status: 'Status',
     active: 'Active',
@@ -418,7 +419,8 @@ export default {
     booking: {
         chooseBarber: 'Choose a Barber',
         chooseServices: 'Choose Services',
-        noServices: 'No services available.',
+        noServices: 'No Services Available',
+        noServicesDesc: "The shop hasn't added any services yet.",
         pickDateTime: 'Pick a Date & Time',
         yourDetails: 'Your Details',
         bookingSummary: 'Booking Summary',
@@ -506,6 +508,8 @@ export default {
         button: 'Walk-in',
         collapse: 'Collapse',
         noBarbers: 'No barbers available for this service right now',
+        noServices: 'No services available',
+        noServicesDesc: 'Please add services before creating a walk-in booking.',
     },
 
     // Appointment Show page

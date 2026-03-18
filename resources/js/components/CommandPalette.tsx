@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { Users, CalendarDays, Scissors, User } from 'lucide-react';
 import {
     CommandDialog,
@@ -33,6 +34,7 @@ const typeIcon = {
 };
 
 export default function CommandPalette() {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResults | null>(null);
@@ -80,10 +82,10 @@ export default function CommandPalette() {
     }, []);
 
     const groups: { key: keyof SearchResults; label: string }[] = [
-        { key: 'customers',    label: 'Customers' },
-        { key: 'appointments', label: 'Appointments' },
-        { key: 'services',     label: 'Services' },
-        { key: 'barbers',      label: 'Barbers' },
+        { key: 'customers',    label: t('cust.title') },
+        { key: 'appointments', label: t('appt.title') },
+        { key: 'services',     label: t('svc.title') },
+        { key: 'barbers',      label: t('barber.title') },
     ];
 
     const hasResults = results && groups.some((g) => results[g.key].length > 0);
@@ -91,16 +93,16 @@ export default function CommandPalette() {
     return (
         <CommandDialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setQuery(''); }}>
             <CommandInput
-                placeholder="Search customers, appointments, services..."
+                placeholder={t('search')}
                 value={query}
                 onValueChange={setQuery}
             />
             <CommandList>
                 {query.length >= 2 && !loading && !hasResults && (
-                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandEmpty>{t('noResults')}</CommandEmpty>
                 )}
                 {loading && (
-                    <div className="py-6 text-center text-sm text-slate-400">Searching…</div>
+                    <div className="py-6 text-center text-sm text-slate-400">{t('loading')}</div>
                 )}
                 {results && groups.map(({ key, label }) =>
                     results[key].length > 0 ? (

@@ -10,7 +10,8 @@ export default {
     decline: 'Ablehnen',
     accept: 'Annehmen',
     loading: 'Wird geladen…',
-    noResults: 'Keine Ergebnisse gefunden.',
+    noResults: 'Keine Ergebnisse gefunden',
+    noResultsHint: 'Versuchen Sie, Ihre Filter oder Suchbegriffe anzupassen',
     actions: 'Aktionen',
     status: 'Status',
     active: 'Aktiv',
@@ -372,7 +373,8 @@ export default {
     booking: {
         chooseBarber: 'Friseur wählen',
         chooseServices: 'Leistungen wählen',
-        noServices: 'Keine Dienstleistungen verfügbar.',
+        noServices: 'Keine Dienstleistungen verfügbar',
+        noServicesDesc: 'Der Shop hat noch keine Leistungen hinzugefügt.',
         pickDateTime: 'Datum & Uhrzeit wählen',
         yourDetails: 'Ihre Angaben',
         bookingSummary: 'Buchungsübersicht',
@@ -472,6 +474,8 @@ export default {
         button: 'Walk-in',
         collapse: 'Einklappen',
         noBarbers: 'Zur Zeit sind keine Friseure für diesen Service verfügbar',
+        noServices: 'Keine Leistungen verfügbar',
+        noServicesDesc: 'Bitte fügen Sie Leistungen hinzu, bevor Sie eine Walk-in-Buchung erstellen.',
     },
 
     // Appointment Show page

@@ -208,18 +208,25 @@ function WalkinModal({ open, onClose, walkin }: { open: boolean; onClose: () => 
                         <Label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                             <Scissors size={11} /> {t('walkin.service')}
                         </Label>
-                        <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
-                            <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
-                                <SelectValue placeholder={t('walkin.selectService')} />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
-                                {walkin.services.map(s => (
-                                    <SelectItem key={s.id} value={String(s.id)}>
-                                        {s.name} — {formatCents(s.price)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {walkin.services.length === 0 ? (
+                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
+                                <p className="text-sm font-semibold text-amber-900">{t('walkin.noServices')}</p>
+                                <p className="text-xs text-amber-700">{t('walkin.noServicesDesc')}</p>
+                            </div>
+                        ) : (
+                            <Select value={data.service_id} onValueChange={v => setData('service_id', v ?? '')}>
+                                <SelectTrigger className="h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-lg">
+                                    <SelectValue placeholder={t('walkin.selectService')} />
+                                </SelectTrigger>
+                                <SelectContent className="rounded-xl border-slate-200 shadow-xl w-[var(--radix-select-trigger-width)]">
+                                    {walkin.services.map(s => (
+                                        <SelectItem key={s.id} value={String(s.id)}>
+                                            {s.name} — {formatCents(s.price)}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
                         {errors.service_id && <p className="text-xs text-red-500">{errors.service_id}</p>}
                     </div>
 

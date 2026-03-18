@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ChevronLeft, ChevronRight, Search, Inbox } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -45,6 +46,7 @@ export function DataTable<TData, TValue>({
     filters,
     showSearch = true, // Default to true
 }: DataTableProps<TData, TValue>) {
+    const { t } = useTranslation();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -182,8 +184,8 @@ export function DataTable<TData, TValue>({
                                         <div className="flex flex-col items-center justify-center gap-3">
                                             <Inbox className="h-12 w-12 text-slate-200" />
                                             <div>
-                                                <p className="text-sm font-semibold text-slate-700">No results found</p>
-                                                <p className="text-xs text-slate-400 mt-1">Try adjusting your filters or search terms</p>
+                                                <p className="text-sm font-semibold text-slate-700">{t('noResults')}</p>
+                                                <p className="text-xs text-slate-400 mt-1">{t('noResultsHint')}</p>
                                             </div>
                                         </div>
                                     </TableCell>
