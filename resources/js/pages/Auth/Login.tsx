@@ -7,6 +7,7 @@ import { ArrowRight, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 import FadeLogo from '@/components/FadeLogo';
 
+
 export default function Login({ status, canResetPassword }: { status?: string, canResetPassword: boolean }) {
     const { t, i18n } = useTranslation();
     const [showPassword, setShowPassword] = useState(false);
