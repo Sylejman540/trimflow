@@ -110,13 +110,13 @@ const statusStyle: Record<string, string> = {
     no_show:     'bg-slate-50 text-slate-400 border-slate-100',
 };
 
-const statusMessages: Record<string, { title: string; key: string }> = {
-    pending:     { title: 'booking.statusPending', key: 'booking.statusPendingDesc' },
-    confirmed:   { title: 'booking.statusConfirmed', key: 'booking.statusConfirmedDesc' },
-    in_progress: { title: 'booking.statusInProgress', key: 'booking.statusInProgressDesc' },
-    completed:   { title: 'booking.statusCompleted', key: 'booking.statusCompletedDesc' },
-    cancelled:   { title: 'booking.statusCancelled', key: 'booking.statusCancelledDesc' },
-    no_show:     { title: 'booking.statusNoShow', key: 'booking.statusNoShowDesc' },
+const statusMessages: Record<string, { title: string; key: string; badge: string }> = {
+    pending:     { title: 'booking.statusPending', key: 'booking.statusPendingDesc', badge: 'booking.statusBadgePending' },
+    confirmed:   { title: 'booking.statusConfirmed', key: 'booking.statusConfirmedDesc', badge: 'booking.statusBadgeConfirmed' },
+    in_progress: { title: 'booking.statusInProgress', key: 'booking.statusInProgressDesc', badge: 'booking.statusBadgeInProgress' },
+    completed:   { title: 'booking.statusCompleted', key: 'booking.statusCompletedDesc', badge: 'booking.statusBadgeCompleted' },
+    cancelled:   { title: 'booking.statusCancelled', key: 'booking.statusCancelledDesc', badge: 'booking.statusBadgeCancelled' },
+    no_show:     { title: 'booking.statusNoShow', key: 'booking.statusNoShowDesc', badge: 'booking.statusBadgeNoShow' },
 };
 
 export default function Status({
@@ -197,7 +197,7 @@ export default function Status({
                     {/* Status Badge */}
                     <div className="text-center">
                         <span className={cn("inline-flex items-center text-sm font-bold tracking-wider border rounded-lg px-3 py-1.5 mb-4", statusStyle[currentStatus] ?? 'bg-slate-50 text-slate-500 border-slate-100')}>
-                            {currentStatus.replace('_', ' ').toUpperCase()}
+                            {t(statusMsg.badge)}
                         </span>
                         <h2 className="text-2xl font-semibold text-slate-900">{t(statusMsg.title)}</h2>
                         <p className="text-sm text-slate-500 mt-1">{t(statusMsg.key)}</p>
