@@ -731,14 +731,16 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [
                                 </div>
                             </div>
 
-                            <DialogFooter className="flex items-center justify-end gap-2">
+                            <DialogFooter className="flex items-center justify-between gap-2 pt-4 border-t border-slate-100">
                                 <Link href={route('appointments.show', selectedAppt.id)}
-                                    className={cn(buttonVariants({ variant: 'outline', size: 'icon' }), 'h-8 w-8')}>
-                                    <Eye className="h-4 w-4" />
+                                    className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9')}>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    {t('notif.view')}
                                 </Link>
                                 <Link href={route('appointments.edit', selectedAppt.id)}
-                                    className={cn(buttonVariants({ size: 'icon' }), 'h-8 w-8 bg-slate-900 hover:bg-slate-800 text-white')}>
-                                    <Edit className="h-4 w-4" />
+                                    className={cn(buttonVariants({ size: 'default' }), 'flex-1 h-9 bg-slate-900 hover:bg-slate-800 text-white')}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    {t('edit')}
                                 </Link>
                             </DialogFooter>
                         </>
