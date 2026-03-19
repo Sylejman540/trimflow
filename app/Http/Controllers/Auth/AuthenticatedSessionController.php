@@ -35,9 +35,12 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
-        // If email is not verified, send verification email and redirect to verification page
+        // If email is not verified, send verification code and redirect to verification page
         if (!$user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
+            $code = $user->generateVerificationCode();
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(
+                new \App\Mail\VerifyEmailCode($user, $code)
+            );
             return redirect()->route('verification.notice');
         }
 
