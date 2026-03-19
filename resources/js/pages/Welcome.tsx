@@ -724,152 +724,96 @@ const BarbersClients = () => {
 // ─── Shop Stories ─────────────────────────────────────────────────────────────
 
 
-// ─── Features Showcase ────────────────────────────────────────────────────────
+// ─── Shop Stories ─────────────────────────────────────────────────────────────
 
-const buildFeatures = (t: any) => [
+const stories = [
     {
-        title: t('land.showcaseFeature1Title'),
-        description: t('land.showcaseFeature1Desc'),
-        Icon: Calendar,
+        name: 'Marcus Johnson',
+        shop: 'Classic Cuts NYC',
+        avatar: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=100&q=80',
+        text: "Before Freshio, I was managing bookings through Instagram DMs at midnight. Now my schedule fills itself. Revenue is up 40% in three months.",
+        rating: 5,
+        image: null,
     },
     {
-        title: t('land.showcaseFeature2Title'),
-        description: t('land.showcaseFeature2Desc'),
-        Icon: User,
+        name: 'David Kowalski',
+        shop: 'The Fade Factory',
+        avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&q=80',
+        text: "The client profiles are a game changer. I know every regular's preferences before they even sit down. It's made my work so much more personal and efficient.",
+        rating: 5,
+        image: null,
     },
     {
-        title: t('land.showcaseFeature3Title'),
-        description: t('land.showcaseFeature3Desc'),
-        Icon: Users,
+        name: 'Arben Gashi',
+        shop: 'Fresh Edges Prishtina',
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&q=80',
+        text: "Set up in 10 minutes. My clients love the booking link. No-shows dropped from 3-4 a week to almost zero. Simple, fast, professional.",
+        rating: 5,
+        image: null,
     },
     {
-        title: t('land.showcaseFeature4Title'),
-        description: t('land.showcaseFeature4Desc'),
-        Icon: BarChart3,
+        name: 'Luca Ferretti',
+        shop: 'Blade & Brush Milano',
+        avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&q=80',
+        text: "Freshio turned my shop into a fully booked machine. Clients love the experience and I love not dealing with missed calls.",
+        rating: 5,
+        image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&q=80',
     },
     {
-        title: t('land.showcaseFeature5Title'),
-        description: t('land.showcaseFeature5Desc'),
-        Icon: Link2,
+        name: 'Jordan Blake',
+        shop: 'Uptown Fades Chicago',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80',
+        text: "I was skeptical at first but within a week my calendar was full. The reminders alone cut my no-shows in half. Couldn't go back.",
+        rating: 5,
+        image: null,
     },
     {
-        title: t('land.showcaseFeature6Title'),
-        description: t('land.showcaseFeature6Desc'),
-        Icon: Award,
+        name: 'Yusuf Al-Amin',
+        shop: 'The Lineup Dubai',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
+        text: "Running three chairs is now manageable. Every barber has their own schedule, clients book who they want. It just works.",
+        rating: 5,
+        image: null,
     },
 ];
 
-const Features = () => {
+const ShopStories = () => {
     const { t } = useTranslation();
-    const features = buildFeatures(t);
     return (
-        <section className="py-20 md:py-32 bg-black" id="how-it-works">
+        <section className="py-20 md:py-28 bg-black" id="stories">
             <div className="max-w-7xl mx-auto px-6">
                 <FadeIn className="text-center mb-12 md:mb-16">
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">{t('land.showcaseLabel')}</p>
-                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">{t('land.showcaseTitle')}</h2>
-                    <p className="text-zinc-400 mt-4 max-w-2xl mx-auto text-sm md:text-base">{t('land.showcaseSub')}</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">{t('land.testimonialsLabel')}</p>
+                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">{t('land.shopStoriesTitle')}</h2>
+                    <p className="text-zinc-400 mt-4 max-w-md mx-auto text-sm md:text-base">{t('land.shopStoriesSub')}</p>
                 </FadeIn>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {features.map((feature, i) => (
-                        <FadeIn key={feature.title} delay={i * 0.05}>
-                            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8 hover:border-blue-600/50 transition-all duration-300 group">
-                                <feature.Icon className="h-8 w-8 text-blue-500 mb-4 group-hover:text-blue-400 transition-colors" />
-                                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">{feature.title}</h3>
-                                <p className="text-sm text-zinc-400 leading-relaxed">{feature.description}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 items-start">
+                    {stories.map((s, i) => (
+                        <FadeIn key={s.name} delay={i * 0.08}>
+                            <div className={`bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden ${i === 1 || i === 4 ? 'md:mt-8' : ''}`}>
+                                {s.image && (
+                                    <img src={s.image} alt="Barbershop" className="w-full h-40 md:h-48 object-cover" />
+                                )}
+                                <div className="p-5 md:p-6">
+                                    <div className="flex gap-1 mb-4">
+                                        {Array.from({ length: s.rating }).map((_, j) => (
+                                            <Star key={j} className="h-3.5 w-3.5 md:h-4 md:w-4 fill-amber-400 text-amber-400" />
+                                        ))}
+                                    </div>
+                                    <p className="text-zinc-300 text-sm leading-relaxed mb-6">"{s.text}"</p>
+                                    <div className="flex items-center gap-3 pt-4 border-t border-zinc-700">
+                                        <img src={s.avatar} alt={s.name} className="h-9 w-9 md:h-10 md:w-10 rounded-full object-cover" />
+                                        <div>
+                                            <p className="font-semibold text-white text-sm">{s.name}</p>
+                                            <p className="text-xs text-zinc-500">{s.shop}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </FadeIn>
                     ))}
                 </div>
-            </div>
-        </section>
-    );
-};
-
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
-
-const buildFAQs = (t: any) => [
-    {
-        q: t('land.faq1Q'),
-        a: t('land.faq1A'),
-    },
-    {
-        q: t('land.faq2Q'),
-        a: t('land.faq2A'),
-    },
-    {
-        q: t('land.faq3Q'),
-        a: t('land.faq3A'),
-    },
-    {
-        q: t('land.faq4Q'),
-        a: t('land.faq4A'),
-    },
-    {
-        q: t('land.faq5Q'),
-        a: t('land.faq5A'),
-    },
-    {
-        q: t('land.faq6Q'),
-        a: t('land.faq6A'),
-    },
-];
-
-function FAQItem({ q, a, index }: { q: string; a: string; index: number }) {
-    const [open, setOpen] = useState(false);
-    return (
-        <FadeIn delay={index * 0.05}>
-            <button
-                onClick={() => setOpen(v => !v)}
-                className="w-full text-left bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 md:p-6 hover:border-blue-600/30 transition-all duration-200 group"
-            >
-                <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-base md:text-lg font-bold text-white group-hover:text-blue-400 transition-colors">{q}</h3>
-                    <ChevronDown className={`h-5 w-5 text-zinc-500 shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
-                </div>
-                {open && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="mt-4 pt-4 border-t border-zinc-700"
-                    >
-                        <p className="text-sm md:text-base text-zinc-400 leading-relaxed">{a}</p>
-                    </motion.div>
-                )}
-            </button>
-        </FadeIn>
-    );
-}
-
-const FAQ = () => {
-    const { t } = useTranslation();
-    const faqs = buildFAQs(t);
-    return (
-        <section className="py-20 md:py-32 bg-black">
-            <div className="max-w-3xl mx-auto px-6">
-                <FadeIn className="text-center mb-12 md:mb-16">
-                    <p className="text-xs font-bold uppercase tracking-widest text-blue-500 mb-3">{t('land.faqLabel')}</p>
-                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">{t('land.faqTitle')}</h2>
-                    <p className="text-zinc-400 mt-4 text-sm md:text-base">{t('land.faqSub')}</p>
-                </FadeIn>
-
-                <div className="space-y-3 md:space-y-4">
-                    {faqs.map((faq, i) => (
-                        <FAQItem key={faq.q} q={faq.q} a={faq.a} index={i} />
-                    ))}
-                </div>
-
-                <FadeIn delay={0.3} className="mt-12 text-center">
-                    <p className="text-sm text-zinc-400 mb-4">{t('land.faqStill')}</p>
-                    <a href="#support"
-                        className="inline-flex items-center gap-2 border border-zinc-700 text-white px-6 py-3 rounded-full hover:border-blue-500 hover:text-blue-400 transition-all duration-200">
-                        {t('land.faqTouch')}
-                        <ArrowRight className="h-4 w-4" />
-                    </a>
-                </FadeIn>
             </div>
         </section>
     );
@@ -1071,8 +1015,7 @@ export default function Welcome({ canLogin, canRegister }: Props) {
             <Marquee />
             <LockInLoyalty />
             <BarbersClients />
-            <Features />
-            <FAQ />
+            <ShopStories />
             <GetFree />
             <Footer />
             <CookieBanner />

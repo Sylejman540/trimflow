@@ -73,10 +73,16 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
-        event(new Registered($user));
-
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Generate and send verification code
+        $code = $user->generateVerificationCode();
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(
+            new \App\Mail\VerifyEmailCode($user, $code)
+        );
+
+        event(new Registered($user));
+
+        return redirect(route('verification.notice'));
     }
 }

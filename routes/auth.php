@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -37,6 +39,40 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('verify-email', EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::post('verify-email', function (\Illuminate\Http\Request $request) {
+        $request->validate([
+            'code' => 'required|string|size:6',
+        ]);
+
+        $user = $request->user();
+
+        if (!$user->isVerificationCodeValid($request->input('code'))) {
+            return back()->withErrors(['code' => __('The verification code is invalid or has expired.')]);
+        }
+
+        $user->markEmailAsVerified();
+        $user->clearVerificationCode();
+
+        return redirect()->route('dashboard')->with('status', 'email-verified');
+    })->name('verification.verify');
+
+    Route::post('email/verification-notification', function (\Illuminate\Http\Request $request) {
+        $user = $request->user();
+        $code = $user->generateVerificationCode();
+
+        // Send email with code (you'll need to create a mailable)
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(
+            new \App\Mail\VerifyEmailCode($user, $code)
+        );
+
+        return back()->with('status', 'verification-link-sent');
+    })
+        ->middleware('throttle:3,1')
+        ->name('verification.send');
+
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
 
