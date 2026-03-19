@@ -79,7 +79,7 @@ export default function Index({
                     >
                         <Check className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         <span className="hidden sm:inline">{t('notif.markAllRead')}</span>
-                        <span className="sm:hidden">Mark read</span>
+                        <span className="sm:hidden">{t('notif.markAsRead')}</span>
                     </button>
                 </div>
             }
