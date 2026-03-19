@@ -48,87 +48,47 @@ interface WalkinProps {
     services: WalkinService[];
 }
 
-function playNotificationSound(type: 'default' | 'bell' | 'chime' | 'ping' = 'default') {
-    console.log('Playing notification sound:', type);
+function playNotificationSound() {
     try {
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        console.log('Audio context created, state:', audioContext.state);
-
         const now = audioContext.currentTime;
-
-        if (type === 'default') {
-            // Two beeps - 800Hz then 1000Hz
-            const osc1 = audioContext.createOscillator();
-            const gain1 = audioContext.createGain();
-            osc1.connect(gain1);
-            gain1.connect(audioContext.destination);
-            osc1.frequency.value = 800;
-            osc1.type = 'sine';
-            gain1.gain.setValueAtTime(0.3, now);
-            gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-            osc1.start(now);
-            osc1.stop(now + 0.15);
-
-            const osc2 = audioContext.createOscillator();
-            const gain2 = audioContext.createGain();
-            osc2.connect(gain2);
-            gain2.connect(audioContext.destination);
-            osc2.frequency.value = 1000;
-            osc2.type = 'sine';
-            gain2.gain.setValueAtTime(0.3, now + 0.2);
-            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
-            osc2.start(now + 0.2);
-            osc2.stop(now + 0.35);
-        } else if (type === 'bell') {
-            // Bell sound - three ascending tones
-            const frequencies = [523.25, 659.25, 783.99]; // C, E, G (major chord)
-            frequencies.forEach((freq, idx) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                const startTime = now + idx * 0.1;
-                gain.gain.setValueAtTime(0.2, startTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
-                osc.start(startTime);
-                osc.stop(startTime + 0.2);
-            });
-        } else if (type === 'chime') {
-            // Chime - high pitched descending tones
-            const frequencies = [1046.50, 783.99, 587.33]; // C, G, D (descending)
-            frequencies.forEach((freq, idx) => {
-                const osc = audioContext.createOscillator();
-                const gain = audioContext.createGain();
-                osc.connect(gain);
-                gain.connect(audioContext.destination);
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                const startTime = now + idx * 0.12;
-                gain.gain.setValueAtTime(0.25, startTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.25);
-                osc.start(startTime);
-                osc.stop(startTime + 0.25);
-            });
-        } else if (type === 'ping') {
-            // Single high ping
+        // Bell sound: ascending C, E, G major chord
+        const frequencies = [523.25, 659.25, 783.99];
+        frequencies.forEach((freq, idx) => {
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.frequency.value = 1200;
+            osc.frequency.value = freq;
             osc.type = 'sine';
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-            osc.start(now);
-            osc.stop(now + 0.1);
-        }
-
-        console.log('Sound playing completed');
+            const startTime = now + idx * 0.1;
+            gain.gain.setValueAtTime(0.2, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+            osc.start(startTime);
+            osc.stop(startTime + 0.2);
+        });
     } catch (e) {
-        // Audio context not supported
         console.warn('Notification sound not supported:', e);
+    }
+}
+
+function showBrowserNotification(title: string, options?: NotificationOptions) {
+    if (typeof window === 'undefined') return;
+
+    if (Notification.permission === 'granted') {
+        new Notification(title, {
+            icon: '/favicon.ico',
+            ...options
+        });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification(title, {
+                    icon: '/favicon.ico',
+                    ...options
+                });
+            }
+        });
     }
 }
 
@@ -384,17 +344,15 @@ export default function AppLayout({
 
         // Listen for new notifications via appointment events
         appointmentChannel.listen('.NotificationCreated', (data: any) => {
-            console.log('NotificationCreated event received:', data, 'current user:', auth.user.id);
-            // Only increment if we have the right data structure
             if (data?.user_id === auth.user.id) {
-                console.log('Notification is for current user');
                 setUnreadCount(prev => prev + 1);
 
-                // Play notification sound if enabled
-                console.log('Sound enabled?', (auth.user as any).notifications_sound);
-                if ((auth.user as any).notifications_sound) {
-                    playNotificationSound('chime');
-                }
+                // Always play bell sound + browser notification
+                playNotificationSound();
+                showBrowserNotification('New Notification', {
+                    body: data.message || 'You have a new message',
+                    tag: `notification-${data.id}`
+                });
             }
         });
 
@@ -539,17 +497,17 @@ export default function AppLayout({
                 sidebarOpen ? 'translate-x-0' : '-translate-x-full',
             )}>
                 {/* Brand */}
-                <div className="px-6 py-4 shrink-0 flex items-center justify-between gap-3">
+                <div className="px-6 py-6 shrink-0 flex items-center justify-between gap-3">
                     <Link href="/dashboard" className="flex items-start gap-3 flex-1 min-w-0">
                         <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
                             <path d="M18 2 L34 18 L18 34 L2 18 Z" fill="#111827" />
                             <text x="18" y="24" textAnchor="middle" fontFamily="'Bebas Neue', sans-serif" fontSize="20" fontWeight="900" fill="#ffffff" letterSpacing="-0.5">F</text>
                         </svg>
                         {!isCollapsed && (
-                            <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-                                <p className="text-lg font-black text-slate-900">Fade</p>
+                            <div className="flex flex-col gap-0.5 min-w-0 flex-1 mt-1">
+                                <p className="text-xl font-black text-slate-900 leading-none">Fade</p>
                                 {auth.company && (
-                                    <p className="text-xs font-semibold text-slate-600 truncate">{auth.company.name}</p>
+                                    <p className="text-[10px] font-medium text-slate-500 truncate">{auth.company.name}</p>
                                 )}
                             </div>
                         )}

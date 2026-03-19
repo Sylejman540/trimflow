@@ -1,4 +1,4 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useState, useMemo, useEffect, FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,50 @@ import { Appointment, AppointmentStatus, Barber, PageProps, Service } from '@/ty
 import { KanbanView } from './KanbanView';
 
 type ViewMode = 'list' | 'calendar' | 'kanban';
+
+function playNotificationSound() {
+    try {
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const now = audioContext.currentTime;
+        // Bell sound: ascending C, E, G major chord
+        const frequencies = [523.25, 659.25, 783.99];
+        frequencies.forEach((freq, idx) => {
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            const startTime = now + idx * 0.1;
+            gain.gain.setValueAtTime(0.2, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.2);
+            osc.start(startTime);
+            osc.stop(startTime + 0.2);
+        });
+    } catch (e) {
+        console.warn('Notification sound not supported:', e);
+    }
+}
+
+function showBrowserNotification(title: string, options?: NotificationOptions) {
+    if (typeof window === 'undefined') return;
+
+    if (Notification.permission === 'granted') {
+        new Notification(title, {
+            icon: '/favicon.ico',
+            ...options
+        });
+    } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification(title, {
+                    icon: '/favicon.ico',
+                    ...options
+                });
+            }
+        });
+    }
+}
 
 const allStatuses: AppointmentStatus[] = [
     'pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show',
@@ -391,7 +435,7 @@ function ListView({ filtered, columns, isBarber, isOwnerBarber, onDelete, select
             </div>
 
             {/* Desktop table */}
-            <div className="hidden sm:block">
+            <div className="hidden sm:block overflow-x-auto">
                 {filtered.length === 0 ? (
                     <div className="py-14 flex flex-col items-center gap-2 text-center px-6">
                         <Calendar className="h-10 w-10 text-slate-200" />
@@ -734,8 +778,36 @@ export default function Index({
     const [dateFilter, setDateFilter] = useState(() => localStorage.getItem('appt_date') ?? 'all');
     const [globalSearch, setGlobalSearch] = useState(() => localStorage.getItem('appt_search') ?? filters?.search ?? '');
 
+    const { auth } = usePage<PageProps>().props;
+
     // Keep local list in sync when Inertia re-renders the page
     useEffect(() => { setAppointments(initialAppointments); }, [initialAppointments]);
+
+    // Real-time updates via Echo broadcasting
+    useEffect(() => {
+        const companyId = auth.company?.id;
+        if (!companyId || !window.Echo) return;
+
+        const channelName = `company.${companyId}.appointments`;
+        const channel = window.Echo.channel(channelName);
+
+        channel.listen('.AppointmentChanged', (data: any) => {
+            // Play bell sound
+            playNotificationSound();
+
+            // Show browser notification
+            showBrowserNotification('New Appointment', {
+                body: `${data.customer?.name || 'Walk-in'} booked with ${data.barber?.user?.name || 'Staff'}`,
+                tag: `appointment-${data.id}`,
+                requireInteraction: false
+            });
+
+            // Reload appointments
+            router.reload({ preserveState: true });
+        });
+
+        return () => { window.Echo.leave(channelName); };
+    }, [auth.company?.id]);
 
     function changeView(v: ViewMode) { localStorage.setItem('appt_view', v); setView(v); }
     function changeStatus(v: string) { localStorage.setItem('appt_status', v); setStatusFilter(v); }
@@ -775,6 +847,11 @@ export default function Index({
     }
 
     function updateAppointmentStatus(appointmentId: number, newStatus: AppointmentStatus) {
+        // Update local state immediately for instant UI feedback
+        setAppointments(prev => prev.map(a =>
+            a.id === appointmentId ? { ...a, status: newStatus } : a
+        ));
+        // Then sync with server
         router.patch(route('appointments.update-status', appointmentId), { status: newStatus }, { preserveScroll: true });
     }
 

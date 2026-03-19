@@ -159,6 +159,11 @@ export default function Show({ company, barbers: initialBarbers, services, recap
 
     useEffect(() => {
         setData('_t', String(Math.floor(Date.now() / 1000)));
+        // Load saved language from localStorage
+        const savedLang = localStorage.getItem('fade_lang');
+        if (savedLang && savedLang !== i18n.language) {
+            i18n.changeLanguage(savedLang);
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -351,9 +356,14 @@ export default function Show({ company, barbers: initialBarbers, services, recap
                         </div>
                         <div className="min-w-0">
                             <p className="text-sm font-bold text-slate-900 truncate">{company.name}</p>
-                            {(company.address || company.phone) && (
-                                <p className="text-[11px] text-slate-400 truncate">{company.address ?? (company.phone ? `+${company.phone.replace(/^\+/, '')}` : '')}</p>
-                            )}
+                            <div className="flex flex-col gap-0.5">
+                                {company.address && (
+                                    <p className="text-[11px] text-slate-400 truncate">{company.address}</p>
+                                )}
+                                {company.phone && (
+                                    <p className="text-[11px] text-slate-400 truncate">{company.phone}</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                     <LanguageSwitcher compact />
