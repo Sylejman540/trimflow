@@ -70,8 +70,9 @@ export default function Index({
                     {unread_count > 0 && (
                         <button
                             onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}
-                            className="text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
+                            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-3 h-9 transition-colors shadow-sm active:scale-95"
                         >
+                            <Check className="h-3.5 w-3.5" />
                             {t('notif.markAllRead')}
                         </button>
                     )}
