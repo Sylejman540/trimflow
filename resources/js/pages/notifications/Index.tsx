@@ -62,10 +62,10 @@ export default function Index({
                 <div className="flex items-center gap-2">
                     <button
                         onClick={handleBack}
-                        className="flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 h-9 transition-colors hover:bg-slate-50"
+                        className="flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors p-2"
+                        title={t('back')}
                     >
-                        <ChevronLeft className="h-4 w-4" />
-                        {t('back')}
+                        <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
                         onClick={() => router.post(route('notifications.read'), {}, { preserveScroll: true })}
