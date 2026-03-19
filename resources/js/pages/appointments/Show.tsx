@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, Package, Trash2, Plus, Star, Check, X } from 'lucide-react';
+import { ArrowLeft, Package, Trash2, Plus, Star, Check, X, Edit2 } from 'lucide-react';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -92,9 +92,10 @@ export default function Show({
                     {can_edit && (
                         <Link
                             href={route('appointments.edit', appointment.id)}
-                            className={cn(buttonVariants({ variant: 'default' }), 'bg-slate-900 text-white hover:bg-slate-800 h-10 px-3 rounded-lg text-xs font-bold border-none shadow-none')}
+                            className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title={t('edit')}
                         >
-                            {t('edit')}
+                            <Edit2 className="h-4 w-4" />
                         </Link>
                     )}
                 </div>
