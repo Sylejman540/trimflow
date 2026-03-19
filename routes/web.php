@@ -51,7 +51,7 @@ Route::get('/company', function () {
     return Inertia::render('Company');
 })->name('company.page');
 
-Route::middleware(['auth', 'company'])->group(function () {
+Route::middleware(['auth', 'company', 'check.email.verified'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
     // Apply rate limiting to write operations: max 60 requests per minute per user
