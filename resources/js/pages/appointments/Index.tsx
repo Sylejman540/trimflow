@@ -731,7 +731,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [
                                 </div>
                             </div>
 
-                            <DialogFooter className="flex items-center justify-between gap-2 pt-4 border-t border-slate-100">
+                            <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
                                 <Link href={route('appointments.show', selectedAppt.id)}
                                     className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 h-9')}>
                                     <Eye className="h-4 w-4 mr-2" />
@@ -742,7 +742,7 @@ function CalendarView({ filtered, isBarber, isOwnerBarber, onDelete, barbers = [
                                     <Edit className="h-4 w-4 mr-2" />
                                     {t('edit')}
                                 </Link>
-                            </DialogFooter>
+                            </div>
                         </>
                     )}
                 </DialogContent>
